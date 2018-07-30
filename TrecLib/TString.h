@@ -1,0 +1,123 @@
+#pragma once
+#include "stdafx.h"
+#include "TArray.h"
+#include "TObject.h"
+#include <d2d1_1.h>
+#include <string>
+
+#define T_NO_ERROR 0
+#define T_OVERFLOW 1
+#define NOT_NUMB 2
+
+/*
+* ColorFormat
+* Used to keep track of how the color originally was presented
+*/
+typedef enum _TREC_LIB_DLL ColorFormat
+{
+	cform_hex,
+	cform_hexa,
+	cform_rgb,
+	cform_rgba,
+	cform_hsl,
+	cform_hsla,
+	cform_ana,
+	cform_ana_a
+}ColorFormat;
+
+
+/*
+* Class: TString
+* Represents the UNICODE version of the String class, with features such as split,
+*	number extraction, substring, and trim
+*/
+class _TREC_LIB_DLL TString :public CString, public TObject
+{
+public:
+	TString();
+	~TString();
+	TString(CString*);
+	TString(TString*);
+	TString(const char*);
+	TString(const WCHAR*);
+	TString(CString& c);
+	TString(TString& c);
+	TString(std::string& str);
+
+	short ConvertToInt(int*);
+	short ConvertToDouble(double*);
+	short ConvertToLong(long*);
+	short ConvertToFloat(float*);
+
+	TrecPointer<TArray<TString>> split(TString);
+	WCHAR* GetBufferCopy();
+	TString SubString(UINT beginningIndex, int endIndex = -1);
+	void Trim();
+
+	bool ConvertToColor(D2D1_COLOR_F& color, ColorFormat& cf);
+
+	void operator=(TString&);
+	void operator=(CString&);
+	void operator=(TString* s);
+	void operator=(CString* s);
+	void operator=(WCHAR* w);
+	void operator=(WCHAR w);
+	void operator+(TString&);
+	void operator+(CString&);
+	void operator+(TString*);
+	void operator+(CString*);
+	void operator+(WCHAR*);
+
+	//void operator+=(TString*);
+	//void operator
+
+	bool operator==(TString& s);
+	bool operator==(CString& s);
+	bool operator==(TString* s);
+	bool operator==(CString* s);
+	bool operator==(WCHAR* s);
+
+	bool operator!=(TString& s);
+	bool operator!=(CString& s);
+	bool operator!=(TString* s);
+	bool operator!=(CString* s);
+	bool operator!=(WCHAR* s);
+
+	virtual UCHAR* GetAnaGameType() override;
+};
+
+/*
+* Function: convertToNumber
+* Purpose: Converts a character into a number
+* Parameters: TCHAR c - the character to convert
+*			int* i - the new number
+* Returns: bool - whether character was a number
+*/
+bool convertToNumber(TCHAR c, int* i);
+
+/*
+* Function: convertToNumber
+* Purpose: Converts a character into a number, allowing for hew values
+* Parameters: TCHAR c - the character to convert
+*			int* i - the new number
+* Returns: bool - whether character was a number
+*/
+bool convertToNumberHex(TCHAR c, UINT& i);
+
+/*
+* Function: convertHueToRGB
+* Purpose: Converts an hsv value to a comparble RGB format
+* Parameters: float p - the p of the new color 
+*			float q - the q of the new color
+*			int hue - the hue of the color
+* Returns: float - the color in an RGB channel
+*/
+float ConvertHueToRGB(float p, float q, int hue);
+
+/*
+* Function: ReturnWCharType
+* Purpose: Returns the WCHAR representation of the char
+* Parameters: char c - the chaacter to convert
+* Returns: WCHAR - the wide version of the character
+*/
+WCHAR ReturnWCharType(char c);
