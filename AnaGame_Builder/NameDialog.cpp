@@ -38,6 +38,7 @@ NameDialog::NameDialog():TDialog(200,350)
 
 NameDialog::~NameDialog()
 {
+	text = nullptr;
 }
 
 bool NameDialog::GetValidConstruction()

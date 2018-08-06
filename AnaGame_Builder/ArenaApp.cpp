@@ -154,6 +154,35 @@ ArenaApp::ArenaApp(TrecPointer<AnafaceUI> m, TrecPointer<AnafaceUI>o, TrecPointe
 	delete aParse;
 
 	// To do! Repeat process 
+
+	fileBody = fileBase;
+	fileBody += L"\\AnaGame\\ArenaViewPanel.txt";
+
+	fileOpened = file.Open(fileBody, CFile::modeRead);
+	if (!fileOpened)
+		return;
+
+	// Now Create THe Anaface that lays it out
+	directory = file.GetFilePath();
+	fileName = file.GetFileName();
+	ind = directory.Find(fileName, 0);
+	if (ind > 0)
+		directory.Delete(ind, fileName.GetLength());
+
+	aParse = new AnafaceParser(ren, w, directory);
+	aParse->setEventSystem(handleList);
+
+	reader = new TML_Reader_(&file, aParse);
+	readingError = 0;
+	if (reader->read(&readingError))
+	{
+		outputPane = aParse->getRootControl();
+		o->addControl(outputPane, TString());
+	}
+	
+	file.Close();
+	delete reader;
+	delete aParse;
 }
 
 
@@ -166,14 +195,15 @@ ArenaApp::~ArenaApp()
 
 bool ArenaApp::InitializeControls()
 {
-	if(!mainPage.get())	
+	if(!mainPage.get() || !outputUI.get() ||
+		!mainUI.get() || !outputPane.get())	
 		return false;
 
 	try
 	{
-		TrecPointer<TLayout> mainLay = dynamic_cast<TLayout*>(mainPage.get());
-		arena = dynamic_cast<TArena*>(mainLay->GetLayoutChild(0, 0).get());
-		TrecPointer<TLayout> panelLay = dynamic_cast<TLayout*>(mainLay->GetLayoutChild(0, 1).get());
+		TrecPointer<TLayout> mainLay = dynamic_cast<TLayout*>(outputPane.get());
+		arena = dynamic_cast<TArena*>(mainPage.get());
+		TrecPointer<TLayout> panelLay = dynamic_cast<TLayout*>(mainLay->GetLayoutChild(0, 0).get());
 		d_x = dynamic_cast<TTextField*>(panelLay->GetLayoutChild(1, 1).get());
 		l_x = dynamic_cast<TTextField*>(panelLay->GetLayoutChild(3, 1).get());
 		d_y = dynamic_cast<TTextField*>(panelLay->GetLayoutChild(1, 2).get());
@@ -183,8 +213,9 @@ bool ArenaApp::InitializeControls()
 		TrecPointer<TString> strName;
 		strName = new TString(arenaName);
 		arena->addAttribute(TString(L"|EngineID"), strName);
-		mainPage->onCreate(mainUI->GetControlArea());
 
+		mainPage->onCreate(mainUI->GetControlArea());
+		outputPane->onCreate(outputUI->GetControlArea());
 		
 
 		modelCollection = arena->getEngine();

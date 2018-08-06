@@ -1,7 +1,12 @@
 #pragma once
 #include <TDialog.h>
+#include <TSpreadSheet.h>
 
-#define MODEL_METHOD_COUNT 0
+#define MODEL_METHOD_COUNT 2
+
+class ModelDialog;
+
+typedef void (ModelDialog::*methodArrayM)(TControl* tc, EventArgs ea);
 
 class ModelDialog:public TDialog
 {
@@ -14,8 +19,19 @@ public:
 	void InitializeControls();
 	void MessageHandler()override;
 
+	bool GetOkay();
+	TString GetIndexString();
+	TString GetVertexString();
+
 private:
 	TString fileHolder;
-	bool constructionWorked;
+	bool constructionWorked, ok;
+
+	TrecPointer<TTextField> nameField, indexField;
+	TrecPointer<TSpreadSheet> dataField;
+
+	methodArrayM modelDialMethods[MODEL_METHOD_COUNT];
+	void OnCancel(TControl* tc, EventArgs ea);
+	void OnOkay(TControl* tc, EventArgs ea);
 };
 

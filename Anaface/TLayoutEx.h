@@ -1,6 +1,6 @@
 #pragma once
 #include "TLayout.h"
-class TLayoutEx :	public TLayout
+class _ANAFACE_DLL TLayoutEx :	public TLayout
 {
 public:
 	TLayoutEx(TrecComPointer<ID2D1RenderTarget>, TrecPointer<TArray<styleTable>> ta);

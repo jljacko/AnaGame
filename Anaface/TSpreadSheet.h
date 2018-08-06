@@ -24,12 +24,15 @@ public:
 	virtual void onDraw() override;
 	virtual UCHAR* GetAnaGameType()override;
 
+	TString GetData();
+	TString GetDataSplitTokens();
+
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr) override;
 
 protected:
-	TString title;
+	TString title, splitTokens;
 	UCHAR header_x_span, header_y_span;
-	bool initializeFields, drawLines, stickToNums;
+	bool initializeFields, drawLines, stickToNums, hasTitle;
 	TDataArray<BorderList> borders;
 	HWND window;
 

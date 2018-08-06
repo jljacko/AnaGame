@@ -77,7 +77,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>C:\Users\jljac\Source\Repos\AnaGame\Tap;C:\Users\jljac\Source\Repos\AnaGame\Anaface;C:\Users\jljac\Source\Repos\AnaGame\VideoGraphics;C:\Users\jljac\Source\Repos\AnaGame\TrecLib;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\jljac\Documents\Visual Studio 2017\Projects\TormonscriptAnimate\Debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\Users\jljac\Source\Repos\AnaGame\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
