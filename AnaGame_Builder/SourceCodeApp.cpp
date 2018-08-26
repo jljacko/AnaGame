@@ -87,3 +87,34 @@ bool SourceCodeApp::InitializeControls()
 	}
 	return false;
 }
+
+void SourceCodeApp::OnSave()
+{
+	if (!code.get())
+		return;
+	if (!filePath.GetLength())
+	{
+		CFileDialog cfd(FALSE);
+		if (cfd.DoModal() == IDCANCEL)
+		{
+			return;
+		}
+		filePath = cfd.GetPathName();
+	}
+
+	TFile file;
+	try
+	{
+		file.Open(filePath, CFile::modeWrite | CFile::modeCreate);
+	}
+	catch (CFileException& e)
+	{
+		file.Open(filePath, CFile::modeWrite | CFile::modeNoTruncate);
+	}
+	if (!file.IsOpen())
+		return;
+
+	TString write = code->GetText();
+	file.WriteString(write);
+	file.Close();
+}

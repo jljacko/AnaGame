@@ -226,6 +226,10 @@ RECT BuilderApp::Get3DArea()
 	return RECT{ 0,0,0,0 };
 }
 
+void BuilderApp::OnSave()
+{
+}
+
 void BuilderApp::MessageHandler()
 {
 }

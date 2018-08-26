@@ -240,9 +240,13 @@ bool ArenaApp::InitializeControls()
 			//floats.push_back(1.0f);
 		}
 
+		TDataArray<UINT> uints;
+		for (UINT c = 0; c < scaleVertices.Size(); c++)
+			uints.push_back(c);
+
 		scale = new ArenaModel(*modelCollection.get());
 		scale->SetVertexData(floats, default_shader_Single_Color,D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-		//scale->SetIndices(indices);
+		scale->SetIndices(uints);
 		scale->setColorBuffer(0.0f, 0.0f, 1.0f, 1.0f);
 		//scale->setPipeColorBuffer(1.0f, 0.0f, 0.0f, 1.0f);
 

@@ -20,6 +20,7 @@ public:
 	TrecPointer<TControl> GetMainPage();
 
 	virtual RECT Get3DArea();
+	virtual void OnSave();
 
 protected:
 	TrecPointer<AnafaceUI> mainUI, outputUI, explorerUI;
@@ -28,6 +29,7 @@ protected:
 	virtual bool InitializeControls();
 	TDataArray<eventNameID> handleList;
 	TDataArray<EventID_Cred> cred;
+	TString filePath;
 
 	HWND windowHandle;
 };

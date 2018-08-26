@@ -128,11 +128,11 @@ TString ModelDialog::GetVertexString()
 
 void ModelDialog::OnCancel(TControl * tc, EventArgs ea)
 {
-	DestroyWindow(windowHandle);
+	ShutdownWindow();
 }
 
 void ModelDialog::OnOkay(TControl * tc, EventArgs ea)
 {
 	ok = true;
-	DestroyWindow(windowHandle);
+	ShutdownWindow();
 }

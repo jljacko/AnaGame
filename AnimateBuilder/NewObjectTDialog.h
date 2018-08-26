@@ -64,7 +64,7 @@ private:
 	bool constructionWorked;
 
 	methodArray _3DDialogMethods[T3D_DIALOG_METHOD_COUNT];
-	TrecPointer<ArenaModel> targetModel;
+	TrecPointer<ArenaModel> targetModel, scale;
 
 	ModelChangeMode mcm;
 };

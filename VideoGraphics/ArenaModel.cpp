@@ -287,7 +287,7 @@ void ArenaModel::Render(DirectX::XMMATRIX & proj, DirectX::XMMATRIX& camera, Are
 
 	unsigned int offset = 0, buffSize = static_cast<unsigned int>(bufferSize);
 
-	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	//context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	ID3D11Buffer*const  buff = vertexBuffer.get();
 	context->IASetVertexBuffers(0, 1, &buff, &buffSize, &offset);
 	//context->UpdateSubresource(indexBuffer.get(), 0, 0, index.data(), 0, 0);
@@ -338,14 +338,19 @@ void ArenaModel::Render(DirectX::XMMATRIX & proj, DirectX::XMMATRIX& camera, Are
 	context->VSSetConstantBuffers(modelLocation, 1, &pBuff);
 	//engine->ModelSetFillMode(D3D11_FILL_SOLID);
 
+	if(indexBuffer.get())
+		context->IASetIndexBuffer(indexBuffer.get(), DXGI_FORMAT_R32_UINT, 0);
+	context->IASetPrimitiveTopology(primitive);
+	
 	switch (primitive)
 	{
 	case D3D11_PRIMITIVE_TOPOLOGY_LINELIST:
 		engine->ModelSetFillMode(D3D11_FILL_WIREFRAME);
 		context->Draw(vertexData.Size() / (buffSize/sizeof(float)), 0);
+		break;
 	default:
 		engine->ModelSetFillMode(D3D11_FILL_SOLID);
-		context->IASetIndexBuffer(indexBuffer.get(), DXGI_FORMAT_R32_UINT, 0);
+		
 		context->DrawIndexed(index.Size(), 0, 0);
 		if (hasPipeColor && setSingleColorBuffer(false) && loc >= 0)
 		{

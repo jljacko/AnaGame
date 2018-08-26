@@ -214,7 +214,7 @@ void NewProjectDialogAG::OnOkay(TControl * tc, EventArgs ea)
 
 	sol->AddProject(newProj);
 
-	DestroyWindow(windowHandle);
+	ShutdownWindow();
 }
 
 void NewProjectDialogAG::OnSolution(TControl * tc, EventArgs ea)

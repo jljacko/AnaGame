@@ -382,6 +382,7 @@ bool TTextField::onCreate(RECT r)
 		return false;
 
 	IDWriteTextLayout* layout = text1->fontLayout.get();
+	text = text1->text;
 	if (!layout)
 		return false;
 	for (int c = 0; c < details.Size(); c++)

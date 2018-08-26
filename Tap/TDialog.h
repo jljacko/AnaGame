@@ -57,6 +57,8 @@ protected:
 	TrecPointer<TControl> pointer;
 	CFile file;
 	CArchive* archer;
+
+	void ShutdownWindow();
 	/*TrecComPointer<ID2D1Factory1> fact;
 	// Regular Direct2D/Write method
 	TrecComPointer<ID2D1DCRenderTarget> renderTarget;

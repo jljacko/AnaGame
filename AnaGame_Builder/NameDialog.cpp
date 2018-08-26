@@ -93,7 +93,7 @@ TString NameDialog::GetName()
 void NameDialog::OnCancel(TControl * tc, EventArgs ea)
 {
 	nameUsed = L"";
-	DestroyWindow(windowHandle);
+	ShutdownWindow();
 }
 
 void NameDialog::OnOkay(TControl * tc, EventArgs ea)
@@ -101,5 +101,5 @@ void NameDialog::OnOkay(TControl * tc, EventArgs ea)
 	if (text.get())
 		nameUsed = text->GetText();
 	if (nameUsed.GetLength())
-		DestroyWindow(windowHandle);
+		ShutdownWindow();
 }

@@ -495,6 +495,13 @@ UCHAR * TDialog::GetAnaGameType()
 	return nullptr;
 }
 
+void TDialog::ShutdownWindow()
+{
+	if(windowFeatures.hInstance)
+		UnregisterClass(name, windowFeatures.hInstance);
+	DestroyWindow(windowHandle);
+}
+
 // Use this as A template
 void TDialog::MessageHandler()
 {

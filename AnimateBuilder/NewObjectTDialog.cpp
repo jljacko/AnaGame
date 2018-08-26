@@ -236,6 +236,9 @@ void NewObjectTDialog::OnSelectCube(TControl * tc, EventArgs ea)
 	if (targetModel->PrepModelWithSupplies(cubeVertices, DirectX::XMFLOAT4(1.0, 1.0, 1.0, 6.0)))
 		MessageBox(windowHandle, L"Model was not prepped properly", L"Model Shader issue", MB_OK | MB_ICONHAND);
 	targetModel->PrepIndicees(indices);*/
+
+
+
 }
 
 void NewObjectTDialog::OnSelectSphere(TControl * tc, EventArgs ea)
@@ -768,7 +771,34 @@ void NewObjectTDialog::initializeControls()
 	if(!targetModel.get())
 		MessageBox(windowHandle, L"Dialog was not initialized properly!\nModel Failed to allocate", L"TDialog Error", MB_OK | MB_ICONHAND);
 
-	
+	TDataArray<DirectX::XMFLOAT3> scaleVertices;
+	scaleVertices.push_back(DirectX::XMFLOAT3(100.0, 0.0, 0.0));   // 0
+	scaleVertices.push_back(DirectX::XMFLOAT3(-100.0, 0.0, 0.0));  // 2
+
+	scaleVertices.push_back(DirectX::XMFLOAT3(0.0, 100.0, 0.0));
+	scaleVertices.push_back(DirectX::XMFLOAT3(0.0, -100.0, 0.0));
+
+	scaleVertices.push_back(DirectX::XMFLOAT3(0.0, 0.0, 100.0));
+	scaleVertices.push_back(DirectX::XMFLOAT3(0.0, 0.0, -100.0));
+
+	TDataArray<float> floats;
+
+	for (UINT c = 0; c < scaleVertices.Size(); c++)
+	{
+		floats.push_back(scaleVertices[c].x);
+		floats.push_back(scaleVertices[c].y);
+		floats.push_back(scaleVertices[c].z);
+		//floats.push_back(1.0f);
+	}
+
+	TDataArray<UINT> uints;
+	for (UINT c = 0; c < scaleVertices.Size(); c++)
+		uints.push_back(c);
+
+	scale = new ArenaModel(*engine.get());
+	scale->SetVertexData(floats, default_shader_Single_Color, D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+	scale->SetIndices(uints);
+	scale->setColorBuffer(0.0f, 0.0f, 1.0f, 1.0f);
 	return;
 }
 bool NewObjectTDialog::InitializeEngine()

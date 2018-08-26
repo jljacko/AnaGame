@@ -177,11 +177,11 @@ void NewFileTDialog::InitializeControls()
 void NewFileTDialog::OnCancel(TControl * tc, EventArgs ea)
 {
 	okay = false;
-	DestroyWindow(windowHandle);
+	ShutdownWindow();
 }
 
 void NewFileTDialog::OnOkay(TControl * tc, EventArgs ea)
 {
 	okay = true;
-	DestroyWindow(windowHandle);
+	ShutdownWindow();
 }

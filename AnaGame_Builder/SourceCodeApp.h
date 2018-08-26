@@ -15,6 +15,7 @@ public:
 	~SourceCodeApp();
 
 	bool InitializeControls() override;
+	virtual void OnSave() override;
 protected:
 	TrecPointer<TTextField> lines;
 	TrecPointer<TTextField> code;
