@@ -99,7 +99,7 @@ public:
 
 	virtual bool onCreate(RECT) override;
 
-	virtual void onDraw() override;
+	virtual void onDraw(TObject* obj = nullptr) override;
 	UINT determineMinHeightNeeded()override;
 	void SetNewLocation(RECT& r)override;
 

@@ -15,7 +15,7 @@ public:
 	~TComboBox();
 
 	bool onCreate(RECT);
-	void onDraw();
+	void onDraw(TObject* obj = nullptr) override;
 	void onDraw(ID2D1RenderTarget* rt);
 	void addElement(TString);
 	bool removeElement(TString);

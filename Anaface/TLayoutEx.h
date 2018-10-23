@@ -16,7 +16,7 @@ public:
 	TrecPointer<TControl> RemoveChild(UINT x, UINT y);
 
 	virtual bool onCreate(RECT)override;
-	virtual void onDraw() override;
+	virtual void onDraw(TObject* obj = nullptr) override;
 	virtual UCHAR* GetAnaGameType()override;
 };
 

@@ -86,8 +86,8 @@ void Shutdown()
 }*/
 
 
-std::vector<ReferenceCount> ReferenceTable;
-std::queue<UINT> freeSpaces;
+std::vector<ReferenceCount> ReferenceTable;// The Reference Table
+std::queue<UINT> freeSpaces;               // Used to find a free space in the Reference Table
 
 /*
 * Function: FindReferencePlace
@@ -100,9 +100,9 @@ std::queue<UINT> freeSpaces;
 	for (size_t c = 0; c < ReferenceTable.size(); c++)
 	{
 		if (ReferenceTable[c].pointer == ref && ReferenceTable[c].timeCount != 0b11111111)
-			return c;
+			return c; // This reference is already in the table, look at that!
 	}
-	return -1;
+	return -1; // Reference is not in the table, need to set a new space
 }
 
  /*
@@ -115,25 +115,24 @@ std::queue<UINT> freeSpaces;
  int InsertNewReference(void* ref, UINT& index/*, const char* type*/)
 {
 
-
 	//ReferenceCount rc = { ref, 1 };
 	int refLoc = FindReferencePlace(ref);
 	int returnable = 0;
 	ReferenceCount rc;
-	if (refLoc == -1)
+	if (refLoc == -1)   // if True, we have a new pointer and we need to find a place for it in the table
 	{
-		if (freeSpaces.empty())
+		if (freeSpaces.empty()) // We do not have a free space, need to add a new one
 		{
 			// Time count can remain 0
 
-			rc.count = 1;
+			rc.count = 1;                  // Initializing a new pointer, there will be one reference to it now
 
-			rc.pointer = ref;
-			rc.timeCount = rand() % 255;
-			ReferenceTable.push_back(rc);
+			rc.pointer = ref;              // Set the pointer
+			rc.timeCount = rand() % 255;   // Add some randomness to thrawt malware
+			ReferenceTable.push_back(rc);  // Add to the reference table
 			refLoc = ReferenceTable.size() - 1;
-			index = refLoc;
-			returnable = rc.timeCount << 16;
+			index = refLoc;                // Allow the Requesting TrecPointer to know the index to its reference is
+			returnable = rc.timeCount << 16; // Allow the TrecPointer to know the time_count (key) to this reference
 		}
 		else
 		{

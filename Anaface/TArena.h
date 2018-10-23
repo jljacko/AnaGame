@@ -26,7 +26,7 @@ public:
 	bool setEngine(TrecPointer<ArenaEngine> e);
 	void removeEngine();
 
-	void onDraw() override;
+	void onDraw(TObject* obj) override;
 
 	void Rotate(float leftRight, float upDown);
 	void Translate(float degree, DirectX::XMFLOAT3 direction);

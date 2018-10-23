@@ -226,9 +226,10 @@ public:
 
 	// Resets the layout in the event one of it's underlying attributes changes
 	void reCreateLayout();
+	void reCreateLayout(TString& str);
 
 	// Draw the Text
-	bool onDraw(RECT);
+	bool onDraw(RECT, TObject* obj = nullptr);
 
 	// Handling Colors
 	// NOTE: For Compatibility between AnaGame for Windows and an eventual AnaGame for Unix,
@@ -451,7 +452,7 @@ public:
 	bool setEventHandler(EventTarget& eh);
 	void updateArrayID(int aid);
 
-	virtual void onDraw();
+	virtual void onDraw(TObject* obj = nullptr);
 	RECT getLocation();
 	RECT getSnip();
 	RECT getMargin();

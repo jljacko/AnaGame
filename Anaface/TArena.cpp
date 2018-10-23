@@ -236,7 +236,7 @@ void TArena::removeEngine()
 * Parameters: void
 * Returns: void
 */
-void TArena::onDraw()
+void TArena::onDraw(TObject* obj)
 {
 	//TControl::onDraw();
 	if (content1.get())
@@ -261,12 +261,12 @@ void TArena::onDraw()
 	}
 
 	if (text1.get())
-		text1->onDraw(TControl::location);
+		text1->onDraw(TControl::location, obj);
 	if (border1.get())
 		border1->onDraw();
 	for (int c = 0; c < children.Count(); c++)
 	{
-		children.ElementAt(c)->onDraw();
+		children.ElementAt(c)->onDraw(obj);
 	}
 }
 

@@ -324,7 +324,7 @@ void AnafaceUI::setDontAddControl(TrecPointer<TControl> control)
 * Parameters: void
 * Returns: void
 */
-void AnafaceUI::onDraw()
+void AnafaceUI::onDraw(TObject* obj)
 {
 	//TControl::onDraw();
 	if (!isActive)
@@ -340,9 +340,9 @@ void AnafaceUI::onDraw()
 		else if (border1.get())
 			border1->onDraw();
 		if (text3.get())
-			text3->onDraw(snip);
+			text3->onDraw(snip, obj);
 		else if (text1.get())
-			text1->onDraw(snip);
+			text1->onDraw(snip, obj);
 	}
 	else if (mState == mouseHover)
 	{
@@ -355,9 +355,9 @@ void AnafaceUI::onDraw()
 		else if (border1.get())
 			border1->onDraw();
 		if (text2.get())
-			text2->onDraw(snip);
+			text2->onDraw(snip, obj);
 		else if (text1.get())
-			text1->onDraw(snip);
+			text1->onDraw(snip, obj);
 	}
 	else
 	{
@@ -366,7 +366,7 @@ void AnafaceUI::onDraw()
 		if (border1.get())
 			border1->onDraw();
 		if (text1.get())
-			text1->onDraw(snip);
+			text1->onDraw(snip, obj);
 	}
 
 	if (vScroll)
@@ -375,9 +375,9 @@ void AnafaceUI::onDraw()
 		hScroll->updateDraw();
 
 	if (tabs.get())
-		tabs->onDraw();
+		tabs->onDraw(obj);
 	if (currentControl.get())
-		currentControl->onDraw();
+		currentControl->onDraw(obj);
 }
 
 /*

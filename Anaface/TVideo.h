@@ -10,7 +10,7 @@ public:
 	~TPlayPauseButton();
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)override;
 
-	void onDraw()override;
+	void onDraw(TObject* obj = nullptr)override;
 
 	virtual UCHAR* GetAnaGameType()override;
 
@@ -37,7 +37,7 @@ public:
 	// Time Functions
 
 	bool onCreate(RECT r)override;
-	void onDraw()override;
+	void onDraw(TObject* obj = nullptr)override;
 
 private:
 	TPlayer* player;

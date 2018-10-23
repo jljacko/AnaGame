@@ -8,7 +8,7 @@ public:
 	~TCheckBox();
 
 	bool onCreate(RECT);
-	void onDraw();
+	void onDraw(TObject* obj = nullptr) override;
 	bool IsClicked();
 	//virtual void storeInTML(CArchive* ar, int childLevel)override;
 

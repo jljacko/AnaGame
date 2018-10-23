@@ -21,7 +21,7 @@ public:
 	~TSpreadSheet();
 
 	virtual bool onCreate(RECT)override;
-	virtual void onDraw() override;
+	virtual void onDraw(TObject* obj = nullptr) override;
 	virtual UCHAR* GetAnaGameType()override;
 
 	TString GetData();

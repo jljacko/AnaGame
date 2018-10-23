@@ -54,11 +54,11 @@ bool TCheckBox::onCreate(RECT r)
 * Parameters: void
 * Returns: void
 */
-void TCheckBox::onDraw()
+void TCheckBox::onDraw(TObject* obj)
 {
 	if (!isActive)
 		return;
-	TControl::onDraw();
+	TControl::onDraw(obj);
 
 
 

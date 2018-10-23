@@ -5,9 +5,12 @@
 #include <memory>
 #include "TrecLib.h"
 
+
 extern UCHAR TArrayType[];
 extern UCHAR TDataArrayType[];
 extern UCHAR TMapType[];
+
+class TString;
 
 /*
 * Class TObject
@@ -18,20 +21,13 @@ class _TREC_LIB_DLL TObject
 public:
 	TObject();
 	virtual ~TObject();
-	LPCTSTR* getType();
-
-	unsigned char* alloStack(int);
-	void deAlloStack();
-	unsigned char* getStack();
-	int getStackSize();
 
 	virtual UCHAR* GetAnaGameType();
+	virtual TString getVariableValueStr(TString& varName);
+	virtual TString toString();
 
 protected:
-	LPCTSTR* sys_Type;
-	unsigned char* startStack;
-	int stackSize;
-	unsigned char* endStack;
+	
 };
 
 

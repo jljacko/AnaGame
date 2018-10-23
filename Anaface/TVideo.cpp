@@ -100,9 +100,9 @@ bool TVideo::onCreate(RECT r)
 	return returnable;
 }
 
-void TVideo::onDraw()
+void TVideo::onDraw(TObject* obj)
 {
-	TControl::onDraw();
+	TControl::onDraw(obj);
 	if(player)
 	player->Repaint();
 }
@@ -142,7 +142,7 @@ void TPlayPauseButton::OnLButtonDown(UINT nFlags, CPoint point, messageOutput * 
 	}
 }
 
-void TPlayPauseButton::onDraw()
+void TPlayPauseButton::onDraw(TObject* obj)
 {
 	int left = snip.left + (snip.right - snip.left) / 3;
 	int right = snip.right - (snip.right - snip.left) / 3;

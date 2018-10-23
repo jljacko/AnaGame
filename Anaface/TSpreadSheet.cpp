@@ -168,7 +168,7 @@ bool TSpreadSheet::onCreate(RECT l)
 	return false;
 }
 
-void TSpreadSheet::onDraw()
+void TSpreadSheet::onDraw(TObject* obj)
 {
 	if (drawLines && internalBrush.get())
 	{
@@ -189,7 +189,7 @@ void TSpreadSheet::onDraw()
 				internalBrush.get(), thickness);
 		}
 	}
-	TControl::onDraw();
+	TControl::onDraw(obj);
 }
 
 UCHAR * TSpreadSheet::GetAnaGameType()

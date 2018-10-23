@@ -42,9 +42,9 @@ bool TDropMenu::onCreate(RECT l)
 * Parameters: void
 * Returns: void
 */
-void TDropMenu::onDraw()
+void TDropMenu::onDraw(TObject* obj)
 {
-	TControl::onDraw();
+	TControl::onDraw(obj);
 	TrecPointer<DropMenuNode> currentNode = rootNode;
 	if (!currentNode.get())
 		return;

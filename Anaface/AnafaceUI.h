@@ -48,7 +48,7 @@ public:
 	int addControl(TrecPointer<TControl> control, TString tabName);
 	int addControl(CArchive* arch);
 	void setDontAddControl(TrecPointer<TControl> control);
-	void onDraw()override;
+	void onDraw(TObject* obj) override;
 	TrecPointer<TControl> GetChildAt(UINT c);
 	TrecPointer<TControl> GetCurrentChild();
 

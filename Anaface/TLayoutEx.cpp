@@ -125,9 +125,9 @@ bool TLayoutEx::onCreate(RECT r)
 	return TLayout::onCreate(r);
 }
 
-void TLayoutEx::onDraw()
+void TLayoutEx::onDraw(TObject* obj)
 {
-	TLayout::onDraw();
+	TLayout::onDraw(obj);
 }
 
 UCHAR * TLayoutEx::GetAnaGameType()

@@ -676,11 +676,11 @@ bool TLayout::onCreate(RECT margin)
 * Parameters: void
 * Returns: void
 */
-void TLayout::onDraw()
+void TLayout::onDraw(TObject* obj)
 {
 	if (!isActive)
 		return;
-	TControl::onDraw();
+	TControl::onDraw(obj);
 
 	for (int c = 0; c < lChildren.Count(); c++)
 	{

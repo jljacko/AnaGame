@@ -111,9 +111,9 @@ bool TRadioButton::onCreate(RECT r)
 * Parameters: void
 * Returns: void
 */
-void TRadioButton::onDraw()
+void TRadioButton::onDraw(TObject* obj)
 {
-	TControl::onDraw();
+	TControl::onDraw(obj);
 
 	if (!isActive)
 		return;

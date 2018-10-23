@@ -76,11 +76,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\jljac\Source\Repos\AnaGame\DirectXTex\DirectXTex-master\DirectXTex;C:\Users\jljac\Documents\Visual Studio 2017\Projects\FX11-master\inc;C:\Users\jljac\Source\Repos\AnaGame\TrecLib;C:\Users\jljac\Documents\Visual Studio 2017\Projects\TormonscriptAnimate\TrecLib;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\jljac\Documents\Visual Studio 2017\Projects\DirectXTex\DirectXTex-master\DirectXTex\Bin\Desktop_2015\Win32\Debug;C:\Program Files %28x86%29\Windows Kits\8.1\Lib\winv6.3\um;C:\Users\jljac\Source\Repos\AnaGame\Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\jljac\Documents\Visual Studio 2017\Projects\DirectXTex\DirectXTex-master\DirectXTex;C:\Users\jljac\Source\Repos\AnaGame\TrecLib;$(IncludePath)</IncludePath>
     <CodeAnalysisRuleSet>C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Team Tools\Static Analysis Tools\Rule Sets\NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <EnableCppCoreCheck>false</EnableCppCoreCheck>
+    <LibraryPath>C:\Users\jljac\Documents\Visual Studio 2017\Projects\DirectXTex\DirectXTex-master\DirectXTex\Bin\Desktop_2015\Win32\Debug;C:\Users\jljac\Source\Repos\AnaGame\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>

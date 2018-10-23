@@ -25,7 +25,7 @@ public:
 	~TDropMenu();
 
 	bool onCreate(RECT l) override;
-	void onDraw() override;
+	void onDraw(TObject* obj = nullptr) override;
 
 	bool SetFolderAsRoot(TString& folder);
 	virtual UCHAR* GetAnaGameType()override;

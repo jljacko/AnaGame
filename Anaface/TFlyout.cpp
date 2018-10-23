@@ -117,7 +117,7 @@ bool TFlyout::onCreate(RECT r)
 * Parameters: void
 * Returns: void
 */
-void TFlyout::onDraw()
+void TFlyout::onDraw(TObject* obj)
 {
 	if (!isShown)
 		return;
@@ -143,9 +143,9 @@ void TFlyout::onDraw()
 			redBrush, 2);
 
 		if (organization == tCanvas)
-			TControl::onDraw();
+			TControl::onDraw(obj);
 		else
-			TLayout::onDraw();
+			TLayout::onDraw(obj);
 	}
 }
 

@@ -200,7 +200,7 @@ bool TComboBox::onCreate(RECT r)
 * Note: This method is almost identical to the TControl version except that children
 *	are only drawn when set to
 */
-void TComboBox::onDraw()
+void TComboBox::onDraw(TObject* obj)
 {
 	if (!isActive)
 		return;
@@ -221,9 +221,9 @@ void TComboBox::onDraw()
 		else if (border1.get())
 			border1->onDraw();
 		if (text3.get())
-			text3->onDraw(snip);
+			text3->onDraw(snip, obj);
 		else if (text1.get())
-			text1->onDraw(snip);
+			text1->onDraw(snip, obj);
 	}
 	else if (mState == mouseHover)
 	{
@@ -236,9 +236,9 @@ void TComboBox::onDraw()
 		else if (border1.get())
 			border1->onDraw();
 		if (text2.get())
-			text2->onDraw(snip);
+			text2->onDraw(snip, obj);
 		else if (text1.get())
-			text1->onDraw(snip);
+			text1->onDraw(snip, obj);
 	}
 	else
 	{
@@ -247,7 +247,7 @@ void TComboBox::onDraw()
 		if (border1.get())
 			border1->onDraw();
 		if (text1.get())
-			text1->onDraw(snip);
+			text1->onDraw(snip, obj);
 	}
 
 	renderTarget->DrawLine(leftpoint, vertexPoint, brush.get());
@@ -259,7 +259,7 @@ if (showExtended)
 
 	for (int c = 0; c < children.Count(); c++)
 	{
-		children.ElementAt(c)->onDraw();
+		children.ElementAt(c)->onDraw(obj);
 	}
 
 

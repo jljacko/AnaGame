@@ -63,7 +63,7 @@ public:
 	void storeInHTML(CArchive* ar)override;
 
 	virtual bool onCreate(RECT)override;
-	virtual void onDraw() override;
+	virtual void onDraw(TObject* obj = nullptr) override;
 
 	int returnColumnsWidth(int x);
 	int returnRowsHeight(int y);

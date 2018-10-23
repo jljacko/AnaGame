@@ -1151,7 +1151,7 @@ UCHAR * TControl::GetAnaGameType()
 * Parameters: void
 * Returns: void
 */
-void TControl::onDraw()
+void TControl::onDraw(TObject* obj)
 {
 	if (!isActive)
 		return;
@@ -1166,9 +1166,9 @@ void TControl::onDraw()
 		else if (border1.get())
 			border1->onDraw();
 		if (text3.get())
-			text3->onDraw(snip);
+			text3->onDraw(snip, obj);
 		else if (text1.get())
-			text1->onDraw(snip);
+			text1->onDraw(snip, obj);
 	}
 	else if (mState == mouseHover)
 	{
@@ -1181,9 +1181,9 @@ void TControl::onDraw()
 		else if (border1.get())
 			border1->onDraw();
 		if (text2.get())
-			text2->onDraw(snip);
+			text2->onDraw(snip, obj);
 		else if (text1.get())
-			text1->onDraw(snip);
+			text1->onDraw(snip, obj);
 	}
 	else
 	{
@@ -1192,7 +1192,7 @@ void TControl::onDraw()
 		if (border1.get())
 			border1->onDraw();
 		if (text1.get())
-			text1->onDraw(snip);
+			text1->onDraw(snip, obj);
 	}
 
 	if (vScroll)
@@ -1202,7 +1202,7 @@ void TControl::onDraw()
 
 	for (int c = 0; c < children.Count(); c++)
 	{
-		children.ElementAt(c)->onDraw();
+		children.ElementAt(c)->onDraw(obj);
 	}
 }
 
@@ -4708,11 +4708,16 @@ int TText::onCreate(RECT loc)
 */
 void TText::reCreateLayout()
 {
+	reCreateLayout(text);
+}
+
+void TText::reCreateLayout(TString & str)
+{
 	fontLayout = nullptr;
 	if (text && format.get())
 	{
 		IDWriteTextLayout* wfl = nullptr;
-		writeFact->CreateTextLayout(text, (UINT32)wcslen(text), format.get(), bounds.right - bounds.left, bounds.bottom - bounds.top, &wfl);
+		writeFact->CreateTextLayout(str, (UINT32)wcslen(str), format.get(), bounds.right - bounds.left, bounds.bottom - bounds.top, &wfl);
 		fontLayout = wfl;
 	}
 }
@@ -4723,11 +4728,18 @@ void TText::reCreateLayout()
 * Parameters: RECT r - the area to draw
 * Returns: bool success
 */
-bool TText::onDraw(RECT r)
+bool TText::onDraw(RECT r, TObject* obj)
 {
 	if (!penBrush.get() || !rt.get())
 		return false;
 	D2D1_RECT_F snipF = { 0.0f,0.0f,0.0f,0.0f };
+	// TString print;
+	if (obj && text.GetLength() > 0 && text.GetAt(0) == L'{' && text.GetAt(text.GetLength() - 1) == L'}')
+	{
+		TString print = obj->getVariableValueStr(text.SubString(1, text.GetLength() - 1));
+		reCreateLayout(print);
+	}
+	
 	if (convertCRectToD2DRect(&r, &snipF))
 	{
 		bounds = snipF;

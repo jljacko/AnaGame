@@ -21,7 +21,7 @@ public:
 	virtual ~TFlyout();
 
 	bool onCreate(RECT);
-	void onDraw();
+	void onDraw(TObject* obj = nullptr) override;
 	bool Show(appearCondition);
 	void Hide();
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);

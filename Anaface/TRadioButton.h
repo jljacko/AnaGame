@@ -14,7 +14,7 @@ public:
 	~TRadioButton();
 
 	bool onCreate(RECT);
-	void onDraw();
+	void onDraw(TObject* obj = nullptr) override;
 	void onCreateClass();
 
 	void storeInTML(CArchive* ar, int childLevel, bool overrideChildren = false) override;

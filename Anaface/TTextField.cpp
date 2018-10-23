@@ -400,10 +400,10 @@ bool TTextField::onCreate(RECT r)
 * Parameters: void
 * Returns: void
 */
-void TTextField::onDraw()
+void TTextField::onDraw(TObject* obj)
 {	
 
-	TControl::onDraw();
+	TControl::onDraw(obj);
 	if (!isActive)
 		return;
 
