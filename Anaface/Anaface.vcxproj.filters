@@ -123,6 +123,9 @@
     <ClCompile Include="TSpreadSheet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TDataBind.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Anaface.def">
@@ -240,6 +243,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TSpreadSheet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TDataBind.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
