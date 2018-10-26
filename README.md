@@ -6,6 +6,10 @@
 
 ## Set-up
 
+#### Update these fields
+
+![Update Fields](https://github.com/TrecApps/AnaGame/blob/master/Documentation/Read_me_images/Properties%20Windows.PNG
+
 1. Clone the Project from Github (*git clone https://github.com/TrecApps/AnaGame.git *)
 2. Open the solution in Visual Studio
 3. Build the TrecLib project (you'll need a debug folder)
@@ -13,6 +17,18 @@
 5. Update the "Library Directories" and "Include Directories" in "VC++ Directories"
 --Make sure they point to the directories on _your_ system
 6. Update the lib file list ("Linker --> Input --> Additional Dependencies")
+
+#### Include Example:
+
+![Include example](https://github.com/TrecApps/AnaGame/blob/master/Documentation/Read_me_images/Include%20Directories.PNG)
+
+#### Library Directory Example
+
+![Library Example](https://github.com/TrecApps/AnaGame/blob/master/Documentation/Read_me_images/Library%20Directories.PNG)
+
+#### Lib Files Example
+
+![Lib Files Example] (https://github.com/TrecApps/AnaGame/blob/master/Documentation/Read_me_images/Lib%20Files.PNG)
 
 ### TrecLib
 
@@ -127,7 +143,9 @@ _Note:_ More Documentation should become available in the coming months
 
 ## Overall Structure
 
-AnaGame Currently Uses 4 Extension DLL's (libraries that provide C++ classes to multiple projects).
+![Structure](https://github.com/TrecApps/AnaGame/blob/master/Documentation/Read_me_images/Project%20Overview.png
+
+AnaGame Currently Uses 5 Extension DLL's (libraries that provide C++ classes to multiple projects).
 There might soon be more in the coming months as more features are added to AnaGame. These DLL's are used
 by four MFC applications in the solution.
 
@@ -138,7 +156,8 @@ AnaGame has a stacked library structure where higher up libraries are dependent 
 * TrecLib: (Lowest layer) Provides the base of AnaGame including the TObject, TString, TFile, TrecPointers, and more
 * VideoGraphics: Provides the 3D Graphics engine, manages 3D shaders, and 3D model management
 * Anaface: User Interface Engine that provides the TControl and subclasses that draw themselves to screen and react to user input
-* Tap: (Highest library (right now)) Ties up the libraries together and provides an interface for applications to use AnaGame libraries effectively
+* Tap:  Ties up the libraries together and provides an interface for applications to use AnaGame libraries effectively
+* TrecCode: (Highest library (right now)) The newest addition, Not advanced at all at this point
 
 ### Applications
 
