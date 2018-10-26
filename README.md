@@ -8,7 +8,7 @@
 
 #### Update these fields
 
-![Update Fields](https://github.com/TrecApps/AnaGame/blob/master/Documentation/Read_me_images/Properties%20Windows.PNG
+![Update Fields](https://github.com/TrecApps/AnaGame/blob/master/Documentation/Read_me_images/Properties%20Windows.PNG)
 
 1. Clone the Project from Github (*git clone https://github.com/TrecApps/AnaGame.git *)
 2. Open the solution in Visual Studio
@@ -28,7 +28,7 @@
 
 #### Lib Files Example
 
-![Lib Files Example] (https://github.com/TrecApps/AnaGame/blob/master/Documentation/Read_me_images/Lib%20Files.PNG)
+![Lib Files Example](https://github.com/TrecApps/AnaGame/blob/master/Documentation/Read_me_images/Lib%20Files.PNG)
 
 ### TrecLib
 
@@ -143,7 +143,7 @@ _Note:_ More Documentation should become available in the coming months
 
 ## Overall Structure
 
-![Structure](https://github.com/TrecApps/AnaGame/blob/master/Documentation/Read_me_images/Project%20Overview.png
+![Structure](https://github.com/TrecApps/AnaGame/blob/master/Documentation/Read_me_images/Project%20Overview.png)
 
 AnaGame Currently Uses 5 Extension DLL's (libraries that provide C++ classes to multiple projects).
 There might soon be more in the coming months as more features are added to AnaGame. These DLL's are used
