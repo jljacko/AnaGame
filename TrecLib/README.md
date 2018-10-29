@@ -29,9 +29,9 @@ No Additional Configuration should be necessary
 * TrecComPointer
 
 ## Attribute Codes:
-NoAtt: No Attributes - this class does not have any attributes
-Gen: Generic - this class uses template so most of not all impelemntation is done in the header file
-Abs: Abstract - The class has a pure vitual function and such you Need to extend the class in order to use it
+* __NoAtt__: No Attributes - this class does not have any attributes
+* __Gen__: Generic - this class uses template so most of not all impelemntation is done in the header file
+* __Abs__: Abstract - The class has a pure vitual function and such you Need to extend the class in order to use it
 
 ### TObject
 #### Attributes: NoAtt
