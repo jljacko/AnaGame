@@ -32,6 +32,7 @@ private:
 protected:
 	TrecPointer<TArena> arena;
 	TrecPointer<ArenaEngine> modelCollection;
+	TrecPointer<TArray<TObject>> models;
 	TrecPointer<ArenaModel> scale;
 	TrecPointer<TTextField> d_x, d_y, d_z, l_x, l_y, l_z;
 	bool rotateMode;

@@ -17,10 +17,12 @@ class TArena;
 class TCanvas;
 class TVideo;
 class GeoGroup;*/
-typedef struct _ANAFACE_DLL styleTable {
+class _ANAFACE_DLL styleTable : public TObject
+{
+public:
 	TString style;
 	TMap<TString> names;
-}styleTable;
+};
 /*
 namespace ControlTypeSafety
 {

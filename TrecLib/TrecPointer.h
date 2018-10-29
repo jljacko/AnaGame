@@ -144,6 +144,7 @@ public:
 		object = castOther;
 	}
 
+
 	/*
 	* Method: TrecPointer - operator=
 	* Purpose: Ovrloads assignment operator to take in acceptable raw pointer
@@ -271,6 +272,16 @@ template <class T, class... types> TrecPointer<T> makeTrecPointer(types&&... arg
 template <class T> T* null()
 {
 	return (T*)nullptr;
+}
+
+template <class T, class U> TrecPointer<U> GetAlternativeType(T orig)
+{
+	T* obj = orig.get();
+	if (!obj)
+		return TrecPointer<U>();
+	TrecPointer<U> ret;
+	ret = dynamic_cast<U*>(obj);
+	return ret;
 }
 
 #define ComNull (IUnknown*)nullptr

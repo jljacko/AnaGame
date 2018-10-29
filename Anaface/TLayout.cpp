@@ -345,21 +345,21 @@ int TLayout::addChild(TrecPointer<TControl> tc, UINT x, UINT y, UINT x_2, UINT y
 * Note: the columns and rows provided will be given a relative spacing based off of the layouts real size
 *	if you intend to set at least one row and/or column to have an absolute size, don't use this method
 */
-bool TLayout::setGrid(TArray<int>* col, TArray<int>* row)
+bool TLayout::setGrid(TDataArray<int>& col, TDataArray<int>& row)
 {
 	if(organization != grid)
 		return false;
-	if (!col->Count() || !row->Count())
+	if (!col.Size() || !row.Size())
 		return false;
 
 	RECT tempRect;
 	tempRect.top = 0;
 	tempRect.left = 0;
-	tempRect.right = *(col->ElementAt(0).get());
-	tempRect.bottom = *(row->ElementAt(0).get());
+	tempRect.right = col[0];
+	tempRect.bottom = row[0];
 
-	columnLines.push_back(*(col->ElementAt(0).get()));
-	rowLines.push_back(*(row->ElementAt(0).get()));
+	columnLines.push_back(col[0]);
+	rowLines.push_back(row[0]);
 
 
 	tempContC = new containerControl();
@@ -375,13 +375,13 @@ bool TLayout::setGrid(TArray<int>* col, TArray<int>* row)
 	colunms = 1;
 	//updateColumn = false;
 	//updateRow = false;
-	for (int c = 1; c < col->Count();c++)
+	for (int c = 1; c < col.Size();c++)
 	{
-		addColunm(*(col->ElementAt(c)).get(),true);
+		addColunm(col[c], true);
 	}
-	for (int c = 1; c < row->Count();c++)
+	for (int c = 1; c < row.Size();c++)
 	{
-		addRow(*(row->ElementAt(c)).get(),true);
+		addRow(row[c], true);
 	}
 	return true;
 }
@@ -392,32 +392,30 @@ bool TLayout::setGrid(TArray<int>* col, TArray<int>* row)
 * Parameters: TArray<int>* nums - the layout of the row/column
 * Returns: bool - success (method fails if layout is a grid or if a control has already been added)
 */
-bool TLayout::setStack(TArray<int>* nums)
+bool TLayout::setStack(TDataArray<int>& nums)
 {
-	if(!nums)
-		return false;
 	if (organization == grid)
 		return false;
 
 	switch (organization)
 	{
 	case VStack:
-		for (int c = 0; c < nums->Count(); c++)
-			addRow(*(nums->ElementAt(c).get()), false);
+		for (int c = 0; c < nums.Size(); c++)
+			addRow(nums[c], false);
 		break;
 	case VBuff:
 	case VMix:
-		for (int c = 0; c < nums->Count(); c++)
-			addRow(*(nums->ElementAt(c).get()),true);
+		for (int c = 0; c < nums.Size(); c++)
+			addRow(nums[c], true);
 		break;
 	case HStack:
-		for (int c = 0; c < nums->Count(); c++)
-			addColunm(*(nums->ElementAt(c).get()), false);
+		for (int c = 0; c < nums.Size(); c++)
+			addColunm(nums[c], false);
 		break;
 	case HBuff:
 	case HMix:
-		for (int c = 0; c < nums->Count();c++)
-			addColunm(*(nums->ElementAt(c).get()),true);
+		for (int c = 0; c < nums.Size();c++)
+			addColunm(nums[c], true);
 	}
 
 

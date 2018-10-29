@@ -8,7 +8,7 @@ typedef enum DropMenuType
 }DropMenuType;
 
 
-class DropMenuNode
+class DropMenuNode: public TObject
 {
 	friend class TDropMenu;
 private:

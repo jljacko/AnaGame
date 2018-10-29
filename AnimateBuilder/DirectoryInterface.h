@@ -15,7 +15,7 @@ found at https://msdn.microsoft.com/en-us/library/bb762188(VS.85).aspx
 
 also, rfid can be found here: https://msdn.microsoft.com/en-us/library/bb762494(v=vs.85).aspx
 */
-class DirectoryInterface
+class DirectoryInterface: public TObject
 {
 public:
 	DirectoryInterface(REFKNOWNFOLDERID);

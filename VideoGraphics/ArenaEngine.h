@@ -195,6 +195,8 @@ public:
 
 	// TO-Do: Add Model Method
 	bool DoMVP();
+
+	
 	
 
 	// Rndering scene
@@ -212,6 +214,8 @@ public:
 	virtual UCHAR* GetAnaGameType()override;
 
 	UCHAR OnWindowResize();
+
+	TDataArray<ArenaModel*>* getModelList();
 	
 private:
 	void Unload();

@@ -88,7 +88,7 @@ TComboBox::~TComboBox()
 	for (int c = boxLoc;c < boxList.Size();c++)
 	{
 		if (boxList[c] == this)
-			boxList[c] = nullptr;
+			boxList.setAt(nullptr, c);
 		//boxList[c]->decrimentLocation();
 	}
 

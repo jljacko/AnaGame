@@ -47,6 +47,33 @@ ArenaModel::ArenaModel(ArenaEngine& ae)
 	hasPipeColor = false;
 }
 
+ArenaModel::ArenaModel()
+{
+	size = 1.0f;
+	ZeroMemory(&location, sizeof(location));
+	ZeroMemory(&direction, sizeof(direction));
+	context = engine->getDevice();
+	device = engine->getDeviceD();
+	renderTarget = engine->getRederTarget();
+	swapChain = engine->getSwapChain();
+	constructionWorked = context.get() && device.get() && renderTarget.get() && swapChain.get();
+
+	indexBuffer = (ID3D11Buffer*)nullptr;
+	singleColorBuffer = (ID3D11Buffer*)nullptr;
+	vertexBuffer = (ID3D11Buffer*)nullptr;
+	projectionBuffer = (ID3D11Buffer*)nullptr;
+
+	//engine->AddModel(*this);
+
+	location.x = 0.0f;
+	location.z = 0.0f;
+	location.y = 0.0f;
+
+	direction.x = direction.y = direction.z = 1.0f;
+
+	hasPipeColor = false;
+}
+
 /*
 * Method: (ArenaModel) (Destructor)
 * Purpose: Cleans up the model

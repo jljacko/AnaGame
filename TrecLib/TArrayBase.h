@@ -8,6 +8,9 @@ public:
 	~TArrayBase();
 
 	virtual UCHAR* GetAnaGameType()override;
+	UINT Count();
+
+	virtual TObject* GetObjectAt(UINT loc) = 0;
 
 protected:
 	UINT count = 0;

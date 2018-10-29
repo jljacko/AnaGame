@@ -21,3 +21,14 @@ UCHAR * TDataArrayBase::GetAnaGameType()
 {
 	return TDataArrayType;
 }
+
+/*
+ * Method: TDataArrayBase - Size
+ * Purpose: Reports the number of elements stored
+ * Parameters: void
+ * Returns: UINT - The Size of the DataArray
+ */
+UINT TDataArrayBase::Size()
+{
+	return size;
+}

@@ -25,41 +25,91 @@ void TDataBind::onDraw(TObject * obj)
 	case VBuff:
 	case VStack:
 	case VMix:
-		for (r = startElement; r < data->Count(); r++)
+		if (dataRaw)
 		{
-			cont->Resize(getRawSectionLocation(r, 0));
-			cont->onDraw(data->ElementAt(r).get());
+			for (r = startElement; r < dataRaw->Size(); r++)
+			{
+				cont->Resize(getRawSectionLocation(r, 0));
+				cont->onDraw(dataRaw->GetObjectAt(r));
+			}
+		}
+		else if (dataWrap)
+		{
+			for (r = startElement; r < dataWrap->Count(); r++)
+			{
+				cont->Resize(getRawSectionLocation(r, 0));
+				cont->onDraw(dataWrap->GetObjectAt(r));
+			}
 		}
 		break;
 	case HBuff:
 	case HStack:
 	case HMix:
-		for (c = startElement; c < data->Count(); c++)
+		if (dataRaw)
 		{
-			cont->Resize(getRawSectionLocation(0, c));
-			cont->onDraw(data->ElementAt(c).get());
+			for (c = startElement; c < dataRaw->Size(); c++)
+			{
+				cont->Resize(getRawSectionLocation(0, c));
+				cont->onDraw(dataRaw->GetObjectAt(c));
+			}
+		}
+		else if (dataWrap)
+		{
+			for (c = startElement; c < dataWrap->Count(); c++)
+			{
+				cont->Resize(getRawSectionLocation(0, c));
+				cont->onDraw(dataWrap->GetObjectAt(c));
+			}
 		}
 		break;
 	case grid:
-		if (byRow)
+		if (dataRaw)
 		{
-			for (c = startCol; c < colunms; c++)
+			if (byRow)
 			{
-				for (r = startRow; r < rows; r++)
+				for (c = startCol; c < colunms && startElement < dataRaw->Size(); c++)
 				{
-					cont->Resize(getRawSectionLocation(r, c));
-					cont->onDraw(data->ElementAt(startElement++).get());
+					for (r = startRow; r < rows && startElement < dataRaw->Size(); r++)
+					{
+						cont->Resize(getRawSectionLocation(r, c));
+						cont->onDraw(dataRaw->GetObjectAt(startElement++));
+					}
+				}
+			}
+			else
+			{
+				for (r = startRow; r < rows && startElement < dataRaw->Size(); r++)
+				{
+					for (c = startCol; c < colunms && startElement < dataRaw->Size(); c++)
+					{
+						cont->Resize(getRawSectionLocation(r, c));
+						cont->onDraw(dataRaw->GetObjectAt(startElement++));
+					}
 				}
 			}
 		}
-		else
+		else if (dataWrap)
 		{
-			for (r = startRow; r < rows; r++)
+			if (byRow)
 			{
-				for (c = startCol; c < colunms; c++)
+				for (c = startCol; c < colunms && startElement < dataWrap->Count(); c++)
 				{
-					cont->Resize(getRawSectionLocation(r, c));
-					cont->onDraw(data->ElementAt(startElement++).get());
+					for (r = startRow; r < rows && startElement < dataWrap->Count(); r++)
+					{
+						cont->Resize(getRawSectionLocation(r, c));
+						cont->onDraw(dataWrap->GetObjectAt(startElement++));
+					}
+				}
+			}
+			else
+			{
+				for (r = startRow; r < rows && startElement < dataWrap->Count(); r++)
+				{
+					for (c = startCol; c < colunms && startElement < dataWrap->Count(); c++)
+					{
+						cont->Resize(getRawSectionLocation(r, c));
+						cont->onDraw(dataWrap->GetObjectAt(startElement++));
+					}
 				}
 			}
 		}
@@ -73,9 +123,15 @@ UCHAR * TDataBind::GetAnaGameType()
 	return nullptr;
 }
 
-void TDataBind::setData(TrecPointer<TArray<TObject>>& data)
+
+
+void TDataBind::setData(TDataArrayBase* data)
 {
-	this->data = data;
+	dataRaw = data;
+}
+void TDataBind::setData(TArrayBase* data)
+{
+	dataWrap = data;
 }
 
 bool TDataBind::onCreate(RECT r)

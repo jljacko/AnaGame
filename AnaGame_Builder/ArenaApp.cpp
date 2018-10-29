@@ -111,6 +111,8 @@ ArenaApp::ArenaApp(TrecPointer<AnafaceUI> m, TrecPointer<AnafaceUI>o, TrecPointe
 	TString fileBody = fileBase;
 	fileBody += L"\\AnaGame\\ArenaView.tml";
 
+	models = new TArray<ArenaModel>();
+
 	if (!m.get())
 		return;
 	TrecComPointer<ID2D1RenderTarget> ren = m->getRenderTarget();
@@ -183,6 +185,35 @@ ArenaApp::ArenaApp(TrecPointer<AnafaceUI> m, TrecPointer<AnafaceUI>o, TrecPointe
 	file.Close();
 	delete reader;
 	delete aParse;
+
+	fileBody = fileBase;
+	fileBody += L"\\AnaGame\\ArenaViewBar.txt";
+
+	fileOpened = file.Open(fileBody, CFile::modeRead);
+	if (!fileOpened)
+		return;
+
+	// Now Create The Anaface that lays it out
+	directory = file.GetFilePath();
+	fileName = file.GetFileName();
+	ind = directory.Find(fileName, 0);
+	if (ind > 0)
+		directory.Delete(ind, fileName.GetLength());
+
+	aParse = new AnafaceParser(ren, w, directory);
+	aParse->setEventSystem(handleList);
+
+	reader = new TML_Reader_(&file, aParse);
+	readingError = 0;
+	if (reader->read(&readingError))
+	{
+		explorerPane = aParse->getRootControl();
+		e->addControl(explorerPane, TString());
+	}
+
+	file.Close();
+	delete reader;
+	delete aParse;
 }
 
 
@@ -196,7 +227,8 @@ ArenaApp::~ArenaApp()
 bool ArenaApp::InitializeControls()
 {
 	if(!mainPage.get() || !outputUI.get() ||
-		!mainUI.get() || !outputPane.get())	
+		!mainUI.get() || !outputPane.get() ||
+		!explorerPane.get() || !explorerUI.get())	
 		return false;
 
 	try
@@ -213,10 +245,14 @@ bool ArenaApp::InitializeControls()
 		TrecPointer<TString> strName;
 		strName = new TString(arenaName);
 		arena->addAttribute(TString(L"|EngineID"), strName);
+		
+		if(modelCollection.get())
+			dynamic_cast<TDataBind*>(explorerPane.get())->setData(modelCollection->getModelList());
+
 
 		mainPage->onCreate(mainUI->GetControlArea());
 		outputPane->onCreate(outputUI->GetControlArea());
-		
+		explorerPane->onCreate(explorerUI->GetControlArea());
 
 		modelCollection = arena->getEngine();
 

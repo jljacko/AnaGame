@@ -3,6 +3,8 @@
 #include "Anaface.h"
 #include "AnafaceUI.h"
 #include <TDataArray.h>
+#include "TSpreadSheet.h"
+#include "TDataBind.h"
 
 
 typedef struct _ANAFACE_DLL eventNameID
@@ -63,6 +65,7 @@ private:
 
 	void addToTree(TrecPointer<TControl>);
 	TString fileLoc;
+	TString singleParam;
 
 	void AddToEventList(R_Message_Type rmt, int id);
 	bool handleEventAttribute(TrecPointer<TString>& v, TString & e);

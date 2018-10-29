@@ -7,7 +7,7 @@
 * class tEntry
 * Holds the entry to the TMap
 */
-template<class t2>  class _TREC_LIB_DLL tEntry
+template<class t2>  class _TREC_LIB_DLL tEntry : TObject
 {
 public:
 	tEntry()

@@ -31,4 +31,8 @@ protected:
 };
 
 
+
+
+
+
  _TREC_LIB_DLL WCHAR* boolToString(bool);

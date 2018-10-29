@@ -2095,6 +2095,11 @@ UCHAR ArenaEngine::OnWindowResize()
 	return NO_ERROR;
 }
 
+TDataArray<ArenaModel*>* ArenaEngine::getModelList()
+{
+	return &models;
+}
+
 /*
 * Method: ArenaEngine - Unload
 * Purpose: nullifies the resources of the engine

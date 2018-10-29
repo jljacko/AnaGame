@@ -26,6 +26,7 @@ class _VIDEO_GRAPHICS ArenaModel : public TObject
 {
 public:
 	ArenaModel(ArenaEngine&);
+	ArenaModel();
 	~ArenaModel();
 
 	void SetNewEngine(ArenaEngine& e);

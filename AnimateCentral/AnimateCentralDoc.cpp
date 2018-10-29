@@ -16,6 +16,7 @@
 #include <TML_Reader_.h>
 
 #include <propkey.h>
+#include <TDataArray.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -681,13 +682,13 @@ void CAnimateCentralDoc::OnSetuptcontrol6()
 	TrecPointer<TString> value4 = new TString("0.2,0.5,0.2,1.0");
 	rootLayout->addAttribute(TString(L"|ContentColor"), value4);
 
-	TArray<int> col, row;
-	col.Add(new int(500));
-	col.Add(new int(600));
-	row.Add(new int(400));
-	row.Add(new int(500));
+	TDataArray<int> col, row;
+	col.push_back(500);
+	col.push_back(600);
+	row.push_back(400);
+	row.push_back(500);
 
-	rootLayout->setGrid(&col,&row);
+	rootLayout->setGrid(col, row);
 	TrecPointer<TControl> childControl = new TControl(rtb, table);
 	TrecPointer<TString> value6 = new TString("5.0");
 	childControl->addAttribute(TString(L"|BorderThickness"), value6);
@@ -816,13 +817,13 @@ void CAnimateCentralDoc::OnSetuptcontrolLayeredtlayout()
 	TrecPointer<TString> value9 = new TString("3,3,3,3");
 	childLayout->addAttribute(TString(L"|Margin"), value9);
 
-	TArray<int> col, row;
-	col.Add(new int(500));
-	col.Add(new int(600));
-	row.Add(new int(300));
-	row.Add(new int(200));
+	TDataArray<int> col, row;
+	col.push_back(500);
+	col.push_back(600);
+	row.push_back(300);
+	row.push_back(200);
 
-	childLayout->setGrid(&col, &row);
+	childLayout->setGrid(col, row);
 
 	childControl = new TControl(rtb, table);
 	TrecPointer<TString> value46 = new TString("5.0");
@@ -906,14 +907,14 @@ void CAnimateCentralDoc::OnSetuptcontrolLayoutGadget()
 	TLayout* rootLayout = new TLayout(rtb, NULL);
 	rootLayout->setLayout(grid);
 
-	TArray<int> col, row;
-	col.Add(new int(500));
-	col.Add(new int(500));
-	row.Add(new int(250));
-	row.Add(new int(250));
-	row.Add(new int(250));
+	TDataArray<int> col, row;
+	col.push_back(500);
+	col.push_back(500);
+	row.push_back(250);
+	row.push_back(250);
+	row.push_back(250);
 
-	rootLayout->setGrid(&col, &row);
+	rootLayout->setGrid(col, row);
 
 	
 	
@@ -1019,14 +1020,14 @@ void CAnimateCentralDoc::OnSetuptcontrolTextbox()
 	TLayout* rootLayout = new TLayout(rtb, NULL);
 	rootLayout->setLayout(grid);
 
-	TArray<int> col, row;
-	col.Add(new int(500));
-	col.Add(new int(500));
-	row.Add(new int(250));
-	row.Add(new int(250));
-	row.Add(new int(250));
+	TDataArray<int> col, row;
+	col.push_back(500);
+	col.push_back(500);
+	row.push_back(250);
+	row.push_back(250);
+	row.push_back(250);
 
-	rootLayout->setGrid(&col, &row);
+	rootLayout->setGrid(col, row);
 
 
 

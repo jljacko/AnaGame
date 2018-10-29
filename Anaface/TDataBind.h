@@ -1,7 +1,6 @@
 #pragma once
 #include "TLayoutEx.h"
-class TDataBind :
-	public TLayoutEx
+class _ANAFACE_DLL TDataBind : public TLayoutEx
 {
 public:
 	TDataBind(TrecComPointer<ID2D1RenderTarget>, TrecPointer<TArray<styleTable>> ta);
@@ -9,11 +8,13 @@ public:
 
 	virtual void onDraw(TObject* obj = nullptr) override;
 	virtual UCHAR* GetAnaGameType()override;
-	void setData(TrecPointer<TArray<TObject>>& data);
+	void setData(TDataArrayBase* data);
+	void setData(TArrayBase* data);
 	bool onCreate(RECT r) override;
 
 protected:
-	TrecPointer<TArray<TObject>> data;
+	TDataArrayBase* dataRaw;
+	TArrayBase* dataWrap;
 	bool byRow;
 };
 

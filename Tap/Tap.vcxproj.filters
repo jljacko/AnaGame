@@ -27,13 +27,7 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Tap_.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="TSocket.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TapParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TDialog.cpp">
@@ -65,9 +59,6 @@
     <ClInclude Include="Resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Tap_.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="TByteCode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -75,9 +66,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Tap_dll.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TapParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TDialog.h">

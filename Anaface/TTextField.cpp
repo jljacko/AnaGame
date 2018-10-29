@@ -27,7 +27,7 @@ TTextField::TTextField(TrecComPointer<ID2D1RenderTarget> rt, TrecPointer<TArray<
 	{
 		if (!TextList[c])
 		{
-			TextList[c] = this;
+			TextList.setAt(this,c);
 			notFound = false;
 		}
 	}
@@ -57,7 +57,7 @@ TTextField::~TTextField()
 	{
 		if (TextList[c] == this)
 		{
-			TextList[c] = nullptr;
+			TextList.setAt(nullptr, c);
 			break;
 		}
 	}

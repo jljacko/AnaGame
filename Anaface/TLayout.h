@@ -29,13 +29,14 @@ typedef enum specialLayout
 
 }specialLayout;
 
-typedef struct containerControl
+class containerControl : public TObject
 {
+public:
 	UINT x = 0, y=0;
 	TrecPointer<TControl> contain;
 	bool extend;
 	UINT x2 = 0, y2 = 0;
-}containerControl;
+};
 
 class _ANAFACE_DLL TLayout :
 	public TControl
@@ -53,8 +54,8 @@ public:
 	bool addRow(int, bool markDetected);
 	int addChild(TrecPointer<TControl>, UINT, UINT);
 	int addChild(TrecPointer<TControl>, UINT, UINT, UINT, UINT);
-	bool setGrid(TArray<int>*, TArray<int>*);
-	bool setStack(TArray<int>*);
+	bool setGrid(TDataArray<int>&, TDataArray<int>&);
+	bool setStack(TDataArray<int>&);
 	//bool setMainChild(int, int);
 
 	//int loadFromTML(CArchive* ar) override;

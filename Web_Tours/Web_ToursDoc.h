@@ -9,14 +9,15 @@
 #include <HTMLParser.h>
 #pragma once
 #define NUMBER_OF_BROWSER_EVENTS 3
-typedef struct Tab
+class Tab: public TObject
 {
+public:
 	TrecPointer<TControl> webPage;
 	TArray<TControl> tabHistory;
 	TArray<TString> titleHistory;
 	TString title;
 	UINT index, currentHistory, uiHold;
-}Tab;
+};
 
 class CWeb_ToursDoc;
 

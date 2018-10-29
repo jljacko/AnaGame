@@ -99,7 +99,7 @@ TDialog::TDialog(int width, int height)
 	{
 		if (!dialogArray[c])
 		{
-			dialogArray[c] = this;
+			dialogArray.setAt(this, c);
 			notFound = false;
 		}
 	}
@@ -130,7 +130,7 @@ TDialog::~TDialog()
 	for (UINT c = 0; c < dialogArray.Size(); c++)
 	{
 		if (dialogArray[c] == this)
-			dialogArray[c] = nullptr;
+			dialogArray.setAt(nullptr, c);
 	}
 
 }

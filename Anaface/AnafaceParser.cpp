@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "AnafaceParser.h"
 //#include "TLayoutEx.h"
-#include "TSpreadSheet.h"
+
 //using namespace ControlTypeSafety;
 
 /*
@@ -120,6 +120,12 @@ bool AnafaceParser::Obj(TString* va)
 				else
 					extendPos = false;
 			}
+			
+		}
+		else
+		{
+			singleParam = strings->ElementAt(0).get();
+			singleParam.Remove(L')');
 		}
 	}
 
@@ -239,9 +245,21 @@ bool AnafaceParser::Obj(TString* va)
 		currentObj = TrecPointer<TControl>(new AnafaceUI(renderer, classList, windowHandle));
 		addToTree(currentObj);
 	}
-	else if (!v->Compare(L"Spadsheet") || !v->Compare(L"TSpreadsheet"))
+	else if (!v->Compare(L"Spreadsheet") || !v->Compare(L"TSpreadsheet"))
 	{
 		currentObj = TrecPointer<TControl>(new TSpreadSheet(renderer, classList, windowHandle));
+		addToTree(currentObj);
+	}
+	else if (!v->Compare(L"TDataBind") || !v->Compare(L"DataLayout"))
+	{
+		currentObj = TrecPointer<TControl>((new TDataBind(renderer, classList)));
+		
+		if(singleParam.Compare(L"Horizontal"))
+			dynamic_cast<TLayout*>(currentObj.get())->setLayout(HMix);
+		else if(singleParam.Compare(L"Grid"))
+			dynamic_cast<TLayout*>(currentObj.get())->setLayout(grid);
+		else
+			dynamic_cast<TLayout*>(currentObj.get())->setLayout(VMix);
 		addToTree(currentObj);
 	}
 	else if (!v->Compare(L"Class"))

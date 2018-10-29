@@ -6,7 +6,7 @@
 * Class TArray
 * Holds references to objects (Not meant to store straight foward data in a row)
 */
-template <class t>class _TREC_LIB_DLL TArray : public TArrayBase
+template <typename t>class _TREC_LIB_DLL TArray : public TArrayBase
 {
 public:
 	/*
@@ -78,15 +78,16 @@ public:
 		return data[at / 10][at % 10];
 	}
 
-	/*
-	* Method: TArray - count
-	* Purpose: Retrieves the number of elements in the TArray
-	* Parameters: void
-	* Returns: UINT - the current element count
-	*/
-	UINT Count()
+	TObject* GetObjectAt(UINT loc)
 	{
-		return count;
+		try
+		{
+			return dynamic_cast<TObject*>(ElementAt(loc).get());
+		}
+		catch (...)
+		{
+			return nullptr;
+		}
 	}
 
 	/*
