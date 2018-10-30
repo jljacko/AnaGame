@@ -107,9 +107,9 @@ ArenaApp::ArenaApp(TrecPointer<AnafaceUI> m, TrecPointer<AnafaceUI>o, TrecPointe
 	handleList.push_back(enid);
 
 	TString fileBase;
-	fileBase = GetDirectory(cd_AppData);
+	fileBase = GetDirectory(cd_Executable);
 	TString fileBody = fileBase;
-	fileBody += L"\\AnaGame\\ArenaView.tml";
+	fileBody += L"\\Resources\\ArenaView.tml";
 
 	models = new TArray<ArenaModel>();
 

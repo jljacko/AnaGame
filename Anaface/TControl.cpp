@@ -3476,14 +3476,14 @@ afx_msg void TControl::OnLButtonUp(UINT nFlags, CPoint point, messageOutput* mOu
 	if (!isActive)
 		return;
 
-	if (!parent.get())
+	/*if (!parent.get())
 	{
 		for (int c = 0; c < TextList.Size(); c++)
 		{
 			if (TextList[c])
 				TextList[c]->OnLButtonUp(nFlags, point, mOut,eventAr);
 		}
-	}
+	}*/
 
 
 	for (int c = 0; c < children.Count(); c++)

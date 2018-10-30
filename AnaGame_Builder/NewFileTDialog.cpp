@@ -7,12 +7,12 @@ TString on_nf_okay = L"onOkay";
 
 NewFileTDialog::NewFileTDialog() : TDialog(600, 700)
 {
-	fileHolder = GetDirectoryWithSlash(CentralDirectories::cd_AppData);
+	fileHolder = GetDirectoryWithSlash(CentralDirectories::cd_Executable);
 
 	for (UINT c = 0; c < NEW_FILE_METHOD_COUNT; c++)
 		ProjectMethods[c] = 0;
 
-	fileHolder += L"Anagame\\NewFile.tml";
+	fileHolder += L"Resources\\NewFile.tml";
 	setName(TString(L"New File"));
 	constructionWorked = setAnaface(fileHolder);
 

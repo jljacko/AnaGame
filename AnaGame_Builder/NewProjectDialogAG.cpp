@@ -9,12 +9,12 @@ TString on_projType = L"onProjectType";
 
 NewProjectDialogAG::NewProjectDialogAG(TrecPointer<Solution> sol) : TDialog(600,700)
 {
-	fileHolder = GetDirectoryWithSlash(CentralDirectories::cd_AppData);
+	fileHolder = GetDirectoryWithSlash(CentralDirectories::cd_Executable);
 
 	for (UINT c = 0; c < NEW_PROJECT_METHOD_COUNT; c++)
 		ProjectMethods[c];
 
-	fileHolder += L"Anagame\\NewProject.tml";
+	fileHolder += L"Resources\\NewProject.tml";
 	constructionWorked = setAnaface(fileHolder);
 	setName(TString(L"New Project"));
 

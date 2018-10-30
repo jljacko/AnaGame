@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "EditObjectTDialog.h"
 #include "MainFrm.h"
+#include <DirectoryInterface.h>
 
 TString mln = L"OnModelLocationNear";
 TString mlf = L"OnModelLocationFar";
@@ -40,12 +41,10 @@ EditObjectTDialog::EditObjectTDialog():TDialog(1000, 950)
 	bit = nullptr;
 	CMainFrame* window = (CMainFrame*)AfxGetMainWnd();
 
-	TString direct = window->getSpecialDirectory(bdi_user_appdata);
+	TString direct = GetDirectoryWithSlash(cd_Executable);
 
-	for (UINT c = 0; c < direct.GetLength(); c++)
-	{
-		fileHolder += direct[c];
-	}
+	direct = direct + "Resources";
+	fileHolder = direct;
 
 	for (int c = 0; c < ED_3D_DIALOG_METHOD_COUNT; c++)
 		_3DDialogMethods[c] = nullptr;

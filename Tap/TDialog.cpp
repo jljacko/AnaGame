@@ -57,7 +57,7 @@ namespace
 	}
 
 
-	static ATOM at = 0;
+	
 
 }
 

@@ -5,6 +5,7 @@
 #include "ArenaModel.h"
 #include "ShaderParser.h"
 #include <TML_Reader_.h>
+#include <DirectoryInterface.h>
 
 TDataArray<ArenaEngine*> engineList;
 
@@ -158,9 +159,9 @@ int ArenaEngine::InitializeDefaultShaders()
 	if (!directory || FAILED(res))
 		return 1;
 
-	TString tDirectory(directory);
+	TString tDirectory = GetDirectoryWithSlash(cd_Executable);
 
-	tDirectory += L"\\AnaGame\\DefaultShaders";
+	tDirectory += L"\\Resources\\DefaultShaders";
 
 	CFile* file = nullptr;
 	CArchive* arch = nullptr;

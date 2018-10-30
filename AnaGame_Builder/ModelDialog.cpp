@@ -9,12 +9,12 @@ ModelDialog::ModelDialog(): TDialog(600,900)
 {
 	ok = false;
 
-	fileHolder = GetDirectoryWithSlash(CentralDirectories::cd_AppData);
+	fileHolder = GetDirectoryWithSlash(CentralDirectories::cd_Executable);
 
 	//for (UINT c = 0; c < NEW_FILE_METHOD_COUNT; c++)
 	//	ProjectMethods[c];
 
-	fileHolder += L"Anagame\\NewModel.tml";
+	fileHolder += L"Resources\\NewModel.tml";
 	setName(TString(L"Set Name"));
 	constructionWorked = setAnaface(fileHolder);
 

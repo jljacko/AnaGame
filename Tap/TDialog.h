@@ -52,6 +52,7 @@ protected:
 	//HDC deviceH;
 	bool isReady;
 	bool firstDraw;
+	ATOM at = 0;
 
 	// Anaface Specific resources
 	TrecPointer<TControl> pointer;

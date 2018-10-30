@@ -1,0 +1,15 @@
+->TML
+-|Type:Anaface_UI
+-|Version:0.0.1
+-/
+
+#The actual Arena
+->TArena(0,0)
+-|StartingLocation:10.0,0.0,0.0
+-|StartingDirection: -1.0,0.0,0.0
+-|CameraType:LookAt
+-|Margin:5,5,5,5
+-|BorderColor:0.0,1.0,0.0,1.0
+-|BorderThickness:2.0
+-|ContentColor:0.0,0.0,0.0,1.0
+

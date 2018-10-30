@@ -2,6 +2,7 @@
 #include "NewObjectTDialog.h"
 #include "MainFrm.h"
 #include <TDataArray.h>
+#include <DirectoryInterface.h>
 //#include "DxErr.h"
 
 TString selectCube = L"OnSelectCube";
@@ -33,12 +34,10 @@ NewObjectTDialog::NewObjectTDialog() : TDialog(1000,800)
 	bit = nullptr;
 	CMainFrame* window = (CMainFrame*)AfxGetMainWnd();
 
-	TString direct = window->getSpecialDirectory(bdi_user_appdata);
+	TString direct = GetDirectoryWithSlash(cd_Executable);
 
-	for (UINT c = 0; c <direct.GetLength(); c++)
-	{
-		fileHolder += direct[c];
-	}
+	direct = direct + "Resources";
+	fileHolder = direct;
 
 	for (int c = 0; c < T3D_DIALOG_METHOD_COUNT; c++)
 		_3DDialogMethods[c] = nullptr;

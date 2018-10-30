@@ -18,9 +18,9 @@ SourceCodeApp::SourceCodeApp(TrecPointer<AnafaceUI> m, TrecPointer<AnafaceUI>o, 
 
 
 	TString fileBase;
-	fileBase = GetDirectory(cd_AppData);
+	fileBase = GetDirectory(cd_Executable);
 	TString fileBody = fileBase;
-	fileBody += L"\\AnaGame\\LineTextEditor.txt";
+	fileBody += L"\\Resources\\LineTextEditor.txt";
 
 	if (!m.get())
 		return;

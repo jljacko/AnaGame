@@ -7,12 +7,12 @@ TString on_n_okay = L"OnOkay";
 
 NameDialog::NameDialog():TDialog(200,350)
 {
-	fileHolder = GetDirectoryWithSlash(CentralDirectories::cd_AppData);
+	fileHolder = GetDirectoryWithSlash(CentralDirectories::cd_Executable);
 
 	//for (UINT c = 0; c < NEW_FILE_METHOD_COUNT; c++)
 	//	ProjectMethods[c];
 
-	fileHolder += L"Anagame\\New Arena Dialog.tml";
+	fileHolder += L"Resources\\New Arena Dialog.tml";
 	setName(TString(L"Set Name"));
 	constructionWorked = setAnaface(fileHolder);
 

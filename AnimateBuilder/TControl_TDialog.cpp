@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "TControl_TDialog.h"
 #include "MainFrm.h"
+#include <DirectoryInterface.h>
 
 TString method1 = L"OnRadioNormal";
 TString method2 = L"OnRadioHover";
@@ -36,12 +37,10 @@ TControl_TDialog::TControl_TDialog(int width, int height):TDialog(width,height)
 	CMainFrame* window = (CMainFrame*)AfxGetMainWnd();
 
 
-	TString direct = window->getSpecialDirectory(bdi_user_appdata);
-	
-	for (UINT c = 0; c < direct.GetLength();c++)
-	{
-		filePath += direct[c];
-	}
+	TString direct = GetDirectoryWithSlash(cd_Executable);
+
+	direct = direct + "Resources";
+	fileHolder = direct;
 
 	// Prepare array
 	for (int c = 0; c < TCONTROL_DIALOG_METHOD_COUNT; c++)
