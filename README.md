@@ -173,4 +173,7 @@ Currently, there are two other projects in AnaGame that were created but not und
 * AnagameCompiler: Functional DLL that's going to be superceeded by an Extension DLL
 * AnafaceSupport: Functional DLL that's intended to manage possible UI styling attributes, supporting CSS attributes as well as Anaface attributes
 
+## Before Execution
 
+Copy the Resources Folder into the Debug/Release folder (depending on your compile mode). AnaGame expects the "Resources" folder (and its contents) to be in the
+same folder as the exe and dll files.
