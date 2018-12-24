@@ -7,7 +7,7 @@ BuilderApp::BuilderApp(TrecPointer<AnafaceUI> m, TrecPointer<AnafaceUI>o, TrecPo
 	windowHandle = w;
 	mainUI = m;
 	outputUI = o;
-	explorerPane = e;
+	explorerUI = e;
 }
 
 

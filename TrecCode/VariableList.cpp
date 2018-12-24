@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "VariableList.h"
-
+#include "TInterpretor.h"
 
 VariableList::VariableList()
 {
@@ -9,6 +9,46 @@ VariableList::VariableList()
 
 VariableList::~VariableList()
 {
+}
+
+int VariableList::insertVariable(TString name, TrecPointer<TInterpretor> value)
+{
+	for (UINT c = 0; c < variables.Size(); c++)
+	{
+		if (variables[c].varName && !variables[c].reference.varName.Compare(name))
+		{
+			variables[c].hold = AG_I_FUNCTION;
+			variables[c].value.object = dynamic_cast<TObject*>(value.get());
+			return 1;
+		}
+	}
+	intVariable var;
+	var.hold = AG_I_FUNCTION;
+	var.reference.varName = name;
+	var.varName = true;
+	var.value.object = value.get();
+	variables.push_back(var);
+	return 0;
+}
+
+int VariableList::insertVariable(TString name, TrecPointer<VariableList> value)
+{
+	for (UINT c = 0; c < variables.Size(); c++)
+	{
+		if (variables[c].varName && !variables[c].reference.varName.Compare(name))
+		{
+			variables[c].hold = AG_I_ARRAY;
+			variables[c].value.object = value;
+			return 1;
+		}
+	}
+	intVariable var;
+	var.hold = AG_I_ARRAY;
+	var.reference.varName = name;
+	var.varName = true;
+	var.value.object = value;
+	variables.push_back(var);
+	return 0;
 }
 
 int VariableList::insertVariable(TString name, TrecPointer<TObject> obj)
@@ -27,6 +67,28 @@ int VariableList::insertVariable(TString name, TrecPointer<TObject> obj)
 	var.reference.varName = name;
 	var.varName = true;
 	var.value.object = obj;
+	variables.push_back(var);
+	return 0;
+}
+
+int VariableList::insertVariable(TString name, TString & value)
+{
+	TString* newString = new TString(value);
+	for (UINT c = 0; c < variables.Size(); c++)
+	{
+		if (variables[c].varName && !variables[c].reference.varName.Compare(name))
+		{
+			variables[c].hold = AG_I_STRING;
+			
+			variables[c].value.object = newString;
+			return 1;
+		}
+	}
+	intVariable var;
+	var.hold = AG_I_STRING;
+	var.reference.varName = name;
+	var.varName = true;
+	var.value.object = newString;
 	variables.push_back(var);
 	return 0;
 }
@@ -67,6 +129,46 @@ int VariableList::insertVariable(TString name, double value)
 	var.reference.varName = name;
 	var.varName = true;
 	var.value.primFloat = value;
+	variables.push_back(var);
+	return 0;
+}
+
+int VariableList::insertVariable(TString name, bool value)
+{
+	for (UINT c = 0; c < variables.Size(); c++)
+	{
+		if (variables[c].varName && !variables[c].reference.varName.Compare(name))
+		{
+			variables[c].hold = AG_I_BOOLEAN;
+			variables[c].value.primInt = value;
+			return 1;
+		}
+	}
+	intVariable var;
+	var.hold = AG_I_BOOLEAN;
+	var.reference.varName = name;
+	var.varName = true;
+	var.value.primInt = value;
+	variables.push_back(var);
+	return 0;
+}
+
+int VariableList::insertVariable(TString name, unsigned long long value)
+{
+	for (UINT c = 0; c < variables.Size(); c++)
+	{
+		if (variables[c].varName && !variables[c].reference.varName.Compare(name))
+		{
+			variables[c].hold = AG_I_U_INT;
+			variables[c].value.primInt = (long long)value;
+			return 1;
+		}
+	}
+	intVariable var;
+	var.hold = AG_I_U_INT;
+	var.reference.varName = name;
+	var.varName = true;
+	var.value.primInt = (long long)value;
 	variables.push_back(var);
 	return 0;
 }

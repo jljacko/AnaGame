@@ -483,7 +483,7 @@ bool ShaderParser::SetBufferPurpose(TString & t)
 	}
 	else if(t == TString(L"Color"))
 	{
-		desc = desc & 0b11111100;
+		desc = desc | 0b00000000;
 	}
 	else if (t == TString(L"Binormal"))
 	{
@@ -534,7 +534,7 @@ bool ShaderParser::SetInputSlot(TString & v)
 			return false;
 
 		unsigned short cValue = static_cast<unsigned short>(value);
-		desc = desc + (cValue << 7);
+		desc = desc + (cValue << 8);
 		return true;
 	}
 	return false;
@@ -578,7 +578,7 @@ bool ShaderParser::SetDataCount(TString & v)
 			return false;
 
 		unsigned short cValue = static_cast<unsigned short>(value);
-		cValue = cValue << 11;
+		cValue = cValue << 12;
 		desc = desc + cValue;
 		return true;
 	}

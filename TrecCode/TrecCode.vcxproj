@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -76,8 +76,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\jljac\Source\Repos\AnaGame\Tap;C:\Users\jljac\Source\Repos\AnaGame\Anaface;C:\Users\jljac\Source\Repos\AnaGame\VideoGraphics;C:\Users\jljac\Source\Repos\AnaGame\TrecLib;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\jljac\Source\Repos\AnaGame\Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\John Jacko\Source\Repos\AnaGame\VideoGraphics;C:\Users\John Jacko\Source\Repos\AnaGame\TrecLib;C:\Users\John Jacko\Source\Repos\AnaGame\Tap;C:\Users\John Jacko\Source\Repos\AnaGame\Anaface;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\John Jacko\Source\Repos\AnaGame\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -186,6 +186,12 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AddExpressionTag.cpp" />
+    <ClCompile Include="AndExpression.cpp" />
+    <ClCompile Include="BNFTag.cpp" />
+    <ClCompile Include="BreakTag.cpp" />
+    <ClCompile Include="ContinueTag.cpp" />
+    <ClCompile Include="DivExpressionTag.cpp" />
     <ClCompile Include="dllmain.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
@@ -200,28 +206,63 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="DoubleOpTag.cpp" />
+    <ClCompile Include="FalseTag.cpp" />
+    <ClCompile Include="F_DivExpressionTag.cpp" />
+    <ClCompile Include="IntLanguage.cpp" />
+    <ClCompile Include="ModExpressionTag.cpp" />
+    <ClCompile Include="MultipExpressionTag.cpp" />
+    <ClCompile Include="NullTag.cpp" />
+    <ClCompile Include="OrExpression.cpp" />
+    <ClCompile Include="PowerTag.cpp" />
+    <ClCompile Include="SimpleTag.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="SubtractExpressionTag.cpp" />
+    <ClCompile Include="TInterpretor.cpp" />
     <ClCompile Include="TrecCode.cpp" />
+    <ClCompile Include="TrueTag.cpp" />
     <ClCompile Include="VariableContainer.cpp" />
     <ClCompile Include="VariableList.cpp" />
     <ClCompile Include="VariableTree.cpp" />
+    <ClCompile Include="VarTag.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\TrecCode.rc2" />
     <None Include="TrecCode.def" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AddExpressionTag.h" />
+    <ClInclude Include="AndExpression.h" />
+    <ClInclude Include="BNFTag.h" />
+    <ClInclude Include="BreakTag.h" />
+    <ClInclude Include="ContinueTag.h" />
+    <ClInclude Include="DivExpressionTag.h" />
+    <ClInclude Include="DoubleOpTag.h" />
+    <ClInclude Include="FalseTag.h" />
+    <ClInclude Include="F_DivExpressionTag.h" />
+    <ClInclude Include="Header.h" />
+    <ClInclude Include="IntLanguage.h" />
+    <ClInclude Include="ModExpressionTag.h" />
+    <ClInclude Include="MultipExpressionTag.h" />
+    <ClInclude Include="NullTag.h" />
+    <ClInclude Include="OrExpression.h" />
+    <ClInclude Include="PowerTag.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="SimpleTag.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="SubtractExpressionTag.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="TInterpretor.h" />
+    <ClInclude Include="TrueTag.h" />
     <ClInclude Include="VariableContainer.h" />
     <ClInclude Include="VariableList.h" />
     <ClInclude Include="VariableTree.h" />
+    <ClInclude Include="VarTag.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="TrecCode.rc" />

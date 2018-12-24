@@ -29,6 +29,12 @@ public:
 	ArenaModel();
 	~ArenaModel();
 
+	TString toString() override;
+	TString getVariableValueStr(TString& varName) override;
+
+	void setName(TString& newName);
+	TString getName();
+
 	void SetNewEngine(ArenaEngine& e);
 
 	bool ValidateConstruction();
@@ -64,6 +70,7 @@ public:
 	virtual UCHAR* GetAnaGameType() override;
 
 private:
+	TString name;
 
 	D3D11_PRIMITIVE_TOPOLOGY primitive;
 

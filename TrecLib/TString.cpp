@@ -147,7 +147,7 @@ short TString::ConvertToInt(int* value)
 * Parameters: long* value - the value to store
 * Returns: short - 0 if successful, error code otherwise
 */
-short TString::ConvertToLong(long* value)
+short TString::ConvertToLong(long long* value)
 {
 	
 	int size = this->GetLength();
@@ -578,13 +578,14 @@ bool TString::ConvertToColor(D2D1_COLOR_F & color, ColorFormat& cf)
 * Parameters: TString& t - the TString to copy
 * Returns: void 
 */
-void TString::operator=(TString &t)
+TString TString::operator=(TString &t)
 {
 	this->Empty();
 	for (int c = 0;c < t.GetLength();c++)
 	{
 		this->AppendChar(t.GetAt(c));
 	}
+	return this;
 }
 
 /*
@@ -593,13 +594,14 @@ void TString::operator=(TString &t)
 * Parameters: TString& t - the TString to copy
 * Returns: void
 */
-void TString::operator=(CString &t)
+TString TString::operator=(CString &t)
 {
 	this->Empty();
 	for (int c = 0;c < t.GetLength();c++)
 	{
 		this->AppendChar(t.GetAt(c));
 	}
+	return this;
 }
 
 /*
@@ -608,15 +610,17 @@ void TString::operator=(CString &t)
 * Parameters: TString* s - the TString to copy
 * Returns: void
 */
-void TString::operator=(TString * s)
+TString TString::operator=(TString * s)
 {
-	if (!s)
-		return;
-	this->Empty();
-	for (int c = 0;c < s->GetLength();c++)
+	if (s)
 	{
-		this->AppendChar(s->GetAt(c));
+		this->Empty();
+		for (int c = 0; c < s->GetLength(); c++)
+		{
+			this->AppendChar(s->GetAt(c));
+		}
 	}
+	return this;
 }
 
 /*
@@ -625,15 +629,17 @@ void TString::operator=(TString * s)
 * Parameters: CString* s - the CString to copy
 * Returns: void
 */
-void TString::operator=(CString * s)
+TString TString::operator=(CString * s)
 {
-	if (!s)
-		return;
-	this->Empty();
-	for (int c = 0;c < s->GetLength();c++)
+	if (s)
 	{
-		this->AppendChar(s->GetAt(c));
+		this->Empty();
+		for (int c = 0; c < s->GetLength(); c++)
+		{
+			this->AppendChar(s->GetAt(c));
+		}
 	}
+	return this;
 }
 
 /*
@@ -642,13 +648,15 @@ void TString::operator=(CString * s)
 * Parameters: WCHAR* w - the wide string to copy
 * Returns: void
 */
-void TString::operator=(WCHAR * w)
+TString TString::operator=(WCHAR * w)
 {
-	if (!w)
-		return;
-	this->Empty();
-	for (int c = 0; *w != L'\0';c++, w++)
-		this->AppendChar(*w);
+	if (w)
+	{
+		this->Empty();
+		for (int c = 0; *w != L'\0'; c++, w++)
+			this->AppendChar(*w);
+	}
+	return this;
 }
 
 /*
@@ -657,10 +665,11 @@ void TString::operator=(WCHAR * w)
 * Parameters: WCHAR w - the Character to copy
 * Returns: void
 */
-void TString::operator=(WCHAR w)
+TString TString::operator=(WCHAR w)
 {
 	this->Empty();
 	this->AppendChar(w);
+	return this;
 }
 
 /*
@@ -669,10 +678,11 @@ void TString::operator=(WCHAR w)
 * Parameters: TString& t - the TString to append
 * Returns: void
 */
-void TString::operator+(TString & t)
+TString TString::operator+(TString & t)
 {
 	for (int c = 0; c < t.GetLength();c++)
 		AppendChar(t.GetAt(c));
+	return this;
 }
 
 /*
@@ -681,10 +691,11 @@ void TString::operator+(TString & t)
 * Parameters: TString& t - the TString to append
 * Returns: void
 */
-void TString::operator+(CString &t)
+TString TString::operator+(CString &t)
 {
 	for (int c = 0; c < t.GetLength();c++)
 		AppendChar(t.GetAt(c));
+	return this;
 }
 
 /*
@@ -693,12 +704,14 @@ void TString::operator+(CString &t)
 * Parameters: TString& t - the TString to append
 * Returns: void
 */
-void TString::operator+(TString *t)
+TString TString::operator+(TString *t)
 {
-	if (!t)
-		return;
-	for (int c = 0; c < t->GetLength();c++)
-		AppendChar(t->GetAt(c));
+	if (t)
+	{
+		for (int c = 0; c < t->GetLength(); c++)
+			AppendChar(t->GetAt(c));
+	}
+	return this;
 }
 
 /*
@@ -707,12 +720,14 @@ void TString::operator+(TString *t)
 * Parameters: CString& t - the CString to append
 * Returns: void
 */
-void TString::operator+(CString *t)
+TString TString::operator+(CString *t)
 {
-	if (!t)
-		return;
-	for (int c = 0; c < t->GetLength();c++)
-		AppendChar(t->GetAt(c));
+	if (t)
+	{
+		for (int c = 0; c < t->GetLength(); c++)
+			AppendChar(t->GetAt(c));
+	}
+	return this;
 }
 
 /*
@@ -721,12 +736,14 @@ void TString::operator+(CString *t)
 * Parameters: WCHAR* w - the wide string to append
 * Returns: void
 */
-void TString::operator+(WCHAR * w)
+TString TString::operator+(WCHAR * w)
 {
-	if (!w)
-		return;
-	for (int c = 0; w[c] != L'\0';c++)
-		this->AppendChar(*w);
+	if (w)
+	{
+		for (int c = 0; w[c] != L'\0'; c++)
+			this->AppendChar(*w);
+	}
+	return this;
 }
 
 /*

@@ -50,6 +50,7 @@ public:
 	// Methods Imported from CArchive
 	
 	BOOL ReadString(CString& rString);
+	UINT ReadString(CString& rString, UINT nMax);
 	LPTSTR ReadString(LPTSTR lpsz, UINT nMax);
 	void WriteString(LPCTSTR lpsz);
 	bool IsOpen();

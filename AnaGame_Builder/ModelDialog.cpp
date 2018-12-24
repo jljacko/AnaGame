@@ -126,6 +126,15 @@ TString ModelDialog::GetVertexString()
 	return TString();
 }
 
+TString ModelDialog::GetModelName()
+{
+	if (nameField.get())
+	{
+		return nameField->GetText();
+	}
+	return TString();
+}
+
 void ModelDialog::OnCancel(TControl * tc, EventArgs ea)
 {
 	ShutdownWindow();

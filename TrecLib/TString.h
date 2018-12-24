@@ -46,7 +46,7 @@ public:
 
 	short ConvertToInt(int*);
 	short ConvertToDouble(double*);
-	short ConvertToLong(long*);
+	short ConvertToLong(long long*);
 	short ConvertToFloat(float*);
 
 	TrecPointer<TArray<TString>> split(TString);
@@ -56,17 +56,17 @@ public:
 
 	bool ConvertToColor(D2D1_COLOR_F& color, ColorFormat& cf);
 
-	void operator=(TString&);
-	void operator=(CString&);
-	void operator=(TString* s);
-	void operator=(CString* s);
-	void operator=(WCHAR* w);
-	void operator=(WCHAR w);
-	void operator+(TString&);
-	void operator+(CString&);
-	void operator+(TString*);
-	void operator+(CString*);
-	void operator+(WCHAR*);
+	TString operator=(TString&);
+	TString operator=(CString&);
+	TString operator=(TString* s);
+	TString operator=(CString* s);
+	TString operator=(WCHAR* w);
+	TString operator=(WCHAR w);
+	TString operator+(TString&);
+	TString operator+(CString&);
+	TString operator+(TString*);
+	TString operator+(CString*);
+	TString operator+(WCHAR*);
 
 	//void operator+=(TString*);
 	//void operator

@@ -22,7 +22,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{1947E225-D209-4486-9C0D-2EEC67B01893}</ProjectGuid>
     <RootNamespace>TrecLib</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
     <Keyword>MFCDLLProj</Keyword>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

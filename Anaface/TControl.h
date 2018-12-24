@@ -148,7 +148,7 @@ public:
 	bool onCreate(D2D1_ROUNDED_RECT);
 
 	// Drawing Method
-	void onDraw();
+	void onDraw(RECT& loc, RECT& snip);
 
 	// Handling Colors
 	// NOTE: For Compatibility between AnaGame for Windows and an eventual AnaGame for Unix,
@@ -229,7 +229,7 @@ public:
 	void reCreateLayout(TString& str);
 
 	// Draw the Text
-	bool onDraw(RECT, TObject* obj = nullptr);
+	bool onDraw(RECT& loc, RECT& snip, TObject* obj = nullptr);
 
 	// Handling Colors
 	// NOTE: For Compatibility between AnaGame for Windows and an eventual AnaGame for Unix,
@@ -326,7 +326,7 @@ public:
 	bool onCreate(D2D1_ROUNDED_RECT);
 	void ShiftHorizontal(int degrees);
 	void ShiftVertical(int degrees);
-	void onDraw();
+	void onDraw(RECT& loc, RECT& snip);
 	D2D1::ColorF getColor();
 	bool setOpaquency(float f);
 	void setColor(D2D1::ColorF);
@@ -720,5 +720,9 @@ bool _ANAFACE_DLL isSnipZero(const RECT& snip);
 * Returns: void
 */
 void zeroSnip(RECT& snip);
+
+bool operator==(D2D1_RECT_F& op1, D2D1_RECT_F& op2);
+
+bool operator!=(D2D1_RECT_F& op1, D2D1_RECT_F& op2);
 
 //void DrawArc(const D2D1_ELLIPSE& e, const D2D1_RECT_F& loc, const D2D1_RECT_F& snip, const D2D1_COLOR_F color);

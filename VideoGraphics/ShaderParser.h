@@ -26,11 +26,11 @@ typedef struct BasicShaderDetails
 */
 typedef struct ConstantBufferDescription
 {
-	ShaderPhase sp;
-	int bufferSlot;
-	bool ModelBuffer;
-	int size;
-	unsigned char purpose;
+	ShaderPhase sp;			// Shader phase the Constant buffer belongs to (Vertex, Pixel, etc.)
+	int bufferSlot;			// the slot in the GPU this buffer is located (1 buffer for each slot)
+	bool ModelBuffer;		// Whether this buffer is for Model data
+	int size;				// Size in bytes of the constant buffer
+	unsigned char purpose;	// What this buffer is used for (uased by AnaGame)
 }ConstantBufferDescription;
 
 /*

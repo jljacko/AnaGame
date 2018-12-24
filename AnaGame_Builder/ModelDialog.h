@@ -22,6 +22,7 @@ public:
 	bool GetOkay();
 	TString GetIndexString();
 	TString GetVertexString();
+	TString GetModelName();
 
 private:
 	TString fileHolder;

@@ -172,6 +172,47 @@ BOOL TFile::ReadString(CString & rString)
 	return success;
 }
 
+UINT TFile::ReadString(CString & rString, UINT nMax)
+{
+	rString.Empty();
+	UINT rust = 0;
+	switch (fileEncode)
+	{
+	case fet_acsii:
+		char letter[1];
+		for ( ; Read(&letter, 1) && rust < nMax; rust++)
+		{
+			rString += ReturnWCharType(letter[0]);
+		}
+
+		break;
+	case fet_unicode:
+		UCHAR letter2[2];
+		
+		for (; Read(&letter2, 2) && rust < nMax; rust++)
+		{
+			WCHAR cLetter;
+			UCHAR temp = letter2[0];
+			letter2[0] = letter2[1];
+			letter2[1] = temp;
+			memcpy(&cLetter, letter2, 2);
+			
+			rString += cLetter;
+		}
+
+		break;
+	case fet_unicode_little:
+		WCHAR wLetter;
+		
+		for( ; Read(&wLetter, 2) && rust < nMax; rust++ )
+		{
+			rString += wLetter;
+		}
+		
+	}
+	return rust;
+}
+
 /*
 * Method: TFile - ReadString
 * Purpose: Reads a line in a file into a String, taking into account the file encoding

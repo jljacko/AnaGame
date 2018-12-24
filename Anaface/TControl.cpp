@@ -1158,41 +1158,41 @@ void TControl::onDraw(TObject* obj)
 	if (mState == mouseLClick)
 	{
 		if (content3.get())
-			content3->onDraw();
+			content3->onDraw(location, snip);
 		else if (content1.get())
-			content1->onDraw();
+			content1->onDraw(location, snip);
 		if (border3.get())
-			border3->onDraw();
+			border3->onDraw(location, snip);
 		else if (border1.get())
-			border1->onDraw();
+			border1->onDraw(location, snip);
 		if (text3.get())
-			text3->onDraw(snip, obj);
+			text3->onDraw(location, snip, obj);
 		else if (text1.get())
-			text1->onDraw(snip, obj);
+			text1->onDraw(location, snip, obj);
 	}
 	else if (mState == mouseHover)
 	{
 		if (content2.get())
-			content2->onDraw();
+			content2->onDraw(location, snip);
 		else if (content1.get())
-			content1->onDraw();
+			content1->onDraw(location, snip);
 		if (border2.get())
-			border2->onDraw();
+			border2->onDraw(location, snip);
 		else if (border1.get())
-			border1->onDraw();
+			border1->onDraw(location, snip);
 		if (text2.get())
-			text2->onDraw(snip, obj);
+			text2->onDraw(location, snip, obj);
 		else if (text1.get())
-			text1->onDraw(snip, obj);
+			text1->onDraw(location, snip, obj);
 	}
 	else
 	{
 		if (content1.get())
-			content1->onDraw();
+			content1->onDraw(location, snip);
 		if (border1.get())
-			border1->onDraw();
+			border1->onDraw(location, snip);
 		if (text1.get())
-			text1->onDraw(snip, obj);
+			text1->onDraw(location, snip, obj);
 	}
 
 	if (vScroll)
@@ -4224,21 +4224,58 @@ bool TBorder::onCreate(D2D1_ROUNDED_RECT rr)
 * Parameters: void
 * Returns: void
 */
-void TBorder::onDraw()
+void TBorder::onDraw(RECT& loc, RECT& snip)
 {
 	
 	//TrecPointer<TControl> cap = TrecPointer<TControl>(cap);
 	if (rt.get() && brush.get() && cap)
 	{
-		RECT snipRect =cap->getSnip();
-		convertCRectToD2DRect(&snipRect, &snip);
+		D2D1_RECT_F f_loc, f_snip;
+		convertCRectToD2DRect(&snip, &f_snip);
+		convertCRectToD2DRect(&loc, &f_loc);
 		bool drawRect = true;
 		//if (snip.left > loci.left || snip.top > loci.top ||
 			//snip.right < loci.right || snip.bottom < loci.bottom)
 		//	drawRect = false;
 
 
-		if (drawRect)
+		if (loc == snip)
+		{
+			switch (shape)
+			{
+			case T_Rect:
+				rt->DrawRectangle(&loci, brush.get(), thickness);
+				break;
+			case T_Rounded_Rect:
+
+				roundedRect.rect = f_snip;
+				rt->DrawRoundedRectangle(&roundedRect, brush.get(), thickness);
+				break;
+			case T_Ellipse:
+
+				circle.point.x = (f_snip.right + f_snip.left) / 2;
+				circle.point.y = (f_snip.bottom + f_snip.top) / 2;
+				circle.radiusX = f_snip.right - f_snip.left;
+				circle.radiusY = f_snip.bottom - f_snip.top;
+				rt->DrawEllipse(&circle, brush.get(), thickness);
+				break;
+			case T_Custom_shape:
+				break;
+			}
+		}
+		else
+		{
+			if (snip.left >= loci.left)
+				rt->DrawLine(D2D1::Point2F(snip.left, snip.top), D2D1::Point2F(snip.left, snip.bottom), brush.get(), thickness);
+			if (snip.top >= loci.top)
+				rt->DrawLine(D2D1::Point2F(snip.left, snip.top), D2D1::Point2F(snip.right, snip.top), brush.get(), thickness);
+			if (snip.right <= loci.right)
+				rt->DrawLine(D2D1::Point2F(snip.right, snip.top), D2D1::Point2F(snip.right, snip.bottom), brush.get(), thickness);
+			if (snip.bottom >= loci.bottom)
+				rt->DrawLine(D2D1::Point2F(snip.left, snip.bottom), D2D1::Point2F(snip.right, snip.bottom), brush.get(), thickness);
+		}
+		
+		/*if (drawRect)
 		{
 			if (cap->onFocus && BuilderFocusBrush.get())
 			{
@@ -4278,15 +4315,8 @@ void TBorder::onDraw()
 		}
 		else
 		{
-			if (snip.left >= loci.left)
-				rt->DrawLine(D2D1::Point2F(snip.left, snip.top), D2D1::Point2F(snip.left, snip.bottom), brush.get(), thickness);
-			if (snip.top >= loci.top)
-				rt->DrawLine(D2D1::Point2F(snip.left, snip.top), D2D1::Point2F(snip.right, snip.top), brush.get(), thickness);
-			if (snip.right <= loci.right)
-				rt->DrawLine(D2D1::Point2F(snip.right, snip.top), D2D1::Point2F(snip.right, snip.bottom), brush.get(), thickness);
-			if (snip.bottom >= loci.bottom)
-				rt->DrawLine(D2D1::Point2F(snip.left, snip.bottom), D2D1::Point2F(snip.right, snip.bottom), brush.get(), thickness);
-		}
+			
+		}*/
 
 
 	}
@@ -4728,11 +4758,14 @@ void TText::reCreateLayout(TString & str)
 * Parameters: RECT r - the area to draw
 * Returns: bool success
 */
-bool TText::onDraw(RECT r, TObject* obj)
+bool TText::onDraw(RECT& loc, RECT& snip, TObject* obj)
 {
 	if (!penBrush.get() || !rt.get())
 		return false;
 	D2D1_RECT_F snipF = { 0.0f,0.0f,0.0f,0.0f };
+	convertCRectToD2DRect(&loc, &snipF);
+	if (bounds != snipF)
+		bounds = snipF;
 	// TString print;
 	if (obj && text.GetLength() > 0 && text.GetAt(0) == L'{' && text.GetAt(text.GetLength() - 1) == L'}')
 	{
@@ -4740,7 +4773,7 @@ bool TText::onDraw(RECT r, TObject* obj)
 		reCreateLayout(print);
 	}
 	
-	if (convertCRectToD2DRect(&r, &snipF))
+	if (convertCRectToD2DRect(&snip, &snipF))
 	{
 		bounds = snipF;
 		if (fontLayout.get())
@@ -5522,22 +5555,31 @@ void TContent::ShiftVertical(int degrees)
 * Parameters: void
 * Returns: void
 */
-void TContent::onDraw()
+void TContent::onDraw(RECT& loc, RECT& snip)
 {
 	if (!rt.get())
 		return;
+
+	D2D1_RECT_F f_snip;
+	convertCRectToD2DRect(&snip, &f_snip);
+
 	if (brush.get())
 	{
 		switch (shape)
 		{
 		case T_Rect:
-			rt->FillRectangle(snip, brush.get());
+			rt->FillRectangle(f_snip, brush.get());
 			break;
 		case T_Rounded_Rect:
+			roundedRect.rect = f_snip;
 			rt->FillRoundedRectangle(&roundedRect, brush.get());
 
 			break;
 		case T_Ellipse:
+			circle.point.x = (f_snip.right + f_snip.left) / 2;
+			circle.point.y = (f_snip.bottom + f_snip.top) / 2;
+			circle.radiusX = f_snip.right - f_snip.left;
+			circle.radiusY = f_snip.bottom - f_snip.top;
 			rt->FillEllipse(&circle, brush.get());
 			break;
 		case T_Custom_shape:
@@ -5546,10 +5588,27 @@ void TContent::onDraw()
 	}
 	if (image.get() && bitmap.get() && cropImage.get())
 	{
+		D2D1_RECT_F f_loc;
+		convertCRectToD2DRect(&loc, &f_loc);
+		if(loc == snip)
+			rt->DrawBitmap(image.get(), f_snip);
+		else
+		{
+			D2D1_POINT_2U point{ 0,0 };
+			D2D1_RECT_U cropSnip;
+			cropSnip.bottom = abs(f_loc.bottom - f_snip.bottom);
+			cropSnip.left = abs(f_snip.left - f_loc.left);
+			cropSnip.right = abs(f_loc.right - f_snip.right);
+			cropSnip.top = abs(f_snip.top - f_loc.top);
+			if (cropSnip.bottom < cropSnip.top || cropSnip.right < cropSnip.left)
+				return;
+			cropImage->CopyFromBitmap(&point, image.get(), &cropSnip);
+			rt->DrawBitmap(cropImage.get(), f_snip);
+		}
 		//cropImage->CopyFromBitmap(NULL)
 		
 		//rt->DrawBitmap(image, snip, thickness, D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR, location);
-		rt->DrawBitmap(image.get(), snip);
+		
 	}
 }
 
@@ -6054,13 +6113,13 @@ RECT convertStringToRECT(TString* str)
 	{
 		goto fallBack;
 	}
-	res[0] = strSpl->ElementAt(0)->ConvertToLong(&returnable.top);
-	res[1] = strSpl->ElementAt(1)->ConvertToLong(&returnable.left);
-	res[2] = strSpl->ElementAt(2)->ConvertToLong(&returnable.bottom);
-	res[3] = strSpl->ElementAt(3)->ConvertToLong(&returnable.right);
+	res[0] = strSpl->ElementAt(0)->ConvertToInt((int*)&returnable.top);
+	res[1] = strSpl->ElementAt(1)->ConvertToInt((int*)&returnable.left);
+	res[2] = strSpl->ElementAt(2)->ConvertToInt((int*)&returnable.bottom);
+	res[3] = strSpl->ElementAt(3)->ConvertToInt((int*)&returnable.right);
 	if (res[0] > 0 || res[1] > 0 || res[2] > 0 || res[3] > 0)
 		goto fallBack;
-	return returnable;
+	return returnable; LONG i;
 }
 
 /*
@@ -6262,6 +6321,18 @@ void zeroSnip(RECT & snip)
 	snip.left = 0;
 	snip.right = 0;
 	snip.top = 0;
+}
+
+bool operator==(D2D1_RECT_F & op1, D2D1_RECT_F & op2)
+{
+	return op1.bottom == op2.bottom && op1.left == op2.left
+		&& op1.right == op2.right && op1.top == op2.top;
+}
+
+bool operator!=(D2D1_RECT_F & op1, D2D1_RECT_F & op2)
+{
+	return op1.bottom != op2.bottom || op1.left != op2.left
+		|| op1.right != op2.right || op1.top != op2.top;
 }
 
 

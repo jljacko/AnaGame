@@ -2227,14 +2227,14 @@ TDataArray<D3D11_INPUT_ELEMENT_DESC>* ArenaEngine::getInputDescription(TDataArra
 	{
 		D3D11_INPUT_ELEMENT_DESC desc;
 		ZeroMemory(&desc, sizeof(desc));
-
+		
 		// Width of the data
-		unsigned char dataWidth = bufferDesc[c] & 0b0000000001110000;
+		unsigned char dataWidth = bufferDesc[c] & 0b0000000011110000;
 		dataWidth = dataWidth >> 4;
 
 		// Count of the data
-		unsigned short dataCount = bufferDesc[c] & 0b0011100000000000;
-		dataCount = dataCount >> 11;
+		unsigned short dataCount = bufferDesc[c] & 0b1111000000000000;
+		dataCount = dataCount >> 12;
 		
 		// First, mark offset count so 0 value is included in first element
 		desc.AlignedByteOffset = offsetCount;
@@ -2298,7 +2298,7 @@ TDataArray<D3D11_INPUT_ELEMENT_DESC>* ArenaEngine::getInputDescription(TDataArra
 		}
 
 		desc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-		desc.InputSlot = (bufferDesc[c] & 0b0000011110000000) >> 7;
+		desc.InputSlot = (bufferDesc[c] & 0b0000111100000000) >> 8;
 
 		returnable->push_back(desc);
 	}

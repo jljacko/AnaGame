@@ -101,7 +101,7 @@ void TDropMenu::DrawNode(long & top, TrecPointer<DropMenuNode> node)
 
 	text1->setCaption(node->caption);
 	//text1->setNewLocation(curLoc);
-	text1->onDraw(curLoc);
+	text1->onDraw(location, snip);
 
 	if (node->hasChildren)
 	{

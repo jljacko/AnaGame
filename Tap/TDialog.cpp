@@ -190,8 +190,15 @@ bool TDialog::InitializeWindow(int& error)
 	if (!at)
 	{
 
-
+		reRegister:
 		at = RegisterClass(&windowFeatures);
+
+
+		if (!at && GetLastError() == ERROR_CLASS_ALREADY_EXISTS)
+		{
+			UnregisterClass(windowFeatures.lpszClassName, windowFeatures.hInstance);
+			goto reRegister;
+		}
 
 		if (!at)
 		{
@@ -214,7 +221,7 @@ bool TDialog::InitializeWindow(int& error)
 	name.ReleaseBuffer();
 	if (!windowHandle)
 	{
-		error = -2;
+		error = -3;
 		DWORD err = GetLastError();
 		return false;
 	}

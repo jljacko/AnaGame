@@ -158,7 +158,7 @@ ArenaApp::ArenaApp(TrecPointer<AnafaceUI> m, TrecPointer<AnafaceUI>o, TrecPointe
 	// To do! Repeat process 
 
 	fileBody = fileBase;
-	fileBody += L"\\AnaGame\\ArenaViewPanel.txt";
+	fileBody += L"\\Resources\\ArenaViewPanel.txt";
 
 	fileOpened = file.Open(fileBody, CFile::modeRead);
 	if (!fileOpened)
@@ -187,7 +187,7 @@ ArenaApp::ArenaApp(TrecPointer<AnafaceUI> m, TrecPointer<AnafaceUI>o, TrecPointe
 	delete aParse;
 
 	fileBody = fileBase;
-	fileBody += L"\\AnaGame\\ArenaViewBar.txt";
+	fileBody += L"\\Resources\\ArenaViewBar.txt";
 
 	fileOpened = file.Open(fileBody, CFile::modeRead);
 	if (!fileOpened)
@@ -246,8 +246,7 @@ bool ArenaApp::InitializeControls()
 		strName = new TString(arenaName);
 		arena->addAttribute(TString(L"|EngineID"), strName);
 		
-		if(modelCollection.get())
-			dynamic_cast<TDataBind*>(explorerPane.get())->setData(modelCollection->getModelList());
+		
 
 
 		mainPage->onCreate(mainUI->GetControlArea());
@@ -255,7 +254,8 @@ bool ArenaApp::InitializeControls()
 		explorerPane->onCreate(explorerUI->GetControlArea());
 
 		modelCollection = arena->getEngine();
-
+		if(modelCollection.get())
+			dynamic_cast<TDataBind*>(explorerPane.get())->setData(modelCollection->getModelList());
 		TDataArray<DirectX::XMFLOAT3> scaleVertices;
 		scaleVertices.push_back(DirectX::XMFLOAT3(100.0, 0.0, 0.0));   // 0
 		scaleVertices.push_back(DirectX::XMFLOAT3(-100.0, 0.0, 0.0));  // 2

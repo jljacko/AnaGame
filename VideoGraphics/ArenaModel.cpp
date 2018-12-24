@@ -84,6 +84,40 @@ ArenaModel::~ArenaModel()
 {
 }
 
+TString ArenaModel::toString()
+{
+	return TString();
+}
+
+TString ArenaModel::getVariableValueStr(TString & varName)
+{
+	if (!varName.Compare(L"Name"))
+		return name;
+	if (!varName.Compare(L"location"))
+	{
+		TString ret;
+		ret.Format(L"Location: %f, %f, %f", location.x, location.y, location.z);
+		return ret;
+	}
+	if (!varName.Compare(L"direction"))
+	{
+		TString ret;
+		ret.Format(L"Direction: %d, %d, %d", direction.x, direction.y, direction.z);
+		return ret;
+	}
+	return TString();
+}
+
+void ArenaModel::setName(TString & newName)
+{
+	name = newName;
+}
+
+TString ArenaModel::getName()
+{
+	return name;
+}
+
 /*
 * Method: ArenaModel - SetNewEngine
 * Purpose: Attaches the model to a new engine

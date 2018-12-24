@@ -621,13 +621,16 @@ bool TLayout::onCreate(RECT margin)
 		
 		lChildren.ElementAt(c)->contain->setLocation( tempCont->getLocation());
 
-		children.Add(lChildren.ElementAt(c)->contain);
+		children.Add(tempCont);
 		/*if (lChildren.ElementAt(c)->contain->child->isLayout)
 		{
 			childLayout = lChildren.ElementAt(c)->contain->child;
 			childLayout->onCreate(lChildren.ElementAt(c)->contain->location);
 		}
 		else*/
+		
+			//tempCont->onCreate(tempCont->getLocation());
+		
 		lChildren.ElementAt(c)->contain->onCreate(tempCont->getLocation());
 
 	}
@@ -683,7 +686,7 @@ void TLayout::onDraw(TObject* obj)
 	for (int c = 0; c < lChildren.Count(); c++)
 	{
 		if(lChildren.ElementAt(c)->contain.get())
-		lChildren.ElementAt(c)->contain->onDraw();
+		lChildren.ElementAt(c)->contain->onDraw(obj);
 	}
 	if (internalBrush.get())
 	{

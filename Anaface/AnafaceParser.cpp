@@ -254,9 +254,9 @@ bool AnafaceParser::Obj(TString* va)
 	{
 		currentObj = TrecPointer<TControl>((new TDataBind(renderer, classList)));
 		
-		if(singleParam.Compare(L"Horizontal"))
+		if(!singleParam.Compare(L"Horizontal"))
 			dynamic_cast<TLayout*>(currentObj.get())->setLayout(HMix);
-		else if(singleParam.Compare(L"Grid"))
+		else if(!singleParam.Compare(L"Grid"))
 			dynamic_cast<TLayout*>(currentObj.get())->setLayout(grid);
 		else
 			dynamic_cast<TLayout*>(currentObj.get())->setLayout(VMix);
@@ -488,6 +488,15 @@ void AnafaceParser::setLayoutPointer()
 }
 */
 
+
+bool isLayout(TrecPointer<TControl> cont)
+{
+	return !strcmp(typeid(*(cont.get())).name(), typeid(TLayout).name()) ||
+		!strcmp(typeid(*(cont.get())).name(), typeid(TLayoutEx).name()) ||
+		!strcmp(typeid(*(cont.get())).name(), typeid(TSpreadSheet).name()) ||
+		!strcmp(typeid(*(cont.get())).name(), typeid(TDataBind).name());
+}
+
 /*
 * Method: AnafaceParser - addToTree
 * Purpose: Adds the curren control to the tree of controls for the Anaface UI
@@ -503,7 +512,7 @@ void AnafaceParser::addToTree(TrecPointer<TControl> tc)
 		currentObj = rootObj;
 		return;
 	}
-	if (baseObj.get() && !strcmp(typeid(*(baseObj.get())).name(),typeid(TLayout).name()) && positionSet)
+	if (baseObj.get() && isLayout(baseObj) && positionSet)
 	{
 		TLayout* lBase = dynamic_cast<TLayout*>(baseObj.get());
 		if (lBase)

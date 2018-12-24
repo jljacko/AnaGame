@@ -22,7 +22,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5CD702FC-FA6B-41BE-9EE1-FE3F7FBD48EF}</ProjectGuid>
     <RootNamespace>AnimateCentral</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
     <Keyword>MFCProj</Keyword>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -76,8 +76,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\jljac\Source\Repos\AnaGame\VideoGraphics;C:\Users\jljac\Source\Repos\AnaGame\TrecLib;C:\Users\jljac\Source\Repos\AnaGame\Tap;C:\Users\jljac\Source\Repos\AnaGame\Anaface;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\jljac\Source\Repos\AnaGame\Debug;C:\Program Files %28x86%29\Windows Kits\8.1\Lib\winv6.3\um;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\John Jacko\Source\Repos\AnaGame\VideoGraphics;C:\Users\John Jacko\Source\Repos\AnaGame\TrecLib;C:\Users\John Jacko\Source\Repos\AnaGame\Tap;C:\Users\John Jacko\Source\Repos\AnaGame\Anaface;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\John Jacko\Source\Repos\AnaGame\Debug;$(LibraryPath)</LibraryPath>
     <CodeAnalysisRuleSet>C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Team Tools\Static Analysis Tools\Rule Sets\NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <EnableCppCoreCheck>false</EnableCppCoreCheck>
