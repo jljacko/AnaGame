@@ -3,7 +3,10 @@
 #include "VariableList.h"
 #include "VariableTree.h"
 #include <TFile.h>
-#include "IntLanguage.h"
+// #include "IntLanguage.h"
+#include "TrecCode.h"
+
+class IntLanguage;
 
 typedef enum InterpretorMessage
 {
@@ -32,10 +35,10 @@ typedef enum CodeMode
 typedef struct DoubIndex
 {
 	int strInd;
-	UINT colInd;
+	TString stringQ;
 }DoubIndex;
 
-class TInterpretor :
+class _TREC_CODE_DLL TInterpretor :
 	public TObject
 {
 	
@@ -87,7 +90,17 @@ protected:
 	InterpretorMessage actionMode;
 	InterpretorResource resource;
 
-	DoubIndex getSingleString(TString& read, UINT in);
+	void UpdateDoubIndex(TString&buff, UINT index, DoubIndex& sinCom, DoubIndex&  newLine, DoubIndex& mulCom,
+		DoubIndex& mulComE, DoubIndex& sinStr, DoubIndex& mulStr);
+
+	DoubIndex getNextSingleComment(TString& buff, UINT index);
+	DoubIndex getNextNewline(TString& buff, UINT index);
+	DoubIndex getNextMultiComment(TString& buff, UINT index);
+	DoubIndex getNextMultiCommentEnd(TString& buff, UINT index);
+	DoubIndex getNextSingleString(TString& buff, UINT index);
+	DoubIndex getNextMultiString(TString& buff, UINT index);
+
+	/*DoubIndex getSingleString(TString& read, UINT in);
 	DoubIndex getMultiString(TString& read, UINT in);
 	int getStringEnd(TString& read, UINT in, UINT);
 	int getMulStringEnd(TString& read, UINT in, UINT dIn);
@@ -95,6 +108,6 @@ protected:
 	int getMultiComment(TString& read, UINT in, bool);
 	int getNextLine(TString& read, UINT in);
 
-	bool setStringMode(CodeMode& sourceMode, UINT& readData, DoubIndex& nextSinStr, DoubIndex& nextMulStr);
+	bool setStringMode(CodeMode& sourceMode, UINT& readData, DoubIndex& nextSinStr, DoubIndex& nextMulStr);*/
 };
 

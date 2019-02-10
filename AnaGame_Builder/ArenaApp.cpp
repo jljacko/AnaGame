@@ -21,7 +21,7 @@ TString on_SetCameraTranslate = L"OnSetCameraTranslate";
 
 static UINT arenaCount = 0;
 
-ArenaApp::ArenaApp(TrecPointer<AnafaceUI> m, TrecPointer<AnafaceUI>o, TrecPointer<AnafaceUI> e, HWND w) : BuilderApp(m,o,e,w)
+ArenaApp::ArenaApp(TrecPointer<AnafaceUI> m, TrecPointer<AnafaceUI>o, TrecPointer<AnafaceUI> e, CAnaGameBuilderDoc* r, HWND w) : BuilderApp(m,o,e, r,w)
 {
 	for (UINT rust = 0; rust < ARENA_APP_COUNT; rust++)
 		handlers[rust] = nullptr;

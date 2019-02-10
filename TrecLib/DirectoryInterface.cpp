@@ -5,7 +5,19 @@
 
 static bool initialized = false;
 
-static TString directories[8];
+static TString directories[9];
+static TString shadowDirectories[9];
+
+void ForgeDirectory(TString& dir)
+{
+	TrecPointer<TArray<TString>> pieces = dir.split(TString(L"/\\"));
+	TString bDir;
+	for (UINT rust = 0; rust < pieces->Count(); rust++)
+	{
+		bDir += *pieces->ElementAt(rust).get() + L'\\';
+		CreateDirectoryW(bDir, 0);
+	}
+}
 
 /*
 * InitializeDirectories
@@ -59,6 +71,31 @@ void InitializeDirectories()
 	tempString = folderString;
 	directories[7] = tempString;
 
+	directories[8] = directories[7];
+	directories[8].Replace(TString(L"\\Downloads"), L"");
+
+	initialized = true;
+	
+	TString baseShadow = GetDirectoryWithSlash(cd_AppData) + TString(L"AnaGame\\ShadowFiles");
+	ForgeDirectory(baseShadow);
+
+	initialized = false;
+
+	shadowDirectories[0] = baseShadow + TString(L"\\AnaGameExe");
+	shadowDirectories[1] = baseShadow + TString(L"\\AppData");
+	shadowDirectories[2] = baseShadow + TString(L"\\Desktop");
+	shadowDirectories[3] = baseShadow + TString(L"\\Documents");
+	shadowDirectories[4] = baseShadow + TString(L"\\Music");
+	shadowDirectories[5] = baseShadow + TString(L"\\Pictures");
+	shadowDirectories[6] = baseShadow + TString(L"\\Videos");
+	shadowDirectories[7] = baseShadow + TString(L"\\Downloads");
+	shadowDirectories[8] = baseShadow;
+
+	for (UINT c = 0; c < 9; c++)
+	{
+		CreateDirectoryW(shadowDirectories[c], 0);
+	}
+
 	initialized = true;
 }
 
@@ -86,4 +123,60 @@ TString GetDirectoryWithSlash(CentralDirectories cd)
 	TString returnable = GetDirectory(cd);
 	returnable += L"\\";
 	return returnable;
+}
+
+/*
+* Function: GetShadowDirectory
+* Purpose: Gets AnaGame's "shadow" version of the specified directory
+* Parameters: CentralDirectories cd - the Directory type being sought
+* Returns: TString - the Directory in the computer being requested
+*/
+TString GetShadowDirectory(CentralDirectories cd)
+{
+	if (!initialized)
+		InitializeDirectories();
+	return shadowDirectories[static_cast<UINT>(cd)];
+}
+
+/*
+* Function: GetShadowDirectoryWithSlash
+* Purpose: Gets AnaGame's "shadow" version of the specified directory
+* Parameters: CentralDirectories cd - the Directory type being sought
+* Returns: TString - the Directory in the computer being requested
+*/
+TString GetShadowDirectoryWithSlash(CentralDirectories cd)
+{
+	TString returnable = GetShadowDirectory(cd);
+	returnable += L"\\";
+	return returnable;
+}
+
+/*
+* Function: GetShadowFilePath
+* Purpose: Sets up the directory and returns the path for the Shadow version of the provided file
+* Parameters: TFile& f - the file to get s shadow File's path for
+* Returns: TString - the Path of the intended Shadow file
+* Note: The provided File has to be open AND it has to be found in an AnaGame approved directory. Otherwise, an empty string is returned
+*/
+TString GetShadowFilePath(TFile& f)
+{
+	if (!f.IsOpen())
+		return TString();
+
+	UINT dirNum = 0;
+	TString returnable = f.GetFilePath();
+	while (dirNum < 9)
+	{
+		if (returnable.Find(directories[dirNum]) != -1)
+		{
+			returnable.Replace(directories[dirNum], TString(L""));
+			break;
+		}
+		dirNum++;
+	}
+
+	if (dirNum > 8)
+		return TString();
+
+	return shadowDirectories[dirNum] + TString(L"\\") + returnable;
 }

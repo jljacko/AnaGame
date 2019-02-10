@@ -6,7 +6,7 @@ VariableTree::VariableTree()
 {
 	root.variable.hold = 0;
 	root.variable.varName = true;
-	root.variable.reference.varName = L"";
+	root.variable.reference.varName = TString();
 }
 
 

@@ -12,7 +12,7 @@
 #define AG_I_U_INT		7
 #define AG_I_STRING		8
 
-typedef union varVal
+typedef struct varVal
 {
 	TrecPointer<TObject> object;
 	long long primInt;
@@ -21,7 +21,7 @@ typedef union varVal
 	~varVal();
 }varVal;
 
-typedef union elementRef
+typedef struct elementRef
 {
 	TString varName;
 	long long index;

@@ -207,6 +207,7 @@
       </PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="DoubleOpTag.cpp" />
+    <ClCompile Include="EnvManager.cpp" />
     <ClCompile Include="FalseTag.cpp" />
     <ClCompile Include="F_DivExpressionTag.cpp" />
     <ClCompile Include="IntLanguage.cpp" />
@@ -245,7 +246,7 @@
     <ClInclude Include="DoubleOpTag.h" />
     <ClInclude Include="FalseTag.h" />
     <ClInclude Include="F_DivExpressionTag.h" />
-    <ClInclude Include="Header.h" />
+    <ClInclude Include="EnvManager.h" />
     <ClInclude Include="IntLanguage.h" />
     <ClInclude Include="ModExpressionTag.h" />
     <ClInclude Include="MultipExpressionTag.h" />
@@ -258,6 +259,7 @@
     <ClInclude Include="SubtractExpressionTag.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TInterpretor.h" />
+    <ClInclude Include="TrecCode.h" />
     <ClInclude Include="TrueTag.h" />
     <ClInclude Include="VariableContainer.h" />
     <ClInclude Include="VariableList.h" />

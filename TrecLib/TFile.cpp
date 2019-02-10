@@ -23,7 +23,7 @@ TFile::TFile()
 *			UINT nOpenFlags - flags that specify the open status of the file
 * Returns: void
 */
-TFile::TFile(LPCTSTR lpszFileName, UINT nOpenFlags) :CFile(lpszFileName, nOpenFlags)
+TFile::TFile(LPCTSTR lpszFileName, UINT nOpenFlags) //:CFile(lpszFileName, nOpenFlags)
 {
 	fileEncode = fet_unknown;
 	CFile(lpszFileName, nOpenFlags);
@@ -73,7 +73,8 @@ TFile::~TFile()
 */
 BOOL TFile::Open(LPCTSTR lpszFileName, UINT nOpenFlags, CFileException * pError)
 {
-	BOOL opened = CFile::Open(lpszFileName, nOpenFlags, pError);
+	BOOL opened = pError ? CFile::Open(lpszFileName, nOpenFlags, pError) :
+		CFile::Open(lpszFileName, nOpenFlags);
 	if (opened)
 		fileEncode = DeduceEncodingType();
 	else
@@ -180,7 +181,7 @@ UINT TFile::ReadString(CString & rString, UINT nMax)
 	{
 	case fet_acsii:
 		char letter[1];
-		for ( ; Read(&letter, 1) && rust < nMax; rust++)
+		for ( ; rust <= nMax && Read(&letter, 1); rust++)
 		{
 			rString += ReturnWCharType(letter[0]);
 		}
@@ -189,7 +190,7 @@ UINT TFile::ReadString(CString & rString, UINT nMax)
 	case fet_unicode:
 		UCHAR letter2[2];
 		
-		for (; Read(&letter2, 2) && rust < nMax; rust++)
+		for (; rust <= nMax && Read(&letter2, 2); rust++)
 		{
 			WCHAR cLetter;
 			UCHAR temp = letter2[0];
@@ -204,7 +205,7 @@ UINT TFile::ReadString(CString & rString, UINT nMax)
 	case fet_unicode_little:
 		WCHAR wLetter;
 		
-		for( ; Read(&wLetter, 2) && rust < nMax; rust++ )
+		for( ; rust <= nMax && Read(&wLetter, 2); rust++ )
 		{
 			rString += wLetter;
 		}
@@ -362,6 +363,21 @@ TString TFile::GetFileDirectory()
 UCHAR * TFile::GetAnaGameType()
 {
 	return TFileType;
+}
+
+TString TFile::GetFileExtension()
+{
+	TString ext = GetFileName();
+	if(ext.Find(L'.') == -1)
+		return ext;
+	for (UINT c = ext.GetLength() - 1; c >= 0; c--)
+	{
+		if (ext[c] == L'.')
+		{
+			return ext.SubString(c + 1);
+		}
+	}
+	return ext;
 }
 
 /*

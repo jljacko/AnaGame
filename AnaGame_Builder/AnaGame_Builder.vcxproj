@@ -76,7 +76,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\John Jacko\Source\Repos\AnaGame\VideoGraphics;C:\Users\John Jacko\Source\Repos\AnaGame\TrecLib;C:\Users\John Jacko\Source\Repos\AnaGame\Tap;C:\Users\John Jacko\Source\Repos\AnaGame\Anaface;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\John Jacko\Source\Repos\AnaGame\TrecCode;C:\Users\John Jacko\Source\Repos\AnaGame\VideoGraphics;C:\Users\John Jacko\Source\Repos\AnaGame\TrecLib;C:\Users\John Jacko\Source\Repos\AnaGame\Tap;C:\Users\John Jacko\Source\Repos\AnaGame\Anaface;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\John Jacko\Source\Repos\AnaGame\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -98,7 +98,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>Tap.lib;Anaface.lib;VideoGraphics.lib;TrecLib.lib;d2d1.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Tap.lib;Anaface.lib;VideoGraphics.lib;TrecLib.lib;d2d1.lib;TrecCode.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>

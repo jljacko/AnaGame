@@ -18,14 +18,14 @@ TagCheck DivExpressionTag::ProcessTag(TString & bounds, VariableContainer & glob
 	switch (de.errorCode)
 	{
 	case 1:
-		return TagCheck{ false, TString(L"Left Expression not parsed Properly"), 0, nullptr };
+		return TagCheck( false, TString(L"Left Expression not parsed Properly"), 0, nullptr );
 	case 2:
-		return TagCheck{ false, TString(L"Right Expression not parsed Properly"), 0, nullptr };
+		return TagCheck( false, TString(L"Right Expression not parsed Properly"), 0, nullptr );
 	case 3:
-		return TagCheck{ false, TString(L"Both Expressions not parsed Properly"), 0, nullptr };
+		return TagCheck( false, TString(L"Both Expressions not parsed Properly"), 0, nullptr );
 	case 4:
 	case 5:
-		return TagCheck{ false, TString(L"Could not find two distinct expressions"), 0, nullptr };
+		return TagCheck( false, TString(L"Could not find two distinct expressions"), 0, nullptr );
 	}
 	long long rightInt = 0;
 	double rightFloat = 0.0;
@@ -39,7 +39,7 @@ TagCheck DivExpressionTag::ProcessTag(TString & bounds, VariableContainer & glob
 	case AG_I_FUNCTION:
 	case AG_I_OBJECT:
 	case AG_I_UNDEFINED:
-		return TagCheck{ false, TString(L"Right expression is not a value that could be subtracted from"), 0, nullptr };
+		return TagCheck( false, TString(L"Right expression is not a value that could be subtracted from"), 0, nullptr );
 	case AG_I_STRING:
 		try
 		{
@@ -48,12 +48,12 @@ TagCheck DivExpressionTag::ProcessTag(TString & bounds, VariableContainer & glob
 			{
 				tryRightDouble = true;
 				if (expString->ConvertToDouble(&rightFloat))
-					return TagCheck{ false, TString(L"RIght Expression was a non-numeric String") };
+					return TagCheck( false, TString(L"RIght Expression was a non-numeric String"), 0, nullptr);
 			}
 		}
 		catch (...)
 		{
-			return TagCheck{ false, TString(L"Right Expression is null or unsuited for subtraction"), 0 , nullptr };
+			return TagCheck( false, TString(L"Right Expression is null or unsuited for subtraction"), 0 , nullptr );
 		}
 		break;
 	case AG_I_DOUBLE:
@@ -71,7 +71,7 @@ TagCheck DivExpressionTag::ProcessTag(TString & bounds, VariableContainer & glob
 		divBy0 = true;
 
 	if (divBy0)
-		return TagCheck{ false, TString(L"Divide By 0!"), 0, nullptr };
+		return TagCheck( false, TString(L"Divide By 0!"), 0, nullptr );
 
 	long long leftInt = 0;
 	double leftFloat = 0.0;
@@ -84,7 +84,7 @@ TagCheck DivExpressionTag::ProcessTag(TString & bounds, VariableContainer & glob
 	case AG_I_FUNCTION:
 	case AG_I_OBJECT:
 	case AG_I_UNDEFINED:
-		return TagCheck{ false, TString(L"Right expression is not a value that could be subtracted from"), 0, nullptr };
+		return TagCheck( false, TString(L"Right expression is not a value that could be subtracted from"), 0, nullptr );
 	case AG_I_STRING:
 		try
 		{
@@ -93,12 +93,12 @@ TagCheck DivExpressionTag::ProcessTag(TString & bounds, VariableContainer & glob
 			{
 				tryLeftDouble = true;
 				if (expString->ConvertToDouble(&leftFloat))
-					return TagCheck{ false, TString(L"Leftt Expression was a non-numeric String") };
+					return TagCheck( false, TString(L"Leftt Expression was a non-numeric String"), 0, nullptr);
 			}
 		}
 		catch (...)
 		{
-			return TagCheck{ false, TString(L"Left Expression is null or unsuited for subtraction"), 0 , nullptr };
+			return TagCheck( false, TString(L"Left Expression is null or unsuited for subtraction"), 0 , nullptr );
 		}
 		break;
 	case AG_I_DOUBLE:

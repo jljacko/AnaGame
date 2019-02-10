@@ -58,6 +58,8 @@ public:
 	TString GetFileDirectory();
 	virtual UCHAR* GetAnaGameType() override;
 
+	TString GetFileExtension();
+
 protected:
 	FileEncodingType DeduceEncodingType();
 private:

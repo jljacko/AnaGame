@@ -93,6 +93,9 @@
     <ClCompile Include="IntLanguage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="EnvManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="TrecCode.def">
@@ -181,7 +184,10 @@
     <ClInclude Include="IntLanguage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Header.h">
+    <ClInclude Include="EnvManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TrecCode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

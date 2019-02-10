@@ -6,32 +6,40 @@
 #include "TInterpretor.h"
 #include "VariableContainer.h"
 
-typedef struct TagCheck
+class TagCheck: public TObject
 {
+public:
+	TagCheck();
+	TagCheck(bool s, TString& e, UINT end, intVariable* iv);
 	bool success;		// Was this an acceptable tag?
 	TString error;		// If not successful, why was that
 	UINT fileByteEnd;	// If successful, where does it end?
 	intVariable* returnValue; // If the Tag was meant to return something
-}TagCheck;
+};
 
-typedef struct TagMark
+class TagMark: public TObject
 {
+public:
+	TagMark();
+	TagMark(bool it, TString& m, short ti);
 	bool isTag;
 	TString mark;
 	short tagIndex;
-}TagMark;
+};
 
-typedef struct ExpressionProcess
+class ExpressionProcess: public TObject
 {
+public:
 	TString code;
 	UINT tagProcess;
-}ExpressionProcess;
+};
 
-typedef struct ProcessedCode
+class ProcessedCode: public TObject
 {
+public:
 	bool worked;
 	TDataArray<ExpressionProcess> expressions;
-}ProcessedCode;
+};
 
 class BNFTag :	public TObject
 {

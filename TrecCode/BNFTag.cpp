@@ -49,7 +49,7 @@ UINT BNFTag::CompileTag(TDataArray<BNFTag*>& tagList)
 			{
 				token = token.SubString(1, token.GetLength() - 1);
 
-				this->syntax[c].push_back(TagMark{ false, token, -1 });
+				this->syntax[c].push_back(TagMark( false, token, -1 ));
 			}
 			else if (token[0] == L'<' && token[token.GetLength() - 1] == L'>')
 			{
@@ -165,6 +165,7 @@ TDataArray<BNFTag*>* setUpTagList(TFile & file)
 		if (tag.GetLength() < 2)
 			continue;
 		BNFTag* bTag = nullptr;
+
 		if (tag[0] == L'<' && tag[tag.GetLength() - 1] == L'>')
 			bTag = BNFTag::GetTag(tag.SubString(1, tag.GetLength() - 1));
 
@@ -190,4 +191,32 @@ UINT CompileIntLanguage(TDataArray<BNFTag*>& tags)
 		ret += tags[rust]->CompileTag(tags);
 	}
 	return ret;
+}
+
+TagCheck::TagCheck()
+{
+	success = false;
+	fileByteEnd = 0;
+	returnValue = nullptr;
+}
+
+TagCheck::TagCheck(bool s, TString & e, UINT end, intVariable * iv)
+{
+	success = s;
+	error = e;
+	fileByteEnd = end;
+	returnValue = iv;
+}
+
+TagMark::TagMark()
+{
+	isTag = false;
+	tagIndex = 0;
+}
+
+TagMark::TagMark(bool it, TString & m, short ti)
+{
+	isTag = it;
+	mark = m;
+	tagIndex = ti;
 }

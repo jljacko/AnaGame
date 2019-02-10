@@ -3,15 +3,21 @@
 #include <DirectoryInterface.h>
 #include <AnafaceParser.h>
 #include <TML_Reader_.h>
+#include <EnvManager.h>
+#include "AnaGame_BuilderDoc.h"
+#include <IntLanguage.h>
 
 static UINT scCount = 0;
 
-SourceCodeApp::SourceCodeApp(TrecPointer<AnafaceUI> m, TrecPointer<AnafaceUI>o, TrecPointer<AnafaceUI> e, HWND w) :BuilderApp(m, o, e, w),
+SourceCodeApp::SourceCodeApp(TrecPointer<AnafaceUI> m, TrecPointer<AnafaceUI>o, TrecPointer<AnafaceUI> e, CAnaGameBuilderDoc* r, HWND w) :BuilderApp(m, o, e, r, w),
 	col_keyword(D2D1::ColorF::Blue), col_type_id(D2D1::ColorF::LightBlue), col_var_id(D2D1::ColorF::Gray), col_fun_id(D2D1::ColorF::Gold)
 {
 	// Time to make sure parameters are valid
 	if (!m.get() || !o.get() || !w || !e.get())
 		return;
+
+	// Start interpret as null so was don't have dangling pointer
+	interpret = nullptr;
 
 	// Now set the structure to link the listeners to their text name
 	eventNameID enid;
@@ -66,6 +72,7 @@ SourceCodeApp::SourceCodeApp(TrecPointer<AnafaceUI> m, TrecPointer<AnafaceUI>o, 
 }
 
 
+
 SourceCodeApp::~SourceCodeApp()
 {
 }
@@ -86,6 +93,30 @@ bool SourceCodeApp::InitializeControls()
 
 	}
 	return false;
+}
+
+void SourceCodeApp::SetContents(TFile & content)
+{
+	if (!content.IsOpen())
+		return;
+	if (code.get())
+	{
+		TString strContent, line;
+		while (content.ReadString(line))
+		{
+			if (strContent.GetLength())
+				strContent += L'\n';
+			strContent += line;
+		}
+
+		code->SetText(strContent);
+
+	}
+
+	filePath = content.GetFilePath();
+
+	PrepLanguage(content);
+	//content.Close();
 }
 
 void SourceCodeApp::OnSave()
@@ -116,5 +147,65 @@ void SourceCodeApp::OnSave()
 
 	TString write = code->GetText();
 	file.WriteString(write);
+	
+
+	PrepLanguage(file);
+
 	file.Close();
+
+}
+
+void SourceCodeApp::OnShow()
+{
+	if (ref) ref->ShowLanguagePanel(interpret);
+}
+
+void SourceCodeApp::onHide()
+{
+	if (ref) ref->ShowLanguagePanel(false);
+}
+
+UINT SourceCodeApp::ProcessIntLanguage()
+{
+	TFile sourceCode;
+	CFileException ex;
+	sourceCode.Open(filePath, CFile::modeRead, &ex);
+	if (!sourceCode.IsOpen())
+	{
+		TCHAR buff[200];
+		ex.GetErrorMessage(buff, 200);
+		return 1;
+	}
+	if (!interpret)
+		return 2;
+	interpret->SetFile(sourceCode);
+	return 0;
+}
+
+void SourceCodeApp::PrepLanguage(TFile & sourceCode)
+{
+
+	checkLanguages();
+
+	if (!sourceCode.IsOpen())
+		return;
+
+
+	TString ext = sourceCode.GetFileExtension();
+
+	sourceCode.Close();
+
+	bool found = false;
+
+	TString languageName = retrieveLanguageByExtension(ext);
+
+	if (!languageName.GetLength())
+		return;
+	IntLanguage* lang = IntLanguage::getLanguage(languageName);
+
+	if (!lang)
+		return;
+
+	this->interpret = new TInterpretor(lang);
+	OnShow();
 }

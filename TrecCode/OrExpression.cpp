@@ -18,14 +18,14 @@ TagCheck OrExpression::ProcessTag(TString & bounds, VariableContainer & globalVa
 	switch (de.errorCode)
 	{
 	case 1:
-		return TagCheck{ false, TString(L"Left Expression not parsed Properly"), 0, nullptr };
+		return TagCheck( false, TString(L"Left Expression not parsed Properly"), 0, nullptr);
 	case 2:
-		return TagCheck{ false, TString(L"Right Expression not parsed Properly"), 0, nullptr };
+		return TagCheck( false, TString(L"Right Expression not parsed Properly"), 0, nullptr);
 	case 3:
-		return TagCheck{ false, TString(L"Both Expressions not parsed Properly"), 0, nullptr };
+		return TagCheck( false, TString(L"Both Expressions not parsed Properly"), 0, nullptr);
 	case 4:
 	case 5:
-		return TagCheck{ false, TString(L"Could not find two distinct expressions"), 0, nullptr };
+		return TagCheck( false, TString(L"Could not find two distinct expressions"), 0, nullptr);
 	}
 	long long rightInt;
 	double rightFloat;
@@ -62,7 +62,7 @@ TagCheck OrExpression::ProcessTag(TString & bounds, VariableContainer & globalVa
 						rightBool = false;
 					else
 					{
-						return TagCheck{ false, TString(L"Non Bool String compared by Boolean operation"), 0, nullptr };
+						return TagCheck( false, TString(L"Non Bool String compared by Boolean operation"), 0, nullptr);
 					}
 				}
 
@@ -70,7 +70,7 @@ TagCheck OrExpression::ProcessTag(TString & bounds, VariableContainer & globalVa
 		}
 		catch (...)
 		{
-			return TagCheck{ false, TString(L"Right Expression is null or unsuited for subtraction"), 0 , nullptr };
+			return TagCheck( false, TString(L"Right Expression is null or unsuited for subtraction"), 0 , nullptr);
 		}
 		break;
 	case AG_I_DOUBLE:
@@ -116,7 +116,7 @@ TagCheck OrExpression::ProcessTag(TString & bounds, VariableContainer & globalVa
 						leftBool = false;
 					else
 					{
-						return TagCheck{ false, TString(L"Non Bool String compared by Boolean operation"), 0, nullptr };
+						return TagCheck( false, TString(L"Non Bool String compared by Boolean operation"), 0, nullptr);
 					}
 				}
 
@@ -124,7 +124,7 @@ TagCheck OrExpression::ProcessTag(TString & bounds, VariableContainer & globalVa
 		}
 		catch (...)
 		{
-			return TagCheck{ false, TString(L"Right Expression is null or unsuited for subtraction"), 0 , nullptr };
+			return TagCheck( false, TString(L"Right Expression is null or unsuited for subtraction"), 0 , nullptr);
 		}
 		break;
 	case AG_I_DOUBLE:

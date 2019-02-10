@@ -19,14 +19,14 @@ TagCheck AddExpressionTag::ProcessTag(TString & bounds, VariableContainer & glob
 	switch (de.errorCode)
 	{
 	case 1:
-		return TagCheck{ false, TString(L"Left Expression not parsed Properly"), 0, nullptr };
+		return TagCheck( false, TString(L"Left Expression not parsed Properly"), 0, nullptr );
 	case 2:
-		return TagCheck{ false, TString(L"Right Expression not parsed Properly"), 0, nullptr };
+		return TagCheck( false, TString(L"Right Expression not parsed Properly"), 0, nullptr );
 	case 3:
-		return TagCheck{ false, TString(L"Both Expressions not parsed Properly"), 0, nullptr };
+		return TagCheck( false, TString(L"Both Expressions not parsed Properly"), 0, nullptr );
 	case 4:
 	case 5:
-		return TagCheck{ false, TString(L"Could not find two distinct expressions"), 0, nullptr };
+		return TagCheck( false, TString(L"Could not find two distinct expressions"), 0, nullptr );
 	}
 
 	long long leftStringI = 0, rightStringI = 0;
@@ -49,10 +49,10 @@ TagCheck AddExpressionTag::ProcessTag(TString & bounds, VariableContainer & glob
 	case AG_I_FUNCTION:
 	case AG_I_OBJECT:
 	case AG_I_UNDEFINED:
-		return TagCheck{ false, TString(L"Type can't be added"), 0, nullptr };
+		return TagCheck( false, TString(L"Type can't be added"), 0, nullptr );
 	case AG_I_DOUBLE:
 		if(rightIsObject)
-			return TagCheck{ false, TString(L"Object can't be added to floating point value"), 0, nullptr };
+			return TagCheck( false, TString(L"Object can't be added to floating point value"), 0, nullptr );
 		switch (de.right.returnValue->hold)
 		{
 		case AG_I_ARRAY:
@@ -61,7 +61,7 @@ TagCheck AddExpressionTag::ProcessTag(TString & bounds, VariableContainer & glob
 
 			}
 			else
-				return TagCheck{ false, TString(L"Language does not support addinng Arrays to numbers")};
+				return TagCheck( false, TString(L"Language does not support addinng Arrays to numbers"),0, nullptr);
 			break;
 		case AG_I_DOUBLE: // In this case, both are doubles
 			de.left.returnValue->value.primFloat += de.right.returnValue->value.primFloat;
@@ -84,7 +84,7 @@ TagCheck AddExpressionTag::ProcessTag(TString & bounds, VariableContainer & glob
 	case AG_I_S_INT:
 	case AG_I_U_INT:
 		if (rightIsObject)
-			return TagCheck{ false, TString(L"Object can't be added to floating point value"), 0, nullptr };
+			return TagCheck( false, TString(L"Object can't be added to floating point value"), 0, nullptr );
 		switch (de.right.returnValue->hold)
 		{
 		case AG_I_ARRAY:
@@ -93,7 +93,8 @@ TagCheck AddExpressionTag::ProcessTag(TString & bounds, VariableContainer & glob
 
 			}
 			else
-				return TagCheck{ false, TString(L"Language does not support addinng Arrays to numbers") };
+				return TagCheck(false, TString(L"Language does not support addinng Arrays to numbers"), 0, nullptr);
+		
 			break;
 		case AG_I_DOUBLE: // In this case, both are doubles
 			de.left.returnValue->value.primInt += de.right.returnValue->value.primFloat;

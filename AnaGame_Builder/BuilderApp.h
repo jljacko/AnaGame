@@ -1,10 +1,12 @@
 #pragma once
 #include <AnafaceUI.h>
 #include <AnafaceParser.h>
+class CAnaGameBuilderDoc;
+
 class BuilderApp
 {
 public:
-	BuilderApp(TrecPointer<AnafaceUI> m, TrecPointer<AnafaceUI>o, TrecPointer<AnafaceUI> e, HWND window);
+	BuilderApp(TrecPointer<AnafaceUI> m, TrecPointer<AnafaceUI>o, TrecPointer<AnafaceUI> e, CAnaGameBuilderDoc* r,HWND window);
 	~BuilderApp();
 
 	afx_msg void OnRButtonUp(UINT nFlags, CPoint point, messageOutput& mo);
@@ -22,6 +24,10 @@ public:
 	virtual RECT Get3DArea();
 	virtual void OnSave();
 
+	virtual void OnShow();
+	virtual void onHide();
+	TString GetFilePath();
+
 protected:
 	TrecPointer<AnafaceUI> mainUI, outputUI, explorerUI;
 	TrecPointer<TControl> mainPage, outputPane, explorerPane;
@@ -30,6 +36,7 @@ protected:
 	TDataArray<eventNameID> handleList;
 	TDataArray<EventID_Cred> cred;
 	TString filePath;
+	CAnaGameBuilderDoc* ref;
 
 	HWND windowHandle;
 };

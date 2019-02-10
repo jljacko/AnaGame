@@ -4,7 +4,7 @@
 #include <TFile.h>
 #include <TMap.h>
 
-static TString languageFolder = GetDirectoryWithSlash(cd_Executable) + TString(L"\\Languages");
+static TString languageFolder = GetDirectoryWithSlash(cd_Executable) + TString(L"Languages");
 
 typedef struct LanguageEntry
 {
@@ -23,13 +23,21 @@ IntLanguage * IntLanguage::getLanguage(TString & langName)
 	}
 
 
-	TString folderTarget = languageFolder + TString(L"\\Int_") + langName;
+	TString folderTarget = languageFolder + TString(L"\\Int_") + langName + L"\\";
 
 	TString langDef = folderTarget + TString(L"language.properties");
-	TFile langFile(langDef, CFile::modeRead);
+	TFile langFile;
+	
+	CFileException ex;
+	if (!langFile.Open(langDef, CFile::modeRead, &ex))
+	{
+		TCHAR buf[200];
+		ex.GetErrorMessage(buf, 200);
 
-	if (!langFile.IsOpen())
 		return nullptr;
+	}
+
+
 
 	TDataArray<TString> lines;
 	TString lineString;
@@ -68,56 +76,83 @@ IntLanguage * IntLanguage::getLanguage(TString & langName)
 		maps.addEntry(*sections->ElementAt(0).get(), TrecPointer<TString>(new TString(value)));
 	}
 
-	TrecPointer<TString> val = maps.retrieveEntry(TString(L"Single String Tokens"));
+	TrecPointer<TString> val = maps.retrieveEntry(TString(L"String Tokens"));
 
 	IntLanguage* lang = new IntLanguage();
 
 	if (val.get())
 	{
+		val->Trim();
 		TrecPointer<TArray<TString>> str = val->split(L";");
 		for(UINT c = 0; c < str->Count(); c++)
-			lang->string.push_back(val.get());
+			lang->string.push_back(str->ElementAt(c).get());
 	}
 
 	val = maps.retrieveEntry(TString(L"Multi String Tokens"));
 
-	IntLanguage* lang = new IntLanguage();
+
 
 	if (val.get())
 	{
+		val->Trim();
 		TrecPointer<TArray<TString>> str = val->split(L";");
 		for (UINT c = 0; c < str->Count(); c++)
-			lang->multiLineString.push_back(val.get());
+			lang->multiLineString.push_back(str->ElementAt(c).get());
 	}
 
 	val = maps.retrieveEntry(TString(L"Single Line Comment Start"));
 	
 	if (val.get())
+	{
+		val->Trim();
 		lang->singleComment = val.get();
+	}
 
 	val = maps.retrieveEntry(TString(L"Multi-line Comment Start"));
 	if (val.get())
+	{
+		val->Trim();
 		lang->startComment = val.get();
-
+	}
 
 	val = maps.retrieveEntry(TString(L"Multi-line Comment End"));
 	if (val.get());
+	{
+		val->Trim();
 		lang->endComment = val.get();
-
+	}
 	val = maps.retrieveEntry(TString(L"Statement End"));
 	if (val.get())
+	{
+		val->Trim();
 		lang->statementEnd = val.get();
+	}
 
+	val = maps.retrieveEntry(TString(L"Block Boundaries"));
+	if (val.get())
+	{
+		val->Trim();
+		lang->blockMarks = val.get();
+	}
 
 	// To-Do: Add some checking for conflicts
 
 
 	// To-Do: No conflicts have been detected, now to set up Code syntax parsing
-	val = maps.retrieveEntry(TString(L"SyntaxFile"));
+	val = maps.retrieveEntry(TString(L"Syntax File"));
 	if (val.get())
 	{
+		val->Trim();
 		TString syntaxFile = folderTarget + val.get();
-		TFile bnf(syntaxFile, CFile::modeRead);
+		TFile bnf;
+		
+		CFileException ex;
+		if (!bnf.Open(syntaxFile, CFile::modeRead, &ex))
+		{
+			WCHAR buff[200];
+			ex.GetErrorMessage(buff, 200);
+			int e = 0;
+		}
 
 		if (bnf.IsOpen())
 		{

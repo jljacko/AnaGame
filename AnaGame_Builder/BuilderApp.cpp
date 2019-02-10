@@ -1,13 +1,14 @@
 #include "stdafx.h"
 #include "BuilderApp.h"
+#include"AnaGame_BuilderDoc.h"
 
-
-BuilderApp::BuilderApp(TrecPointer<AnafaceUI> m, TrecPointer<AnafaceUI>o, TrecPointer<AnafaceUI> e, HWND w)
+BuilderApp::BuilderApp(TrecPointer<AnafaceUI> m, TrecPointer<AnafaceUI>o, TrecPointer<AnafaceUI> e, CAnaGameBuilderDoc* r, HWND w)
 {
 	windowHandle = w;
 	mainUI = m;
 	outputUI = o;
 	explorerUI = e;
+	ref = r;
 }
 
 
@@ -228,6 +229,19 @@ RECT BuilderApp::Get3DArea()
 
 void BuilderApp::OnSave()
 {
+}
+
+void BuilderApp::OnShow()
+{
+}
+
+void BuilderApp::onHide()
+{
+}
+
+TString BuilderApp::GetFilePath()
+{
+	return filePath;
 }
 
 void BuilderApp::MessageHandler()

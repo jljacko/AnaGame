@@ -11,7 +11,7 @@ class ArenaApp : public BuilderApp
 	// friend class CAnaGame_BuilderDoc;
 	friend class CAnaGameBuilderDoc;
 public:
-	ArenaApp(TrecPointer<AnafaceUI> m, TrecPointer<AnafaceUI>o, TrecPointer<AnafaceUI> e, HWND w);
+	ArenaApp(TrecPointer<AnafaceUI> m, TrecPointer<AnafaceUI>o, TrecPointer<AnafaceUI> e, CAnaGameBuilderDoc* r, HWND w);
 	~ArenaApp();
 
 	bool InitializeControls() override;
