@@ -1,0 +1,104 @@
+
+<statement> ::= <compound_statement> | [[simple_statement]]
+
+<compound_statement> ::= [[if_statement]] | [[while_statement]] | [[for_1_statement]] | [[try_statement]] | [[function_statement]] | [[class_statement]]
+
+[[if_statement]] ::= 'if' <expression> ':' [[block]] <else_handler> | 'if' <expression> ':' [[block]]
+
+<else_handler> ::= 'elif' <expression> ':' [[block]] <else_handler> | 'elif' <expression> ':' [[block]] | 'else' ':' [[block]]
+
+[[while_statement]] ::= 'while' <expression> ':' [[block]] ['else' ':' [[block]]]
+
+# Note, Using simple BNF though Python has more complex expression list
+# TO-DO: handle complex list
+[[for_1_statement]] ::= 'for' [[temp_var]] 'in' [[list_var]] : [[block]] ['else' ':' [[block]]]
+
+# TO-DO: Study Python try/catch blocks
+[[try_statement]] ::= 'try' ':' [[block]]
+
+[[function_statement]] ::= 'def' [[var]] '(' [[parameters]] ')' ':' [[block]]
+
+# TO-DO: check for information about the arg-List
+[[class_statement]] ::= 'class' [[var]] ':' [[block]]
+
+<small_statement> ::= [[assignment]] | [[mod_assignment]] | <flow_statement> | <expression>
+
+[[assignment]] ::= [[var]] '=' <expression>
+
+[[mod_assignment]] ::= [[var]] [[mod_assignment_op]] <expression>
+
+<flow_statement> ::= [[break]] | [[continue]] | [[return]]
+
+[[break]] ::= 'break'
+
+[[continue]] ::= 'continue'
+
+[[return]] ::= 'return' <expression>
+
+<expression> ::= [[or_exp]] | [[and_exp]] | [[not_test]] | <compare_exp>
+
+[[or_exp]] ::= <expression> 'or' <expression>
+
+[[and_exp]] ::= <expression> 'and' <expression>
+
+[[not_test]] ::= 'not' [[not_test]] | <compare_exp>
+
+<compare_exp> ::= [[or_expr]] | [[xor_expr]] | [[and_expr]] | <shift_exp>
+
+# Use '\|' instead of '|' to let BNF Parser know that the character '|' is desired, else will be skipped
+[[or_expr]] ::= <compare_expr> '\|' <compare_expr>
+
+[[xor_expr]] ::= <compare_expr> '^' <compare_expr>
+
+[[and_expr]] ::= <shift_exp> '&' <shift_exp>
+
+<shift_exp> ::= [[left_shift]] | [[right_shift]] | <arithmetic_exp>
+
+[[left_shift]] ::= <arithmetic_exp> '<<' <arithmetic_exp>
+
+[[right_shift]] ::= <arithmetic_exp '>>' <arithmetic_exp>
+
+<arithmetic_exp> ::= [[add_exp]] | [[subtract_exp]] | <factor_exp>
+
+[[add_exp]] ::= <arithmetic_exp> '+' <arithmetic_exp>
+
+[[subtract_exp]] ::= <factor_exp> '-' <arithmetic_exp>
+
+<factor_exp> ::= [[mul_exp]] | [[div_exp]] | [[mod_exp]] | [[float_div_exp]] | <factor>
+
+[[mul_exp]] ::= <factor_exp> '*' <factor_exp>
+
+# Since python usually returns a float with regular div
+[[div_exp]] ::= <factor_exp> '//' <factor_exp>
+
+[[mod_exp]] ::= <factor_exp> '%' <factor_exp>
+
+[[float_div_exp]] ::= <factor_exp> '/' <factor_exp>
+
+<factor> ::= [[power]] | <atom>
+
+[[power]] ::= <atom> '**' <factor>
+
+<atom> ::= '(' <atom> ')' | [[method_call]] | [[method_attr]] | [[function_call]] | [[var]] | [[number]] | [[string]] | [[null]] | [[true]] | [[false]] | [[array]]
+
+[[method_call]] ::= [[method_call]] '.' [[var]] '(' [[parameters]] ')' | [[method__attr]] '.' [[var]] '(' [[parameters]] ')' |  [[var]] '.' [[var]] '(' [[parameters]] ')'
+
+[[method_attr]] ::= [[method_call]] '.' [[var]] | [[method_attr]] '.' [[var]] | [[var]] '.' [[var]]
+
+[[function_call]] ::= [[var]] '(' [[parameters]] ')'
+
+[[null]] ::= 'null'
+
+[[true]] ::= 'true'
+
+[[false]] ::= 'false'
+
+[[array]] ::= '[' [[parameters]] ']'
+
+# TO-DO: Define parameters
+
+
+
+
+
+
