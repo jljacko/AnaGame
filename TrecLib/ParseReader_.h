@@ -24,7 +24,7 @@ protected:
 	TFile* tReader;
 	Parser_* respond;
 	//CStdioFile* fileActualReader;
-	bool supported;
+	//bool supported;
 	bool materials;
 	bool usingTFile;
 };

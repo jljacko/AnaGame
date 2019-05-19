@@ -172,7 +172,7 @@ int ArenaEngine::InitializeDefaultShaders()
 
 	// Prepare to Read the Single Color Shader
 
-	tempDir = tDirectory;
+	tempDir.Set(tDirectory);
 	tempDir += L"\\SingleColor";
 	ShaderParser* parse = new ShaderParser(*this, &tempDir);
 	tempDir += L"\\SingleColor.tml";
@@ -215,7 +215,7 @@ int ArenaEngine::InitializeDefaultShaders()
 	// Prepare to read the 3D Color Vertex Shader
 
 
-	tempDir = tDirectory;
+	tempDir.Set(tDirectory);
 	tempDir += L"\\3DColor";
 	parse = new ShaderParser(*this, &tempDir);
 	tempDir += L"\\3DColor.tml";
@@ -257,7 +257,7 @@ int ArenaEngine::InitializeDefaultShaders()
 	// Prepare to Read the 4D Color Shader
 
 
-	tempDir = tDirectory;
+	tempDir.Set(tDirectory);
 	tempDir += L"\\4DColor";
 	parse = new ShaderParser(*this, &tempDir);
 	tempDir += L"\\4DColor.tml";
@@ -298,7 +298,7 @@ int ArenaEngine::InitializeDefaultShaders()
 
 	// Prepare to read the one Texture Shader
 
-	tempDir = tDirectory;
+	tempDir.Set(tDirectory);
 	tempDir += L"\\Texture1";
 	parse = new ShaderParser(*this, &tempDir);
 	tempDir += L"\\Texture1.tml";
@@ -338,7 +338,7 @@ int ArenaEngine::InitializeDefaultShaders()
 	parse = nullptr;
 
 	// Prepare the Double Texture Shader
-	tempDir = tDirectory;
+	tempDir.Set(tDirectory);
 	tempDir += L"\\Texture2";
 	parse = new ShaderParser(*this, &tempDir);
 	tempDir += L"\\Texture2.tml";
@@ -1490,7 +1490,7 @@ TrecPointer<ArenaEngine> ArenaEngine::GetArenaEngine(TString& d, HWND w, HINSTAN
 		engine = new ArenaEngine();
 	if (engine)
 	{
-		engine->name = d;
+		engine->name.Set(d);
 		engineList.push_back(engine);
 		if (ae)
 		{

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2010
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.202
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AnimateBuilder", "AnimateBuilder\AnimateBuilder.vcxproj", "{C62E621F-E2E1-49F8-80AE-F6E532629397}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -37,6 +37,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VideoGraphics", "VideoGraphics\VideoGraphics.vcxproj", "{6A5656A3-4CCE-49AA-A0AC-6C73629A061A}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TrecCode", "TrecCode\TrecCode.vcxproj", "{EC4DD89F-71E2-439D-817F-81EBC5A578E9}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DocAnimation", "DocAnimation\DocAnimation.vcxproj", "{2621189F-2F7B-4BC2-BF5C-95BA4F6A7571}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -126,6 +128,14 @@ Global
 		{EC4DD89F-71E2-439D-817F-81EBC5A578E9}.Release|x64.Build.0 = Release|x64
 		{EC4DD89F-71E2-439D-817F-81EBC5A578E9}.Release|x86.ActiveCfg = Release|Win32
 		{EC4DD89F-71E2-439D-817F-81EBC5A578E9}.Release|x86.Build.0 = Release|Win32
+		{2621189F-2F7B-4BC2-BF5C-95BA4F6A7571}.Debug|x64.ActiveCfg = Debug|x64
+		{2621189F-2F7B-4BC2-BF5C-95BA4F6A7571}.Debug|x64.Build.0 = Debug|x64
+		{2621189F-2F7B-4BC2-BF5C-95BA4F6A7571}.Debug|x86.ActiveCfg = Debug|Win32
+		{2621189F-2F7B-4BC2-BF5C-95BA4F6A7571}.Debug|x86.Build.0 = Debug|Win32
+		{2621189F-2F7B-4BC2-BF5C-95BA4F6A7571}.Release|x64.ActiveCfg = Release|x64
+		{2621189F-2F7B-4BC2-BF5C-95BA4F6A7571}.Release|x64.Build.0 = Release|x64
+		{2621189F-2F7B-4BC2-BF5C-95BA4F6A7571}.Release|x86.ActiveCfg = Release|Win32
+		{2621189F-2F7B-4BC2-BF5C-95BA4F6A7571}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -27,7 +27,7 @@ ShaderParser::ShaderParser(ArenaEngine& ae, TString directory)
 	cbd.purpose = 0;
 	cbd.size = 0;
 	cbd.sp = static_cast<ShaderPhase>(0);
-	fileLocation = directory;
+	fileLocation.Set(directory);
 }
 
 /*

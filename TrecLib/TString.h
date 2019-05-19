@@ -56,6 +56,15 @@ public:
 
 	bool ConvertToColor(D2D1_COLOR_F& color, ColorFormat& cf);
 
+	// Set Methods, to be used in place of Assignment operators to avoid C26444 Warnings
+	void Set(TString& s);
+	void Set(TString* s);
+	void Set(CString& s) ;
+	void Set(CString* s);
+	void Set(WCHAR* w);
+	void Set(WCHAR w);
+
+
 	TString operator=(TString&);
 	TString operator=(CString&);
 	TString operator=(TString* s);

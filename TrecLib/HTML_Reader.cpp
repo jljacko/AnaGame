@@ -18,10 +18,17 @@ HTML_Reader::HTML_Reader(CArchive* ca, Parser_* p):ParseReader_(ca,p)
 	contentMode = false;
 	contentSpace = false;
 	contentS = makeTrecPointer<TString>();
+	usingWide = false;
 }
 
 HTML_Reader::HTML_Reader(TFile * ta, Parser_ *p):ParseReader_(ta,p)
 {
+	charDeduced = false;
+	openTaken = false;
+	contentMode = false;
+	contentSpace = false;
+	contentS = makeTrecPointer<TString>();
+	usingWide = false;
 }
 
 /*
@@ -76,7 +83,7 @@ bool HTML_Reader::read(int * i)
 				if (!DeduceToken(t))
 					return false;
 				if (openTaken)
-					t = L'<';
+					t.Set(L'<');
 				openTaken = false;
 			}
 		}
@@ -104,7 +111,7 @@ bool HTML_Reader::read(int * i)
 				{
 					// Time to end ContentMode
 					endContentMode();
-					t = w1;
+					t.Set(w1);
 				}
 				else
 				{
@@ -282,7 +289,7 @@ bool HTML_Reader::DeduceToken(TString & t)
 		}
 	}
 	*/
-	t = L"";
+	t.Set(L"");
 	return true;
 }
 

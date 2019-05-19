@@ -36,7 +36,7 @@ typedef struct DoubIndex
 {
 	int strInd;
 	TString stringQ;
-}DoubIndex;
+} DoubIndex;
 
 class _TREC_CODE_DLL TInterpretor :
 	public TObject
@@ -60,6 +60,7 @@ public:
 	void SendFlowMessage(InterpretorMessage, intVariable* ret);
 	intVariable* GetVariable(TString& name);
 
+	UINT Run();
 	UINT Run(TInterpretor* t);
 	UINT Run(TInterpretor* t, VariableList& parameters);
 	UINT Run(TInterpretor* t, TString& arguements);
@@ -99,6 +100,9 @@ protected:
 	DoubIndex getNextMultiCommentEnd(TString& buff, UINT index);
 	DoubIndex getNextSingleString(TString& buff, UINT index);
 	DoubIndex getNextMultiString(TString& buff, UINT index);
+
+	UINT GetNextStatement(TString& statement, ULONGLONG& startSeek);
+	CodeMode EndsAsString(TString& statement, CodeMode sourceMode, UINT start);
 
 	/*DoubIndex getSingleString(TString& read, UINT in);
 	DoubIndex getMultiString(TString& read, UINT in);

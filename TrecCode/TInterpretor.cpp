@@ -9,6 +9,8 @@ TInterpretor::TInterpretor()
 	parent = nullptr;
 	resource = ir_none;
 	language = nullptr;
+	fileLoc = 0;
+	globalVariables = nullptr;
 }
 
 
@@ -22,13 +24,14 @@ TInterpretor::TInterpretor(TInterpretor* ti)
 	actionMode = im_run;
 	returnValue = nullptr;
 	parent = ti;
+	fileLoc = 0;
 	if (ti)
 	{
-		this->endComment = ti->endComment;
+		this->endComment.Set(ti->endComment);
 		this->globalVariables = ti->globalVariables;
 		this->multiLineString = ti->multiLineString;
-		this->singleComment = ti->singleComment;
-		this->startComment = ti->startComment;
+		this->singleComment.Set(ti->singleComment);
+		this->startComment.Set(ti->startComment);
 		this->string = ti->string;
 		this->language = ti->language;
 	}
@@ -46,13 +49,14 @@ TInterpretor::TInterpretor(IntLanguage * lang)
 	returnValue = nullptr;
 	parent = nullptr;
 	globalVariables = nullptr;
+	fileLoc = 0;
 	if (lang)
 	{
-		this->endComment = lang->endComment;
+		this->endComment.Set(lang->endComment);
 		
 		this->multiLineString = lang->multiLineString;
-		this->singleComment = lang->singleComment;
-		this->startComment = lang->startComment;
+		this->singleComment.Set(lang->singleComment);
+		this->startComment.Set(lang->startComment);
 		this->string = lang->string;
 		this->language = lang;
 	}
@@ -92,10 +96,10 @@ bool TInterpretor::SetFile(TFile & file)
 	int endString = -1;
 	DoubIndex sinCom, newL, multiCom, multiComE, sinStr, mulStr;
 
-	while (readData = file.ReadString(inBuffer, 100))
+	while (readData = file.ReadString(inBuffer, (UINT)100))
 	{
 		UpdateDoubIndex(inBuffer, 0, sinCom, newL, multiCom, multiComE, sinStr, mulStr);
-		outbuffer = L"";
+		outbuffer.Set(L"");
 		for (UINT c = 0; c < inBuffer.GetLength(); c++)
 		{
 			
@@ -191,98 +195,12 @@ bool TInterpretor::SetFile(TFile & file)
 
 		sourceFile.WriteString(outbuffer);
 
-		/*strIndex = 0;
-		while (strIndex < readData)
-		{
-			nextSinStr = getSingleString(inBuffer, strIndex);
-			nextSinCom = getSingleComment(inBuffer, strIndex);
-			nextLine = getNextLine(inBuffer, strIndex);
-			nextMulCom = getMultiComment(inBuffer, strIndex, true);
-			endMulCom = getMultiComment(inBuffer, strIndex, false);
-			nextMulStr = getMultiString(inBuffer, strIndex);
-
-			UINT startStrIndex = strIndex;
-			outbuffer.Empty();
-
-			switch (sourceMode)
-			{
-			case cm_reg:
-				if (nextSinCom == -1 && nextMulCom == -1)
-				{
-					// In this case, there is no comment and we can safely copy the entire String into the output.
-					// We do, however, have to check for strings
-					if(!setStringMode(sourceMode, readData, nextSinStr, nextMulStr))
-						strIndex = readData;
-					
-				}
-				else
-				{	// We are dealing with comments at this point
-					if (nextSinCom > -1 && (nextMulCom == -1 && nextMulCom > nextSinCom))
-					{
-						if (!setStringMode(sourceMode, readData, nextSinStr, nextMulStr))
-						{
-							strIndex = nextSinCom;
-							sourceMode = cm_sinCom;
-						}
-						
-						
-					}
-					else
-					{
-						if (!setStringMode(sourceMode, readData, nextSinStr, nextMulStr))
-						{
-							strIndex = nextMulCom;
-							sourceMode = cm_mulCom;
-						}
-					}
-				}
-				outbuffer = inBuffer.SubString(startStrIndex, strIndex);
-				break;
-			case cm_sinCom:
-				if (nextLine != -1)
-				{
-					strIndex = nextLine;
-					sourceMode = cm_reg;
-				}
-				else
-					strIndex = readData;
-				break;
-			case cm_sinStr:
-				endString = getMulStringEnd(inBuffer, strIndex, nextMulStr.colInd);
-				if (endString == -1 && (nextLine != -1 && nextLine < endString))
-				{
-					strIndex = nextLine;
-				}
-				else if (endString == -1 && nextLine == -1)
-					strIndex = readData;
-				else
-					strIndex = endString + (multiLineString[nextMulStr.colInd].GetLength() - 1);
-				outbuffer = inBuffer.SubString(startStrIndex, strIndex);
-				break;
-			case cm_mulCom:
-				if (endMulCom != -1)
-				{
-					strIndex = endMulCom;
-					sourceMode = cm_reg;
-				}
-				else
-					strIndex = readData;
-				break;
-			case cm_mulStr:
-				endString = getMulStringEnd(inBuffer, strIndex, nextMulStr.colInd);
-				if (endString == -1)
-					strIndex = readData;
-				else
-					strIndex = endString + (multiLineString[nextMulStr.colInd].GetLength() - 1);
-				outbuffer = inBuffer.SubString(startStrIndex, strIndex);
-			}
-
-			sourceFile.WriteString(outbuffer);
-		}*/
+		
 
 	}
 
 	sourceFile.Seek(0, CFile::SeekPosition::begin);
+	return true;
 }
 
 bool TInterpretor::SetFile(TFile & file, ULONG seek)
@@ -301,7 +219,7 @@ void TInterpretor::setLanguage(IntLanguage * lang)
 
 void TInterpretor::SetString(TString & strCode)
 {
-	sourceString = strCode;
+	sourceString.Set(strCode);
 	resource = ir_string;
 }
 
@@ -330,6 +248,22 @@ intVariable * TInterpretor::GetVariable(TString & name)
 		return parent->GetVariable(name);
 
 	return nullptr;
+}
+
+UINT TInterpretor::Run()
+{
+	if (!sourceFile.IsOpen())
+		return 1;
+
+	TString code;
+	ULONGLONG filePos = sourceFile.GetPosition();
+
+	while (filePos += GetNextStatement(code, filePos))
+	{
+		// To-Do: Call upon the language BNF Tags to parse the Code statement
+		language->ProcessCode(code, sourceFile, filePos, globalVariables, this);
+	}
+	
 }
 
 UINT TInterpretor::Run(TInterpretor * t)
@@ -405,7 +339,7 @@ DoubIndex TInterpretor::getNextSingleString(TString & buff, UINT index)
 		int loc = buff.Find(string[rust], index);
 		if (loc != -1 && (ret.strInd == -1 || loc < ret.strInd))
 		{
-			ret.stringQ = string[rust];
+			ret.stringQ.Set(string[rust]);
 			ret.strInd = loc;
 			break;
 		}
@@ -424,13 +358,97 @@ DoubIndex TInterpretor::getNextMultiString(TString & buff, UINT index)
 		int loc = buff.Find(multiLineString[rust], index);
 		if (loc != -1 && (ret.strInd == -1 || loc < ret.strInd))
 		{
-			ret.stringQ = multiLineString[rust];
+			ret.stringQ.Set(multiLineString[rust]);
 			ret.strInd = loc;
 			break;
 		}
 	}
 
 	return ret;
+}
+
+UINT TInterpretor::GetNextStatement(TString & statement, ULONGLONG& startSeek)
+{
+	if(!language)
+		return 0;
+	WCHAR statementEnd = L';';
+	statement.Empty(); // Empty the new statement for addition
+	CodeMode sourceMode = cm_reg; // Start assuming we're dealing with raw code rather than a string
+	TString baseStatement;
+	UINT stringPart = 0;
+
+	appendStatement: // Used for adding to the statement, in case the "statement end" was actually in a string 
+
+	for (UINT c = 0; c < language->statementEnd.GetLength(); c++)
+	{
+		TString tempStatement;
+		sourceFile.ReadString(tempStatement, language->statementEnd.GetAt(c));
+		if (!baseStatement.GetLength() || tempStatement.GetLength() < baseStatement.GetLength())
+		{
+			baseStatement.Set(tempStatement);
+			statementEnd = language->statementEnd.GetAt(c);
+		}
+		sourceFile.Seek(startSeek, CFile::SeekPosition::begin);
+	}
+
+	// If the file ends in string mode, then we're screwed.
+	if (!baseStatement.GetLength() && sourceMode != cm_reg)
+		return 0;
+
+	statement += baseStatement;
+	if (statementEnd)
+		statement += statementEnd;
+	else
+		return statement.GetLength();
+	sourceMode = EndsAsString(statement, sourceMode, stringPart);
+	stringPart = statement.GetLength();
+
+	if (sourceMode != cm_reg)
+		goto appendStatement;
+	return statement.GetLength();
+}
+
+CodeMode TInterpretor::EndsAsString(TString & statement, CodeMode sourceMode, UINT start)
+{
+	DoubIndex sin, mul, line;
+
+	for (UINT Rust = start; Rust < statement.GetLength(); Rust++)
+	{
+		switch (sourceMode)
+		{
+		case cm_reg:
+			sin = getNextSingleString(statement, Rust);
+			mul = getNextMultiString(statement, Rust);
+
+			if (sin.strInd != -1)
+				sourceMode = cm_sinStr;
+
+			if (mul.strInd != -1 && (sourceMode != cm_sinStr || mul.strInd < sin.strInd))
+				sourceMode = cm_mulStr;
+
+
+				break;
+		case cm_sinStr:
+			sin = getNextSingleString(statement, Rust);
+			line = getNextNewline(statement, Rust);
+
+			if (sin.strInd == -1 && line.strInd == -1)
+				return cm_sinStr;
+			if (sin.strInd != -1 && (line.strInd == -1 || sin.strInd < line.strInd))
+			{
+				Rust += sin.stringQ.GetLength() - 1;
+				sourceMode = cm_reg;
+			}
+			break;
+		case cm_mulStr:
+			mul = getNextMultiString(statement, Rust);
+			if (mul.strInd == -1)
+				return cm_mulStr;
+			Rust += mul.stringQ.GetLength() - 1;
+			sourceMode = cm_reg;
+		}
+	}
+	return sourceMode;
 }
 
 /*

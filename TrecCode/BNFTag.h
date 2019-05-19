@@ -57,7 +57,11 @@ public:
 	virtual TagCheck ProcessTag(UINT statementStart, UINT tagStart, TFile& file, VariableContainer& globalVariables, TInterpretor& inter, TDataArray<BNFTag*>& tags, UINT end = 0);
 	virtual TagCheck ProcessTag(TString& bounds, VariableContainer& globalVariables, TInterpretor& inter, TDataArray<BNFTag*>& tags);
 
+	virtual TagCheck ProcessTag(TString& code, UINT codeStart, TFile& file, VariableContainer& globalVariables, TInterpretor& inter, TDataArray<BNFTag*>& tags);
+
 	virtual void addAttribute(TString& att, TString& val);
+
+	TString GetTageName();
 
 protected:
 	TString name;

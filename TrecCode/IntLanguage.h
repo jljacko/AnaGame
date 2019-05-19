@@ -11,6 +11,8 @@ class _TREC_CODE_DLL IntLanguage
 public:
 
 	static IntLanguage* getLanguage(TString& langName);
+
+	UINT ProcessCode(TString& statement, TFile& file, UINT codeStart, VariableTree*, TInterpretor* , UINT line = 0);
 	
 protected:
 	IntLanguage();
@@ -25,5 +27,10 @@ protected:
 	TString startComment, endComment;   // Multi-line comments;
 	TString blockMarks;					// How TrecCode know how a block is defined
 	TDataArray<TString> string, multiLineString;
+
+
+
+	TString rootBNF;
+	int startIndex;
 };
 

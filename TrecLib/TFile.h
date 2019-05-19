@@ -52,6 +52,8 @@ public:
 	BOOL ReadString(CString& rString);
 	UINT ReadString(CString& rString, UINT nMax);
 	LPTSTR ReadString(LPTSTR lpsz, UINT nMax);
+	UINT ReadString(CString& rString, WCHAR chara);
+	
 	void WriteString(LPCTSTR lpsz);
 	bool IsOpen();
 	bool SetEncoding(FileEncodingType fet);

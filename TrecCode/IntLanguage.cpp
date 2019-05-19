@@ -137,6 +137,13 @@ IntLanguage * IntLanguage::getLanguage(TString & langName)
 
 	// To-Do: Add some checking for conflicts
 
+	// Now collect the root tag
+	val = maps.retrieveEntry(TString(L"Root BNF"));
+	if (val.get())
+	{
+		val->Trim();
+		lang->rootBNF = val.get();
+	}
 
 	// To-Do: No conflicts have been detected, now to set up Code syntax parsing
 	val = maps.retrieveEntry(TString(L"Syntax File"));
@@ -159,8 +166,19 @@ IntLanguage * IntLanguage::getLanguage(TString & langName)
 			lang->tagList = setUpTagList(bnf);
 			if (lang->tagList)
 				CompileIntLanguage(*lang->tagList);
+
+			for (UINT Rust = 0; Rust < lang->tagList->Size(); Rust++)
+			{
+				if (lang->tagList->at(Rust)->GetTageName() == lang->rootBNF)
+				{
+					lang->startIndex = Rust;
+					break;
+				}
+			}
 		}
 	}
+
+
 
 
 	// Now time to add the language to the collection
@@ -168,9 +186,23 @@ IntLanguage * IntLanguage::getLanguage(TString & langName)
 	return lang;
 }
 
+UINT IntLanguage::ProcessCode(TString & statement, TFile& file, UINT codeStart, VariableTree* gv, TInterpretor* inter, UINT line)
+{
+	if(startIndex == -1 || !tagList || !tagList->Size() || !gv || !inter)
+		return 1;
+
+	if (!rootBNF.GetLength())
+		return 2;
+
+	// tagList->at(startIndex)->ProcessTag(statement, *gv, *inter, *tagList);
+	tagList->at(startIndex)->ProcessTag(statement, codeStart, file, *gv, *inter, *tagList);
+	return 0;
+}
+
 IntLanguage::IntLanguage()
 {
 	tagList = nullptr;
+	startIndex = -1;
 }
 
 

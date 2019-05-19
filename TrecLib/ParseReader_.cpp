@@ -22,6 +22,7 @@ ParseReader_::ParseReader_(CArchive* car, Parser_* par)
 	else
 		materials = true;
 	usingTFile = false;
+	tReader = nullptr;
 }
 
 /*
@@ -40,6 +41,7 @@ ParseReader_::ParseReader_(TFile *tf, Parser_ *par)
 	else
 		materials = true;
 	usingTFile = true;
+	reader = nullptr;
 }
 
 /*

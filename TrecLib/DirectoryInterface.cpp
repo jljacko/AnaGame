@@ -39,39 +39,39 @@ void InitializeDirectories()
 
 	TString tempString;
 
-	tempString = filepath;
-	directories[0] = tempString;
+	tempString.Set(filepath);
+	directories[0].Set(tempString);
 
 	PWSTR folderString = nullptr;
 	SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, NULL, &folderString);
-	tempString = folderString;
-	directories[1] = tempString;
+	tempString.Set(folderString);
+	directories[1].Set(tempString);
 
 	SHGetKnownFolderPath(FOLDERID_Desktop, 0, NULL, &folderString);
-	tempString = folderString;
-	directories[2] = tempString;
+	tempString.Set(folderString);
+	directories[2].Set(tempString);
 
 	SHGetKnownFolderPath(FOLDERID_Documents, 0, NULL, &folderString);
-	tempString = folderString;
-	directories[3] = tempString;
+	tempString.Set(folderString);
+	directories[3].Set(tempString);
 
 	SHGetKnownFolderPath(FOLDERID_Music, 0, NULL, &folderString);
-	tempString = folderString;
-	directories[4] = tempString;
+	tempString.Set(folderString);
+	directories[4].Set(tempString);
 
 	SHGetKnownFolderPath(FOLDERID_Pictures, 0, NULL, &folderString);
-	tempString = folderString;
-	directories[5] = tempString;
+	tempString.Set(folderString);
+	directories[5].Set(tempString);
 
 	SHGetKnownFolderPath(FOLDERID_Videos, 0, NULL, &folderString);
-	tempString = folderString;
-	directories[6] = tempString;
+	tempString.Set(folderString);
+	directories[6].Set(tempString);
 
 	SHGetKnownFolderPath(FOLDERID_Downloads, 0, NULL, &folderString);
-	tempString = folderString;
-	directories[7] = tempString;
+	tempString.Set(folderString);
+	directories[7].Set(tempString);
 
-	directories[8] = directories[7];
+	directories[8].Set(directories[7]);
 	directories[8].Replace(TString(L"\\Downloads"), L"");
 
 	initialized = true;
@@ -81,15 +81,15 @@ void InitializeDirectories()
 
 	initialized = false;
 
-	shadowDirectories[0] = baseShadow + TString(L"\\AnaGameExe");
-	shadowDirectories[1] = baseShadow + TString(L"\\AppData");
-	shadowDirectories[2] = baseShadow + TString(L"\\Desktop");
-	shadowDirectories[3] = baseShadow + TString(L"\\Documents");
-	shadowDirectories[4] = baseShadow + TString(L"\\Music");
-	shadowDirectories[5] = baseShadow + TString(L"\\Pictures");
-	shadowDirectories[6] = baseShadow + TString(L"\\Videos");
-	shadowDirectories[7] = baseShadow + TString(L"\\Downloads");
-	shadowDirectories[8] = baseShadow;
+	shadowDirectories[0].Set(baseShadow + TString(L"\\AnaGameExe"));
+	shadowDirectories[1].Set(baseShadow + TString(L"\\AppData"));
+	shadowDirectories[2].Set(baseShadow + TString(L"\\Desktop"));
+	shadowDirectories[3].Set(baseShadow + TString(L"\\Documents"));
+	shadowDirectories[4].Set(baseShadow + TString(L"\\Music"));
+	shadowDirectories[5].Set(baseShadow + TString(L"\\Pictures"));
+	shadowDirectories[6].Set(baseShadow + TString(L"\\Videos"));
+	shadowDirectories[7].Set(baseShadow + TString(L"\\Downloads"));
+	shadowDirectories[8].Set(baseShadow);
 
 	for (UINT c = 0; c < 9; c++)
 	{

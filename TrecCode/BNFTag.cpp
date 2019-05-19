@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "BNFTag.h"
-
+#include "TagHeaders.h"
 
 BNFTag::BNFTag(TString & tagName)
 {
@@ -18,6 +18,106 @@ BNFTag * BNFTag::GetTag(TString & tagName)
 
 BNFTag * BNFTag::GetFunctionalTag(TString & tagName)
 {
+	// Basic Conditional
+	if (tagName == TString(L"if_statement"))
+		return nullptr; // To-Do: Create the If bnf tag
+
+	// Basic Loops
+	if (tagName == TString(L"while_statement"))
+		return nullptr; // To-Do: Create the while bnf tag
+	if (tagName == TString(L"until_statement"))
+		return nullptr; // To-Do: Create the until bnf tag
+	if (tagName == TString(L"for_1_statement"))
+		return nullptr; // To-Do: Create the If bnf tag
+	if (tagName == TString(L"for_3_statement"))
+		return nullptr; // To-Do: Create the If bnf tag
+
+	// Error Handlers
+	if (tagName == TString(L"try_statement"))
+		return nullptr; // To-Do: Create the If bnf tag
+	if (tagName == TString(L"catch"))
+		return nullptr; // To-Do: Create the If bnf tag
+	if (tagName == TString(L"finally"))
+		return nullptr; // To-Do: Create the If bnf tag
+
+	// Function functionality
+	if (tagName == TString(L"function_statement"))
+		return nullptr; // To-Do: Create the If bnf tag
+	if (tagName == TString(L"parameters"))
+		return nullptr; // To-Do: Create the If bnf tag
+	if (tagName == TString(L"function_expr"))
+		return nullptr; // To-Do: Create the If bnf tag
+	if (tagName == TString(L"block"))
+		return nullptr; // To-Do: Create the If bnf tag
+	
+	// Flow Tags
+	if (tagName == TString(L"break"))
+		return new BreakTag();
+	if (tagName == TString(L"continue"))
+		return new ContinueTag();
+	if (tagName == TString(L"return"))
+		return nullptr; // To-Do: Create the If bnf tag
+
+	// Variables
+	if (tagName == TString(L"class_statement"))
+		return nullptr; // To-Do: Create the If bnf tag
+	if (tagName == TString(L"var"))
+		return nullptr; // To-Do: Create the If bnf tag
+	if (tagName == TString(L"declaration"))
+		return nullptr; // To-Do: Create the If bnf tag
+
+	// Gate-wise expressions
+	if (tagName == TString(L"or_exp"))
+		return nullptr; // To-Do: Create the If bnf tag
+	if (tagName == TString(L"and_exp"))
+		return nullptr; // To-Do: Create the If bnf tag
+	if (tagName == TString(L"not_test"))
+		return nullptr; // To-Do: Create the If bnf tag
+	if (tagName == TString(L"xor_expr"))
+		return nullptr; // To-Do: Create the If bnf tag
+	if (tagName == TString(L"or_expr"))
+		return nullptr; // To-Do: Create the If bnf tag
+	if (tagName == TString(L"and_expr"))
+		return nullptr; // To-Do: Create the If bnf tag
+
+	// Shifts
+	if (tagName == TString(L"left_shift"))
+		return nullptr; // To-Do: Create the If bnf tag
+	if (tagName == TString(L"right_shift"))
+		return nullptr; // To-Do: Create the If bnf tag
+
+	// Arithmetic expressions
+	if (tagName == TString(L"subtract_exp"))
+		return new SubtractExpressionTag();
+	if (tagName == TString(L"add_exp"))
+		return new AddExpressionTag();
+	if (tagName == TString(L"mul_exp"))
+		return new MultipExpressionTag(); 
+	if (tagName == TString(L"div_exp"))
+		return new DivExpressionTag(); 
+	if (tagName == TString(L"mod_exp"))
+		return new ModExpressionTag(); 
+	if (tagName == TString(L"float_div_exp"))
+		return new F_DivExpressionTag(); 
+	if (tagName == TString(L"power"))
+		return new PowerTag(); 
+
+	// Methods
+	if (tagName == TString(L"method_call"))
+		return nullptr; // To-Do: Create the If bnf tag
+	if (tagName == TString(L"method_attr"))
+		return nullptr; // To-Do: Create the If bnf tag
+
+	// Basics
+	if (tagName == TString(L"null"))
+		return new NullTag(); 
+	if (tagName == TString(L"true"))
+		return new TrueTag(); 
+	if (tagName == TString(L"false"))
+		return new FalseTag();
+	if (tagName == TString(L"array"))
+		return nullptr; // To-Do: Create the array bnf tag
+
 	return nullptr;
 }
 
@@ -90,8 +190,24 @@ TagCheck BNFTag::ProcessTag(TString & bounds, VariableContainer & globalVariable
 	return TagCheck();
 }
 
+TagCheck BNFTag::ProcessTag(TString & code, UINT codeStart, TFile & file, VariableContainer & globalVariables, TInterpretor & inter, TDataArray<BNFTag*>& tags)
+{
+
+	TagCheck returnable;
+	for (UINT C = 0; C < syntax.Size(); C++)
+	{
+		// syntax[C].
+	}
+	return TagCheck();
+}
+
 void BNFTag::addAttribute(TString & att, TString & val)
 {
+}
+
+TString BNFTag::GetTageName()
+{
+	return name;
 }
 
 short BNFTag::findTagIndex(TDataArray<BNFTag*>& list, TString & token)

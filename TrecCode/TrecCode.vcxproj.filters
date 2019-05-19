@@ -190,6 +190,9 @@
     <ClInclude Include="TrecCode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TagHeaders.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="TrecCode.rc">

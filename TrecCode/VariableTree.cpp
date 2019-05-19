@@ -6,7 +6,7 @@ VariableTree::VariableTree()
 {
 	root.variable.hold = 0;
 	root.variable.varName = true;
-	root.variable.reference.varName = TString();
+	root.variable.reference.varName.Set(TString());
 }
 
 
@@ -69,7 +69,7 @@ int VariableTree::insertVariable(TString name, TrecPointer<TObject> obj, varNode
 	if (!node.variable.reference.varName.GetLength())
 	{
 		node.variable.hold = AG_I_OBJECT;
-		node.variable.reference.varName = name;
+		node.variable.reference.varName.Set(name);
 		node.variable.value.object = obj;
 		return 1;
 	}
@@ -86,7 +86,7 @@ int VariableTree::insertVariable(TString name, TrecPointer<TObject> obj, varNode
 		node.higher = new intVariable();
 		node.higher->variable.hold = 0;
 		node.higher->variable.varName = true;
-		node.higher->variable.reference.varName = L"";
+		node.higher->variable.reference.varName.Set(L"");
 		insertVariable(name, obj, *node.higher.get());
 		return 3;
 	}
@@ -95,7 +95,7 @@ int VariableTree::insertVariable(TString name, TrecPointer<TObject> obj, varNode
 	node.lower = new intVariable();
 	node.lower->variable.hold = 0;
 	node.lower->variable.varName = true;
-	node.lower->variable.reference.varName = L"";
+	node.lower->variable.reference.varName.Set(L"");
 	insertVariable(name, obj, *node.lower.get());
 	return 4;
 }
@@ -105,7 +105,7 @@ int VariableTree::insertVariable(TString name, TString & value, varNode & node)
 	if (!node.variable.reference.varName.GetLength())
 	{
 		node.variable.hold = AG_I_STRING;
-		node.variable.reference.varName = name;
+		node.variable.reference.varName.Set(name);
 		node.variable.value.object = new TString(value);
 		return 1;
 	}
@@ -122,7 +122,7 @@ int VariableTree::insertVariable(TString name, TString & value, varNode & node)
 		node.higher = new intVariable();
 		node.higher->variable.hold = 0;
 		node.higher->variable.varName = true;
-		node.higher->variable.reference.varName = L"";
+		node.higher->variable.reference.varName.Set(L"");
 		insertVariable(name, value, *node.higher.get());
 		return 3;
 	}
@@ -131,7 +131,7 @@ int VariableTree::insertVariable(TString name, TString & value, varNode & node)
 	node.lower = new intVariable();
 	node.lower->variable.hold = 0;
 	node.lower->variable.varName = true;
-	node.lower->variable.reference.varName = L"";
+	node.lower->variable.reference.varName.Set(L"");
 	insertVariable(name, value, *node.lower.get());
 	return 4;
 }
@@ -141,7 +141,7 @@ int VariableTree::insertVariable(TString name, unsigned long long value, varNode
 	if (!node.variable.reference.varName.GetLength())
 	{
 		node.variable.hold = AG_I_U_INT;
-		node.variable.reference.varName = name;
+		node.variable.reference.varName.Set(name);
 		node.variable.value.primInt = (long long)value;
 		return 1;
 	}
@@ -158,7 +158,7 @@ int VariableTree::insertVariable(TString name, unsigned long long value, varNode
 		node.higher = new intVariable();
 		node.higher->variable.hold = 0;
 		node.higher->variable.varName = true;
-		node.higher->variable.reference.varName = L"";
+		node.higher->variable.reference.varName.Set(L"");
 		insertVariable(name, value, *node.higher.get());
 		return 3;
 	}
@@ -167,7 +167,7 @@ int VariableTree::insertVariable(TString name, unsigned long long value, varNode
 	node.lower = new intVariable();
 	node.lower->variable.hold = 0;
 	node.lower->variable.varName = true;
-	node.lower->variable.reference.varName = L"";
+	node.lower->variable.reference.varName.Set(L"");
 	insertVariable(name, value, *node.lower.get());
 	return 4;
 }
@@ -177,7 +177,7 @@ int VariableTree::insertVariable(TString name, long long value, varNode & node)
 	if (!node.variable.reference.varName.GetLength())
 	{
 		node.variable.hold = AG_I_S_INT;
-		node.variable.reference.varName = name;
+		node.variable.reference.varName.Set(name);
 		node.variable.value.primInt = value;
 		return 1;
 	}
@@ -194,7 +194,7 @@ int VariableTree::insertVariable(TString name, long long value, varNode & node)
 		node.higher = new intVariable();
 		node.higher->variable.hold = 0;
 		node.higher->variable.varName = true;
-		node.higher->variable.reference.varName = L"";
+		node.higher->variable.reference.varName.Set(L"");
 		insertVariable(name, value, *node.higher.get());
 		return 3;
 	}
@@ -203,7 +203,7 @@ int VariableTree::insertVariable(TString name, long long value, varNode & node)
 	node.lower = new intVariable();
 	node.lower->variable.hold = 0;
 	node.lower->variable.varName = true;
-	node.lower->variable.reference.varName = L"";
+	node.lower->variable.reference.varName.Set(L"");
 	insertVariable(name, value, *node.lower.get());
 	return 4;
 }
@@ -213,7 +213,7 @@ int VariableTree::insertVariable(TString name, double value, varNode & node)
 	if (!node.variable.reference.varName.GetLength())
 	{
 		node.variable.hold = AG_I_DOUBLE;
-		node.variable.reference.varName = name;
+		node.variable.reference.varName.Set(name);
 		node.variable.value.primFloat = value;
 		return 1;
 	}
@@ -230,7 +230,7 @@ int VariableTree::insertVariable(TString name, double value, varNode & node)
 		node.higher = new intVariable();
 		node.higher->variable.hold = 0;
 		node.higher->variable.varName = true;
-		node.higher->variable.reference.varName = L"";
+		node.higher->variable.reference.varName.Set(L"");
 		insertVariable(name, value, *node.higher.get());
 		return 3;
 	}
@@ -239,7 +239,7 @@ int VariableTree::insertVariable(TString name, double value, varNode & node)
 	node.lower = new intVariable();
 	node.lower->variable.hold = 0;
 	node.lower->variable.varName = true;
-	node.lower->variable.reference.varName = L"";
+	node.lower->variable.reference.varName.Set(L"");
 	insertVariable(name, value, *node.lower.get());
 	return 4;
 }
@@ -249,7 +249,7 @@ int VariableTree::insertVariable(TString name, bool value, varNode & node)
 	if (!node.variable.reference.varName.GetLength())
 	{
 		node.variable.hold = AG_I_BOOLEAN;
-		node.variable.reference.varName = name;
+		node.variable.reference.varName.Set(name);
 		node.variable.value.primInt = value;
 		return 1;
 	}
@@ -266,7 +266,7 @@ int VariableTree::insertVariable(TString name, bool value, varNode & node)
 		node.higher = new intVariable();
 		node.higher->variable.hold = 0;
 		node.higher->variable.varName = true;
-		node.higher->variable.reference.varName = L"";
+		node.higher->variable.reference.varName.Set(L"");
 		insertVariable(name, value, *node.higher.get());
 		return 3;
 	}
@@ -275,7 +275,7 @@ int VariableTree::insertVariable(TString name, bool value, varNode & node)
 	node.lower = new intVariable();
 	node.lower->variable.hold = 0;
 	node.lower->variable.varName = true;
-	node.lower->variable.reference.varName = L"";
+	node.lower->variable.reference.varName.Set(L"");
 	insertVariable(name, value, *node.lower.get());
 	return 4;
 }
@@ -301,7 +301,7 @@ int VariableTree::insertVariable(TString name, TrecPointer<TInterpretor> value, 
 	if (!node.variable.reference.varName.GetLength())
 	{
 		node.variable.hold = AG_I_FUNCTION;
-		node.variable.reference.varName = name;
+		node.variable.reference.varName.Set(name);
 		node.variable.value.object = value.get();
 		return 1;
 	}
@@ -318,7 +318,7 @@ int VariableTree::insertVariable(TString name, TrecPointer<TInterpretor> value, 
 		node.higher = new intVariable();
 		node.higher->variable.hold = 0;
 		node.higher->variable.varName = true;
-		node.higher->variable.reference.varName = L"";
+		node.higher->variable.reference.varName.Set(L"");
 		insertVariable(name, value, *node.higher.get());
 		return 3;
 	}
@@ -327,7 +327,7 @@ int VariableTree::insertVariable(TString name, TrecPointer<TInterpretor> value, 
 	node.lower = new intVariable();
 	node.lower->variable.hold = 0;
 	node.lower->variable.varName = true;
-	node.lower->variable.reference.varName = L"";
+	node.lower->variable.reference.varName.Set(L"");
 	insertVariable(name, value, *node.lower.get());
 	return 4;
 }
@@ -337,7 +337,7 @@ int VariableTree::insertVariable(TString name, TrecPointer<VariableList> value, 
 	if (!node.variable.reference.varName.GetLength())
 	{
 		node.variable.hold = AG_I_ARRAY;
-		node.variable.reference.varName = name;
+		node.variable.reference.varName.Set(name);
 		node.variable.value.object = value.get();
 		return 1;
 	}
@@ -354,7 +354,7 @@ int VariableTree::insertVariable(TString name, TrecPointer<VariableList> value, 
 		node.higher = new intVariable();
 		node.higher->variable.hold = 0;
 		node.higher->variable.varName = true;
-		node.higher->variable.reference.varName = L"";
+		node.higher->variable.reference.varName.Set(L"");
 		insertVariable(name, value, *node.higher.get());
 		return 3;
 	}
@@ -363,7 +363,7 @@ int VariableTree::insertVariable(TString name, TrecPointer<VariableList> value, 
 	node.lower = new intVariable();
 	node.lower->variable.hold = 0;
 	node.lower->variable.varName = true;
-	node.lower->variable.reference.varName = L"";
+	node.lower->variable.reference.varName.Set(L"");
 	insertVariable(name, value, *node.lower.get());
 	return 4;
 }

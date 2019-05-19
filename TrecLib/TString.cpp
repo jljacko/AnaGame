@@ -572,6 +572,64 @@ bool TString::ConvertToColor(D2D1_COLOR_F & color, ColorFormat& cf)
 }
 
 
+void TString::Set(TString& t)
+{
+	this->Empty();
+	for (int c = 0;c < t.GetLength();c++)
+	{
+		this->AppendChar(t.GetAt(c));
+	}
+}
+
+void TString::Set(TString* s)
+{	
+	if (s)
+	{
+		this->Empty();
+		for (int c = 0; c < s->GetLength(); c++)
+		{
+			this->AppendChar(s->GetAt(c));
+		}
+	}
+}
+
+void TString::Set(CString& t)
+{	
+	this->Empty();
+	for (int c = 0;c < t.GetLength();c++)
+	{
+		this->AppendChar(t.GetAt(c));
+	}
+}
+
+void TString::Set(CString* s)
+{
+	if (s)
+	{
+		this->Empty();
+		for (int c = 0; c < s->GetLength(); c++)
+		{
+			this->AppendChar(s->GetAt(c));
+		}
+	}
+}
+
+void TString::Set(WCHAR* w)
+{
+	if (w)
+	{
+		this->Empty();
+		for (int c = 0; *w != L'\0'; c++, w++)
+			this->AppendChar(*w);
+	}
+}
+
+void TString::Set(WCHAR w)
+{
+	this->Empty();
+	this->AppendChar(w);
+}
+
 /*
 * Method: TString - operator=
 * Purpose: Assigns an Existing TString to this TString
@@ -580,11 +638,7 @@ bool TString::ConvertToColor(D2D1_COLOR_F & color, ColorFormat& cf)
 */
 TString TString::operator=(TString &t)
 {
-	this->Empty();
-	for (int c = 0;c < t.GetLength();c++)
-	{
-		this->AppendChar(t.GetAt(c));
-	}
+	Set(t);
 	return this;
 }
 
@@ -596,11 +650,7 @@ TString TString::operator=(TString &t)
 */
 TString TString::operator=(CString &t)
 {
-	this->Empty();
-	for (int c = 0;c < t.GetLength();c++)
-	{
-		this->AppendChar(t.GetAt(c));
-	}
+	Set(t);
 	return this;
 }
 
@@ -612,14 +662,7 @@ TString TString::operator=(CString &t)
 */
 TString TString::operator=(TString * s)
 {
-	if (s)
-	{
-		this->Empty();
-		for (int c = 0; c < s->GetLength(); c++)
-		{
-			this->AppendChar(s->GetAt(c));
-		}
-	}
+	Set(s);
 	return this;
 }
 
@@ -631,14 +674,7 @@ TString TString::operator=(TString * s)
 */
 TString TString::operator=(CString * s)
 {
-	if (s)
-	{
-		this->Empty();
-		for (int c = 0; c < s->GetLength(); c++)
-		{
-			this->AppendChar(s->GetAt(c));
-		}
-	}
+	Set(s);
 	return this;
 }
 
@@ -650,12 +686,7 @@ TString TString::operator=(CString * s)
 */
 TString TString::operator=(WCHAR * w)
 {
-	if (w)
-	{
-		this->Empty();
-		for (int c = 0; *w != L'\0'; c++, w++)
-			this->AppendChar(*w);
-	}
+	Set(w);
 	return this;
 }
 
@@ -667,8 +698,7 @@ TString TString::operator=(WCHAR * w)
 */
 TString TString::operator=(WCHAR w)
 {
-	this->Empty();
-	this->AppendChar(w);
+	Set(w);
 	return this;
 }
 

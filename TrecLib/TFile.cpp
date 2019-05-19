@@ -23,7 +23,7 @@ TFile::TFile()
 *			UINT nOpenFlags - flags that specify the open status of the file
 * Returns: void
 */
-TFile::TFile(LPCTSTR lpszFileName, UINT nOpenFlags) //:CFile(lpszFileName, nOpenFlags)
+TFile::TFile(LPCTSTR lpszFileName, UINT nOpenFlags) :CFile(lpszFileName, nOpenFlags)
 {
 	fileEncode = fet_unknown;
 	CFile(lpszFileName, nOpenFlags);
@@ -263,6 +263,53 @@ LPTSTR TFile::ReadString(LPTSTR lpsz, UINT nMax)
 	return lpsz;
 }
 
+UINT TFile::ReadString(CString & rString, WCHAR chara)
+{
+	bool success = false;
+	rString.Empty();
+	switch (fileEncode)
+	{
+	case fet_acsii:
+		char letter[1];
+		while (Read(&letter, 1))
+		{
+			if (letter[0] == chara)
+				break;
+			rString += ReturnWCharType(letter[0]);
+			success = true;
+		}
+
+		break;
+	case fet_unicode:
+		UCHAR letter2[2];
+		while (Read(&letter2, 2))
+		{
+			WCHAR cLetter;
+			UCHAR temp = letter2[0];
+			letter2[0] = letter2[1];
+			letter2[1] = temp;
+			memcpy(&cLetter, letter2, 2);
+			if (cLetter == chara)
+				break;
+			rString += cLetter;
+			success = true;
+		}
+
+		break;
+	case fet_unicode_little:
+		WCHAR wLetter;
+		while (Read(&wLetter, 2))
+		{
+			if (wLetter == chara)
+				break;
+			rString += wLetter;
+			success = true;
+		}
+
+	}
+	return rString.GetLength();
+}
+
 /*
 * Method: TFile - WriteString
 * Purpose: Wrties a string to the file
@@ -370,7 +417,7 @@ TString TFile::GetFileExtension()
 	TString ext = GetFileName();
 	if(ext.Find(L'.') == -1)
 		return ext;
-	for (UINT c = ext.GetLength() - 1; c >= 0; c--)
+	for (int c = ext.GetLength() - 1; c >= 0; c--)
 	{
 		if (ext[c] == L'.')
 		{
