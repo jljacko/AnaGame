@@ -5,13 +5,13 @@
 
 
 
-class VariableList : public VariableContainer
+class _TREC_CODE_DLL VariableList : public VariableContainer
 {
 public:
 	VariableList();
 	~VariableList();
 
-	virtual int insertVariable(TString name, TrecPointer<TObject>);				// 1. Basic object
+	virtual int insertVariable(TString name, TrecPointer<TObject>, UCHAR type = 1);				// 1. Basic object
 	virtual int insertVariable(TString name, TString& value);					// 8. Basic String Object
 	virtual int insertVariable(TString name, TrecPointer<TInterpretor> value);	// 5. Used for functions
 	virtual int insertVariable(TString name, long long value);					// 2. signed integer
@@ -29,6 +29,7 @@ public:
 	intVariable * getVariable(long long index, bool lowScope, int scope);
 
 	int clearVariable(TString name, bool lowScope = true);
+	TDataArray<intVariable> GetVariableListCopy();
 
 private:
 	TDataArray<intVariable> variables;

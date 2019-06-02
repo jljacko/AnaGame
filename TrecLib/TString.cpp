@@ -101,6 +101,10 @@ TString::TString(std::string & str): CString{str.c_str()}
 {
 }
 
+TString::TString(WCHAR c): CString(c)
+{
+}
+
 /*
 * Method: TString - ConvertToInt
 * Purpose: Converts a Compliant TString into an integer

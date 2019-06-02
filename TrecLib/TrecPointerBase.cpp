@@ -18,6 +18,7 @@
 */
 TrecPointerBase::TrecPointerBase()
 {
+	dontDeRef = false;
 }
 
 /*

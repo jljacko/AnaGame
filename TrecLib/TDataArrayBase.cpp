@@ -2,8 +2,10 @@
 #include "TDataArrayBase.h"
 UCHAR TDataArrayType[] = { 1, 0b00100000 };
 
-TDataArrayBase::TDataArrayBase()
+TDataArrayBase::TDataArrayBase(UINT s, UINT c)
 {
+	size = s;
+	capacity = c;
 }
 
 

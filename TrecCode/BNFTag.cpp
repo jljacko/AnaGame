@@ -169,16 +169,16 @@ UINT BNFTag::CompileTag(TDataArray<BNFTag*>& tagList)
 	return 0;
 }
 
-TagCheck BNFTag::ProcessTag(UINT statementStart, UINT tagStart, TFile & file, VariableContainer & globalVariables, TInterpretor & inter, TDataArray<BNFTag*>& tags, UINT end)
+TagCheck BNFTag::ProcessTag(UINT statementStart, UINT tagStart, TrecPointer<TFile> file, VariableContainer & globalVariables, TInterpretor & inter, TDataArray<BNFTag*>& tags, UINT end)
 {
 	TString code;
-	file.Seek(tagStart, CFile::begin);
+	file->Seek(tagStart, CFile::begin);
 
 	UINT length = 100;
 	if (end > tagStart && end - tagStart < length)
 		length = end - tagStart;
 
-	file.ReadString(code, length);
+	file->ReadString(code, length);
 
 
 
@@ -190,7 +190,7 @@ TagCheck BNFTag::ProcessTag(TString & bounds, VariableContainer & globalVariable
 	return TagCheck();
 }
 
-TagCheck BNFTag::ProcessTag(TString & code, UINT codeStart, TFile & file, VariableContainer & globalVariables, TInterpretor & inter, TDataArray<BNFTag*>& tags)
+TagCheck BNFTag::ProcessTag(TString & code, UINT codeStart, TrecPointer<TFile> file, VariableContainer & globalVariables, TInterpretor & inter, TDataArray<BNFTag*>& tags)
 {
 
 	TagCheck returnable;

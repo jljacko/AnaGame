@@ -51,7 +51,7 @@ int VariableList::insertVariable(TString name, TrecPointer<VariableList> value)
 	return 0;
 }
 
-int VariableList::insertVariable(TString name, TrecPointer<TObject> obj)
+int VariableList::insertVariable(TString name, TrecPointer<TObject> obj, UCHAR type)
 {
 	for (UINT c = 0; c < variables.Size(); c++)
 	{
@@ -63,7 +63,7 @@ int VariableList::insertVariable(TString name, TrecPointer<TObject> obj)
 		}
 	}
 	intVariable var;
-	var.hold = 1;
+	var.hold = type;
 	var.reference.varName = name;
 	var.varName = true;
 	var.value.object = obj;
@@ -256,4 +256,16 @@ intVariable * VariableList::getVariable(long long index, bool lowScope, int scop
 int VariableList::clearVariable(TString name, bool lowScope)
 {
 	return 0;
+}
+
+TDataArray<intVariable> VariableList::GetVariableListCopy()
+{
+	TDataArray<intVariable> returnable;
+
+	for (UINT Rust = 0; Rust < variables.Size(); Rust++)
+	{
+		returnable.push_back(variables[Rust]);
+	}
+
+	return returnable;
 }

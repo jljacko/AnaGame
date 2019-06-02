@@ -102,7 +102,7 @@ TString ArenaModel::getVariableValueStr(TString & varName)
 	if (!varName.Compare(L"direction"))
 	{
 		TString ret;
-		ret.Format(L"Direction: %d, %d, %d", direction.x, direction.y, direction.z);
+		ret.Format(L"Direction: %f, %f, %f", direction.x, direction.y, direction.z);
 		return ret;
 	}
 	return TString();

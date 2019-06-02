@@ -12,7 +12,7 @@ public:
 
 	static IntLanguage* getLanguage(TString& langName);
 
-	UINT ProcessCode(TString& statement, TFile& file, UINT codeStart, VariableTree*, TInterpretor* , UINT line = 0);
+	UINT ProcessCode(TString& statement, TrecPointer<TFile> file, UINT codeStart, VariableTree*, TInterpretor* , UINT line = 0);
 	
 protected:
 	IntLanguage();

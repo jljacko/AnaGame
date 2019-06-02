@@ -29,7 +29,7 @@ int VariableTree::insertVariable(TString name, unsigned long long value)
 	return insertVariable(name, value, root);
 }
 
-int VariableTree::insertVariable(TString name, TrecPointer<TObject> obj)
+int VariableTree::insertVariable(TString name, TrecPointer<TObject> obj, UCHAR type)
 {
 	return insertVariable(name, obj, root);
 }
@@ -64,18 +64,18 @@ int VariableTree::clearVariable(TString name, bool lowScope)
 	return 0;
 }
 
-int VariableTree::insertVariable(TString name, TrecPointer<TObject> obj, varNode & node)
+int VariableTree::insertVariable(TString name, TrecPointer<TObject> obj, varNode & node, UCHAR type)
 {
 	if (!node.variable.reference.varName.GetLength())
 	{
-		node.variable.hold = AG_I_OBJECT;
+		node.variable.hold = type;
 		node.variable.reference.varName.Set(name);
 		node.variable.value.object = obj;
 		return 1;
 	}
 	if (node.variable.reference.varName.Compare(name) == 0)
 	{
-		node.variable.hold = AG_I_OBJECT;
+		node.variable.hold = type;
 		node.variable.value.object = obj;
 		return 2;
 	}

@@ -4,7 +4,7 @@ class _TREC_LIB_DLL TDataArrayBase :
 	public TObject
 {
 public:
-	TDataArrayBase();
+	TDataArrayBase(UINT s, UINT c);
 	~TDataArrayBase();
 
 	virtual UCHAR* GetAnaGameType() override;

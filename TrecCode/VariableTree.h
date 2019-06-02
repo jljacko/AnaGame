@@ -3,21 +3,22 @@
 
 
 
-typedef struct varNode
+class _TREC_CODE_DLL varNode
 {
+public:
 	intVariable variable;
 	TrecPointer<varNode> lower, higher;
 	varNode();
 	~varNode();
-}varNode;
+};
 
-class VariableTree : public VariableContainer
+class _TREC_CODE_DLL VariableTree : public VariableContainer
 {
 public:
 	VariableTree();
 	~VariableTree();
 
-	virtual int insertVariable(TString name, TrecPointer<TObject>);				// 1. Basic object
+	virtual int insertVariable(TString name, TrecPointer<TObject>, UCHAR type = 1);				// 1. Basic object
 	virtual int insertVariable(TString name, TString& value);					// 8. Basic String Object
 	virtual int insertVariable(TString name, TrecPointer<TInterpretor> value);	// 5. Used for functions
 	virtual int insertVariable(TString name, long long value);					// 2. signed integer
@@ -32,7 +33,7 @@ public:
 
 private:
 	varNode root;
-	int insertVariable(TString name, TrecPointer<TObject>, varNode& node);
+	int insertVariable(TString name, TrecPointer<TObject>, varNode& node, UCHAR type = 1);
 	int insertVariable(TString name, TrecPointer<TInterpretor>, varNode& node);
 	int insertVariable(TString name, TrecPointer<VariableList>, varNode& node);
 	int insertVariable(TString name, TString& value, varNode& node);

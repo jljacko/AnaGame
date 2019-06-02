@@ -1,6 +1,7 @@
+
 #include "stdafx.h"
 #include "TInterpretor.h"
-#include"IntLanguage.h"
+#include "IntLanguage.h"
 
 TInterpretor::TInterpretor()
 {
@@ -11,6 +12,7 @@ TInterpretor::TInterpretor()
 	language = nullptr;
 	fileLoc = 0;
 	globalVariables = nullptr;
+	startLine = 0;
 }
 
 
@@ -25,6 +27,7 @@ TInterpretor::TInterpretor(TInterpretor* ti)
 	returnValue = nullptr;
 	parent = ti;
 	fileLoc = 0;
+	startLine = 0;
 	if (ti)
 	{
 		this->endComment.Set(ti->endComment);
@@ -50,6 +53,7 @@ TInterpretor::TInterpretor(IntLanguage * lang)
 	parent = nullptr;
 	globalVariables = nullptr;
 	fileLoc = 0;
+	startLine = 0;
 	if (lang)
 	{
 		this->endComment.Set(lang->endComment);
@@ -67,18 +71,20 @@ TInterpretor::TInterpretor(IntLanguage * lang)
 	}
 }
 
-bool TInterpretor::SetFile(TFile & file)
+bool TInterpretor::SetFile(TrecPointer<TFile> file)
 {
-	if (!file.IsOpen())
+	if (!file.get() || !file->IsOpen())
 		return false;
 	fileLoc = 0;
 
-	TString sourceName = file.GetFileDirectory();
-	TString fileName = L"_NO_COM_" + file.GetFileName();
+	TString sourceName = file->GetFileDirectory();
+	TString fileName = L"_NO_COM_" + file->GetFileName();
 
 	CFileException ex;
+	TFile* p_sourceFile = new TFile();
+	sourceFile = p_sourceFile;
 
-	if (!sourceFile.Open(sourceName + fileName, CFile::modeWrite | CFile::typeText | CFile::modeCreate, &ex))
+	if (!sourceFile->Open(sourceName + fileName, CFile::modeWrite | CFile::typeText | CFile::modeCreate, &ex))
 	{
 		WCHAR buff[200];
 		ex.GetErrorMessage(buff, 200);
@@ -96,7 +102,7 @@ bool TInterpretor::SetFile(TFile & file)
 	int endString = -1;
 	DoubIndex sinCom, newL, multiCom, multiComE, sinStr, mulStr;
 
-	while (readData = file.ReadString(inBuffer, (UINT)100))
+	while (readData = file->ReadString(inBuffer, (UINT)100))
 	{
 		UpdateDoubIndex(inBuffer, 0, sinCom, newL, multiCom, multiComE, sinStr, mulStr);
 		outbuffer.Set(L"");
@@ -193,22 +199,55 @@ bool TInterpretor::SetFile(TFile & file)
 		} // end of for
 
 
-		sourceFile.WriteString(outbuffer);
+		sourceFile->WriteString(outbuffer);
 
 		
 
 	}
-
-	sourceFile.Seek(0, CFile::SeekPosition::begin);
+	sourceFile->Close();
+	if (!sourceFile->Open(sourceName + fileName, CFile::modeRead | CFile::typeText, &ex))
+	{
+		WCHAR buff[200];
+		ex.GetErrorMessage(buff, 200);
+		return false;
+	}
+	sourceFile->Seek(0, CFile::SeekPosition::begin);
 	return true;
 }
 
-bool TInterpretor::SetFile(TFile & file, ULONG seek)
+bool TInterpretor::SetFile(TrecPointer<TFile> file, ULONG seek, UINT line)
 {
-	if(!file.IsOpen())
+	if(!file->IsOpen())
 		return false;
-	file.Seek(seek, CFile::SeekPosition::begin);
+	file->Seek(seek, CFile::SeekPosition::begin);
+	startLine = line;
+	sourceFile = file;
 	return true;
+}
+
+void TInterpretor::SetParams(TString& params, WCHAR paramDivider)
+{
+	// To-Do: Add support for default values
+
+
+	parameters.RemoveAll();
+	auto paramList = params.split(TString(paramDivider));
+
+	for (UINT c = 0; c < paramList->Count(); c++)
+	{
+		TString param = paramList->ElementAt(c).get();
+		auto paramComponents = param.split(L" \n\t");
+		
+		TString type;
+		for (UINT Rust = 0; Rust < paramComponents->Count() - 1; Rust++)
+		{
+			type += *(paramComponents->ElementAt(Rust).get()) + TString(L" ");
+		}
+		type.Trim();
+
+		parameters.push_back({ type, *paramComponents->ElementAt(paramComponents->Count() - 1).get() });
+	}
+
 }
 
 void TInterpretor::setLanguage(IntLanguage * lang)
@@ -234,6 +273,11 @@ void TInterpretor::SendFlowMessage(InterpretorMessage im, intVariable* ret)
 	actionMode = im;
 }
 
+void TInterpretor::setLine(UINT line)
+{
+	startLine = line;
+}
+
 intVariable * TInterpretor::GetVariable(TString & name)
 {
 	intVariable* ret = localVariables.getVariable(name);
@@ -252,11 +296,11 @@ intVariable * TInterpretor::GetVariable(TString & name)
 
 UINT TInterpretor::Run()
 {
-	if (!sourceFile.IsOpen())
+	if (!sourceFile.get() || !sourceFile->IsOpen())
 		return 1;
 
 	TString code;
-	ULONGLONG filePos = sourceFile.GetPosition();
+	ULONGLONG filePos = sourceFile->GetPosition();
 
 	while (filePos += GetNextStatement(code, filePos))
 	{
@@ -268,18 +312,40 @@ UINT TInterpretor::Run()
 
 UINT TInterpretor::Run(TInterpretor * t)
 {
-	return 0;
+	parent = t;
+	
+	return Run();
 }
 
 UINT TInterpretor::Run(TInterpretor * t, VariableList & parameters)
 {
-	return 0;
+	TDataArray<intVariable> params = parameters.GetVariableListCopy();
+
+	for (UINT Rust = 0; Rust < this->parameters.Size(); Rust++)
+	{
+		switch (params[Rust].hold)
+		{
+		case AG_I_U_INT:
+			localVariables.insertVariable(this->parameters[Rust].paramName, (ULONGLONG)params[Rust].value.primInt);
+			break;
+		case AG_I_S_INT:
+			localVariables.insertVariable(this->parameters[Rust].paramName, params[Rust].value.primInt);
+			break;
+		case AG_I_BOOLEAN:
+			localVariables.insertVariable(this->parameters[Rust].paramName, (bool)params[Rust].value.primInt);
+			break;
+		case AG_I_DOUBLE:
+			localVariables.insertVariable(this->parameters[Rust].paramName, params[Rust].value.primFloat);
+			break;
+		default:
+			localVariables.insertVariable(this->parameters[Rust].paramName, params[Rust].value.object, params[Rust].hold);
+
+		}
+		
+	}
+	return Run(t);
 }
 
-UINT TInterpretor::Run(TInterpretor * t, TString & arguements)
-{
-	return 0;
-}
 
 
 
@@ -382,13 +448,13 @@ UINT TInterpretor::GetNextStatement(TString & statement, ULONGLONG& startSeek)
 	for (UINT c = 0; c < language->statementEnd.GetLength(); c++)
 	{
 		TString tempStatement;
-		sourceFile.ReadString(tempStatement, language->statementEnd.GetAt(c));
+		sourceFile->ReadString(tempStatement, language->statementEnd.GetAt(c));
 		if (!baseStatement.GetLength() || tempStatement.GetLength() < baseStatement.GetLength())
 		{
 			baseStatement.Set(tempStatement);
 			statementEnd = language->statementEnd.GetAt(c);
 		}
-		sourceFile.Seek(startSeek, CFile::SeekPosition::begin);
+		sourceFile->Seek(startSeek, CFile::SeekPosition::begin);
 	}
 
 	// If the file ends in string mode, then we're screwed.

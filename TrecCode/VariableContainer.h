@@ -1,6 +1,7 @@
 #pragma once
 
 #include <TString.h>
+#include "TrecCode.h"
 
 #define AG_I_UNDEFINED	0
 #define AG_I_OBJECT		1
@@ -30,11 +31,11 @@ typedef struct elementRef
 	~elementRef();
 }elementRef;
 
-class intVariable: public TObject
+class _TREC_CODE_DLL intVariable: public TObject
 {
 public:
 	UCHAR hold;
-	bool varName;
+	bool varName;			// Does the Variable have a name? 
 	elementRef reference;
 	varVal value;
 	intVariable();
@@ -46,13 +47,13 @@ public:
 class VariableList;
 class TInterpretor;
 
-class VariableContainer : public TObject
+class _TREC_CODE_DLL VariableContainer : public TObject
 {
 public:
 	VariableContainer();
 	~VariableContainer();
 
-	virtual int insertVariable(TString name, TrecPointer<TObject>) = 0;				// 1. Basic object
+	virtual int insertVariable(TString name, TrecPointer<TObject>, UCHAR type = 1) = 0;				// 1. Basic object
 	virtual int insertVariable(TString name, TString& value) = 0;					// 8. Basic String Object
 	virtual int insertVariable(TString name, TrecPointer<TInterpretor> value) = 0;	// 5. Used for functions
 	virtual int insertVariable(TString name, long long value) = 0;					// 2. signed integer

@@ -54,10 +54,10 @@ public:
 	void SetSyntaxString(TString& s);
 	UINT CompileTag(TDataArray<BNFTag*>& tagList);
 
-	virtual TagCheck ProcessTag(UINT statementStart, UINT tagStart, TFile& file, VariableContainer& globalVariables, TInterpretor& inter, TDataArray<BNFTag*>& tags, UINT end = 0);
+	virtual TagCheck ProcessTag(UINT statementStart, UINT tagStart, TrecPointer<TFile> file, VariableContainer& globalVariables, TInterpretor& inter, TDataArray<BNFTag*>& tags, UINT end = 0);
 	virtual TagCheck ProcessTag(TString& bounds, VariableContainer& globalVariables, TInterpretor& inter, TDataArray<BNFTag*>& tags);
 
-	virtual TagCheck ProcessTag(TString& code, UINT codeStart, TFile& file, VariableContainer& globalVariables, TInterpretor& inter, TDataArray<BNFTag*>& tags);
+	virtual TagCheck ProcessTag(TString& code, UINT codeStart, TrecPointer<TFile> file, VariableContainer& globalVariables, TInterpretor& inter, TDataArray<BNFTag*>& tags);
 
 	virtual void addAttribute(TString& att, TString& val);
 

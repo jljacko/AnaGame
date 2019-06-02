@@ -167,10 +167,10 @@ void SourceCodeApp::onHide()
 
 UINT SourceCodeApp::ProcessIntLanguage()
 {
-	TFile sourceCode;
+	TrecPointer<TFile> sourceCode = makeTrecPointer<TFile>();
 	CFileException ex;
-	sourceCode.Open(filePath, CFile::modeRead, &ex);
-	if (!sourceCode.IsOpen())
+	sourceCode->Open(filePath, CFile::modeRead, &ex);
+	if (!sourceCode->IsOpen())
 	{
 		TCHAR buff[200];
 		ex.GetErrorMessage(buff, 200);
@@ -179,6 +179,8 @@ UINT SourceCodeApp::ProcessIntLanguage()
 	if (!interpret)
 		return 2;
 	interpret->SetFile(sourceCode);
+
+	interpret->Run();
 	return 0;
 }
 

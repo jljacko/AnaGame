@@ -43,6 +43,7 @@ public:
 	TString(CString& c);
 	TString(TString& c);
 	TString(std::string& str);
+	TString(WCHAR c);
 
 	short ConvertToInt(int*);
 	short ConvertToDouble(double*);

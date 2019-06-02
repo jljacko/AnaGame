@@ -101,11 +101,9 @@ public:
 	* Parameters: void
 	* Returns: void
 	*/
-	TDataArray()
+	TDataArray() : TDataArrayBase(0, 5)
 	{
-		capacity = 5;
-		array = new T[capacity];
-		size = 0;
+		array = new T[5];
 	}
 
 	/*
@@ -114,14 +112,12 @@ public:
 	* Parameters: TDataArray<T>& newArray - the Data Array to copy
 	* Returns: void
 	*/
-	TDataArray(TDataArray<T>& newArray)
+	TDataArray(TDataArray<T>& newArray) : TDataArrayBase(newArray.Size(), newArray.Capacity())
 	{
-		capacity = newArray.Capacity();
-		array = new T[capacity];
-		size = newArray.Size();
+		array = new T[newArray.Capacity()];
 		
-		for (UINT c = 0; c < size && c <capacity; c++)
-			if(c < capacity)
+		for (UINT c = 0; c < newArray.Size() && c < newArray.Capacity(); c++)
+			if(c < newArray.Capacity())
 			array[c] = newArray[c];
 		//memcpy_s(array, capacity, newArray.GetArray(), capacity);
 	}
@@ -312,11 +308,10 @@ public:
 	* Parameters: void
 	* Returns: void
 	*/
-	TDataArray<T*>()
-	{
-		capacity = 5;
-		array = new T*[capacity];
-		size = 0;
+	TDataArray<T*>() : TDataArrayBase(0, 5)
+	{	
+		array = new T*[5];
+
 	}
 
 	/*
@@ -325,14 +320,12 @@ public:
 	* Parameters: TDataArray<T>& newArray - the Data Array to copy
 	* Returns: void
 	*/
-	TDataArray(TDataArray<T>& newArray)
+	TDataArray(TDataArray<T>& newArray) : TDataArrayBase(newArray.Size(), newArray.Capacity())
 	{
-		capacity = newArray.Capacity();
-		array = new (T*)[capacity];
-		size = newArray.Size();
+		array = new (T*)[newArray.Capacity()];
 
-		for (UINT c = 0; c < size && c < capacity; c++)
-			if (c < capacity)
+		for (UINT c = 0; c < newArray.Size() && c < newArray.Capacity(); c++)
+			if (c < newArray.Capacity())
 				array[c] = newArray[c];
 		//memcpy_s(array, capacity, newArray.GetArray(), capacity);
 	}
