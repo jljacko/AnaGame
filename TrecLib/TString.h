@@ -77,6 +77,13 @@ public:
 	TString operator+(TString*);
 	TString operator+(CString*);
 	TString operator+(WCHAR*);
+	TString operator+(WCHAR w);
+	TString operator+=(TString&);
+	TString operator+=(CString&);
+	TString operator+=(TString*);
+	TString operator+=(CString*);
+	TString operator+=(WCHAR*);
+	TString operator+=(WCHAR w);
 
 	//void operator+=(TString*);
 	//void operator

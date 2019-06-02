@@ -714,9 +714,10 @@ TString TString::operator=(WCHAR w)
 */
 TString TString::operator+(TString & t)
 {
+	TString returnString = this;
 	for (int c = 0; c < t.GetLength();c++)
-		AppendChar(t.GetAt(c));
-	return this;
+		returnString.AppendChar(t.GetAt(c));
+	return returnString;
 }
 
 /*
@@ -727,9 +728,10 @@ TString TString::operator+(TString & t)
 */
 TString TString::operator+(CString &t)
 {
+	TString returnString = this;
 	for (int c = 0; c < t.GetLength();c++)
-		AppendChar(t.GetAt(c));
-	return this;
+		returnString.AppendChar(t.GetAt(c));
+	return returnString;
 }
 
 /*
@@ -742,8 +744,10 @@ TString TString::operator+(TString *t)
 {
 	if (t)
 	{
+		TString returnString = this;
 		for (int c = 0; c < t->GetLength(); c++)
-			AppendChar(t->GetAt(c));
+			returnString.AppendChar(t->GetAt(c));
+		return returnString;
 	}
 	return this;
 }
@@ -758,8 +762,10 @@ TString TString::operator+(CString *t)
 {
 	if (t)
 	{
+		TString returnString = this;
 		for (int c = 0; c < t->GetLength(); c++)
-			AppendChar(t->GetAt(c));
+			returnString.AppendChar(t->GetAt(c));
+		return returnString;
 	}
 	return this;
 }
@@ -774,9 +780,98 @@ TString TString::operator+(WCHAR * w)
 {
 	if (w)
 	{
+		TString returnString = this;
+		for (int c = 0; w[c] != L'\0'; c++)
+			returnString.AppendChar(*w);
+		return returnString;
+	}
+	return this; // Return this string since there was nothing to add
+}
+
+TString TString::operator+(WCHAR w)
+{
+	TString returnString = this;
+	returnString.AppendChar(w);
+	return returnString;
+}
+
+/*
+* Method: TString - operator+=
+* Purpose: Adds the contents of an existing TString to this one
+* Parameters: TString& t - the TString to append
+* Returns: void
+*/
+TString TString::operator+=(TString& t)
+{
+	for (int c = 0; c < t.GetLength(); c++)
+		AppendChar(t.GetAt(c));
+	return this;
+}
+
+/*
+* Method: TString - operator+=
+* Purpose: Adds the contents of an existing TString to this one
+* Parameters: TString& t - the TString to append
+* Returns: void
+*/
+TString TString::operator+=(CString& t)
+{
+	for (int c = 0; c < t.GetLength(); c++)
+		AppendChar(t.GetAt(c));
+	return this;
+}
+
+/*
+* Method: TString - operator+=
+* Purpose: Adds the contents of an existing TString to this one
+* Parameters: TString& t - the TString to append
+* Returns: void
+*/
+TString TString::operator+=(TString* t)
+{
+	if (t)
+	{
+		for (int c = 0; c < t->GetLength(); c++)
+			AppendChar(t->GetAt(c));
+	}
+	return this;
+}
+
+/*
+* Method: TString - operator+=
+* Purpose: Adds the contents of an existing CString to this one
+* Parameters: CString& t - the CString to append
+* Returns: void
+*/
+TString TString::operator+=(CString* t)
+{
+	if (t)
+	{
+		for (int c = 0; c < t->GetLength(); c++)
+			AppendChar(t->GetAt(c));
+	}
+	return this;
+}
+
+/*
+* Method: TString - operator+=
+* Purpose: Adds the contents of an existing wide string to this one
+* Parameters: WCHAR* w - the wide string to append
+* Returns: void
+*/
+TString TString::operator+=(WCHAR* w)
+{
+	if (w)
+	{
 		for (int c = 0; w[c] != L'\0'; c++)
 			this->AppendChar(*w);
 	}
+	return this;
+}
+
+TString TString::operator+=(WCHAR w)
+{
+	AppendChar(w);
 	return this;
 }
 
