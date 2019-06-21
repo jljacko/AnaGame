@@ -39,6 +39,7 @@ TagCheck BreakTag::ProcessTag(TString & bounds, VariableContainer & globalVariab
 		{
 			inter.SendFlowMessage(im_break, nullptr);
 			ret.success = true;
+			Log(lt_code, TString(L"Break Tag"));
 			return ret;
 		}
 	}

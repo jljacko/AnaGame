@@ -303,9 +303,15 @@ TagCheck BNFTag::ProcessTag(TString& code, UINT codeStart, TrecPointer<TFile> fi
 		}
 
 		UINT appendChar = token + syntaxSample[syntaxStart + 1].mark.GetLength();
-		code2 = code.SubString(appendChar);
+		code2.Set(code.SubString(appendChar));
 
-		return ProcessTag(code2, codeStart + appendChar, file, globalVariables, inter, lang, tags, syntaxLevel, syntaxStart + 2);
+		returnable = ProcessTag(code2, codeStart + appendChar, file, globalVariables, inter, lang, tags, syntaxLevel, syntaxStart + 2);
+		if (returnable.success)
+		{
+			auto logMessage = name + TString(L" tag");
+			Log(lt_code, TString(logMessage));
+		}
+		return returnable;
 	}
 	else
 	{
@@ -333,7 +339,13 @@ TagCheck BNFTag::ProcessTag(TString& code, UINT codeStart, TrecPointer<TFile> fi
 		if (syntaxStart + 1 == syntaxSample.Size())
 			return returnable;
 		
-		return ProcessTag(code2, codeStart + appendChar, file, globalVariables, inter, lang, tags, syntaxLevel, syntaxStart + 1);
+		returnable = ProcessTag(code2, codeStart + appendChar, file, globalVariables, inter, lang, tags, syntaxLevel, syntaxStart + 1);
+		if (returnable.success)
+		{
+			auto logMessage = name + TString(L" tag");
+			Log(lt_code, TString(logMessage));
+		}
+		return returnable;
 	}
 }
 

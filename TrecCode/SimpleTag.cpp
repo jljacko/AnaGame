@@ -5,7 +5,7 @@
 SimpleTag::SimpleTag() : BNFTag(TString(L"simple_statement"))
 {
 	equateGreekQandSemiC = true;
-	rawSyntax = L"<small_statement>";
+	rawSyntax.Set(L"<small_statement>");
 }
 
 
@@ -36,7 +36,7 @@ TagCheck SimpleTag::ProcessTag(TString & bounds, VariableContainer & globalVaria
 
 	if (split == -1)
 	{
-		ret.error = L"No Stateent Terminator: valid terminators include '" + enders + L"'";
+		ret.error.Set(L"No Stateent Terminator: valid terminators include '" + enders + L"'");
 		ret.success = false;
 		return ret;
 	}
@@ -45,14 +45,14 @@ TagCheck SimpleTag::ProcessTag(TString & bounds, VariableContainer & globalVaria
 
 	if (!syntax.Size() || !syntax[0].Size())
 	{
-		ret.error = L"No Syntax available. Did you compile the language before running it?";
+		ret.error.Set(L"No Syntax available. Did you compile the language before running it?");
 		ret.success = false;
 		return ret;
 	}
 
 	if (syntax[0][0].tagIndex < 0)
 	{
-		ret.error = L"Statement could not be run. Make sure a <small_statement> syntax rule is included in the language's AG_BNF file?";
+		ret.error.Set(L"Statement could not be run. Make sure a <small_statement> syntax rule is included in the language's AG_BNF file?");
 		ret.success = false;
 		return ret;
 	}
@@ -63,7 +63,7 @@ TagCheck SimpleTag::ProcessTag(TString & bounds, VariableContainer & globalVaria
 	}
 	catch (TString& t)
 	{
-		ret.error = t + TString(L"small_statement tag index exceeds tag collection");
+		ret.error.Set(t + TString(L"small_statement tag index exceeds tag collection"));
 		ret.success = false;
 		return ret;
 	}
@@ -79,7 +79,7 @@ void SimpleTag::addAttribute(TString & att, TString & val)
 	}
 
 	if (att == TString(L"StatementTerminator"))
-		enders = val;
+		enders.Set(val);
 
 
 	// Save programmers the frustration of dealing with a Greek Question Mark 

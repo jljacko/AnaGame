@@ -139,6 +139,6 @@ TagCheck OrExpression::ProcessTag(TString & bounds, VariableContainer & globalVa
 	// At this point, subtraction is being done
 	de.left.returnValue->hold = AG_I_BOOLEAN;
 	de.left.returnValue->value.primInt = leftBool || rightBool;
-
+	Log(lt_code, TString(L"Or Tag"));
 	return de.left;
 }

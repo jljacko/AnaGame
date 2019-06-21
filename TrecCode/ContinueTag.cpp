@@ -26,7 +26,7 @@ TagCheck ContinueTag::ProcessTag(TString & bounds, VariableContainer & globalVar
 
 	if (!syntax.Size())
 	{
-		ret.error = TString(L"Null Tag not Compiled properly.");
+		ret.error.Set(TString(L"Null Tag not Compiled properly."));
 		return ret;
 	}
 
@@ -39,6 +39,7 @@ TagCheck ContinueTag::ProcessTag(TString & bounds, VariableContainer & globalVar
 		{
 			inter.SendFlowMessage(im_continue, nullptr);
 			ret.success = true;
+			Log(lt_code, TString(L"continue tag"));
 			return ret;
 		}
 	}

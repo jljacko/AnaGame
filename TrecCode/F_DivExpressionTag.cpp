@@ -133,6 +133,6 @@ TagCheck F_DivExpressionTag::ProcessTag(TString & bounds, VariableContainer & gl
 			de.left.returnValue->value.primFloat = ((double)leftInt) / ((double)rightInt);
 		}
 	}
-
+	Log(lt_code, TString(L"Div F Tag"));
 	return de.left;
 }

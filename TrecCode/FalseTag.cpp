@@ -27,7 +27,7 @@ TagCheck FalseTag::ProcessTag(TString & bounds, VariableContainer & globalVariab
 
 	if (!syntax.Size())
 	{
-		ret.error = TString(L"Error! Null Tag not Compiled properly.");
+		ret.error.Set(TString(L"Error! Null Tag not Compiled properly."));
 		return ret;
 	}
 
@@ -46,6 +46,6 @@ TagCheck FalseTag::ProcessTag(TString & bounds, VariableContainer & globalVariab
 			return ret;
 		}
 	}
-	ret.error = TString(L"Not 'Null' Expression");
+	ret.error.Set(TString(L"Not 'Null' Expression"));
 	return ret;
 }

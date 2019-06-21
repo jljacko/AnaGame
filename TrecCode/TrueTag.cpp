@@ -26,7 +26,7 @@ TagCheck TrueTag::ProcessTag(TString & bounds, VariableContainer & globalVariabl
 
 	if (!syntax.Size())
 	{
-		ret.error = TString(L"Null Tag not Compiled properly.");
+		ret.error.Set(TString(L"Null Tag not Compiled properly."));
 		return ret;
 	}
 
@@ -42,9 +42,10 @@ TagCheck TrueTag::ProcessTag(TString & bounds, VariableContainer & globalVariabl
 
 			// TO-DO: Determine the means of expressing the object (as oppposed to a number)
 			ret.success = true;
+			Log(lt_code, TString(L"True Tag"));
 			return ret;
 		}
 	}
-	ret.error = TString(L"Not 'Null' Expression");
+	ret.error.Set(TString(L"Not 'Null' Expression"));
 	return ret;
 }

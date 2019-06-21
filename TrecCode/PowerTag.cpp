@@ -130,6 +130,6 @@ TagCheck PowerTag::ProcessTag(TString & bounds, VariableContainer & globalVariab
 			de.left.returnValue->value.primFloat = pow(leftInt, rightInt);
 		}
 	}
-
+	Log(lt_code, TString(L"Power Tag"));
 	return de.left;
 }

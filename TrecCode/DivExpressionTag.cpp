@@ -137,6 +137,6 @@ TagCheck DivExpressionTag::ProcessTag(TString & bounds, VariableContainer & glob
 			de.left.returnValue->value.primInt = leftInt / rightInt;
 		}
 	}
-
+	Log(lt_code, TString(L"Div Tag"));
 	return de.left;
 }

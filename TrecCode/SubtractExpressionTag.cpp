@@ -129,6 +129,6 @@ TagCheck SubtractExpressionTag::ProcessTag(TString & bounds, VariableContainer &
 			de.left.returnValue->value.primInt = leftInt - rightInt;
 		}
 	}
-
+	Log(lt_code, TString(L"Subtract Tag"));
 	return de.left;
 }

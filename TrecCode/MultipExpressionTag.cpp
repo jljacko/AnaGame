@@ -129,6 +129,6 @@ TagCheck MultipExpressionTag::ProcessTag(TString & bounds, VariableContainer & g
 			de.left.returnValue->value.primInt = leftInt * rightInt;
 		}
 	}
-
+	Log(lt_code, TString(L"Mul Tag"));
 	return de.left;
 }

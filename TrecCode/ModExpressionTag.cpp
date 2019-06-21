@@ -133,6 +133,6 @@ TagCheck ModExpressionTag::ProcessTag(TString & bounds, VariableContainer & glob
 			de.left.returnValue->value.primInt = leftInt % rightInt;
 		}
 	}
-
+	Log(lt_code, TString(L"Mod Tag"));
 	return de.left;
 }

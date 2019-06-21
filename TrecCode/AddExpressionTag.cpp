@@ -98,6 +98,7 @@ TagCheck AddExpressionTag::ProcessTag(TString & bounds, VariableContainer & glob
 			break;
 		case AG_I_DOUBLE: // In this case, both are doubles
 			de.left.returnValue->value.primInt += de.right.returnValue->value.primFloat;
+			Log(lt_code, TString(L"Add Tag"));
 			return de.left;
 		case AG_I_STRING:
 
@@ -107,9 +108,11 @@ TagCheck AddExpressionTag::ProcessTag(TString & bounds, VariableContainer & glob
 			break;
 		case AG_I_S_INT:
 			de.left.returnValue->value.primInt += de.right.returnValue->value.primInt;
+			Log(lt_code, TString(L"Add Tag"));
 			return de.left;
 		case AG_I_U_INT:
 			de.left.returnValue->value.primInt += (unsigned long long)de.right.returnValue->value.primInt;
+			Log(lt_code, TString(L"Add Tag"));
 			return de.left;
 		}
 		break;
@@ -120,7 +123,7 @@ TagCheck AddExpressionTag::ProcessTag(TString & bounds, VariableContainer & glob
 	case AG_I_ARRAY:
 		break;
 	}
-	
+	// Log(lt_code, TString(L"Add Tag"));
 
 	return TagCheck();
 }

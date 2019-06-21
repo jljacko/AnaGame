@@ -28,15 +28,15 @@ TagCheck VarTag::ProcessTag(TString & bounds, VariableContainer & globalVariable
 		{
 			var = new intVariable();
 			ret.returnValue = var;
-			ret.error = bounds;
+			ret.error.Set(bounds);
 			
 		}
 		else
 		{
 			ret.success = false;
-			ret.error = bounds + TString(L" Does not appear to exist in Scope");
+			ret.error.Set(bounds + TString(L" Does not appear to exist in Scope"));
 		}
 	}
-
+	
 	return ret;
 }
