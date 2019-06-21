@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "ArenaModel.h"
 #include <DirectXTex.h>
+#include <Logger.h>
 
 /*
 * Method: ArenaModel
@@ -45,6 +46,10 @@ ArenaModel::ArenaModel(ArenaEngine& ae)
 	direction.x = direction.y = direction.z = 1.0f;
 
 	hasPipeColor = false;
+	TString logMessage;
+	logMessage.Format(L"CREATE %p ArenaModel(ArenaEngine& ae)", this);
+
+	Log(lt_memory, logMessage);
 }
 
 ArenaModel::ArenaModel()
@@ -72,6 +77,10 @@ ArenaModel::ArenaModel()
 	direction.x = direction.y = direction.z = 1.0f;
 
 	hasPipeColor = false;
+	TString logMessage;
+	logMessage.Format(L"CREATE %p ArenaModel()", this);
+
+	Log(lt_memory, logMessage);
 }
 
 /*
@@ -82,6 +91,10 @@ ArenaModel::ArenaModel()
 */
 ArenaModel::~ArenaModel()
 {
+	TString logMessage;
+	logMessage.Format(L"DELETE %p ArenaModel", this);
+
+	Log(lt_memory, logMessage);
 }
 
 TString ArenaModel::toString()

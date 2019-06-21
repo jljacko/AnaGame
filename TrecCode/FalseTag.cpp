@@ -12,7 +12,7 @@ FalseTag::~FalseTag()
 }
 
 
-TagCheck FalseTag::ProcessTag(TString & bounds, VariableContainer & globalVariables, TInterpretor & inter, TDataArray<BNFTag*>& tags)
+TagCheck FalseTag::ProcessTag(TString & bounds, VariableContainer & globalVariables, TInterpretor & inter, IntLanguage& lang, TDataArray<BNFTag*>& tags)
 {
 	bounds.Trim();
 
@@ -27,7 +27,7 @@ TagCheck FalseTag::ProcessTag(TString & bounds, VariableContainer & globalVariab
 
 	if (!syntax.Size())
 	{
-		ret.error = TString(L"Null Tag not Compiled properly.");
+		ret.error = TString(L"Error! Null Tag not Compiled properly.");
 		return ret;
 	}
 

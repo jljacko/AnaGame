@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "TString.h"
-
+#include "TDataArray.h"
 
 UCHAR TStringType[] = { 2, 0b10000000, 1 };
 
@@ -158,7 +158,7 @@ short TString::ConvertToLong(long long* value)
 
 	if (!size)
 		return NOT_NUMB;
-	long temp = *value;
+	long long temp = *value;
 
 	*value = 0;
 	int hold;
@@ -301,9 +301,10 @@ short TString::ConvertToFloat(float* value)
 * Method: TString - split
 * Purpose: Splits a String by the provided deliniators
 * Parameters: TString str - the TString holding deliniators
+			bool checkBackSlash - if true, then the method will ignore characters if a single backslash preceeds it
 * Returns: TrecPointer<TArray<TString>> - Array of TStrings holding tokens
 */
-TrecPointer<TArray<TString>> TString::split(TString str)
+TrecPointer<TArray<TString>> TString::split(TString str, bool checkBackSlash)
 {
 	//TArray<TString>* tats = new TArray<TString>();
 	TrecPointer<TArray<TString>> ret;
@@ -316,11 +317,22 @@ TrecPointer<TArray<TString>> TString::split(TString str)
 
 	CString tok;
 
-	int pos = 0;
+	int pos = 0, begPos = 0;
 	tok = this->Tokenize(str, pos);
 	while (!tok.IsEmpty())
 	{
+		if (checkBackSlash)
+		{
+			
+			while (tok[tok.GetLength() - 1] == L'\\' && (tok.GetLength() == 1 || tok[tok.GetLength() - 2] != L'\\'))
+			{
+				tok = this->Tokenize(str, pos);
+				tok = this->SubString(begPos, pos);
+			}
+		}
+
 		(ret).get()->Add(new TString(new TString(&tok)));
+		begPos = pos;
 		tok = this->Tokenize(str, pos);
 	}
 	ret.Boost();
@@ -356,7 +368,7 @@ TString TString::SubString(UINT beginningIndex, int endIndex)
 	if (endIndex == -1)
 	{
 		for (int c = beginningIndex; c < GetLength(); c++)
-			returnable += GetAt(c);
+			returnable.AppendChar(GetAt(c));
 	}
 	else
 	{
@@ -364,7 +376,7 @@ TString TString::SubString(UINT beginningIndex, int endIndex)
 		if (endIndex > GetLength())
 			return returnable;
 		for (UINT c = beginningIndex; c < endIndex; c++)
-			returnable += GetAt(c);
+			returnable.AppendChar(GetAt(c));
 	}
 	return returnable;
 }
@@ -575,6 +587,71 @@ bool TString::ConvertToColor(D2D1_COLOR_F & color, ColorFormat& cf)
 	return false;
 }
 
+int TString::FindOutOfQuotes(TString& subString, int start)
+{
+	TDataArray<int> possibleIndeces;
+	while (start != -1) 
+	{
+		start = Find(subString, start);
+		if (start != -1)
+		{
+			possibleIndeces.push_back(start);
+			start++;
+		}
+	}
+
+	TDataArray<IndexRange> quotes;
+	WCHAR quoteMode = 0;
+	IndexRange range{ -1,-1 };
+	for (UINT rust = 0; rust < GetLength() && rust != -1; rust++)
+	{
+		switch (quoteMode)
+		{
+		case L'\'':
+			range.start = rust - 1;
+			rust = Find(L'\'', rust);
+			if (rust != -1)
+			{
+				range.end = rust;
+				quotes.push_back(range);
+				quoteMode = 0;
+			}
+			break;
+		case L'\"':
+			range.start = rust - 1;
+			rust = Find(L'\"', rust);
+			if (rust != -1)
+			{
+				range.end = rust;
+				quotes.push_back(range);
+				quoteMode = 0;
+			}
+			break;
+		default: // should be 0
+			if (GetAt(rust) == L'\'')
+				quoteMode = L'\'';
+			else if (GetAt(rust) == L'\"')
+				quoteMode = L'\"';
+		}
+	}
+
+	for (UINT c = 0; c < possibleIndeces.Size(); c++)
+	{
+		int ind = possibleIndeces[c];
+		bool works = true;
+		for (UINT rust = 0; rust < quotes.Size(); rust++) 
+		{
+			if (ind > quotes[rust].start && ind < quotes[rust].end)
+			{
+				works = false;
+				continue;
+			}
+		}
+		if (works) return ind;
+	}
+	return -1;
+}
+
 
 void TString::Set(TString& t)
 {
@@ -782,7 +859,7 @@ TString TString::operator+(WCHAR * w)
 	{
 		TString returnString = this;
 		for (int c = 0; w[c] != L'\0'; c++)
-			returnString.AppendChar(*w);
+			returnString.AppendChar(w[c]);
 		return returnString;
 	}
 	return this; // Return this string since there was nothing to add
@@ -864,7 +941,7 @@ TString TString::operator+=(WCHAR* w)
 	if (w)
 	{
 		for (int c = 0; w[c] != L'\0'; c++)
-			this->AppendChar(*w);
+			this->AppendChar(w[c]);
 	}
 	return this;
 }

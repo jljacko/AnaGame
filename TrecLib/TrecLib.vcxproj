@@ -210,6 +210,7 @@
       </PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="HTML_Reader.cpp" />
+    <ClCompile Include="Logger.cpp" />
     <ClCompile Include="ParseReader_.cpp" />
     <ClCompile Include="Parser_.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -237,6 +238,7 @@
   <ItemGroup>
     <ClInclude Include="DirectoryInterface.h" />
     <ClInclude Include="HTML_Reader.h" />
+    <ClInclude Include="Logger.h" />
     <ClInclude Include="ParseReader_.h" />
     <ClInclude Include="Parser_.h" />
     <ClInclude Include="PrimitiveWrapper.h" />

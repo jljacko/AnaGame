@@ -5,6 +5,7 @@
 #include <afxwin.h>
 #include <afxdllx.h>
 #include "TrecPointer.h"
+#include "Logger.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -46,6 +47,7 @@ DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)
 		TRACE0("TrecLib.DLL Terminating!\n");
 
 		//Shutdown();
+		CloseLog();
 		// Terminate the library before destructors are called
 		AfxTermExtensionModule(TrecLibDLL);
 	}

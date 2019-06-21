@@ -16,7 +16,7 @@ TDataArray<LanguageEntry> languages;
 
 IntLanguage * IntLanguage::getLanguage(TString & langName)
 {
-	for (int Rust = 0; Rust < languages.Size(); Rust++)
+	for (UINT Rust = 0; Rust < languages.Size(); Rust++)
 	{
 		if (languages[Rust].langName == langName)
 			return languages[Rust].lang;
@@ -54,23 +54,23 @@ IntLanguage * IntLanguage::getLanguage(TString & langName)
 			continue;
 
 		TString value = sections->ElementAt(1).get();
-		for (int c = 2; c < sections->Count(); c++)
+		for (UINT c = 2; c < sections->Count(); c++)
 		{
-			value += L":";
-			value += *(sections->ElementAt(c).get());
+			value.Append(L":");
+			value.Append(*(sections->ElementAt(c).get()));
 		}
 
 		if (!value.GetLength())
 			continue;
 
 		if (value.GetAt(0) == L'\"')
-			value = value.SubString(1);
+			value.Set(value.SubString(1));
 
 		if (!value.GetLength())
 			continue;
 
 		if (value.GetAt(value.GetLength() - 1) == L'\"')
-			value = value.SubString(0, value.GetLength() - 1);
+			value.Set(value.SubString(0, value.GetLength() - 1));
 
 
 		maps.addEntry(*sections->ElementAt(0).get(), TrecPointer<TString>(new TString(value)));
@@ -84,8 +84,11 @@ IntLanguage * IntLanguage::getLanguage(TString & langName)
 	{
 		val->Trim();
 		TrecPointer<TArray<TString>> str = val->split(L";");
-		for(UINT c = 0; c < str->Count(); c++)
+		for (UINT c = 0; c < str->Count(); c++)
+		{
+			parseSpecialCharacters(*str->ElementAt(c).get());
 			lang->string.push_back(str->ElementAt(c).get());
+		}
 	}
 
 	val = maps.retrieveEntry(TString(L"Multi String Tokens"));
@@ -97,7 +100,10 @@ IntLanguage * IntLanguage::getLanguage(TString & langName)
 		val->Trim();
 		TrecPointer<TArray<TString>> str = val->split(L";");
 		for (UINT c = 0; c < str->Count(); c++)
+		{
+			parseSpecialCharacters(*str->ElementAt(c).get());
 			lang->multiLineString.push_back(str->ElementAt(c).get());
+		}
 	}
 
 	val = maps.retrieveEntry(TString(L"Single Line Comment Start"));
@@ -105,34 +111,39 @@ IntLanguage * IntLanguage::getLanguage(TString & langName)
 	if (val.get())
 	{
 		val->Trim();
-		lang->singleComment = val.get();
+		parseSpecialCharacters(*val.get());
+		lang->singleComment.Set(val.get());
 	}
 
 	val = maps.retrieveEntry(TString(L"Multi-line Comment Start"));
 	if (val.get())
 	{
 		val->Trim();
-		lang->startComment = val.get();
+		parseSpecialCharacters(*val.get());
+		lang->startComment.Set(val.get());
 	}
 
 	val = maps.retrieveEntry(TString(L"Multi-line Comment End"));
-	if (val.get());
+	if (val.get())
 	{
 		val->Trim();
-		lang->endComment = val.get();
+		parseSpecialCharacters(*val.get());
+		lang->endComment.Set(val.get());
 	}
 	val = maps.retrieveEntry(TString(L"Statement End"));
 	if (val.get())
 	{
 		val->Trim();
-		lang->statementEnd = val.get();
+		parseSpecialCharacters(*val.get());
+		lang->statementEnd.Set(val.get());
 	}
 
 	val = maps.retrieveEntry(TString(L"Block Boundaries"));
 	if (val.get())
 	{
 		val->Trim();
-		lang->blockMarks = val.get();
+		parseSpecialCharacters(*val.get());
+		lang->blockMarks.Set(val.get());
 	}
 
 	// To-Do: Add some checking for conflicts
@@ -142,7 +153,7 @@ IntLanguage * IntLanguage::getLanguage(TString & langName)
 	if (val.get())
 	{
 		val->Trim();
-		lang->rootBNF = val.get();
+		lang->rootBNF.Set(val.get());
 	}
 
 	// To-Do: No conflicts have been detected, now to set up Code syntax parsing
@@ -195,8 +206,26 @@ UINT IntLanguage::ProcessCode(TString & statement, TrecPointer<TFile> file, UINT
 		return 2;
 
 	// tagList->at(startIndex)->ProcessTag(statement, *gv, *inter, *tagList);
-	tagList->at(startIndex)->ProcessTag(statement, codeStart, file, *gv, *inter, *tagList);
+	TagCheck check = tagList->at(startIndex)->ProcessTag(statement, codeStart, file, *gv, *inter, *this, *tagList);
+
+	if (!check.success)
+		return 3;
+
 	return 0;
+}
+
+BNFTag* IntLanguage::getTagAt(UINT index)
+{
+	if(!tagList)
+		return nullptr;
+	if (index < tagList->Size())
+		return tagList->at(index);
+	return nullptr;
+}
+
+TString IntLanguage::getLanguageName()
+{
+	return language;
 }
 
 IntLanguage::IntLanguage()
@@ -208,4 +237,14 @@ IntLanguage::IntLanguage()
 
 IntLanguage::~IntLanguage()
 {
+}
+
+void parseSpecialCharacters(TString& string)
+{
+	string.Replace(L"\\n", L"\n");
+	string.Replace(L"\\s", L"\s");
+	string.Replace(L"\\t", L"\t");
+	string.Replace(L"\\r", L"\r");
+	string.Replace(L"\\v", L"\v");
+	string.Replace(L"\\f", L"\f");
 }

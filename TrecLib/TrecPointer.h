@@ -5,6 +5,7 @@
 #include "TrecPointerBase.h"
 
 
+
 /*
 * Class TrecPointer
 * Holds the Resources for addapting the TrecPointer to specific Regular Classes and references
@@ -27,6 +28,8 @@ public:
 	{
 		object = nullptr;
 		init(nullptr);
+
+		
 	}
 
 	/*
@@ -39,6 +42,8 @@ public:
 	{
 		object = obj;
 		init(obj, typeid(T).name());
+
+
 	}
 
 	/*
@@ -53,7 +58,10 @@ public:
 		//init(obj.get());
 		SetTrecPointer(obj);
 		if (object)
+		{
 			IncrementCount();
+
+		}
 	}
 
 	/*
@@ -135,10 +143,16 @@ public:
 		{
 			T* del = reinterpret_cast<T*>(DecrementCount(/*typeid(T).name()*/));
 			if (del)
+			{
 				delete del;
+
+			}
+
 		}
-		if (castOther)
+		if (castOther) {
 			IncrementCount(castOther, typeid(T).name());
+
+		}
 		else
 			nullify();
 		object = castOther;
@@ -163,11 +177,14 @@ public:
 			{
 				ASSERT(del == object);
 				delete del;
+
 			}
+
 		}
 		if (other)
 		{
 			IncrementCount(other, typeid(T).name());
+
 		}
 		else
 			nullify();
@@ -194,13 +211,16 @@ public:
 		if (object)
 		{
 			T* del = reinterpret_cast<T*>(DecrementCount(/*typeid(T).name()*/));
-			if (del)
+			if (del) {
 				delete del;
+
+			}
 		}
 		if (altRawCast)
 		{
 			SetTrecPointer(point);
 			IncrementCount(typeid(T).name());
+
 		}
 		else
 			nullify();
@@ -224,12 +244,17 @@ public:
 			{
 				//ASSERT(del == object);
 				delete del;
+
 			}
+
 		}
 		object = point.get();
 		SetTrecPointer(point);
-		if(object)	
-		IncrementCount(typeid(T).name());
+		if (object)
+		{
+			IncrementCount(typeid(T).name());
+
+		}
 
 		point.hold();
 		//resetHold();
@@ -243,8 +268,11 @@ public:
 	*/
 	void Delete()
 	{
-		if(object && object == NukeCount(/*typeid(T).name()*/))
+		if (object && object == NukeCount(/*typeid(T).name()*/))
+		{
 			delete object;
+
+		}
 		nullify();
 	}
 

@@ -20,6 +20,9 @@ typedef enum CentralDirectories
 	cd_User			// 8
 }CentralDirectories;
 
+void  ForgeDirectory(TString& dir);
+
+
 /*
 * Function: GetDirectory
 * Purpose: Gets the directory specified

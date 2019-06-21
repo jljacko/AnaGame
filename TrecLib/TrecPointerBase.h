@@ -36,6 +36,8 @@ protected:
 	void stopDeRef();
 	void enableDeRef();
 	bool getRefStatus();
+
+	UINT getCount();
 	//void* validateReference();
 };
 

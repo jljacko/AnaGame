@@ -12,7 +12,7 @@ VarTag::~VarTag()
 {
 }
 
-TagCheck VarTag::ProcessTag(TString & bounds, VariableContainer & globalVariables, TInterpretor & inter, TDataArray<BNFTag*>& tags)
+TagCheck VarTag::ProcessTag(TString & bounds, VariableContainer & globalVariables, TInterpretor & inter, IntLanguage& lang, TDataArray<BNFTag*>& tags)
 {
 	bounds.Trim();
 	

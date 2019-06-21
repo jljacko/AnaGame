@@ -5,6 +5,7 @@
 #include <TFile.h>
 #include "TInterpretor.h"
 #include "VariableContainer.h"
+#include <Logger.h>
 
 class TagCheck: public TObject
 {
@@ -54,10 +55,10 @@ public:
 	void SetSyntaxString(TString& s);
 	UINT CompileTag(TDataArray<BNFTag*>& tagList);
 
-	virtual TagCheck ProcessTag(UINT statementStart, UINT tagStart, TrecPointer<TFile> file, VariableContainer& globalVariables, TInterpretor& inter, TDataArray<BNFTag*>& tags, UINT end = 0);
-	virtual TagCheck ProcessTag(TString& bounds, VariableContainer& globalVariables, TInterpretor& inter, TDataArray<BNFTag*>& tags);
+	virtual TagCheck ProcessTag(UINT statementStart, UINT tagStart, TrecPointer<TFile> file, VariableContainer& globalVariables, TInterpretor& inter, TDataArray<BNFTag*>& tags, IntLanguage& lang, UINT end = 0);
+	virtual TagCheck ProcessTag(TString& bounds, VariableContainer& globalVariables, TInterpretor& inter, IntLanguage& lang, TDataArray<BNFTag*>& tags);
 
-	virtual TagCheck ProcessTag(TString& code, UINT codeStart, TrecPointer<TFile> file, VariableContainer& globalVariables, TInterpretor& inter, TDataArray<BNFTag*>& tags);
+	virtual TagCheck ProcessTag(TString& code, UINT codeStart, TrecPointer<TFile> file, VariableContainer& globalVariables, TInterpretor& inter, IntLanguage& lang, TDataArray<BNFTag*>& tags);
 
 	virtual void addAttribute(TString& att, TString& val);
 
@@ -69,6 +70,8 @@ protected:
 	TDataArray<TDataArray<TagMark>> syntax;
 
 	short findTagIndex(TDataArray<BNFTag*>&, TString& token);
+
+	virtual TagCheck ProcessTag(TString& code, UINT codeStart, TrecPointer<TFile> file, VariableContainer& globalVariables, TInterpretor& inter, IntLanguage& lang, TDataArray<BNFTag*>& tags, UINT syntaxLevel, UINT syntaxStart);
 
 	UINT CountRawTags(TDataArray<TagMark>& tags);
 	int GetIndexOfToken(TString& code, TDataArray<TagMark>& tags, UINT token, UINT start = 0);

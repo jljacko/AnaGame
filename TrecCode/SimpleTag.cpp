@@ -18,7 +18,7 @@ TagCheck SimpleTag::ProcessTag(UINT statementStart, UINT tagStart, TFile & file,
 	return TagCheck();
 }
 
-TagCheck SimpleTag::ProcessTag(TString & bounds, VariableContainer & globalVariables, TInterpretor & inter, TDataArray<BNFTag*>& tags)
+TagCheck SimpleTag::ProcessTag(TString & bounds, VariableContainer & globalVariables, TInterpretor & inter, IntLanguage& lang, TDataArray<BNFTag*>& tags)
 {
 	int split = -1;
 
@@ -59,7 +59,7 @@ TagCheck SimpleTag::ProcessTag(TString & bounds, VariableContainer & globalVaria
 
 	try
 	{
-		return tags[syntax[0][0].tagIndex]->ProcessTag(smallStatement, globalVariables, inter, tags);
+		return tags[syntax[0][0].tagIndex]->ProcessTag(smallStatement, globalVariables, inter, lang, tags);
 	}
 	catch (TString& t)
 	{

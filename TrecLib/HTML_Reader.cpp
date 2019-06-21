@@ -326,7 +326,7 @@ bool HTML_Reader::parseQuoteTokens(TrecPointer<TArray<TString>>& tokens)
 	if(!tokens.get() || !tokens->Count())
 		return false;
 
-	TrecPointer<TArray<TString>> tokens2 = tokens->ElementAt(0)->split(L" \n\t\r\s");
+	TrecPointer<TArray<TString>> tokens2 = tokens->ElementAt(0)->split(L" \n\t\r\v\f");
 	respond->Obj(tokens2->ElementAt(0).get());
 	
 
@@ -348,7 +348,7 @@ bool HTML_Reader::parseQuoteTokens(TrecPointer<TArray<TString>>& tokens)
 			// To-Do: Implement support for quotation marks
 			for (UINT c = 3; c < tokens->Count(); c += 2)
 			{
-				tokens2 = tokens->ElementAt(c-1)->split(L" \n\t\r\s");
+				tokens2 = tokens->ElementAt(c-1)->split(L" \n\t\r\v\f");
 				tokens2->ElementAt(tokens2->Count() - 1)->Append(*tokens->ElementAt(c).get());
 				tokens3 = tokens2->ElementAt(0)->split(L"=");
 				if (tokens3->Count() > 1 && tokens3->ElementAt(0).get())

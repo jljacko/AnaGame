@@ -1,6 +1,7 @@
 //#include "stdafx.h"
 #include "AnafaceUI.h"
 #include "stdafx.h"
+#include <Logger.h>
 
 /*
 * Method:
@@ -65,6 +66,11 @@ TControl::TControl(TrecComPointer<ID2D1RenderTarget> rt,TrecPointer<TArray<style
 	//eventList = new TDataArray<EventTypeID>();
 	contextMenu = nullptr;
 	
+
+	TString logMessage;
+	logMessage.Format(L"CREATE %p TControl(TrecComPointer<ID2D1RenderTarget>,TrecPointer<TArray<styleTable>>, bool)", this);
+
+	Log(lt_memory, logMessage);
 }
 
 /*
@@ -166,9 +172,12 @@ TControl::TControl(TControl & rCont)
 	onFocus=rCont.onFocus;
 	onClickFocus=rCont.onClickFocus;
 
+	eventList = rCont.eventList;
 
-		eventList = rCont.eventList;
+	TString logMessage;
+	logMessage.Format(L"CREATE %p TControl(TControl&)", this);
 
+	Log(lt_memory, logMessage);
 }
 
 /*
@@ -224,6 +233,10 @@ TControl::TControl()
 	rightBorder = leftBorder = topBorder = bottomBorder = onFocus = onClickFocus = false;
 
 	//eventList = new TDataArray<EventTypeID>();
+	TString logMessage;
+	logMessage.Format(L"CREATE %p TControl()", this);
+
+	Log(lt_memory, logMessage);
 }
 
 /*
@@ -251,7 +264,10 @@ TControl::~TControl()
 		tc.Delete();
 	}
 	children.Clear();
-	
+	TString logMessage;
+	logMessage.Format(L"DELETE %p TControl", this);
+
+	Log(lt_memory, logMessage);
 }
 
 extern TDataArray<TTextField*> TextList;
@@ -3951,6 +3967,11 @@ TBorder::TBorder(TrecComPointer<ID2D1RenderTarget>rtp, TControl*tc)
 	}
 	else
 		BuilderFocusBrush = nullptr;
+
+	TString logMessage;
+	logMessage.Format(L"CREATE %p TBorder(TrecComPointer<ID2D1RenderTarget>, TControl*)", this);
+
+	Log(lt_memory, logMessage);
 }
 
 /*
@@ -3990,6 +4011,11 @@ TBorder::TBorder(TrecPointer<TBorder> & rBord,TControl* tc_holder)
 	loci = rBord->loci;
 	circle = rBord->circle;
 	roundedRect = rBord->roundedRect;
+
+	TString logMessage;
+	logMessage.Format(L"CREATE %p TBorder(TrecPointer<TBorder>&,TControl*)", this);
+
+	Log(lt_memory, logMessage);
 }
 
 /*
@@ -4014,6 +4040,11 @@ TBorder::TBorder()
 	BuilderFocusBrush = nullptr;
 	bitBrush = nullptr;
 	gradients->color = D2D1::ColorF(0.0f,0.0f,0.0f,1.0f);
+
+	TString logMessage;
+	logMessage.Format(L"CREATE %p TBorder()", this);
+
+	Log(lt_memory, logMessage);
 }
 
 /*
@@ -4032,6 +4063,11 @@ TBorder::~TBorder()
 	stopColl.Delete();
 	BuilderFocusBrush.Delete();
 	bitBrush.Delete();
+
+	TString logMessage;
+	logMessage.Format(L"DELETE %p TBorder", this);
+
+	Log(lt_memory, logMessage);
 }
 
 /*
@@ -4520,6 +4556,11 @@ TText::TText(TrecComPointer<ID2D1RenderTarget>rtp,TControl* tc)
 	gradients[0].position = 0.0;
 	gradients[1].position = 1.0f;
 	gradStop = nullptr;
+
+	TString logMessage;
+	logMessage.Format(L"CREATE %p TText(TrecComPointer<ID2D1RenderTarget>, TControl*)", this);
+
+	Log(lt_memory, logMessage);
 }
 
 /*
@@ -4565,6 +4606,12 @@ TText::TText(TrecPointer<TText> & rText, TControl* tc_holder)
 
 	fontLayout = rText->fontLayout;
 	format = rText->format;
+
+
+	TString logMessage;
+	logMessage.Format(L"CREATE %p TText(TrecPointer<TText> &, TControl*)", this);
+
+	Log(lt_memory, logMessage);
 }
 
 /*
@@ -4596,6 +4643,11 @@ TText::TText()
 	gradients[0].position = 0.0;
 	gradients[1].position = 1.0f;
 	gradStop = nullptr;
+
+	TString logMessage;
+	logMessage.Format(L"CREATE %p TText()", this);
+
+	Log(lt_memory, logMessage);
 }
 
 /*
@@ -4606,6 +4658,11 @@ TText::TText()
 */
 TText::~TText()
 {
+
+	TString logMessage;
+	logMessage.Format(L"DELETE %p TText - %S", this, this->text);
+
+	Log(lt_memory, logMessage);
 
 	writeFact = nullptr;
 
@@ -5245,6 +5302,11 @@ TContent::TContent(TrecComPointer<ID2D1RenderTarget>rtp, TControl* tc)
 	gradients[0].position = 0.0;
 	gradients[1].position = 1.0f;
 	gradStop = nullptr;
+
+	TString logMessage;
+	logMessage.Format(L"CREATE %p TContent(TrecComPointer<ID2D1RenderTarget>, TControl*)", this);
+
+	Log(lt_memory, logMessage);
 }
 
 /*
@@ -5271,6 +5333,11 @@ TContent::TContent()
 	gradients[0].position = 0.0;
 	gradients[1].position = 1.0f;
 	gradStop = nullptr;
+
+	TString logMessage;
+	logMessage.Format(L"CREATE %p TContent()", this);
+
+	Log(lt_memory, logMessage);
 }
 
 /*
@@ -5310,6 +5377,11 @@ TContent::TContent(TrecPointer<TContent> &rCont, TControl* tc_holder)
 	// Alternate shapes
 	circle = rCont->circle;
 	roundedRect = rCont->roundedRect;
+
+	TString logMessage;
+	logMessage.Format(L"CREATE %p TContent(TrecPointer<TContent> &rCont, TControl*)", this);
+
+	Log(lt_memory, logMessage);
 }
 
 /*
@@ -5329,6 +5401,11 @@ TContent::~TContent()
 	sb.Delete();
 
 	cropImage.Delete();
+
+	TString logMessage;
+	logMessage.Format(L"DELETE %p TContent", this);
+
+	Log(lt_memory, logMessage);
 }
 
 /*

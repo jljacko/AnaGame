@@ -253,4 +253,9 @@ bool TrecPointerBase::getRefStatus()
 	return dontDeRef;
 }
 
+UINT TrecPointerBase::getCount()
+{
+	return ::GetCount(index, timeCount);
+}
+
 

@@ -244,6 +244,7 @@
     <ClCompile Include="TFlyout.cpp" />
     <ClCompile Include="TGadgetControl.cpp" />
     <ClCompile Include="TGeometry.cpp" />
+    <ClCompile Include="TImage.cpp" />
     <ClCompile Include="TLayout.cpp" />
     <ClCompile Include="TLayoutEx.cpp" />
     <ClCompile Include="TLineGeometry.cpp" />
@@ -288,6 +289,7 @@
     <ClInclude Include="TFlyout.h" />
     <ClInclude Include="TGadgetControl.h" />
     <ClInclude Include="TGeometry.h" />
+    <ClInclude Include="TImage.h" />
     <ClInclude Include="TLayout.h" />
     <ClInclude Include="TLayoutEx.h" />
     <ClInclude Include="TLineGeometry.h" />

@@ -3,6 +3,7 @@
 #include <WinBase.h>
 #include <vector>
 #include "TrecPointerBase.h"
+#include "Logger.h"
 
 /*
 * Class TrecComPointer
@@ -38,6 +39,9 @@ public:
 	{
 		object = obj;
 		init(object,typeid(T).name());
+		TString log;
+		log.Format(L"Pointer Assigned - %p - %S - Count = %i (COM)", object, TString(typeid(T).name()), getCount());
+		Log(lt_pointer, log);
 	}
 
 	/*
@@ -52,7 +56,12 @@ public:
 		//init(object, typeid(T).name());
 		SetTrecPointer(obj);
 		if (object)
+		{
 			IncrementCount(/*typeid(T).name()*/);
+			TString log;
+			log.Format(L"Pointer Assigned - %p - %S - Count = %i (COM)", object, TString(typeid(T).name()), getCount());
+			Log(lt_pointer, log);
+		}
 	}
 
 	/*
@@ -70,6 +79,9 @@ public:
 		{
 			ASSERT(object == del);
 			object->Release();
+			TString log;
+			log.Format(L"Pointer Unassigned - %p - %S - Count = %i (COM-RELEASED)", object, TString(typeid(T).name()), getCount());
+			Log(lt_pointer, log);
 		}
 		
 	}
@@ -123,11 +135,23 @@ public:
 			{
 				ASSERT(object == del);
 				object->Release();
+				TString log;
+				log.Format(L"Pointer Unassigned - %p - %S - Count = %i (COM-RELEASED)", object, TString(typeid(T).name()), getCount());
+				Log(lt_pointer, log);
+			}
+			else
+			{
+				TString log;
+				log.Format(L"Pointer Unassigned - %p - %S - Count = %i (COM)", object, TString(typeid(T).name()), getCount());
+				Log(lt_pointer, log);
 			}
 		}
 		if (other)
 		{
 			IncrementCount(other,  typeid(T).name());
+			TString log;
+			log.Format(L"Pointer Assigned - %p - %S - Count = %i (COM)", other, TString(typeid(T).name()), getCount());
+			Log(lt_pointer, log);
 		}
 		resetHold();
 		object = other;
@@ -152,6 +176,15 @@ public:
 			{
 				ASSERT(object == del);
 				object->Release();
+				TString log;
+				log.Format(L"Pointer Unassigned - %p - %S - Count = %i (COM-RELEASED)", object, TString(typeid(T).name()), getCount());
+				Log(lt_pointer, log);
+			}
+			else
+			{
+				TString log;
+				log.Format(L"Pointer Unassigned - %p - %S - Count = %i (COM)", object, TString(typeid(T).name()), getCount());
+				Log(lt_pointer, log);
 			}
 		}
 
@@ -160,7 +193,9 @@ public:
 		{
 			SetTrecPointer(point);
 			IncrementCount(/*typeid(T).name()*/);
-
+			TString log;
+			log.Format(L"Pointer Assigned - %p - %S - Count = %i (COM)", pointer, TString(typeid(T).name()), getCount());
+			Log(lt_pointer, log);
 		}
 		else nullify();
 
@@ -176,8 +211,13 @@ public:
 	*/
 	void Delete()
 	{
-		if(object && object == NukeCount(/*typeid(T).name()*/))
+		if (object && object == NukeCount(/*typeid(T).name()*/))
+		{
 			object->Release();
+			TString log;
+			log.Format(L"Pointer Unassigned - %p - %S - Count = %i (COM-RELEASED) (FORCE)", object, TString(typeid(T).name()), getCount());
+			Log(lt_pointer, log);
+		}
 		else
 			object = nullptr;
 		nullify();

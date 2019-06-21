@@ -1,10 +1,11 @@
 #include "stdafx.h"
 #include "BNFTag.h"
 #include "TagHeaders.h"
+#include "IntLanguage.h"
 
 BNFTag::BNFTag(TString & tagName)
 {
-	name = tagName;
+	name.Set(tagName);
 }
 
 BNFTag::~BNFTag()
@@ -123,13 +124,13 @@ BNFTag * BNFTag::GetFunctionalTag(TString & tagName)
 
 void BNFTag::SetSyntaxString(TString & s)
 {
-	rawSyntax = s;
+	rawSyntax.Set(s);
 }
 
 UINT BNFTag::CompileTag(TDataArray<BNFTag*>& tagList)
 {
 	// TO-Do: update call to address "\|", where we don't want to split
-	TrecPointer<TArray<TString>> syntax = rawSyntax.split(TString(L"|"));
+	auto syntax = rawSyntax.split(TString(L"|"), true);
 
 	for (UINT c = 0; c < syntax->Count(); c++)
 	{
@@ -141,35 +142,50 @@ UINT BNFTag::CompileTag(TDataArray<BNFTag*>& tagList)
 		for (UINT rust = 0; rust < synComps->Count(); rust++)
 		{
 			TString token = synComps->ElementAt(rust).get();
+			token.Trim();
 
 			if (token.GetLength() < 2)
 				continue;
 
 			if (token[0] == L'\'' && token[token.GetLength() - 1] == L'\'')
 			{
-				token = token.SubString(1, token.GetLength() - 1);
+				token.Set(token.SubString(1, token.GetLength() - 1));
 
 				this->syntax[c].push_back(TagMark( false, token, -1 ));
 			}
 			else if (token[0] == L'<' && token[token.GetLength() - 1] == L'>')
 			{
-				token = token.SubString(1, token.GetLength() - 1);
+				token.Set(token.SubString(1, token.GetLength() - 1));
 
 				this->syntax[c].push_back(TagMark{ true , token, findTagIndex(tagList, token) });
 			}
 			else if (token[0] == L'[' && token[token.GetLength() - 1] == L']'
 				&& token[1] == L'[' && token[token.GetLength() - 2] == L']')
 			{
-				token = token.SubString(2, token.GetLength() - 2);
+				token.Set(token.SubString(2, token.GetLength() - 2));
 
 				this->syntax[c].push_back(TagMark{ true , token, findTagIndex(tagList, token) });
 			}
 		}
+		if (!this->syntax[c].Size()) continue;
+
+		// Now to make sure we don't have two tag marks in a row. If we do, this is an invalid syntax as
+		// TrecCode won't know where to draw the boundary in a peice of code between the two tags
+		bool isTag = this->syntax[c][0].isTag;
+		for (UINT rust = 1; rust < this->syntax[c].Size(); rust++)
+		{
+			if (isTag && this->syntax[c][rust].isTag)
+				return 1; // We are dealing with two tag marks in a row. Illegal as there is no way to know how to draw the boundary
+			isTag = this->syntax[c][rust].isTag;
+		}
 	}
+
+
+
 	return 0;
 }
 
-TagCheck BNFTag::ProcessTag(UINT statementStart, UINT tagStart, TrecPointer<TFile> file, VariableContainer & globalVariables, TInterpretor & inter, TDataArray<BNFTag*>& tags, UINT end)
+TagCheck BNFTag::ProcessTag(UINT statementStart, UINT tagStart, TrecPointer<TFile> file, VariableContainer & globalVariables, TInterpretor & inter, TDataArray<BNFTag*>& tags, IntLanguage& lang, UINT end)
 {
 	TString code;
 	file->Seek(tagStart, CFile::begin);
@@ -185,20 +201,22 @@ TagCheck BNFTag::ProcessTag(UINT statementStart, UINT tagStart, TrecPointer<TFil
 	return TagCheck();
 }
 
-TagCheck BNFTag::ProcessTag(TString & bounds, VariableContainer & globalVariables, TInterpretor & inter, TDataArray<BNFTag*>& tags)
+TagCheck BNFTag::ProcessTag(TString & bounds, VariableContainer & globalVariables, TInterpretor & inter, IntLanguage& lang, TDataArray<BNFTag*>& tags)
 {
 	return TagCheck();
 }
 
-TagCheck BNFTag::ProcessTag(TString & code, UINT codeStart, TrecPointer<TFile> file, VariableContainer & globalVariables, TInterpretor & inter, TDataArray<BNFTag*>& tags)
+TagCheck BNFTag::ProcessTag(TString & code, UINT codeStart, TrecPointer<TFile> file, VariableContainer & globalVariables, TInterpretor & inter, IntLanguage& lang, TDataArray<BNFTag*>& tags)
 {
 
 	TagCheck returnable;
 	for (UINT C = 0; C < syntax.Size(); C++)
 	{
-		// syntax[C].
+		returnable = ProcessTag(code, codeStart, file, globalVariables, inter, lang, tags, C, 0);
+		if (returnable.success)
+			return returnable;
 	}
-	return TagCheck();
+	return returnable;
 }
 
 void BNFTag::addAttribute(TString & att, TString & val)
@@ -218,6 +236,105 @@ short BNFTag::findTagIndex(TDataArray<BNFTag*>& list, TString & token)
 			return c;
 	}
 	return -1;
+}
+
+TagCheck BNFTag::ProcessTag(TString& code, UINT codeStart, TrecPointer<TFile> file, VariableContainer& globalVariables,
+	TInterpretor& inter, IntLanguage& lang, TDataArray<BNFTag*>& tags, UINT syntaxLevel, UINT syntaxStart)
+{
+	TagCheck returnable;
+	returnable.returnValue = nullptr;
+	returnable.success = false;
+	auto syntaxSample = syntax[syntaxLevel];
+	if (!syntaxSample.Size())
+	{
+		returnable.returnValue = nullptr;
+		returnable.success = false;
+		return returnable;
+	}
+	bool startWithTag = syntaxSample[syntaxStart].isTag;
+	if (startWithTag)
+	{
+		TString code2;
+		int token = -1;
+		if (syntaxSample.Size() - syntaxStart == 1)
+		{
+			code2.Set(code);
+		}
+		else
+		{
+			token = code.FindOutOfQuotes(syntaxSample[syntaxStart + 1].mark);
+			if (token == -1)
+			{
+				return returnable;
+			}
+			code2 = code.SubString(0, token);
+		}
+
+		BNFTag* tag = lang.getTagAt(syntaxSample[syntaxStart].tagIndex);
+		if (!tag)
+		{
+			TString error;
+			error.Format(L"Error Processing Code for '%S'\n\tCode <<<%S>>>\n\tEncountered NULL tag!", lang.getLanguageName(), code);
+			returnable.error.Set(error);
+			returnable.success = false;
+			returnable.returnValue = nullptr;
+			returnable.fileByteEnd = codeStart + code.GetLength();
+			return returnable;
+		}
+		if (tag == this)
+		{
+			returnable.error.Format(L"Error Processing Code for '%S'\n\tEncountered Endless recursive tag!", lang.getLanguageName());
+			returnable.success = false;
+			returnable.returnValue = nullptr;
+			returnable.fileByteEnd = codeStart + code.GetLength();
+			return returnable;
+		}
+
+		returnable = tag->ProcessTag(code, codeStart, file, globalVariables, inter, lang, tags);
+
+		/* Go ahead and return now if:
+		 * 1. The tag was not successful
+		 * 2. It was successful, but there there was only that tage to process
+		 * 3. 
+		 */
+		if (!returnable.success || token == -1 || syntaxSample.Size() == syntaxStart + 2)
+		{
+			return returnable;
+		}
+
+		UINT appendChar = token + syntaxSample[syntaxStart + 1].mark.GetLength();
+		code2 = code.SubString(appendChar);
+
+		return ProcessTag(code2, codeStart + appendChar, file, globalVariables, inter, lang, tags, syntaxLevel, syntaxStart + 2);
+	}
+	else
+	{
+		int tokenIndex = code.FindOutOfQuotes(syntaxSample[syntaxStart].mark);
+		if (tokenIndex == -1)
+			return returnable;
+		if (tokenIndex > 0)
+		{
+			TString pre = code.SubString(0, tokenIndex);
+			pre.Trim();
+			if (!pre.IsEmpty())
+				return returnable;
+		}
+
+		UINT appendChar = tokenIndex + syntaxSample[syntaxStart].mark.GetLength();
+		TString code2 = code.SubString(appendChar);
+		code2.Trim();
+
+		if (code2.IsEmpty())
+		{
+			if(syntaxStart + 1 == syntaxSample.Size())
+				returnable.success = true;
+			return returnable;
+		}
+		if (syntaxStart + 1 == syntaxSample.Size())
+			return returnable;
+		
+		return ProcessTag(code2, codeStart + appendChar, file, globalVariables, inter, lang, tags, syntaxLevel, syntaxStart + 1);
+	}
 }
 
 UINT BNFTag::CountRawTags(TDataArray<TagMark>& tags)
@@ -253,6 +370,7 @@ int BNFTag::GetIndexOfToken(TString & code, TDataArray<TagMark>& tags, UINT toke
 
 ProcessedCode BNFTag::PreProcessLine(TString & code, UINT syntaxIndex)
 {
+
 	return ProcessedCode();
 }
 
@@ -267,7 +385,7 @@ TDataArray<BNFTag*>* setUpTagList(TFile & file)
 		int split = line.Find(L"::=");
 		int comment = line.Find(L"#");
 
-		if (split < 0 || split > comment)
+		if (split < 0 || (split > comment && comment != -1))
 			continue;
 
 		while (comment != -1 && comment > 0 && line[comment - 1] == L'\\')
@@ -319,7 +437,7 @@ TagCheck::TagCheck()
 TagCheck::TagCheck(bool s, TString & e, UINT end, intVariable * iv)
 {
 	success = s;
-	error = e;
+	error.Set(e);
 	fileByteEnd = end;
 	returnValue = iv;
 }
@@ -333,6 +451,6 @@ TagMark::TagMark()
 TagMark::TagMark(bool it, TString & m, short ti)
 {
 	isTag = it;
-	mark = m;
+	mark.Set(m);
 	tagIndex = ti;
 }

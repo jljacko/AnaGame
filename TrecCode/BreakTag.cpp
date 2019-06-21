@@ -11,7 +11,7 @@ BreakTag::~BreakTag()
 {
 }
 
-TagCheck BreakTag::ProcessTag(TString & bounds, VariableContainer & globalVariables, TInterpretor & inter, TDataArray<BNFTag*>& tags)
+TagCheck BreakTag::ProcessTag(TString & bounds, VariableContainer & globalVariables, TInterpretor & inter, IntLanguage& lang, TDataArray<BNFTag*>& tags)
 {
 	bounds.Trim();
 
@@ -26,7 +26,7 @@ TagCheck BreakTag::ProcessTag(TString & bounds, VariableContainer & globalVariab
 
 	if (!syntax.Size())
 	{
-		ret.error = TString(L"Null Tag not Compiled properly.");
+		ret.error.Set(TString(L"Null Tag not Compiled properly."));
 		return ret;
 	}
 

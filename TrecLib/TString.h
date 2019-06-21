@@ -4,6 +4,7 @@
 #include "TObject.h"
 #include <d2d1_1.h>
 #include <string>
+#include "TrecPointer.h"
 
 #define T_NO_ERROR 0
 #define T_OVERFLOW 1
@@ -24,6 +25,11 @@ typedef enum _TREC_LIB_DLL ColorFormat
 	cform_ana,
 	cform_ana_a
 }ColorFormat;
+
+typedef struct IndexRange {
+	int start;
+	int end;
+}IndexRange;
 
 
 /*
@@ -50,12 +56,14 @@ public:
 	short ConvertToLong(long long*);
 	short ConvertToFloat(float*);
 
-	TrecPointer<TArray<TString>> split(TString);
+	TrecPointer<typename TArray<TString>> split(TString, bool checkBackSlash = false);
 	WCHAR* GetBufferCopy();
 	TString SubString(UINT beginningIndex, int endIndex = -1);
 	void Trim();
 
 	bool ConvertToColor(D2D1_COLOR_F& color, ColorFormat& cf);
+
+	int FindOutOfQuotes(TString& subString, int start = 0);
 
 	// Set Methods, to be used in place of Assignment operators to avoid C26444 Warnings
 	void Set(TString& s);

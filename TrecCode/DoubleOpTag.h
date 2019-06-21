@@ -15,6 +15,6 @@ public:
 	DoubleOpTag(TString& tagName);
 	~DoubleOpTag();
 
-	dualExpression Get2Expressions(TString& bounds, VariableContainer & globalVariables, TInterpretor & inter, TDataArray<BNFTag*>& tags);
+	dualExpression Get2Expressions(TString& bounds, VariableContainer & globalVariables, TInterpretor & inter, IntLanguage& lang, TDataArray<BNFTag*>& tags);
 };
 

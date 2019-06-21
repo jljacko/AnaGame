@@ -6,6 +6,7 @@
 #include "ShaderParser.h"
 #include <TML_Reader_.h>
 #include <DirectoryInterface.h>
+#include <Logger.h>
 
 TDataArray<ArenaEngine*> engineList;
 
@@ -67,6 +68,11 @@ ArenaEngine::ArenaEngine(ArenaEngine& ae)
 	dxDev = ae.getDeviceD_U();
 	viewBuffer = DirectX::XMMatrixIdentity();
 	//InitializeDefaultShaders();
+
+	TString logMessage;
+	logMessage.Format(L"CREATE %p ArenaEngine(ArenaEngine& ae)", this);
+
+	Log(lt_memory, logMessage);
 }
 
 /*
@@ -115,6 +121,11 @@ ArenaEngine::ArenaEngine()
 	dxDev = nullptr;
 	viewBuffer = DirectX::XMMatrixIdentity();
 	//InitializeDefaultShaders();
+
+	TString logMessage;
+	logMessage.Format(L"CREATE %p ArenaEngine()", this);
+
+	Log(lt_memory, logMessage);
 }
 
 /*
@@ -141,6 +152,10 @@ ArenaEngine::~ArenaEngine()
 		UnloadAnaGameShaders();
 		defaultShadersSet = false;
 	}
+	TString logMessage;
+	logMessage.Format(L"DELETE %p ArenaEngine", this);
+
+	Log(lt_memory, logMessage);
 }
 
 /*
@@ -161,7 +176,7 @@ int ArenaEngine::InitializeDefaultShaders()
 
 	TString tDirectory = GetDirectoryWithSlash(cd_Executable);
 
-	tDirectory += L"\\Resources\\DefaultShaders";
+	tDirectory.Append(L"\\Resources\\DefaultShaders");
 
 	CFile* file = nullptr;
 	CArchive* arch = nullptr;
@@ -173,9 +188,9 @@ int ArenaEngine::InitializeDefaultShaders()
 	// Prepare to Read the Single Color Shader
 
 	tempDir.Set(tDirectory);
-	tempDir += L"\\SingleColor";
+	tempDir.Append(L"\\SingleColor");
 	ShaderParser* parse = new ShaderParser(*this, &tempDir);
-	tempDir += L"\\SingleColor.tml";
+	tempDir.Append(L"\\SingleColor.tml");
 
 
 	try {
@@ -216,9 +231,9 @@ int ArenaEngine::InitializeDefaultShaders()
 
 
 	tempDir.Set(tDirectory);
-	tempDir += L"\\3DColor";
+	tempDir.Append(L"\\3DColor");
 	parse = new ShaderParser(*this, &tempDir);
-	tempDir += L"\\3DColor.tml";
+	tempDir.Append(L"\\3DColor.tml");
 
 
 	try {
@@ -258,9 +273,9 @@ int ArenaEngine::InitializeDefaultShaders()
 
 
 	tempDir.Set(tDirectory);
-	tempDir += L"\\4DColor";
+	tempDir.Append(L"\\4DColor");
 	parse = new ShaderParser(*this, &tempDir);
-	tempDir += L"\\4DColor.tml";
+	tempDir.Append(L"\\4DColor.tml");
 
 
 	try {
@@ -299,9 +314,9 @@ int ArenaEngine::InitializeDefaultShaders()
 	// Prepare to read the one Texture Shader
 
 	tempDir.Set(tDirectory);
-	tempDir += L"\\Texture1";
+	tempDir.Append(L"\\Texture1");
 	parse = new ShaderParser(*this, &tempDir);
-	tempDir += L"\\Texture1.tml";
+	tempDir.Append(L"\\Texture1.tml");
 
 
 	try {
@@ -339,9 +354,9 @@ int ArenaEngine::InitializeDefaultShaders()
 
 	// Prepare the Double Texture Shader
 	tempDir.Set(tDirectory);
-	tempDir += L"\\Texture2";
+	tempDir.Append(L"\\Texture2");
 	parse = new ShaderParser(*this, &tempDir);
-	tempDir += L"\\Texture2.tml";
+	tempDir.Append(L"\\Texture2.tml");
 
 
 	try {

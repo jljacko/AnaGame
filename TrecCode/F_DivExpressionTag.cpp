@@ -11,9 +11,9 @@ F_DivExpressionTag::~F_DivExpressionTag()
 {
 }
 
-TagCheck F_DivExpressionTag::ProcessTag(TString & bounds, VariableContainer & globalVariables, TInterpretor & inter, TDataArray<BNFTag*>& tags)
+TagCheck F_DivExpressionTag::ProcessTag(TString & bounds, VariableContainer & globalVariables, TInterpretor & inter, IntLanguage& lang, TDataArray<BNFTag*>& tags)
 {
-	dualExpression de = Get2Expressions(bounds, globalVariables, inter, tags);
+	dualExpression de = Get2Expressions(bounds, globalVariables, inter, lang, tags);
 
 	switch (de.errorCode)
 	{

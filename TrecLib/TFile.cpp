@@ -23,12 +23,11 @@ TFile::TFile()
 *			UINT nOpenFlags - flags that specify the open status of the file
 * Returns: void
 */
-TFile::TFile(LPCTSTR lpszFileName, UINT nOpenFlags) :CFile(lpszFileName, nOpenFlags)
+TFile::TFile(LPCTSTR lpszFileName, UINT nOpenFlags) 
 {
 	fileEncode = fet_unknown;
-	CFile(lpszFileName, nOpenFlags);
 
-	if (m_hFile == CFile::hFileNull)
+	if (!CFile::Open(lpszFileName, nOpenFlags))
 		return;
 
 	// Here, the file is open, try to deduce the file type
@@ -44,9 +43,9 @@ TFile::TFile(LPCTSTR lpszFileName, UINT nOpenFlags) :CFile(lpszFileName, nOpenFl
 TFile::TFile(TString & file, UINT nOpenFlags)
 {
 	fileEncode = fet_unknown;
-	CFile(file, nOpenFlags);
+	;
 
-	if (m_hFile == CFile::hFileNull)
+	if (!CFile::Open(file, nOpenFlags))
 		return;
 
 	// Here, the file is open, try to deduce the file type

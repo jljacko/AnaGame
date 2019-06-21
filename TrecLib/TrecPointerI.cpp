@@ -74,6 +74,8 @@ void Shutdown()
 	refFile.Close();
 }
 
+
+
 /*WCHAR* getWCHARSfromchars(const char* str)
 {
 	if (!str)
@@ -88,6 +90,18 @@ void Shutdown()
 
 std::vector<ReferenceCount> ReferenceTable;// The Reference Table
 std::queue<UINT> freeSpaces;               // Used to find a free space in the Reference Table
+
+
+UINT GetCount(UINT index, UCHAR time)
+{
+	if(index > ReferenceTable.size())
+		return 0;
+	if (ReferenceTable[index].timeCount == time) {
+		return ReferenceTable[index].count;
+	}
+	return 0;
+}
+
 
 /*
 * Function: FindReferencePlace
@@ -138,7 +152,7 @@ std::queue<UINT> freeSpaces;               // Used to find a free space in the R
 		{
 			refLoc = freeSpaces.front();
 
-			ASSERT(refLoc < ReferenceTable.size());
+			ASSERT((UINT)refLoc < ReferenceTable.size());
 			freeSpaces.pop();
 			ReferenceTable[refLoc].pointer = ref;
 			ReferenceTable[refLoc].timeCount++;  // So Any dangling Trec Pointers will know that this reference is no longer valid for them 

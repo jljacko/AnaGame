@@ -66,3 +66,12 @@ void BoostPointer(UINT index, unsigned char time);
 * Note: DEPRECIATED - used only for debugging purposes
 */
 void Shutdown();
+
+/*
+* Function: GetCount
+* Purpose: Reports how many pointers are currently pointing to a registered object
+* Parameters: UINT index - index of the reference entry
+*			unsigned char time - key to determine if the trec pointer making the request is legitimate
+* Returns: UINT - how many pointers pointing to the object (0 if pointer is null)
+*/
+UINT GetCount(UINT index, UCHAR time);

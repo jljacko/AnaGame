@@ -11,7 +11,7 @@ DoubleOpTag::~DoubleOpTag()
 {
 }
 
-dualExpression DoubleOpTag::Get2Expressions(TString & bounds, VariableContainer & globalVariables, TInterpretor & inter, TDataArray<BNFTag*>& tags)
+dualExpression DoubleOpTag::Get2Expressions(TString & bounds, VariableContainer & globalVariables, TInterpretor & inter, IntLanguage& lang, TDataArray<BNFTag*>& tags)
 {
 	TagCheck left, right;
 
@@ -27,7 +27,7 @@ dualExpression DoubleOpTag::Get2Expressions(TString & bounds, VariableContainer 
 		TDataArray<TagCheck> expressions;
 		for (UINT c = 0; c < pc.expressions.Size(); c++)
 		{
-			expressions.push_back(tags[pc.expressions[c].tagProcess]->ProcessTag(pc.expressions[c].code, globalVariables, inter, tags));
+			expressions.push_back(tags[pc.expressions[c].tagProcess]->ProcessTag(pc.expressions[c].code, globalVariables, inter, lang, tags));
 		}
 
 		if (expressions.Size() < 2)

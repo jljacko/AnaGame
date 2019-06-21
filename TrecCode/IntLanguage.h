@@ -13,6 +13,9 @@ public:
 	static IntLanguage* getLanguage(TString& langName);
 
 	UINT ProcessCode(TString& statement, TrecPointer<TFile> file, UINT codeStart, VariableTree*, TInterpretor* , UINT line = 0);
+
+	BNFTag* getTagAt(UINT index);
+	TString getLanguageName();
 	
 protected:
 	IntLanguage();
@@ -34,3 +37,4 @@ protected:
 	int startIndex;
 };
 
+void parseSpecialCharacters(TString& string);

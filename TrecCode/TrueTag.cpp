@@ -11,7 +11,7 @@ TrueTag::~TrueTag()
 {
 }
 
-TagCheck TrueTag::ProcessTag(TString & bounds, VariableContainer & globalVariables, TInterpretor & inter, TDataArray<BNFTag*>& tags)
+TagCheck TrueTag::ProcessTag(TString & bounds, VariableContainer & globalVariables, TInterpretor & inter, IntLanguage& lang, TDataArray<BNFTag*>& tags)
 {
 	bounds.Trim();
 

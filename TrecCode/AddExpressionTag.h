@@ -7,7 +7,7 @@ public:
 	AddExpressionTag();
 	~AddExpressionTag();
 
-	virtual TagCheck ProcessTag(TString& bounds, VariableContainer& globalVariables, TInterpretor& inter, TDataArray<BNFTag*>& tags) override;
+	virtual TagCheck ProcessTag(TString& bounds, VariableContainer& globalVariables, TInterpretor& inter, IntLanguage& lang, TDataArray<BNFTag*>& tags) override;
 
 	virtual void addAttribute(TString& att, TString& val) override;
 

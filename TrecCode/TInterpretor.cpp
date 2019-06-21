@@ -3,6 +3,8 @@
 #include "TInterpretor.h"
 #include "IntLanguage.h"
 
+#include <Logger.h>
+
 TInterpretor::TInterpretor()
 {
 	actionMode = im_run;
@@ -13,11 +15,20 @@ TInterpretor::TInterpretor()
 	fileLoc = 0;
 	globalVariables = nullptr;
 	startLine = 0;
+
+	TString logMessage;
+	logMessage.Format(L"CREATE %p TInterpretor()", this);
+
+	Log(lt_memory, logMessage);
 }
 
 
 TInterpretor::~TInterpretor()
 {
+	TString logMessage;
+	logMessage.Format(L"DELETE %p TInterpretor", this);
+
+	Log(lt_memory, logMessage);
 }
 
 TInterpretor::TInterpretor(TInterpretor* ti)
@@ -43,6 +54,11 @@ TInterpretor::TInterpretor(TInterpretor* ti)
 		globalVariables = nullptr;
 		this->language = nullptr;
 	}
+
+	TString logMessage;
+	logMessage.Format(L"CREATE %p TInterpretor(TInterpretor*)", this);
+
+	Log(lt_memory, logMessage);
 }
 
 TInterpretor::TInterpretor(IntLanguage * lang)
@@ -69,6 +85,11 @@ TInterpretor::TInterpretor(IntLanguage * lang)
 		
 		this->language = nullptr;
 	}
+
+	TString logMessage;
+	logMessage.Format(L"CREATE %p TInterpretor(TLanguage*)", this);
+
+	Log(lt_memory, logMessage);
 }
 
 bool TInterpretor::SetFile(TrecPointer<TFile> file)
@@ -212,6 +233,10 @@ bool TInterpretor::SetFile(TrecPointer<TFile> file)
 		return false;
 	}
 	sourceFile->Seek(0, CFile::SeekPosition::begin);
+
+	// Now set up global variables since this function estabilshes that this is the root file
+	globalVariables = new VariableTree();
+
 	return true;
 }
 
@@ -301,10 +326,11 @@ UINT TInterpretor::Run()
 
 	TString code;
 	ULONGLONG filePos = sourceFile->GetPosition();
-
-	while (filePos += GetNextStatement(code, filePos))
+	ULONGLONG filePosAdd = 0;
+	while ( filePosAdd = GetNextStatement(code, filePos))
 	{
 		// To-Do: Call upon the language BNF Tags to parse the Code statement
+		filePos += filePosAdd;
 		language->ProcessCode(code, sourceFile, filePos, globalVariables, this);
 	}
 	
