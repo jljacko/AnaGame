@@ -3,6 +3,7 @@
 #include <DirectoryInterface.h>
 #include <TFile.h>
 #include <TMap.h>
+#include <Logger.h>
 
 static TString languageFolder = GetDirectoryWithSlash(cd_Executable) + TString(L"Languages");
 
@@ -174,6 +175,8 @@ IntLanguage * IntLanguage::getLanguage(TString & langName)
 
 		if (bnf.IsOpen())
 		{
+			Log(lt_bnf, TString(L"LANGUAGE: ") + lang->language);
+			Log(lt_bnf, TString());
 			lang->tagList = setUpTagList(bnf);
 			if (lang->tagList)
 				CompileIntLanguage(*lang->tagList);

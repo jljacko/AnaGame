@@ -180,6 +180,27 @@ UINT BNFTag::CompileTag(TDataArray<BNFTag*>& tagList)
 		}
 	}
 
+	Log(lt_bnf, this->name);
+	TString code(L"\t");
+	for (UINT C = 0; C < this->syntax.Size(); C++)
+	{
+		
+
+		for (UINT Rust = 0; Rust < this->syntax[C].Size(); Rust++)
+		{
+			if (this->syntax[C][Rust].isTag)
+			{
+				code.Append(TString(L"<<<") + this->syntax[C][Rust].mark + TString(L">>> "));
+			} 
+			else
+			{
+				code.AppendFormat(_T("[%d] "), this->syntax[C][Rust].tagIndex);
+			}
+		}
+		code.Append(L" |  ");
+		
+	}
+	Log(lt_bnf, code);
 
 
 	return 0;
