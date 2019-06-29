@@ -7,7 +7,8 @@
 typedef enum LogType {
 	lt_memory,
 	lt_code,
-	lt_pointer
+	lt_pointer,
+	lt_bnf
 }LogType;
 
 void _TREC_LIB_DLL Log(LogType lt, TString& logMessage);
