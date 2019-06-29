@@ -12,5 +12,9 @@ public:
 	UINT setLinearGradientD(D2D1_COLOR_F& color1, D2D1_COLOR_F& color2, float degrees, CPoint& point);
 
 	UINT rotate(CPoint& point);
+	virtual void onDraw(TObject* obj) override;
+
+protected:
+	D2D1_MATRIX_3X2_F rotation;
 };
 
