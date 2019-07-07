@@ -61,13 +61,13 @@ public:
 	TInterpretor(IntLanguage* lang);
 
 	bool SetFile(TrecPointer<TFile> file);
-	bool SetFile(TrecPointer<TFile> file, ULONG seek, UINT line);
+	bool SetFile(TrecPointer<TFile> file, ULONG seek, UINT line, ULONG64 end = 0);
 	void SetParams(TString& params, WCHAR paramDivider);
 	void setLanguage(IntLanguage* lang);
 
 	void SetString(TString& strCode);
 
-	void SetGlobalVariables(VariableTree* vt);
+	void SetGlobalVariables(VariableContainer* vt);
 
 	void SendFlowMessage(InterpretorMessage, intVariable* ret);
 	void setLine(UINT line);
@@ -82,7 +82,7 @@ protected:
 
 	// Variables available to the Interpretor
 	VariableTree localVariables;
-	VariableTree* globalVariables;
+	VariableContainer* globalVariables;
 
 	TDataArray<Parameter> parameters;
 
@@ -99,6 +99,7 @@ protected:
 	TrecPointer<TFile> sourceFile;
 	TString sourceString;
 	ULONG64 fileLoc;
+	ULONG64 fileLocEnd; // Where the Interpretor is supposed to stop reading (0 if end of file)
 	UINT startLine;
 
 	intVariable* returnValue;

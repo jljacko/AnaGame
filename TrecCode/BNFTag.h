@@ -10,7 +10,8 @@
 typedef enum BlockType
 {
 	block_tokens,
-	block_indent
+	block_indent,
+	block_curly
 }BlockType;
 
 class TagCheck: public TObject

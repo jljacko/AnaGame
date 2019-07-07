@@ -20,6 +20,7 @@ TInterpretor::TInterpretor()
 	logMessage.Format(L"CREATE %p TInterpretor()", this);
 
 	Log(lt_memory, logMessage);
+	fileLocEnd = 0U;
 }
 
 
@@ -240,13 +241,14 @@ bool TInterpretor::SetFile(TrecPointer<TFile> file)
 	return true;
 }
 
-bool TInterpretor::SetFile(TrecPointer<TFile> file, ULONG seek, UINT line)
+bool TInterpretor::SetFile(TrecPointer<TFile> file, ULONG seek, UINT line, ULONG64 end)
 {
 	if(!file->IsOpen())
 		return false;
 	file->Seek(seek, CFile::SeekPosition::begin);
 	startLine = line;
 	sourceFile = file;
+	fileLocEnd = end;
 	return true;
 }
 
@@ -266,7 +268,7 @@ void TInterpretor::SetParams(TString& params, WCHAR paramDivider)
 		TString type;
 		for (UINT Rust = 0; Rust < paramComponents->Count() - 1; Rust++)
 		{
-			type += *(paramComponents->ElementAt(Rust).get()) + TString(L" ");
+			type.Append(*(paramComponents->ElementAt(Rust).get()) + TString(L" "));
 		}
 		type.Trim();
 
@@ -287,7 +289,7 @@ void TInterpretor::SetString(TString & strCode)
 	resource = ir_string;
 }
 
-void TInterpretor::SetGlobalVariables(VariableTree * vt)
+void TInterpretor::SetGlobalVariables(VariableContainer * vt)
 {
 	globalVariables = vt;
 }
@@ -327,7 +329,7 @@ UINT TInterpretor::Run()
 	TString code;
 	ULONGLONG filePos = sourceFile->GetPosition();
 	ULONGLONG filePosAdd = 0;
-	while ( filePosAdd = GetNextStatement(code, filePos))
+	while ( filePosAdd = GetNextStatement(code, filePos) && (!fileLocEnd || filePos < fileLocEnd))
 	{
 		// To-Do: Call upon the language BNF Tags to parse the Code statement
 		filePos += filePosAdd;

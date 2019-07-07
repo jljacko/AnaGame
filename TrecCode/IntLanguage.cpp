@@ -203,7 +203,7 @@ IntLanguage * IntLanguage::getLanguage(TString & langName)
 	return lang;
 }
 
-UINT IntLanguage::ProcessCode(TString & statement, TrecPointer<TFile> file, UINT codeStart, VariableTree* gv, TInterpretor* inter, UINT line)
+UINT IntLanguage::ProcessCode(TString & statement, TrecPointer<TFile> file, UINT codeStart, VariableContainer* gv, TInterpretor* inter, UINT line)
 {
 	if(startIndex == -1 || !tagList || !tagList->Size() || !gv || !inter)
 		return 1;
