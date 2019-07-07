@@ -332,7 +332,16 @@ public:
 	void setColor(D2D1::ColorF);
 	RECT getLocation();
 
+	void SetRadialImage(TDataArray<D2D1_COLOR_F>& colors);
+	void SetLinearImage(TDataArray<D2D1_COLOR_F>& colors);
+
+	void SetRadialImage(TDataArray<D2D1_GRADIENT_STOP>& colors);
+	void SetLinearImage(TDataArray<D2D1_GRADIENT_STOP>& colors);
+
 private:
+	ID2D1GradientStopCollection* getStopCollection(TDataArray<D2D1_COLOR_F>& colors);
+
+
 	//CMap<CString, CString, CString, CString> styles;
 	TrecComPointer<ID2D1RenderTarget> rt;
 

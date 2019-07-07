@@ -19,3 +19,4 @@
 #include "SubtractExpressionTag.h"
 #include "TrueTag.h"
 #include "VarTag.h"
+#include "ConditionalBlockTag.h"

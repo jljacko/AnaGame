@@ -4539,8 +4539,8 @@ TText::TText(TrecComPointer<ID2D1RenderTarget>rtp,TControl* tc)
 	rt = rtp;
 	cap = tc;
 	fontSize = 12.0;
-	locale = new WCHAR[6]{ L"en-us" };
-	font = new WCHAR[6]{ L"Ariel" };
+	locale.Set( L"en-us" );
+	font.Set(L"Ariel" );
 	color = D2D1::ColorF(D2D1::ColorF::Black);
 	fontWeight = DWRITE_FONT_WEIGHT_REGULAR;
 	fontStyle = DWRITE_FONT_STYLE_NORMAL;
@@ -4623,8 +4623,8 @@ TText::TText(TrecPointer<TText> & rText, TControl* tc_holder)
 TText::TText()
 {
 	fontSize = 12.0;
-	locale = new WCHAR[6]{ L"en-us" };
-	font = new WCHAR[6]{ L"Ariel" };
+	locale.Set( L"en-us" );
+	font.Set(L"Ariel" );
 	color = D2D1::ColorF(D2D1::ColorF::Black);
 	fontWeight = DWRITE_FONT_WEIGHT_REGULAR;
 	fontStyle = DWRITE_FONT_STYLE_NORMAL;
@@ -4884,7 +4884,7 @@ D2D1::ColorF TText::getColor()
 */
 bool TText::setNewFont(TString& pFont)
 {
-	font = pFont;
+	font.Set( pFont);
 	RECT r = convertD2DRectToRECT(bounds);
 	onCreate(r);
 	reCreateLayout();
@@ -5001,7 +5001,7 @@ TString TText::getCaption()
 */
 void TText::setCaption(TString& string)
 {
-	text = string;
+	text.Set(string);
 	reCreateLayout();
 }
 
@@ -5736,6 +5736,96 @@ void TContent::setColor(D2D1::ColorF cf)
 RECT TContent::getLocation()
 {
 	return convertD2DRectToRECT(location);
+}
+
+void TContent::SetRadialImage(TDataArray<D2D1_COLOR_F>& colors)
+{
+	ID2D1GradientStopCollection* stopper = getStopCollection(colors);
+	if (!stopper) return;
+
+	gradStop = stopper;
+	ID2D1RadialGradientBrush* radBrush = nullptr;
+	rt->CreateRadialGradientBrush(D2D1::RadialGradientBrushProperties(
+		D2D1::Point2F(location.left, location.top),
+		D2D1::Point2F(location.right, location.bottom),
+		location.right - location.left, location.bottom - location.top),
+		stopper, &radBrush);
+	brush = radBrush;
+	rb = radBrush;
+}
+
+void TContent::SetLinearImage(TDataArray<D2D1_COLOR_F>& colors)
+{
+	ID2D1GradientStopCollection* stopper = getStopCollection(colors);
+	if (!stopper) return;
+
+	gradStop = stopper;
+	ID2D1LinearGradientBrush* linBrush = nullptr;
+	rt->CreateLinearGradientBrush(D2D1::LinearGradientBrushProperties(
+		D2D1::Point2F(location.left, location.top),
+		D2D1::Point2F(location.right, location.bottom)),
+		stopper, &linBrush);
+	brush = linBrush;
+	lb = linBrush;
+}
+
+void TContent::SetRadialImage(TDataArray<D2D1_GRADIENT_STOP>& colors)
+{
+	ID2D1GradientStopCollection* stopper = nullptr;
+
+	if (!rt.get()) return;
+
+	rt->CreateGradientStopCollection(colors.data(), colors.Size(), &stopper);
+
+	if (!stopper) return;
+
+	gradStop = stopper;
+	ID2D1RadialGradientBrush* radBrush = nullptr;
+	rt->CreateRadialGradientBrush(D2D1::RadialGradientBrushProperties(
+		D2D1::Point2F(location.left, location.top),
+		D2D1::Point2F(location.right, location.bottom),
+		location.right - location.left, location.bottom - location.top),
+		stopper, &radBrush);
+	brush = radBrush;
+	rb = radBrush;
+}
+
+void TContent::SetLinearImage(TDataArray<D2D1_GRADIENT_STOP>& colors)
+{
+	ID2D1GradientStopCollection* stopper = nullptr;
+
+	if (!rt.get()) return;
+	
+	rt->CreateGradientStopCollection(colors.data(), colors.Size(), &stopper);
+
+	if (!stopper) return;
+
+	gradStop = stopper;
+	ID2D1LinearGradientBrush* linBrush = nullptr;
+	rt->CreateLinearGradientBrush(D2D1::LinearGradientBrushProperties(
+		D2D1::Point2F(location.left, location.top),
+		D2D1::Point2F(location.right, location.bottom)),
+		stopper, &linBrush);
+	brush = linBrush;
+	lb = linBrush;
+}
+
+ID2D1GradientStopCollection* TContent::getStopCollection(TDataArray<D2D1_COLOR_F>& colors)
+{
+	if (!rt.get() || !colors.Size()) return nullptr;
+	ID2D1GradientStopCollection* stop = nullptr;
+	TDataArray<D2D1_GRADIENT_STOP> gradients;
+
+	float stopValue = 1.0f / static_cast<float>(colors.Size());
+
+	for (UINT Rust = 0; Rust < colors.Size(); Rust++)
+	{
+		D2D1_GRADIENT_STOP gStop{ static_cast<float>(Rust) * stopValue, colors[Rust] };
+		gradients.push_back(gStop);
+	}
+
+	rt->CreateGradientStopCollection(gradients.data(), gradients.Size(), &stop);
+	return stop;
 }
 
 /*

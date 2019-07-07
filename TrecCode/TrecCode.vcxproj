@@ -188,8 +188,10 @@
   <ItemGroup>
     <ClCompile Include="AddExpressionTag.cpp" />
     <ClCompile Include="AndExpression.cpp" />
+    <ClCompile Include="BlockTag.cpp" />
     <ClCompile Include="BNFTag.cpp" />
     <ClCompile Include="BreakTag.cpp" />
+    <ClCompile Include="ConditionalBlockTag.cpp" />
     <ClCompile Include="ContinueTag.cpp" />
     <ClCompile Include="DivExpressionTag.cpp" />
     <ClCompile Include="dllmain.cpp">
@@ -239,8 +241,10 @@
   <ItemGroup>
     <ClInclude Include="AddExpressionTag.h" />
     <ClInclude Include="AndExpression.h" />
+    <ClInclude Include="BlockTag.h" />
     <ClInclude Include="BNFTag.h" />
     <ClInclude Include="BreakTag.h" />
+    <ClInclude Include="ConditionalBlockTag.h" />
     <ClInclude Include="ContinueTag.h" />
     <ClInclude Include="DivExpressionTag.h" />
     <ClInclude Include="DoubleOpTag.h" />

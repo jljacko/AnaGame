@@ -175,9 +175,12 @@ IntLanguage * IntLanguage::getLanguage(TString & langName)
 
 		if (bnf.IsOpen())
 		{
-			Log(lt_bnf, TString(L"LANGUAGE: ") + lang->language);
+			BlockType bt = (lang->blockMarks == TString(L"Tabs")) ? block_indent: block_tokens;
+
+
+			Log(lt_bnf, TString(L"LANGUAGE: ") + langName);
 			Log(lt_bnf, TString());
-			lang->tagList = setUpTagList(bnf);
+			lang->tagList = setUpTagList(bnf, bt);
 			if (lang->tagList)
 				CompileIntLanguage(*lang->tagList);
 

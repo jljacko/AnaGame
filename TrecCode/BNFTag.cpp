@@ -17,21 +17,21 @@ BNFTag * BNFTag::GetTag(TString & tagName)
 	return new BNFTag(tagName);
 }
 
-BNFTag * BNFTag::GetFunctionalTag(TString & tagName)
+BNFTag * BNFTag::GetFunctionalTag(TString & tagName, BlockType bt)
 {
 	// Basic Conditional
 	if (tagName == TString(L"if_statement"))
-		return nullptr; // To-Do: Create the If bnf tag
+		return new ConditionalBlockTag(tagName, bt, false, false, false); 
 
 	// Basic Loops
 	if (tagName == TString(L"while_statement"))
-		return nullptr; // To-Do: Create the while bnf tag
+		return  new ConditionalBlockTag(tagName, bt, true, false, false); 
 	if (tagName == TString(L"until_statement"))
-		return nullptr; // To-Do: Create the until bnf tag
+		return  new ConditionalBlockTag(tagName, bt, true, false, false, true); // Included to support the Perl Language (which has n Until block)
 	if (tagName == TString(L"for_1_statement"))
-		return nullptr; // To-Do: Create the If bnf tag
+		return  new ConditionalBlockTag(tagName, bt, true, false, false);; 
 	if (tagName == TString(L"for_3_statement"))
-		return nullptr; // To-Do: Create the If bnf tag
+		return  new ConditionalBlockTag(tagName, bt, true, true, false);; // To-Do: Create the If bnf tag
 
 	// Error Handlers
 	if (tagName == TString(L"try_statement"))
@@ -179,8 +179,10 @@ UINT BNFTag::CompileTag(TDataArray<BNFTag*>& tagList)
 			isTag = this->syntax[c][rust].isTag;
 		}
 	}
-
-	Log(lt_bnf, this->name);
+	TString bnfLang(L"<<<");
+	bnfLang.Append(this->name);
+	bnfLang.Append(L">>>");
+	Log(lt_bnf, bnfLang);
 	TString code(L"\t");
 	for (UINT C = 0; C < this->syntax.Size(); C++)
 	{
@@ -188,13 +190,15 @@ UINT BNFTag::CompileTag(TDataArray<BNFTag*>& tagList)
 
 		for (UINT Rust = 0; Rust < this->syntax[C].Size(); Rust++)
 		{
-			if (this->syntax[C][Rust].isTag)
+			if (!this->syntax[C][Rust].isTag)
 			{
-				code.Append(TString(L"<<<") + this->syntax[C][Rust].mark + TString(L">>> "));
+				auto value = this->syntax[C][Rust].mark;
+				code.Append(TString(L"<<<") + value + TString(L">>> "));
 			} 
 			else
 			{
-				code.AppendFormat(_T("[%d] "), this->syntax[C][Rust].tagIndex);
+				auto value = this->syntax[C][Rust].tagIndex;
+				code.AppendFormat(_T("[%d] "), value);
 			}
 		}
 		code.Append(L" |  ");
@@ -407,11 +411,13 @@ ProcessedCode BNFTag::PreProcessLine(TString & code, UINT syntaxIndex)
 	return ProcessedCode();
 }
 
-TDataArray<BNFTag*>* setUpTagList(TFile & file)
+TDataArray<BNFTag*>* setUpTagList(TFile & file, BlockType bt)
 {
 	TDataArray<BNFTag*>* ret = new TDataArray<BNFTag*>();
 
 	TString line;
+
+
 
 	while (file.ReadString(line))
 	{
@@ -438,7 +444,7 @@ TDataArray<BNFTag*>* setUpTagList(TFile & file)
 
 		if (tag[0] == L'[' && tag[tag.GetLength() - 1] == L']'
 			&& tag[1] == L'[' && tag[tag.GetLength() - 2] == L']')
-			bTag = BNFTag::GetFunctionalTag(tag.SubString(2, tag.GetLength() - 2));
+			bTag = BNFTag::GetFunctionalTag(tag.SubString(2, tag.GetLength() - 2), bt);
 
 		if (bTag)
 		{

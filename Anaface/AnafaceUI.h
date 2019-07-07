@@ -11,6 +11,7 @@
 #include "TVideo.h"
 #include "TContextMenu.h"
 #include "TCanvas.h"
+#include "TImage.h"
 
 class AnafaceUI;
 typedef struct _ANAFACE_DLL auiHold {

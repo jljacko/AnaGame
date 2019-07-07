@@ -31,7 +31,7 @@ AnafaceParser::AnafaceParser(TrecComPointer<ID2D1RenderTarget> rt, HWND hWin,TSt
 	rootObj = nullptr;
 	currentObj = nullptr;
 	baseObj = nullptr;
-	fileLoc = directory;
+	fileLoc.Set(directory);
 	windowHandle = hWin;
 	events = NULL;
 	classList = new TArray<styleTable>();
@@ -124,7 +124,7 @@ bool AnafaceParser::Obj(TString* va)
 		}
 		else
 		{
-			singleParam = strings->ElementAt(0).get();
+			singleParam.Set(strings->ElementAt(0).get());
 			singleParam.Remove(L')');
 		}
 	}
@@ -250,6 +250,11 @@ bool AnafaceParser::Obj(TString* va)
 		currentObj = TrecPointer<TControl>(new TSpreadSheet(renderer, classList, windowHandle));
 		addToTree(currentObj);
 	}
+	else if (!v->Compare(L"Image") || !!v->Compare(L"TImage"))
+	{
+		currentObj = TrecPointer<TControl>(new TImage(renderer, classList));
+		addToTree(currentObj);
+	}
 	else if (!v->Compare(L"TDataBind") || !v->Compare(L"DataLayout"))
 	{
 		currentObj = TrecPointer<TControl>((new TDataBind(renderer, classList)));
@@ -299,7 +304,7 @@ bool AnafaceParser::Attribute(TrecPointer<TString> v, TString& e)
 		{
 			if (!v.get())
 				return false;
-			currentStyle->style = v.get();
+			currentStyle->style.Set(v.get());
 				return true;
 		}
 

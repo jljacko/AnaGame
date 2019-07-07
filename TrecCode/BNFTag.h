@@ -7,6 +7,12 @@
 #include "VariableContainer.h"
 #include <Logger.h>
 
+typedef enum BlockType
+{
+	block_tokens,
+	block_indent
+}BlockType;
+
 class TagCheck: public TObject
 {
 public:
@@ -50,7 +56,7 @@ protected:
 
 public:
 	static BNFTag* GetTag(TString& tagName);
-	static BNFTag* GetFunctionalTag(TString& tagName);
+	static BNFTag* GetFunctionalTag(TString& tagName, BlockType bt);
 
 	void SetSyntaxString(TString& s);
 	UINT CompileTag(TDataArray<BNFTag*>& tagList);
@@ -80,7 +86,7 @@ protected:
 };
 
 
-TDataArray<BNFTag*>* setUpTagList(TFile& file);
+TDataArray<BNFTag*>* setUpTagList(TFile& file, BlockType bt);
 
 UINT CompileIntLanguage(TDataArray<BNFTag*>& tags);
 
