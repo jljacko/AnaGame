@@ -106,6 +106,7 @@ UINT TImage::onFill(CPoint& pixel, D2D1_COLOR_F& color, float tolerance)
 			images[currentImage].d2dBitbap = bitmap.d2dBitbap;
 			releaseImage->Release();
 		}
+		pLock->Release();
 	}
 
 	return 0;
