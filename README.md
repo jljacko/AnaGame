@@ -6,6 +6,14 @@
 
 ## Set-up
 
+### 1. Clone the project:
+`
+git clone https://github.com/TrecApps/AnaGame.git
+`
+### 2. Create the Solution and Project Files (if not already present)
+
+Soon: A YouTube video to walk-you through the process
+
 #### Update these fields
 
 ![Update Fields](https://github.com/TrecApps/AnaGame/blob/master/Documentation/Read_me_images/Properties%20Windows.PNG)
@@ -30,11 +38,11 @@
 
 ![Lib Files Example](https://github.com/TrecApps/AnaGame/blob/master/Documentation/Read_me_images/Lib%20Files.PNG)
 
-### TrecLib
+### TrecLib (MFC Extension DLL)
 
 No configurtion needs to be done
 
-### VideoGraphics
+### VideoGraphics (MFC Extension DLL)
 
 Include Directories:
 * DirectXTex\DirectXTex-master\DirectXTex (3rd Party Project)
@@ -63,7 +71,7 @@ __Note:__ Starting with Windows 8, the development kit for Windows included Dire
 	because AnaGame was developed on Windows 8 and 10, you'll need the DirectXTex project found here:
 	https://github.com/Microsoft/DirectXTex
 
-### Anaface
+### Anaface (MFC Extension DLL)
 
 Include Directories:
 * TrecLib
@@ -88,7 +96,7 @@ Lib Files:
 
 __Note:__ Some of these Lib files might not be needed (I know the first four ARE needed).
 
-### Tap
+### Tap (MFC Extension DLL)
 
 Include Directories:
 * TrecLib
