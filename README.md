@@ -6,14 +6,6 @@
 
 ## Set-up
 
-### 1. Clone the project:
-`
-git clone https://github.com/TrecApps/AnaGame.git
-`
-### 2. Create the Solution and Project Files (if not already present)
-
-Soon: A YouTube video to walk-you through the process
-
 #### Update these fields
 
 ![Update Fields](https://github.com/TrecApps/AnaGame/blob/master/Documentation/Read_me_images/Properties%20Windows.PNG)
