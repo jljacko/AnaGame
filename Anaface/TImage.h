@@ -36,5 +36,8 @@ protected:
 	UINT currentImage;
 };
 
-void MarkPixels(CPoint& startPoint, UINT idealPixel, float tolerance, TDataArray<TDataArray<PixelMark>>& pixels);
+void MarkPixelsRoot(CPoint& startPoint, UINT idealPixel, float tolerance, TDataArray<TDataArray<PixelMark>>& pixels);
+void MarkPixels(CPoint& startPoint, UINT startPixel, float tolerance, TDataArray<TDataArray<PixelMark>>& pixels);
+
 void ConvertD2D1ColorToUIntColor(D2D1_COLOR_F& d2dColor, UINT& uColor);
+bool ColorsMatch(UINT color1, UINT color2, float tolerance);

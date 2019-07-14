@@ -162,10 +162,60 @@ void TImage::onDraw(TObject* obj)
 	renderTarget->SetTransform(identityMatrix);
 }
 
-void MarkPixels(CPoint& startPoint, UINT idealPixel, float tolerance, TDataArray<TDataArray<PixelMark>>& pixels)
+void MarkPixelsRoot(CPoint& startPoint, UINT idealPixel, float tolerance, TDataArray<TDataArray<PixelMark>>& pixels)
 {
+	if (!pixels.Size() || startPoint.x >= pixels[0].Size() || startPoint.y >= pixels.Size())
+		return;
+
+	UINT startPixel = pixels[startPoint.y][startPoint.x].pixel;
+
+	// pixels[startPoint.y][startPoint.x].marker == 2;
+
+	MarkPixels(startPoint, startPixel, tolerance, pixels);
+}
+
+void MarkPixels(CPoint& startPoint, UINT startPixel, float tolerance, TDataArray<TDataArray<PixelMark>>& pixels)
+{
+	// If this pixel is out of bounds, then don't analyze it
+	if (!pixels.Size() || startPoint.x >= pixels[0].Size() || startPoint.y >= pixels.Size())
+		return;
+
+	// If this pixel has already been looked at, don't look at it again
+	if (pixels[startPoint.y][startPoint.x].pixel) return;
+
+	if (ColorsMatch(startPixel, pixels[startPoint.y][startPoint.x].pixel, tolerance))
+	{
+		pixels[startPoint.y][startPoint.x].pixel = 2;
+
+		MarkPixels(CPoint(startPoint.x + 1, startPoint.y), startPixel, tolerance, pixels);
+		MarkPixels(CPoint(startPoint.x - 1, startPoint.y), startPixel, tolerance, pixels);
+		MarkPixels(CPoint(startPoint.x, startPoint.y + 1), startPixel, tolerance, pixels);
+		MarkPixels(CPoint(startPoint.x, startPoint.y - 1), startPixel, tolerance, pixels);
+	}
+	else
+	{
+		pixels[startPoint.y][startPoint.x].pixel = 1;
+	}
 }
 
 void ConvertD2D1ColorToUIntColor(D2D1_COLOR_F& d2dColor, UINT& uColor)
 {
+	uColor = 0;
+	
+	UINT tempColor = static_cast<UINT>(d2dColor.a * 255);
+	uColor += (tempColor);
+
+	tempColor = static_cast<UINT>(d2dColor.b * 255);
+	uColor += (tempColor << 8);
+
+	tempColor = static_cast<UINT>(d2dColor.g * 255);
+	uColor += (tempColor << 16);
+
+	tempColor = static_cast<UINT>(d2dColor.b * 255);
+	uColor += (tempColor << 24);
+}
+
+bool ColorsMatch(UINT color1, UINT color2, float tolerance)
+{
+	return false;
 }
