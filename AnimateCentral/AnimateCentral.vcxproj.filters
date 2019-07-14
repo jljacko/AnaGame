@@ -48,6 +48,9 @@
     <ClInclude Include="TDllApp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="AnagameMessage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimateCentral.cpp">
