@@ -321,31 +321,35 @@ intVariable * TInterpretor::GetVariable(TString & name)
 	return nullptr;
 }
 
-UINT TInterpretor::Run()
+TagCheck TInterpretor::Run()
 {
 	if (!sourceFile.get() || !sourceFile->IsOpen())
-		return 1;
+		return TagCheck(false, TString(L"Interpretor cannot Run. Source File Object is missing or unopened!"), 0, nullptr);
 
 	TString code;
 	ULONGLONG filePos = sourceFile->GetPosition();
 	ULONGLONG filePosAdd = 0;
+	TagCheck monitor(false,TString(L"Could not get Single Statement"), 0, nullptr);
 	while ( filePosAdd = GetNextStatement(code, filePos) && (!fileLocEnd || filePos < fileLocEnd))
 	{
 		// To-Do: Call upon the language BNF Tags to parse the Code statement
 		filePos += filePosAdd;
-		language->ProcessCode(code, sourceFile, filePos, globalVariables, this);
+		monitor = language->ProcessCode(code, sourceFile, filePos, globalVariables, this);
+		if (!monitor.success)
+			break;
 	}
+	return monitor;
 	
 }
 
-UINT TInterpretor::Run(TInterpretor * t)
+TagCheck TInterpretor::Run(TInterpretor * t)
 {
 	parent = t;
 	
 	return Run();
 }
 
-UINT TInterpretor::Run(TInterpretor * t, VariableList & parameters)
+TagCheck TInterpretor::Run(TInterpretor * t, VariableList & parameters)
 {
 	TDataArray<intVariable> params = parameters.GetVariableListCopy();
 

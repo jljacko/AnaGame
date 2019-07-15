@@ -60,7 +60,7 @@ TagCheck BlockTag::ProcessTag(TString& code, UINT codeStart, TrecPointer<TFile> 
 	newInterpretor->SetGlobalVariables(&globalVariables);
 	newInterpretor->SetFile(file, codeStart, 0, codeEnd);
 
-	UINT info = newInterpretor->Run(&inter);
+	TagCheck info = newInterpretor->Run(&inter);
 
-	return TagCheck();
+	return info;
 }
