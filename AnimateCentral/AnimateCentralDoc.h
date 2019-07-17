@@ -83,18 +83,5 @@ protected:
 	void SetSearchContent(const CString& value);
 #endif // SHARED_HANDLERS
 public:
-	afx_msg void OnSetacontroltest1();
-
-	afx_msg void OnSetuptcontrol1();
-	afx_msg void OnSetuptcontrol2();
-	afx_msg void OnSetuptcontrol3();
-
-	afx_msg void OnSetuptcontrol4();
-	afx_msg void OnSetuptcontrol5();
-	afx_msg void OnSetuptcontrol6();
-	afx_msg void OnSetuptcontrolLayeredtlayout();
-	afx_msg void OnSetuptcontrolLayoutGadget();
-	afx_msg void OnSetuptcontrolTextbox();
-	afx_msg void OnSetuptcontrolCombobox();
-	afx_msg void OnSetuptcontrolScrolltest();
+	
 };

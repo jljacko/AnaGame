@@ -175,20 +175,6 @@ BEGIN
     BEGIN
         MENUITEM "&About AnimateCentral...",    ID_APP_ABOUT
     END
-    POPUP "Set Up TControl"
-    BEGIN
-        MENUITEM "1",                           ID_SETUPTCONTROL_1, CHECKED
-        MENUITEM "2",                           ID_SETUPTCONTROL_2
-        MENUITEM "3",                           ID_SETUPTCONTROL_3
-        MENUITEM "TLayout rows",                ID_SETUPTCONTROL_4
-        MENUITEM "TLayout colunms",             ID_SETUPTCONTROL_5
-        MENUITEM "Tlayout Grid",                ID_SETUPTCONTROL_6
-        MENUITEM "Layered TLayout",             ID_SETUPTCONTROL_LAYEREDTLAYOUT
-        MENUITEM "Layout, radio, and check",    ID_SETUPTCONTROL_LAYOUT
-        MENUITEM "TextBox",                     ID_SETUPTCONTROL_TEXTBOX
-        MENUITEM "comboBox",                    ID_SETUPTCONTROL_COMBOBOX
-        MENUITEM "Scroll Test",                 ID_SETUPTCONTROL_SCROLLTEST
-    END
 END
 
 IDR_POPUP_EDIT MENU
@@ -198,14 +184,6 @@ BEGIN
         MENUITEM "Cu&t\tCtrl+X",                ID_EDIT_CUT
         MENUITEM "&Copy\tCtrl+C",               ID_EDIT_COPY
         MENUITEM "&Paste\tCtrl+V",              ID_EDIT_PASTE
-    END
-    POPUP "Set A Control Test"
-    BEGIN
-        MENUITEM "1",                           ID_SETACONTROLTEST_1
-        MENUITEM "2",                           ID_SETACONTROLTEST_2
-        MENUITEM "3",                           ID_SETACONTROLTEST_3
-        MENUITEM "4",                           ID_SETACONTROLTEST_4
-        MENUITEM "5",                           ID_SETACONTROLTEST_5
     END
 END
 
