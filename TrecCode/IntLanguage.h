@@ -12,7 +12,7 @@ public:
 
 	static IntLanguage* getLanguage(TString& langName);
 
-	UINT ProcessCode(TString& statement, TrecPointer<TFile> file, UINT codeStart, VariableContainer*, TInterpretor* , UINT line = 0);
+	TagCheck ProcessCode(TString& statement, TrecPointer<TFile> file, UINT codeStart, VariableContainer*, TInterpretor* , UINT line = 0);
 
 	BNFTag* getTagAt(UINT index);
 	TString getLanguageName();

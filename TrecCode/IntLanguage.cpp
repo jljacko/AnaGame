@@ -203,21 +203,25 @@ IntLanguage * IntLanguage::getLanguage(TString & langName)
 	return lang;
 }
 
-UINT IntLanguage::ProcessCode(TString & statement, TrecPointer<TFile> file, UINT codeStart, VariableContainer* gv, TInterpretor* inter, UINT line)
+TagCheck IntLanguage::ProcessCode(TString & statement, TrecPointer<TFile> file, UINT codeStart, VariableContainer* gv, TInterpretor* inter, UINT line)
 {
 	if(startIndex == -1 || !tagList || !tagList->Size() || !gv || !inter)
-		return 1;
+		return TagCheck(false, TString(L"Resources provided to Interpretor are inadequate for code processing!"), 0, nullptr);
 
 	if (!rootBNF.GetLength())
-		return 2;
+		return TagCheck(false, TString(L"Resources provided to Interpretor are inadequate for code processing!"), 0, nullptr);
 
 	// tagList->at(startIndex)->ProcessTag(statement, *gv, *inter, *tagList);
 	TagCheck check = tagList->at(startIndex)->ProcessTag(statement, codeStart, file, *gv, *inter, *this, *tagList);
 
 	if (!check.success)
-		return 3;
+	{
 
-	return 0;
+		return check;
+	}
+	
+
+	return check;
 }
 
 BNFTag* IntLanguage::getTagAt(UINT index)
