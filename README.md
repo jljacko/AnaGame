@@ -1,7 +1,7 @@
 # AnaGame (Draft - to be updated soon)
 #### Language: C++
 #### Compiler: Visual C++
-#### IDE: Visual Studio 2015 (created), 2017 (Current) - both Community edition
+#### IDE: Visual Studio 2015 (created), 2019 (Current) - both Community edition
 ##### Note: Professional or above should work, so long as MFC part of your installation
 
 ## Set-up
@@ -14,9 +14,13 @@
 2. Open the solution in Visual Studio
 3. Build the TrecLib project (you'll need a debug folder)
 4. For each project (other than TrecLib), Open their properties window
-5. Update the "Library Directories" and "Include Directories" in "VC++ Directories"
+5. Check the "Library Directories" and "Include Directories" in "VC++ Directories"
 --Make sure they point to the directories on _your_ system
-6. Update the lib file list ("Linker --> Input --> Additional Dependencies")
+--Recently, I modified the project files to point to _relevant_ files/folders, meaning you shouldn't have too much work to do.
+6. Check the lib file list ("Linker --> Input --> Additional Dependencies")
+
+__Note:__ For both steps 5 and 6, check the notes on each individual project to make sure your set up meets requirements. Hopefully, you
+	shouldn't have to change anything.
 
 #### Include Example:
 
@@ -62,6 +66,9 @@ __Note:__ Starting with Windows 8, the development kit for Windows included Dire
 	function involved with Textures in prior DirectX Development was removed from the kit. Consequently, 
 	because AnaGame was developed on Windows 8 and 10, you'll need the DirectXTex project found here:
 	https://github.com/Microsoft/DirectXTex
+
+__Note 2:__ I highly advise you to clone the _DirectXTex_ repo from the same directory you clone the _Anagame_ repo. That way, you shouldn't have to modify the 
+	_VideoGraphics_ project file to point to this repo.
 
 ### Anaface (MFC Extension DLL)
 
