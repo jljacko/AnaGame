@@ -162,6 +162,125 @@ void TImage::onDraw(TObject* obj)
 	renderTarget->SetTransform(identityMatrix);
 }
 
+UINT TImage::addImage(TFile& file)
+{
+	TString fileName(file.GetFilePath());
+	file.Close();
+	return addImage(fileName);
+}
+
+UINT TImage::addImage(TString& fileName)
+{
+	IWICImagingFactory* imageFactory = NULL;
+	IWICBitmapDecoder* decoder = NULL;
+	IWICBitmapFrameDecode* framDec = NULL;
+	IWICFormatConverter* converter = NULL;
+	IWICBitmapScaler* scale = nullptr;
+	UINT frameCount = 0;
+	HRESULT result = CoCreateInstance(CLSID_WICImagingFactory,
+		NULL,
+		CLSCTX_INPROC_SERVER,
+		IID_IWICImagingFactory,
+		(LPVOID*)& imageFactory);
+	if (!SUCCEEDED(result))
+		return 2;
+	result = imageFactory->CreateDecoderFromFilename(fileName,
+		NULL,
+		GENERIC_READ,
+		WICDecodeMetadataCacheOnLoad,
+		&decoder);
+	if (!SUCCEEDED(result))
+	{
+		imageFactory->Release();
+		return 3;
+	}
+
+	result = decoder->GetFrame(0, &framDec);
+	if (!SUCCEEDED(result))
+	{
+		imageFactory->Release();
+		decoder->Release();
+		return 4;
+	}
+
+	UINT h = 0, w = 0;
+
+	framDec->GetSize(&w, &h);
+	result = imageFactory->CreateFormatConverter(&converter);
+	if (!SUCCEEDED(result))
+	{
+		imageFactory->Release();
+		decoder->Release();
+		return 5;
+	}
+
+	result = imageFactory->CreateBitmapScaler(&scale);
+
+	if (!SUCCEEDED(result))
+	{
+		imageFactory->Release();
+		decoder->Release();
+		converter->Release();
+		return 6;
+	}
+
+
+	//TO-Do - add mechanism for image being it's own size
+	result = scale->Initialize(framDec, location.right - location.left, location.bottom - location.top,
+		WICBitmapInterpolationModeFant);
+	
+
+	if (!SUCCEEDED(result))
+	{
+		imageFactory->Release();
+		decoder->Release();
+		converter->Release();
+		return 7;
+	}
+
+	result = converter->Initialize(scale, GUID_WICPixelFormat32bppPRGBA,
+		WICBitmapDitherTypeNone, NULL, 0.0f,
+		WICBitmapPaletteTypeMedianCut);
+
+	scale->Release();
+	scale = nullptr;
+
+	if (!SUCCEEDED(result))
+	{
+		imageFactory->Release();
+		decoder->Release();
+		converter->Release();
+		return 8;
+	}
+	if (!renderTarget.get())
+	{
+		imageFactory->Release();
+		decoder->Release();
+		converter->Release();
+		return 9;
+	}
+	TBitmap theMap{ nullptr, nullptr };
+	result = renderTarget->CreateBitmapFromWicBitmap(converter, &theMap.d2dBitbap);
+	
+	HRESULT result2 = imageFactory->CreateBitmapFromSource(scale, WICBitmapCacheOnLoad, &theMap.wicBitmap);
+	
+	//decoder->GetFrameCount(&frameCount);
+	imageFactory->Release();
+	decoder->Release();
+	converter->Release();
+	if (!SUCCEEDED(result) || !SUCCEEDED(result2))
+	{
+		if (theMap.d2dBitbap)
+			theMap.d2dBitbap->Release();
+		if (theMap.wicBitmap)
+			theMap.wicBitmap->Release();
+
+		return 10;
+	}
+	images.push_back(theMap);
+	return 0;
+}
+
 void MarkPixelsRoot(CPoint& startPoint, UINT idealPixel, float tolerance, TDataArray<TDataArray<PixelMark>>& pixels)
 {
 	if (!pixels.Size() || startPoint.x >= pixels[0].Size() || startPoint.y >= pixels.Size())

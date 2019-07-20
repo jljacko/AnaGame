@@ -1,5 +1,6 @@
 #pragma once
 #include "TControl.h"
+#include <TFile.h>
 
 typedef struct TBitmap {
 	IWICBitmap* wicBitmap;
@@ -28,6 +29,9 @@ public:
 
 	UINT rotate(CPoint& point);
 	virtual void onDraw(TObject* obj) override;
+
+	UINT addImage(TFile& file);
+	UINT addImage(TString& fileName);
 
 protected:
 	D2D1_MATRIX_3X2_F rotation;
