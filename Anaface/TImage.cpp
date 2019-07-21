@@ -336,5 +336,17 @@ void ConvertD2D1ColorToUIntColor(D2D1_COLOR_F& d2dColor, UINT& uColor)
 
 bool ColorsMatch(UINT color1, UINT color2, float tolerance)
 {
-	return false;
+	BYTE bColor1[4], bColor2[4];
+	memcpy(bColor1, &color1, sizeof(color1));
+	memcpy(bColor2, &color2, sizeof(color2));
+
+	float distance = powf(static_cast<float>(bColor1[0]) - static_cast<float>(bColor2[0]), 2) +
+		powf(static_cast<float>(bColor1[1]) - static_cast<float>(bColor2[1]), 2) + 
+		powf(static_cast<float>(bColor1[2]) - static_cast<float>(bColor2[2]), 2) + 
+		powf(static_cast<float>(bColor1[3]) - static_cast<float>(bColor2[3]), 2);
+
+	distance = sqrtf(distance);
+
+
+	return ((distance/260100.0f) * 100.0f) <= tolerance;
 }
