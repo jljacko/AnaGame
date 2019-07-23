@@ -13,7 +13,6 @@ UCHAR TFileType[] = { 2, 0b10000000, 2 };
 TFile::TFile()
 {
 	fileEncode = fet_unknown;
-	CFile();
 }
 
 /*
@@ -23,7 +22,7 @@ TFile::TFile()
 *			UINT nOpenFlags - flags that specify the open status of the file
 * Returns: void
 */
-TFile::TFile(LPCTSTR lpszFileName, UINT nOpenFlags) 
+TFile::TFile(TString& lpszFileName, UINT nOpenFlags) 
 {
 	fileEncode = fet_unknown;
 
@@ -70,7 +69,7 @@ TFile::~TFile()
 *			CFileException * pError - Error information
 * Returns: BOOL - success or failure to open file
 */
-BOOL TFile::Open(LPCTSTR lpszFileName, UINT nOpenFlags, CFileException * pError)
+BOOL TFile::Open(TString& lpszFileName, UINT nOpenFlags)
 {
 	BOOL opened = pError ? CFile::Open(lpszFileName, nOpenFlags, pError) :
 		CFile::Open(lpszFileName, nOpenFlags);
@@ -81,42 +80,8 @@ BOOL TFile::Open(LPCTSTR lpszFileName, UINT nOpenFlags, CFileException * pError)
 	return opened;
 }
 
-/*
-* Method: TFile - Open
-* Purpose: Opens the File
-* Parameters: TString& file - The File to open
-*			UINT flags - Flags to open the file
-*			CFileException * pError - Error information
-* Returns: BOOL - success or failure to open file
-*/
-BOOL TFile::Open(TString & file, UINT flags, CFileException * pError)
-{
-	BOOL opened = CFile::Open(file, flags, pError);
-	if (opened)
-		fileEncode = DeduceEncodingType();
-	else
-		fileEncode = fet_unknown;
-	return opened;
-}
 
-/*
-* Method: TFile - Open
-* Purpose: Opens the File
-* Parameters: LPCTSTR lpszFileName - The File to open
-*			UINT nOpenFlags - Flags to open the file
-*			CAtlTransactionManager * pTM - some junk parameter that makes no sense
-*			CFileException * pError - Error information
-* Returns: BOOL - success or failure to open file
-*/
-BOOL TFile::Open(LPCTSTR lpszFileName, UINT nOpenFlags, CAtlTransactionManager * pTM, CFileException * pError)
-{
-	BOOL opened = CFile::Open(lpszFileName, nOpenFlags, pTM, pError);
-	if (opened)
-		fileEncode = DeduceEncodingType();
-	else
-		fileEncode = fet_unknown;
-	return opened;
-}
+
 
 
 /*
@@ -125,7 +90,7 @@ BOOL TFile::Open(LPCTSTR lpszFileName, UINT nOpenFlags, CAtlTransactionManager *
 * Parameters: CString& rString - the String to read into
 * Returns: BOOL - success of reading
 */
-BOOL TFile::ReadString(CString & rString)
+BOOL TFile::ReadString(TString & rString)
 {
 	bool success = false;
 	rString.Empty();
@@ -172,7 +137,7 @@ BOOL TFile::ReadString(CString & rString)
 	return success;
 }
 
-UINT TFile::ReadString(CString & rString, UINT nMax)
+UINT TFile::ReadString(TString & rString, UINT nMax)
 {
 	rString.Empty();
 	UINT rust = 0;
@@ -213,56 +178,8 @@ UINT TFile::ReadString(CString & rString, UINT nMax)
 	return rust;
 }
 
-/*
-* Method: TFile - ReadString
-* Purpose: Reads a line in a file into a String, taking into account the file encoding
-* Parameters: LPTSTR lpsz - the buffer to hold the string
-*			UINT nMax - the size of the buffer
-* Returns: LPTSTR - the buffer
-*/
-LPTSTR TFile::ReadString(LPTSTR lpsz, UINT nMax)
-{
-	switch (fileEncode)
-	{
-	case fet_acsii:
-	case fet_unicode8:
-		char letter[1];
-		for (UINT c = 0; Read(&letter, 1) && c < nMax;c++)
-		{
-			if (letter[0] == '\n')
-				break;
-			lpsz[c] = ReturnWCharType(letter[0]);
-		}
-		break;
-	case fet_unicode:
-		UCHAR letter2[2];
-		for(UINT c = 0; Read(&letter2, 2) && c < nMax;c++)
-		{
-			WCHAR cLetter;
-			UCHAR temp = letter2[0];
-			letter2[0] = letter2[1];
-			letter2[1] = temp;
-			memcpy(&cLetter, letter2, 2);
-			if (cLetter == L'\n')
-				break;
-			lpsz[c] = cLetter;
-		}
-		break;
-	case fet_unicode_little:
-	case fet_unknown:
-		fileEncode = fet_unicode_little; // If unknown, just use the default
-		WCHAR wLetter;
-		for (UINT c = 0;Read(&wLetter, 2) && c < nMax;c++)
-		{
-			if (wLetter == L'\n')
-				break;
-			lpsz[c] = wLetter;
-		}
-	}
-	return lpsz;
-}
 
-UINT TFile::ReadString(CString & rString, WCHAR chara)
+UINT TFile::ReadString(TString & rString, WCHAR chara)
 {
 	bool success = false;
 	rString.Empty();
@@ -315,7 +232,7 @@ UINT TFile::ReadString(CString & rString, WCHAR chara)
 * Parameters: LPCTSTR lpsz - the Stringt to write
 * Returns: void
 */
-void TFile::WriteString(LPCTSTR lpsz)
+void TFile::WriteString(TString& lpsz)
 {
 	UINT size = 0;
 	CHAR* acsiiText = nullptr;

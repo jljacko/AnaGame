@@ -1,5 +1,4 @@
 #pragma once
-
 #include "TArray.h"
 #include "TObject.h"
 #include <d2d1_1.h>
@@ -31,21 +30,14 @@ typedef struct IndexRange {
 	int end;
 }IndexRange;
 
-typedef struct strData
-{
-	WCHAR* w_str;
-	char* c_str;
-};
-
 
 /*
 * Class: TString
 * Represents the UNICODE version of the String class, with features such as split,
 *	number extraction, substring, and trim
 */
-class _TREC_LIB_DLL TString : public TObject
+class _TREC_LIB_DLL TString :public CString, public TObject
 {
-
 public:
 	TString();
 	~TString();
@@ -73,7 +65,6 @@ public:
 	// Set Methods, to be used in place of Assignment operators to avoid C26444 Warnings
 	void Set(TString& s);
 	void Set(TString* s);
-
 	void Set(WCHAR* w);
 	void Set(WCHAR w);
 
@@ -102,66 +93,7 @@ public:
 	bool operator!=(TString* s);
 	bool operator!=(WCHAR* s);
 
-	WCHAR operator[](UINT loc);
-
 	virtual UCHAR* GetAnaGameType() override;
-
-	UINT GetSize();
-	WCHAR GetAt(UINT c);
-
-	// Relics from MFC CString that we now hve to implement ourselves
-	void AppendFormat(WCHAR* format, ...);
-	void AppendFormat(TString& format, ...);
-	void Format(WCHAR* format, ...);
-	void Format(TString& format, ...);
-
-	int Compare(TString& other);
-	int CompareNoCase(TString& other);
-	static int Compare(TString& str1, TString& str2);
-
-	int Delete(int index, int count = 1);
-	TString GetDelete(int& ret, int index, int count = 1);
-	
-	int Find(TString& sub, int start = 0);
-	int Find(WCHAR sub, int start = 0);
-	int FindOneOf(TString& chars, int start = 0);
-
-	bool SetAsEnvironmentVariable(TString& var);
-
-	int Insert(int index, TString& subStr);
-	TString GetInsert(int& ret, int index, TString& subStr);
-	int Insert(int index, WCHAR ch);
-	TString GetInsert(int& ret, int index, WCHAR ch);
-
-	void SetLower();
-	TString GetLower();
-	void SetUpper();
-	TString GetUpper();
-
-	void SetReverse();
-	TString GetReverse();
-
-	int Remove(WCHAR c);
-	TString GetRemove(int& ret, WCHAR c);
-
-	int Replace(TString& oldStr, TString& newStr);
-	TString GetReplace(int& ret, TString& oldStr, TString& newStr);
-	int Replace(WCHAR& oldStr, WCHAR& newStr);
-	TString GetReplace(int& ret, WCHAR& oldStr, WCHAR& newStr);
-
-	TString Tokenize(TString& tokens, int& start);
-
-	void Trim();
-	TString GetTrim();
-	void TrimRight();
-	TString GetTrimRight();
-	void TrimLeft();
-	TString GetTrimLeft();
-
-private:
-	UINT size;			// Note: these values focus on the number of WCHARs
-	UINT capacity;
-	strData string;
 };
 
 /*
