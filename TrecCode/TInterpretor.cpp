@@ -329,11 +329,16 @@ TagCheck TInterpretor::Run()
 	TString code;
 	ULONGLONG filePos = sourceFile->GetPosition();
 	ULONGLONG filePosAdd = 0;
-	TagCheck monitor(false,TString(L"Could not get Single Statement"), 0, nullptr);
+	TagCheck monitor(false, TString(L"Could not get Single Statement"), 0, nullptr);
 	while ( filePosAdd = GetNextStatement(code, filePos) && (!fileLocEnd || filePos < fileLocEnd))
 	{
 		// To-Do: Call upon the language BNF Tags to parse the Code statement
 		filePos += filePosAdd;
+
+		// If all we have is whitespace, continue until we reach the end or we achieve an actual statement
+		code.Trim();
+		if (!code.GetLength())
+			continue;
 		monitor = language->ProcessCode(code, sourceFile, filePos, globalVariables, this);
 		if (!monitor.success)
 			break;

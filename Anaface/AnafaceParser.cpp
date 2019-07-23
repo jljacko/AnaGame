@@ -250,7 +250,7 @@ bool AnafaceParser::Obj(TString* va)
 		currentObj = TrecPointer<TControl>(new TSpreadSheet(renderer, classList, windowHandle));
 		addToTree(currentObj);
 	}
-	else if (!v->Compare(L"Image") || !!v->Compare(L"TImage"))
+	else if (!v->Compare(L"Image") || !v->Compare(L"TImage"))
 	{
 		currentObj = TrecPointer<TControl>(new TImage(renderer, classList));
 		addToTree(currentObj);
