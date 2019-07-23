@@ -1,9 +1,10 @@
 #pragma once
-//#define _AFXDLL
-#include "afx.h"
+
 #include <new>
 #include <memory>
 #include "TrecLib.h"
+
+#include "AnagameDef.h"
 
 
 extern UCHAR TArrayType[];

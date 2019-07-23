@@ -1,10 +1,10 @@
-#include "stdafx.h"
 #include "TObject.h"
 #include "TString.h"
 
 UCHAR TObjectType[] = { 1, 0b10000000 };
 
-
+WCHAR str_true[] = L"true";
+WCHAR str_false[] = L"false";
 
 
 /*
@@ -65,7 +65,7 @@ TString TObject::toString()
 WCHAR* boolToString(bool val)
 {
 	if (val)
-		return L"true";
+		return str_true;
 	else
-		return L"false";
+		return str_false;
 }

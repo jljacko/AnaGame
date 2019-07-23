@@ -32,13 +32,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AnaGame_Builder", "AnaGame_
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AnafaceSupport", "AnafaceSupport\AnafaceSupport.vcxproj", "{5FAA55A0-3827-4B56-AC12-5CF349D85F01}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TrecLib", "TrecLib\TrecLib.vcxproj", "{1947E225-D209-4486-9C0D-2EEC67B01893}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VideoGraphics", "VideoGraphics\VideoGraphics.vcxproj", "{6A5656A3-4CCE-49AA-A0AC-6C73629A061A}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TrecCode", "TrecCode\TrecCode.vcxproj", "{EC4DD89F-71E2-439D-817F-81EBC5A578E9}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DocAnimation", "DocAnimation\DocAnimation.vcxproj", "{2621189F-2F7B-4BC2-BF5C-95BA4F6A7571}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TrecLib", "TrecLib\TrecLib.vcxproj", "{D51F30ED-A597-4CB8-9BEB-7EC42AECE350}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -104,14 +104,6 @@ Global
 		{5FAA55A0-3827-4B56-AC12-5CF349D85F01}.Release|x64.Build.0 = Release|x64
 		{5FAA55A0-3827-4B56-AC12-5CF349D85F01}.Release|x86.ActiveCfg = Release|Win32
 		{5FAA55A0-3827-4B56-AC12-5CF349D85F01}.Release|x86.Build.0 = Release|Win32
-		{1947E225-D209-4486-9C0D-2EEC67B01893}.Debug|x64.ActiveCfg = Debug|x64
-		{1947E225-D209-4486-9C0D-2EEC67B01893}.Debug|x64.Build.0 = Debug|x64
-		{1947E225-D209-4486-9C0D-2EEC67B01893}.Debug|x86.ActiveCfg = Debug|Win32
-		{1947E225-D209-4486-9C0D-2EEC67B01893}.Debug|x86.Build.0 = Debug|Win32
-		{1947E225-D209-4486-9C0D-2EEC67B01893}.Release|x64.ActiveCfg = Release|x64
-		{1947E225-D209-4486-9C0D-2EEC67B01893}.Release|x64.Build.0 = Release|x64
-		{1947E225-D209-4486-9C0D-2EEC67B01893}.Release|x86.ActiveCfg = Release|Win32
-		{1947E225-D209-4486-9C0D-2EEC67B01893}.Release|x86.Build.0 = Release|Win32
 		{6A5656A3-4CCE-49AA-A0AC-6C73629A061A}.Debug|x64.ActiveCfg = Debug|x64
 		{6A5656A3-4CCE-49AA-A0AC-6C73629A061A}.Debug|x64.Build.0 = Debug|x64
 		{6A5656A3-4CCE-49AA-A0AC-6C73629A061A}.Debug|x86.ActiveCfg = Debug|Win32
@@ -136,6 +128,14 @@ Global
 		{2621189F-2F7B-4BC2-BF5C-95BA4F6A7571}.Release|x64.Build.0 = Release|x64
 		{2621189F-2F7B-4BC2-BF5C-95BA4F6A7571}.Release|x86.ActiveCfg = Release|Win32
 		{2621189F-2F7B-4BC2-BF5C-95BA4F6A7571}.Release|x86.Build.0 = Release|Win32
+		{D51F30ED-A597-4CB8-9BEB-7EC42AECE350}.Debug|x64.ActiveCfg = Debug|x64
+		{D51F30ED-A597-4CB8-9BEB-7EC42AECE350}.Debug|x64.Build.0 = Debug|x64
+		{D51F30ED-A597-4CB8-9BEB-7EC42AECE350}.Debug|x86.ActiveCfg = Debug|Win32
+		{D51F30ED-A597-4CB8-9BEB-7EC42AECE350}.Debug|x86.Build.0 = Debug|Win32
+		{D51F30ED-A597-4CB8-9BEB-7EC42AECE350}.Release|x64.ActiveCfg = Release|x64
+		{D51F30ED-A597-4CB8-9BEB-7EC42AECE350}.Release|x64.Build.0 = Release|x64
+		{D51F30ED-A597-4CB8-9BEB-7EC42AECE350}.Release|x86.ActiveCfg = Release|Win32
+		{D51F30ED-A597-4CB8-9BEB-7EC42AECE350}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
