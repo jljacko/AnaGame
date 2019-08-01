@@ -29,9 +29,9 @@ BNFTag * BNFTag::GetFunctionalTag(TString & tagName, BlockType bt)
 	if (tagName == TString(L"until_statement"))
 		return  new ConditionalBlockTag(tagName, bt, true, false, false, true); // Included to support the Perl Language (which has n Until block)
 	if (tagName == TString(L"for_1_statement"))
-		return  new ConditionalBlockTag(tagName, bt, true, false, false);; 
+		return  new ConditionalBlockTag(tagName, bt, true, false, false);
 	if (tagName == TString(L"for_3_statement"))
-		return  new ConditionalBlockTag(tagName, bt, true, true, false);; // To-Do: Create the If bnf tag
+		return  new ConditionalBlockTag(tagName, bt, true, true, false);
 
 	// Error Handlers
 	if (tagName == TString(L"try_statement"))
@@ -43,13 +43,13 @@ BNFTag * BNFTag::GetFunctionalTag(TString & tagName, BlockType bt)
 
 	// Function functionality
 	if (tagName == TString(L"function_statement"))
-		return nullptr; // To-Do: Create the If bnf tag
+		return new ProcedureBlockTag(tagName, bt, false, false, false);
 	if (tagName == TString(L"parameters"))
 		return nullptr; // To-Do: Create the If bnf tag
 	if (tagName == TString(L"function_expr"))
-		return nullptr; // To-Do: Create the If bnf tag
+		return new ProcedureBlockTag(tagName, bt, false, false, true);
 	if (tagName == TString(L"block"))
-		return nullptr; // To-Do: Create the If bnf tag
+		return new BlockTag(bt);
 	
 	// Flow Tags
 	if (tagName == TString(L"break"))
@@ -69,9 +69,9 @@ BNFTag * BNFTag::GetFunctionalTag(TString & tagName, BlockType bt)
 
 	// Gate-wise expressions
 	if (tagName == TString(L"or_exp"))
-		return nullptr; // To-Do: Create the If bnf tag
+		return new OrExpression(); // To-Do: Create the If bnf tag
 	if (tagName == TString(L"and_exp"))
-		return nullptr; // To-Do: Create the If bnf tag
+		return new AndExpression(); // To-Do: Create the If bnf tag
 	if (tagName == TString(L"not_test"))
 		return nullptr; // To-Do: Create the If bnf tag
 	if (tagName == TString(L"xor_expr"))
@@ -292,7 +292,7 @@ TagCheck BNFTag::ProcessTag(TString& code, UINT codeStart, TrecPointer<TFile> fi
 			{
 				return returnable;
 			}
-			code2 = code.SubString(0, token);
+			code2.Set(code.SubString(0, token));
 		}
 
 		BNFTag* tag = lang.getTagAt(syntaxSample[syntaxStart].tagIndex);
@@ -464,6 +464,22 @@ UINT CompileIntLanguage(TDataArray<BNFTag*>& tags)
 		ret += tags[rust]->CompileTag(tags);
 	}
 	return ret;
+}
+
+bool getVariablesBooleanValue(intVariable& var)
+{
+	switch (var.hold)
+	{
+	case 6: // These are objects
+	case 5:
+	case 1:
+		return static_cast<bool>(var.value.object.get());
+	case 3:
+		return static_cast<bool>(var.value.primFloat);
+	default:
+		return static_cast<bool>(var.value.primInt);
+	}
+
 }
 
 TagCheck::TagCheck()

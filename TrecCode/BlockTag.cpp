@@ -56,11 +56,15 @@ TagCheck BlockTag::ProcessTag(TString& code, UINT codeStart, TrecPointer<TFile> 
 		break;
 	}
 
-	TrecPointer<TInterpretor> newInterpretor = new TInterpretor(inter);
+	TInterpretor* newInterpretor = new TInterpretor(inter);
 	newInterpretor->SetGlobalVariables(&globalVariables);
 	newInterpretor->SetFile(file, codeStart, 0, codeEnd);
 
-	TagCheck info = newInterpretor->Run(&inter);
+	intVariable var;
+	var.hold = 5; // Used for functions
+	var.value.object = newInterpretor;
+
+	TagCheck info(true, TString(L""), codeEnd, new intVariable(var));
 
 	return info;
 }

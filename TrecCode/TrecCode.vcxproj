@@ -218,6 +218,7 @@
     <ClCompile Include="NullTag.cpp" />
     <ClCompile Include="OrExpression.cpp" />
     <ClCompile Include="PowerTag.cpp" />
+    <ClCompile Include="ProcedureBlockTag.cpp" />
     <ClCompile Include="SimpleTag.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -257,6 +258,7 @@
     <ClInclude Include="NullTag.h" />
     <ClInclude Include="OrExpression.h" />
     <ClInclude Include="PowerTag.h" />
+    <ClInclude Include="ProcedureBlockTag.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SimpleTag.h" />
     <ClInclude Include="stdafx.h" />

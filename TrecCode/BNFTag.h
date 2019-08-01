@@ -91,3 +91,4 @@ TDataArray<BNFTag*>* setUpTagList(TFile& file, BlockType bt);
 
 UINT CompileIntLanguage(TDataArray<BNFTag*>& tags);
 
+bool getVariablesBooleanValue(intVariable& var);
