@@ -29,14 +29,12 @@ public:
 	TFile();
 	TFile(TString& lpszFileName,
 		UINT nOpenFlags);
-	TFile(TString& file, UINT nOpenFlags);
 	~TFile();
 
 	// Methods that override CFile's Methods
-	BOOL Open(TString lpszFileName,
+	bool Open(TString& lpszFileName,
 		UINT nOpenFlags);
 
-	BOOL Open(TString& file, UINT flags);
 
 	// Methods Imported from CArchive
 	
@@ -73,5 +71,6 @@ private:
 	TString filePath;
 	FileEncodingType fileEncode;
 	HFILE fileHandle;
+	ULONGLONG position;
 };
 

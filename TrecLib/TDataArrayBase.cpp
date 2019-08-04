@@ -1,4 +1,4 @@
-#include "stdafx.h"
+
 #include "TDataArrayBase.h"
 UCHAR TDataArrayType[] = { 1, 0b00100000 };
 
@@ -6,6 +6,12 @@ TDataArrayBase::TDataArrayBase(UINT s, UINT c)
 {
 	size = s;
 	capacity = c;
+}
+
+TDataArrayBase::TDataArrayBase(TDataArrayBase& copy)
+{
+	size = copy.Size();
+	capacity = copy.Capacity();
 }
 
 
@@ -33,4 +39,9 @@ UCHAR * TDataArrayBase::GetAnaGameType()
 UINT TDataArrayBase::Size()
 {
 	return size;
+}
+
+UINT TDataArrayBase::Capacity()
+{
+	return capacity;
 }

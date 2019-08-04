@@ -1,4 +1,4 @@
-#include "stdafx.h"
+
 #include "TrecPointerBase.h"
 #include "TrecPointerI.h"
 
@@ -96,7 +96,7 @@ void TrecPointerBase::IncrementCount(void * ref, const char* type)
 */
 void TrecPointerBase::IncrementCount(const char* type)
 {
-	ASSERT(InsertNewReference(index, timeCount/*, type*/));
+	InsertNewReference(index, timeCount/*, type*/);
 }
 
 /*

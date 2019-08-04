@@ -3,7 +3,7 @@
 #include "TString.h"
 #include "TDataArrayBase.h"
 
-
+#include <vector>
 
 
 
@@ -50,7 +50,7 @@ public:
 	* Parameters: TDataArray<T>& newArray - the Data Array to copy
 	* Returns: void
 	*/
-	void operator=(TDataArray<T>& newArray)
+	void operator=(const TDataArray<T>& newArray)
 	{
 		if (array)
 			delete[] array;
@@ -84,7 +84,7 @@ public:
 	* Parameters: std::vector<T, std::allocator<T>>& vectorSource - the vector to copy
 	* Returns: void
 	*/
-	void operator=(std::vector<T, std::allocator<T>>& vectorSource)
+	void operator=(const std::vector<T, std::allocator<T>>& vectorSource)
 	{
 		if (array)
 			delete[] array;
@@ -112,7 +112,7 @@ public:
 	* Parameters: TDataArray<T>& newArray - the Data Array to copy
 	* Returns: void
 	*/
-	TDataArray(TDataArray<T>& newArray) : TDataArrayBase(newArray.Size(), newArray.Capacity())
+	TDataArray(const TDataArray<T>& newArray) : TDataArrayBase(newArray.Size(), newArray.Capacity())
 	{
 		array = new T[newArray.Capacity()];
 		

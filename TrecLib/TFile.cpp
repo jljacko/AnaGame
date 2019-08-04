@@ -1,4 +1,4 @@
-#include "stdafx.h"
+
 #include "TFile.h"
 #include "TString.h"
 
@@ -13,6 +13,7 @@ UCHAR TFileType[] = { 2, 0b10000000, 2 };
 TFile::TFile()
 {
 	fileEncode = fet_unknown;
+	fileHandle = 0;
 }
 
 /*
@@ -24,32 +25,9 @@ TFile::TFile()
 */
 TFile::TFile(TString& lpszFileName, UINT nOpenFlags) 
 {
-	fileEncode = fet_unknown;
-
-	if (!CFile::Open(lpszFileName, nOpenFlags))
-		return;
-
-	// Here, the file is open, try to deduce the file type
-	fileEncode = DeduceEncodingType();
+	Open(lpszFileName, nOpenFlags);
 }
 
-/*
-* Method: (TFile) (Constructor)
-* Purpose: Creates a file that presumably will be opened
-* Parameters: TString& file - the File name to open
-* Returns: UINT nOpenFlags - flags that specify the open status of the file
-*/
-TFile::TFile(TString & file, UINT nOpenFlags)
-{
-	fileEncode = fet_unknown;
-	;
-
-	if (!CFile::Open(file, nOpenFlags))
-		return;
-
-	// Here, the file is open, try to deduce the file type
-	fileEncode = DeduceEncodingType();
-}
 
 /*
 * Method: (TFile) (Destructor) 
@@ -59,6 +37,7 @@ TFile::TFile(TString & file, UINT nOpenFlags)
 */
 TFile::~TFile()
 {
+	Close();
 }
 
 /*
@@ -69,15 +48,23 @@ TFile::~TFile()
 *			CFileException * pError - Error information
 * Returns: BOOL - success or failure to open file
 */
-BOOL TFile::Open(TString& lpszFileName, UINT nOpenFlags)
+bool TFile::Open(TString& lpszFileName, UINT nOpenFlags)
 {
-	BOOL opened = pError ? CFile::Open(lpszFileName, nOpenFlags, pError) :
-		CFile::Open(lpszFileName, nOpenFlags);
-	if (opened)
-		fileEncode = DeduceEncodingType();
-	else
-		fileEncode = fet_unknown;
-	return opened;
+	fileEncode = fet_unknown;
+
+	std::string fName = lpszFileName.GetRegString();
+	OFSTRUCT structure;
+	fileHandle = OpenFile(fName.c_str(), &structure, nOpenFlags);
+
+	if (fileHandle == HFILE_ERROR)
+	{
+		fileHandle = 0;
+		return false;
+	}
+
+	// Here, the file is open, try to deduce the file type
+	fileEncode = DeduceEncodingType();
+	return true;
 }
 
 
@@ -223,7 +210,7 @@ UINT TFile::ReadString(TString & rString, WCHAR chara)
 		}
 
 	}
-	return rString.GetLength();
+	return rString.GetSize();
 }
 
 /*
@@ -240,16 +227,17 @@ void TFile::WriteString(TString& lpsz)
 	WCHAR cLetter = L'\0';
 	UCHAR bytes[2];
 	UCHAR temp = 0;
+	WCHAR* bufferString = lpsz.GetBufferCopy();
 	if (fileEncode == fet_unknown)
 		fileEncode = fet_unicode_little;
 	switch (fileEncode)
 	{
 	case fet_acsii:
 	case fet_unicode8:
-		size = wcslen(lpsz);
+		size = lpsz.GetSize();
 		acsiiText = new CHAR[size * 2 + 1];
 		wBytes = WideCharToMultiByte(CP_ACP,
-			0, lpsz, -1,
+			0, bufferString, -1,
 			acsiiText, size * 2, NULL,
 			NULL);
 		Write(acsiiText, wBytes);
@@ -268,8 +256,10 @@ void TFile::WriteString(TString& lpsz)
 		break;
 	case fet_unicode_little:
 		for (UINT c = 0; lpsz[c] != L'\0'; c++)
-			Write(&lpsz[c], 2);
+			Write(&bufferString[c], 2);
 	}
+
+	delete[] bufferString;
 }
 
 /*
@@ -280,7 +270,7 @@ void TFile::WriteString(TString& lpsz)
 */
 bool TFile::IsOpen()
 {
-	return m_hFile != CFile::hFileNull;
+	return fileHandle != 0;
 }
 
 /*
@@ -313,7 +303,7 @@ TString TFile::GetFileDirectory()
 	TString fileName = GetFileName();
 	int ind = directory.Find(fileName, 0);
 	if (ind > 0)
-		directory.Delete(ind, fileName.GetLength());
+		directory.Delete(ind, fileName.GetSize());
 	return directory;
 }
 
@@ -333,7 +323,7 @@ TString TFile::GetFileExtension()
 	TString ext = GetFileName();
 	if(ext.Find(L'.') == -1)
 		return ext;
-	for (int c = ext.GetLength() - 1; c >= 0; c--)
+	for (int c = ext.GetSize() - 1; c >= 0; c--)
 	{
 		if (ext[c] == L'.')
 		{
@@ -341,6 +331,13 @@ TString TFile::GetFileExtension()
 		}
 	}
 	return ext;
+}
+
+void TFile::Close()
+{
+	if (fileHandle)
+		CloseHandle((HANDLE)fileHandle);
+	fileHandle = 0;
 }
 
 /*
@@ -351,7 +348,7 @@ TString TFile::GetFileExtension()
 */
 FileEncodingType TFile::DeduceEncodingType()
 {
-	if (m_hFile == CFile::hFileNull)
+	if (!IsOpen())
 		return fet_unknown;
 	if (GetLength() < 2)
 		return fet_unknown;
@@ -429,4 +426,12 @@ FileEncodingType TFile::DeduceEncodingType()
 			return fet_acsii;
 	}
 	return fet_unknown;
+}
+
+ULONGLONG TFile::GetLength()
+{
+	LARGE_INTEGER  len_li;
+	GetFileSizeEx((HANDLE)fileHandle, &len_li);
+	LONGLONG  len_ll = len_li.QuadPart;
+	return len_ll;
 }

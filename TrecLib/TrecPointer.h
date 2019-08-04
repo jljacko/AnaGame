@@ -38,7 +38,7 @@ public:
 	* Parameters: T* obj - raw reference to use
 	* Returns: void
 	*/
-	TrecPointer(T* obj) 
+	TrecPointer(const T* obj) 
 	{
 		object = obj;
 		init(obj, typeid(T).name());
@@ -52,7 +52,7 @@ public:
 	* Parameters: TrecPointer<T>& obj - Trec Pointer to copy
 	* Returns: void
 	*/
-	TrecPointer(TrecPointer<T>& obj) //: TrecPointerBase(obj, typeid(T).name())
+	TrecPointer(const TrecPointer<T>& obj) //: TrecPointerBase(obj, typeid(T).name())
 	{
 		object = obj.get();
 		//init(obj.get());
@@ -132,7 +132,7 @@ public:
 	* Parameters: u* other - raw pointer to similar class
 	* Returns: void
 	*/
-	template<class u> void operator=(u* other)
+	template<class u> void operator=(const u* other)
 	{
 		T* castOther = dynamic_cast<T*>(other);
 		
@@ -199,7 +199,7 @@ public:
 	* Parameters: TrecPointer<u>& point - TrecPointer with reference to similar object type
 	* Returns: void
 	*/
-	template<class u> void operator=(TrecPointer<u>& point)
+	template<class u> void operator=(const TrecPointer<u>& point)
 	{
 		u* altRaw = point.get();
 
@@ -233,7 +233,7 @@ public:
 	* Parameters: TrecPointer<T>& point - reference to the other TrecPointer
 	* Returns: void
 	*/
-	void operator=(TrecPointer<T>& point)
+	void operator=(const TrecPointer<T>& point)
 	{
 		if (point.get() == object)
 			return;
