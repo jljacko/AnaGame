@@ -253,6 +253,16 @@ TString BNFTag::GetTageName()
 	return name;
 }
 
+int BNFTag::GetIndexOfTag(TString& name, TDataArray<BNFTag*>& tags)
+{
+	for (int c = 0; c < tags.Size(); c++)
+	{
+		if (name == tags[c]->name)
+			return c;
+	}
+	return -1;
+}
+
 short BNFTag::findTagIndex(TDataArray<BNFTag*>& list, TString & token)
 {
 	for (UINT c = 0; c < list.Size() && c < SHORT_MAX; c++)

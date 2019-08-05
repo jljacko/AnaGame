@@ -22,8 +22,9 @@ TagCheck ProcedureBlockTag::ProcessTag(TString& bounds, UINT codeStart, TrecPoin
 
 TagCheck ProcedureBlockTag::ProcessTag(TString& bounds, UINT codeStart, TrecPointer<TFile> file, VariableContainer& globalVariables, TInterpretor& inter, IntLanguage& lang, TDataArray<BNFTag*>& tags, UCHAR index)
 {
-	int varTagIndex = -1, paramTagIndex = -1;
+	int varTagIndex = BNFTag::GetIndexOfTag(TString(L""), tags), paramTagIndex = BNFTag::GetIndexOfTag(TString(L""), tags);
 
+	
 
 	return TagCheck();
 }

@@ -71,6 +71,8 @@ public:
 
 	TString GetTageName();
 
+	static int GetIndexOfTag(TString& name, TDataArray<BNFTag*>& tags);
+
 protected:
 	TString name;
 	TString rawSyntax;
