@@ -14,6 +14,7 @@ TFile::TFile()
 {
 	fileEncode = fet_unknown;
 	fileHandle = 0;
+	position = 0ULL;
 }
 
 /*
@@ -340,6 +341,19 @@ void TFile::Close()
 	fileHandle = 0;
 }
 
+void TFile::Write(const void* buffer, UINT count)
+{
+	if (!fileHandle)
+		return;
+	LPDWORD resCount;
+	LPOVERLAPPED lap;
+	BOOL res = WriteFile((HANDLE)fileHandle, buffer, count, resCount, lap);
+
+	if (!res)
+		return;
+	position += *resCount;
+}
+
 /*
 * Method: TFile - DeduceEncodingType
 * Purpose: Attempts to determine the encoding type of the file if possible
@@ -434,4 +448,79 @@ ULONGLONG TFile::GetLength()
 	GetFileSizeEx((HANDLE)fileHandle, &len_li);
 	LONGLONG  len_ll = len_li.QuadPart;
 	return len_ll;
+}
+
+ULONGLONG TFile::GetPosition()
+{
+	return position;
+}
+
+UINT TFile::Read(void* buffer, UINT count)
+{
+	if(!fileHandle)
+		return 0;
+	LPDWORD resCount;
+	LPOVERLAPPED lap;
+	BOOL res = ReadFile((HANDLE)fileHandle, buffer, count, resCount, lap);
+
+	if (!res)
+		return 0;
+	position += *resCount;
+	return *resCount;
+}
+
+ULONGLONG TFile::Seek(LONGLONG offset, UINT from)
+{
+	if (!fileHandle) return;
+	PLONG hZero;
+	*hZero = 0;
+	DWORD res = SetFilePointer((HANDLE)fileHandle, 0, hZero, FILE_END);
+
+	if (res != INVALID_SET_FILE_POINTER)
+	{
+		ULONGLONG upper = static_cast<ULONGLONG>(*hZero) << 32;
+
+		position = upper + static_cast<ULONGLONG>(res);
+	}
+	else
+	{
+		// To-Do:
+	}
+	return position;
+}
+
+void TFile::SeekToBegin()
+{
+	if (!fileHandle) return;
+	PLONG hZero;
+	*hZero = 0;
+	DWORD res = SetFilePointer((HANDLE)fileHandle, 0, hZero, FILE_BEGIN);
+
+	if (res != INVALID_SET_FILE_POINTER)
+	{
+		position = 0;
+	}
+	else
+	{
+		// To-Do:
+	}
+}
+
+ULONGLONG TFile::SeekToEnd()
+{
+	if (!fileHandle) return;
+	PLONG hZero;
+	*hZero = 0;
+	DWORD res = SetFilePointer((HANDLE)fileHandle, 0, hZero, FILE_END);
+
+	if (res != INVALID_SET_FILE_POINTER)
+	{
+		ULONGLONG upper = static_cast<ULONGLONG>(*hZero) << 32;
+
+		position = upper + static_cast<ULONGLONG>(res);
+	}
+	else
+	{
+		// To-Do:
+	}
 }
