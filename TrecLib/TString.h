@@ -122,6 +122,10 @@ public:
 	int Find(WCHAR sub, int start = 0);
 	int FindOneOf(TString& chars, int start = 0);
 
+	int FindLast(TString& sub, int start = -1);
+	int FindLast(WCHAR sub, int start = -1);
+	int FindLastOneOf(TString& chars, int start = -1);
+
 	bool SetAsEnvironmentVariable(TString& var);
 
 	int Insert(int index, TString& subStr);

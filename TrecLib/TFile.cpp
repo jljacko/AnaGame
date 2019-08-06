@@ -65,6 +65,7 @@ bool TFile::Open(TString& lpszFileName, UINT nOpenFlags)
 
 	// Here, the file is open, try to deduce the file type
 	fileEncode = DeduceEncodingType();
+	filePath = lpszFileName;
 	return true;
 }
 
@@ -298,14 +299,13 @@ bool TFile::SetEncoding(FileEncodingType fet)
 */
 TString TFile::GetFileDirectory()
 {
-	if(!IsOpen())
+	TString sep(L"/\\");
+	int seperate = filePath.FindLastOneOf(sep);
+
+	if (seperate == -1)
 		return TString();
-	TString directory = GetFilePath();
-	TString fileName = GetFileName();
-	int ind = directory.Find(fileName, 0);
-	if (ind > 0)
-		directory.Delete(ind, fileName.GetSize());
-	return directory;
+
+	return filePath.SubString(0, seperate + 1);
 }
 
 /*
@@ -339,6 +339,13 @@ void TFile::Close()
 	if (fileHandle)
 		CloseHandle((HANDLE)fileHandle);
 	fileHandle = 0;
+}
+
+void TFile::Flush()
+{
+	if (!fileHandle)
+		return;
+	FlushFileBuffers((HANDLE)fileHandle);
 }
 
 void TFile::Write(const void* buffer, UINT count)
@@ -440,6 +447,28 @@ FileEncodingType TFile::DeduceEncodingType()
 			return fet_acsii;
 	}
 	return fet_unknown;
+}
+
+TString TFile::GetFileName()
+{
+	TString sep(L"/\\");
+	int seperate = filePath.FindLastOneOf(sep);
+
+	if(seperate == -1)
+		return TString();
+
+	return filePath.SubString(seperate + 1);
+}
+
+TString TFile::GetFilePath()
+{
+	return filePath;
+}
+
+TString TFile::GetFileTitle()
+{
+	
+	return TString();
 }
 
 ULONGLONG TFile::GetLength()
