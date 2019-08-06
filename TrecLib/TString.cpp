@@ -758,22 +758,22 @@ int TString::FindOutOfQuotes(TString& subString, int start)
 
 void TString::Set(const TString& t)
 {
-	this->Empty();
-	for (int c = 0;c < t.GetSize();c++)
-	{
-		this->AppendChar(t.GetAt(c));
-	}
+	Set(&t);
 }
 
 void TString::Set(const TString* s)
 {	
 	if (s)
 	{
-		this->Empty();
-		for (int c = 0; c < s->GetSize(); c++)
-		{
-			this->AppendChar(s->GetAt(c));
-		}
+		if (string)
+			delete[] string;
+		string = new WCHAR[s->capacity];
+		capacity = s->capacity;
+		size = s->size;
+
+		for (UINT c = 0; c < size; c++)
+			string[c] = s->string[c];
+		string[size] = L'0';
 	}
 }
 
@@ -782,9 +782,8 @@ void TString::Set(const WCHAR* w)
 {
 	if (w)
 	{
-		this->Empty();
-		for (int c = 0; *w != L'\0'; c++, w++)
-			this->AppendChar(*w);
+		TString str(w);
+		Set(&str);
 	}
 }
 
