@@ -425,6 +425,52 @@ void TString::Trim()
 	TrimLeft();
 }
 
+TString TString::GetTrim() const
+{
+	TString ret(this);
+	ret.Trim();
+	return ret;
+}
+
+void TString::TrimRight()
+{
+	int end = size - 1;
+	while (end >= 0 && iswspace(string[end]))
+	{
+		end--;
+	}
+	end++;
+	size = end;
+	string[size] = L'\0';
+}
+
+TString TString::GetTrimRight()
+{
+	TString ret(this);
+	ret.TrimRight();
+	return ret;
+}
+
+void TString::TrimLeft()
+{
+	UINT end = 0;
+	while (end < size && iswspace(string[end])) end++;
+	UINT sEnd = end;
+	for (UINT Rust = 0; end < size; Rust++, end++)
+	{
+		string[Rust] = string[end];
+	}
+	size -= sEnd;
+	string[size] = L'\0';
+}
+
+TString TString::GetTrimLeft()
+{
+	TString ret(this);
+	ret.TrimLeft();
+	return ret;
+}
+
 void TString::Empty()
 {
 	if (string)
@@ -1037,6 +1083,88 @@ WCHAR TString::GetAt(UINT c) const
 	return L'\0';
 }
 
+void TString::AppendFormat(WCHAR* format, ...)
+{
+	if (!format)
+		return;
+	TString tFormat(format);
+
+	va_list vList;
+
+	TString result = GetFormattedString(tFormat, vList);
+
+	Append(result);
+}
+
+void TString::AppendFormat(TString& format, ...)
+{
+	va_list vList;
+
+	TString result = GetFormattedString(format, vList);
+
+	Append(result);
+}
+
+void TString::Format(WCHAR* format, ...)
+{
+	if (!format)
+		return;
+	TString tFormat(format);
+
+	va_list vList;
+
+	TString result = GetFormattedString(tFormat, vList);
+
+	Set(result);
+}
+
+void TString::Format(TString& format, ...)
+{
+	va_list vList;
+
+	TString result = GetFormattedString(format, vList);
+
+	Set(result);
+}
+
+void TString::AppendChar(WCHAR ch)
+{
+	if (size + 1 == capacity)
+	{
+		WCHAR* newString = new WCHAR[++capacity];
+
+		memcpy(newString, string, capacity - 1);
+		delete[] string;
+		string = newString;
+	}
+
+	string[size++] = ch;
+	string[size] = L'\0';
+}
+
+void TString::Append(TString& app)
+{
+	capacity += app.capacity;
+
+	WCHAR* newString = new WCHAR[capacity];
+
+	for (UINT c = 0; c < size; c++)
+	{
+		newString[c] = string[c];
+	}
+
+	UINT newSize = size + app.size;
+
+	for (UINT c = size, rust = 0; c < newSize && rust < app.size; c++, rust++)
+	{
+		newString[c] = app[rust];
+	}
+	size = newSize;
+	newString[size] = L'\0';
+	delete[] string;
+	string = newString;
+}
+
 
 /*
 * Function: convertToNumber
@@ -1188,6 +1316,11 @@ WCHAR ReturnWCharType(char c)
 	char charTo[] = { c, '\0' };
 	mbstowcs_s(&conv, w, 2, charTo, 1);
 	return w[0];
+}
+
+TString TString::GetFormattedString(TString& format, va_list& data)
+{
+	return TString();
 }
 
 int TString::Compare(const TString& other)
@@ -1460,4 +1593,108 @@ TString TString::GetRemove(int& ret, WCHAR c)
 	TString retStr(this);
 	ret = retStr.Remove(c);
 	return retStr;
+}
+
+int TString::Replace(TString& oldStr, TString& newStr)
+{
+	TDataArray<int> indices;
+
+	int index = 0;
+	while (true)
+	{
+		index = Find(oldStr, index);
+		if (index == -1)
+			break;
+		indices.push_back(index);
+		index++;
+	}
+
+	// If the old string does not appear, make no changes
+	if (!indices.Size())
+		return 0;
+
+	int difference = (static_cast<int>(newStr.size) - static_cast<int>(oldStr.size)) * indices.Size();
+	int newSize = size + difference;
+
+	WCHAR* newString = new WCHAR[capacity + difference];
+
+	int currentIndex = indices[0];
+	int indexIndex = 1;
+	for (int rust = 0, c = 0; rust < size && c < newSize; rust++, c++)
+	{
+		if (rust == currentIndex)
+		{
+			for (UINT C = 0; C < newStr.size && c < newSize; C++, c++)
+			{
+				newString[c] = newStr[C];
+			}
+			c--; // So then the outer for loop increments again, it will be where it should
+			if (indexIndex >= indices.Size())
+			{
+				currentIndex = -1;
+			}
+			else
+			{
+				currentIndex = indices[indexIndex++];
+			}
+			rust += (oldStr.size - 1);
+			continue;
+		}
+
+		newString[c] = string[rust];
+	}
+
+	size = newSize;
+	newString[size] = L'\0';
+	delete[] string;
+	string = newString;
+	capacity += difference;
+
+	return indices.Size();
+}
+
+TString TString::GetReplace(int& ret, TString& oldStr, TString& newStr)
+{
+	TString retStr(this);
+	ret = retStr.Replace(oldStr, newStr);
+	return retStr;
+}
+
+int TString::Replace(WCHAR& oldStr, WCHAR& newStr)
+{
+	int ret = 0;
+
+	for (UINT Rust = 0; Rust < size; Rust++)
+	{
+		if (string[Rust] == oldStr)
+		{
+			ret++;
+			string[Rust] = newStr;
+		}
+	}
+
+	return ret;
+}
+
+TString TString::GetReplace(int& ret, WCHAR& oldStr, WCHAR& newStr)
+{
+	TString retStr(this);
+	ret = retStr.Replace(oldStr, newStr);
+	return retStr;
+}
+
+TString TString::Tokenize(TString& tokens, int& start)
+{
+	int end;
+	while ((end = FindOneOf(tokens, start)) == start)
+	{
+		start++;
+	}
+
+	TString ret = SubString(start, end);
+
+	start = end;
+
+
+	return ret;
 }

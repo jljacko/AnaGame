@@ -106,6 +106,9 @@ public:
 	void Format(WCHAR* format, ...);
 	void Format(TString& format, ...);
 	void AppendChar(WCHAR ch);
+	void Append(TString&);
+
+	static TString GetFormattedString(TString& format, va_list& data);
 
 	int Compare(const TString& other);
 	int Compare(const WCHAR* other);
