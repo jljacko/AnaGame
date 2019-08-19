@@ -1317,10 +1317,25 @@ WCHAR ReturnWCharType(char c)
 	return w[0];
 }
 
+TString formatSpecifiers(L"diuoxXfFeEgGaAcCsSpT");
+
 TString TString::GetFormattedString(TString& format, va_list& data)
 {
-	return TString();
+	WCHAR* formatedString = new WCHAR[format.capacity * 2];
+
+	int result = swprintf(formatedString, (format.capacity * 2) - 1, format.string, data);
+
+	TString ret;
+	if (result > -1)
+	{
+		ret.Set(formatedString);
+	}
+
+	delete[] formatedString;
+	
+	return ret;
 }
+
 
 int TString::Compare(const TString& other)
 {
@@ -1439,6 +1454,58 @@ int TString::FindOneOf(TString& chars, int start)
 		}
 	}
 
+
+	return -1;
+}
+
+int TString::FindLast(TString& sub, int start)
+{
+	if (start >= size)
+		return -1;
+	for (int c = start; c >= 0; c--)
+	{
+		if (sub[0] == string[c])
+		{
+			bool works = true;
+			for (int rust = c, C = 0; rust < size && C < sub.size; rust++, C++)
+			{
+				if (string[rust] != sub[C])
+				{
+					works = false;
+					break;
+				}
+			}
+			if (works)
+				return c;
+		}
+	}
+	return -1;
+}
+
+int TString::FindLast(WCHAR sub, int start)
+{
+	if (start >= size)
+		return -1;
+	for (int rust = start; rust >= 0; rust--)
+	{
+		if (string[rust] == sub)
+			return rust;
+	}
+	return -1;
+}
+
+int TString::FindLastOneOf(TString& chars, int start)
+{
+	if (start >= size)
+		return -1;
+	for (int c = start; c >= 0; c--)
+	{
+		for (UINT rust = 0; rust < chars.GetSize(); rust++)
+		{
+			if (string[c] == chars[rust])
+				return c;
+		}
+	}
 
 	return -1;
 }

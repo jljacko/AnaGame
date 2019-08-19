@@ -467,8 +467,20 @@ TString TFile::GetFilePath()
 
 TString TFile::GetFileTitle()
 {
-	
-	return TString();
+	UINT length = filePath.GetSize();
+	WCHAR* cTitle = new WCHAR[length + 1];
+	ZeroMemory(cTitle, sizeof(WCHAR) * (length + 1));
+	WCHAR* pathBuffer = filePath.GetBufferCopy();
+
+	TString ret;
+	if (!::GetFileTitleW(pathBuffer, cTitle, length))
+	{
+		ret.Set(cTitle);
+	}
+
+	delete[] cTitle;
+	delete[] pathBuffer;
+	return ret;
 }
 
 ULONGLONG TFile::GetLength()
