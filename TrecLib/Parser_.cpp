@@ -1,4 +1,4 @@
-#include "stdafx.h"
+
 #include "Parser_.h"
 
 UCHAR Parser_Type[] = { 2, 0b10000000, 4 };

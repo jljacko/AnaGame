@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+
 #include "TString.h"
 #include "TFile.h"
 

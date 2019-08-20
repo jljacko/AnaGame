@@ -1,7 +1,6 @@
 #pragma once
 #include "TString.h"
 
-#include "stdafx.h"
 
 /*
 * Class: Parser

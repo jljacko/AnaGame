@@ -43,7 +43,7 @@ public:
 
 	UINT ReadString(TString& rString, WCHAR chara);
 	
-	void WriteString(TString& lpsz);
+	void WriteString(const TString& lpsz);
 	bool IsOpen();
 	bool SetEncoding(FileEncodingType fet);
 	TString GetFileDirectory();

@@ -65,7 +65,7 @@ bool TFile::Open(TString& lpszFileName, UINT nOpenFlags)
 
 	// Here, the file is open, try to deduce the file type
 	fileEncode = DeduceEncodingType();
-	filePath = lpszFileName;
+	filePath.Set(lpszFileName);
 	return true;
 }
 
@@ -91,7 +91,7 @@ BOOL TFile::ReadString(TString & rString)
 		{
 			if (letter[0] == '\n')
 				break;
-			rString += ReturnWCharType(letter[0]);
+			rString.AppendChar(ReturnWCharType(letter[0]));
 			success = true;
 		}
 		
@@ -107,7 +107,7 @@ BOOL TFile::ReadString(TString & rString)
 			memcpy(&cLetter, letter2, 2);
 			if (cLetter == L'\n')
 				break;
-			rString += cLetter;
+			rString.AppendChar(cLetter);
 			success = true;
 		}
 
@@ -118,7 +118,7 @@ BOOL TFile::ReadString(TString & rString)
 		{
 			if (wLetter == L'\n')
 				break;
-			rString += wLetter;
+			rString.AppendChar(wLetter);
 			success = true;
 		}
 
@@ -136,7 +136,7 @@ UINT TFile::ReadString(TString & rString, UINT nMax)
 		char letter[1];
 		for ( ; rust <= nMax && Read(&letter, 1); rust++)
 		{
-			rString += ReturnWCharType(letter[0]);
+			rString.AppendChar(ReturnWCharType(letter[0]));
 		}
 
 		break;
@@ -151,7 +151,7 @@ UINT TFile::ReadString(TString & rString, UINT nMax)
 			letter2[1] = temp;
 			memcpy(&cLetter, letter2, 2);
 			
-			rString += cLetter;
+			rString.AppendChar(cLetter);
 		}
 
 		break;
@@ -160,7 +160,7 @@ UINT TFile::ReadString(TString & rString, UINT nMax)
 		
 		for( ; rust <= nMax && Read(&wLetter, 2); rust++ )
 		{
-			rString += wLetter;
+			rString.AppendChar(wLetter);
 		}
 		
 	}
@@ -180,7 +180,7 @@ UINT TFile::ReadString(TString & rString, WCHAR chara)
 		{
 			if (letter[0] == chara)
 				break;
-			rString += ReturnWCharType(letter[0]);
+			rString.AppendChar(ReturnWCharType(letter[0]));
 			success = true;
 		}
 
@@ -196,7 +196,7 @@ UINT TFile::ReadString(TString & rString, WCHAR chara)
 			memcpy(&cLetter, letter2, 2);
 			if (cLetter == chara)
 				break;
-			rString += cLetter;
+			rString.AppendChar( cLetter);
 			success = true;
 		}
 
@@ -207,7 +207,7 @@ UINT TFile::ReadString(TString & rString, WCHAR chara)
 		{
 			if (wLetter == chara)
 				break;
-			rString += wLetter;
+			rString.AppendChar(wLetter);
 			success = true;
 		}
 
@@ -221,7 +221,7 @@ UINT TFile::ReadString(TString & rString, WCHAR chara)
 * Parameters: LPCTSTR lpsz - the Stringt to write
 * Returns: void
 */
-void TFile::WriteString(TString& lpsz)
+void TFile::WriteString(const TString& lpsz)
 {
 	UINT size = 0;
 	CHAR* acsiiText = nullptr;
@@ -352,13 +352,18 @@ void TFile::Write(const void* buffer, UINT count)
 {
 	if (!fileHandle)
 		return;
-	LPDWORD resCount;
-	LPOVERLAPPED lap;
+	LPDWORD resCount = new DWORD;
+	LPDWORD resCount2 = resCount;
+	LPOVERLAPPED lap = new _OVERLAPPED;
+	LPOVERLAPPED lap2 = lap;
 	BOOL res = WriteFile((HANDLE)fileHandle, buffer, count, resCount, lap);
 
 	if (!res)
 		return;
 	position += *resCount;
+
+	delete resCount2;
+	delete lap2;
 }
 
 /*
@@ -500,22 +505,30 @@ UINT TFile::Read(void* buffer, UINT count)
 {
 	if(!fileHandle)
 		return 0;
-	LPDWORD resCount;
-	LPOVERLAPPED lap;
+	LPDWORD resCount = new DWORD;
+	LPDWORD resCount2 = resCount;
+	LPOVERLAPPED lap = new _OVERLAPPED;
+	LPOVERLAPPED lap2 = lap;
 	BOOL res = ReadFile((HANDLE)fileHandle, buffer, count, resCount, lap);
 
 	if (!res)
 		return 0;
 	position += *resCount;
-	return *resCount;
+
+	DWORD stackResCount = *resCount;
+
+	delete resCount;
+	delete lap2;
+	return stackResCount;
 }
 
 ULONGLONG TFile::Seek(LONGLONG offset, UINT from)
 {
-	if (!fileHandle) return;
-	PLONG hZero;
+	if (!fileHandle) return 0;
+	PLONG hZero = new LONG;
 	*hZero = 0;
-	DWORD res = SetFilePointer((HANDLE)fileHandle, 0, hZero, FILE_END);
+	PLONG store = hZero;
+	DWORD res = SetFilePointer((HANDLE)fileHandle, offset, hZero, from);
 
 	if (res != INVALID_SET_FILE_POINTER)
 	{
@@ -527,14 +540,16 @@ ULONGLONG TFile::Seek(LONGLONG offset, UINT from)
 	{
 		// To-Do:
 	}
+	delete store;
 	return position;
 }
 
 void TFile::SeekToBegin()
 {
 	if (!fileHandle) return;
-	PLONG hZero;
+	PLONG hZero = new LONG;
 	*hZero = 0;
+	PLONG store = hZero;
 	DWORD res = SetFilePointer((HANDLE)fileHandle, 0, hZero, FILE_BEGIN);
 
 	if (res != INVALID_SET_FILE_POINTER)
@@ -545,13 +560,16 @@ void TFile::SeekToBegin()
 	{
 		// To-Do:
 	}
+
+	delete store;
 }
 
 ULONGLONG TFile::SeekToEnd()
 {
-	if (!fileHandle) return;
-	PLONG hZero;
+	if (!fileHandle) return 0;
+	PLONG hZero = new LONG;
 	*hZero = 0;
+	PLONG store = hZero;
 	DWORD res = SetFilePointer((HANDLE)fileHandle, 0, hZero, FILE_END);
 
 	if (res != INVALID_SET_FILE_POINTER)
@@ -564,4 +582,6 @@ ULONGLONG TFile::SeekToEnd()
 	{
 		// To-Do:
 	}
+
+	delete store;
 }

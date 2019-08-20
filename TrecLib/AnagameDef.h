@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Windows.h>
+
 #ifndef ANAGAME_DEFINITIONS
 #define ANAGAME_DEFINITIONS
 /*

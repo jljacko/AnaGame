@@ -3,7 +3,7 @@
 #include "TObject.h"
 #include <d2d1_1.h>
 #include <string>
-#include "TrecPointer.h"
+#include "TrecReference.h"
 
 #define T_NO_ERROR 0
 #define T_OVERFLOW 1
@@ -54,9 +54,8 @@ public:
 	short ConvertToFloat(float*);
 
 	TrecPointer<typename TDataArray<TString>> split(TString, bool checkBackSlash = false);
-	WCHAR* GetBufferCopy();
+	WCHAR* GetBufferCopy()const ;
 	TString SubString(UINT beginningIndex, int endIndex = -1);
-	void Trim();
 
 	bool ConvertToColor(D2D1_COLOR_F& color, ColorFormat& cf);
 
@@ -73,14 +72,14 @@ public:
 	TString operator=(const TString* s);
 	TString operator=(const WCHAR* w);
 	TString operator=(const WCHAR w);
-	TString operator+(TString&);
-	TString operator+(TString*);
-	TString operator+(WCHAR*);
-	TString operator+(WCHAR w);
-	TString operator+=(TString&);
-	TString operator+=(TString*);
-	TString operator+=(WCHAR*);
-	TString operator+=(WCHAR w);
+	TString operator+(const TString&);
+	TString operator+(const TString*);
+	TString operator+(const WCHAR*);
+	TString operator+(const WCHAR w);
+	TString operator+=(const TString&);
+	TString operator+=(const TString*);
+	TString operator+=(const WCHAR*);
+	TString operator+=(const WCHAR w);
 
 	//void operator+=(TString*);
 	//void operator
@@ -95,36 +94,36 @@ public:
 
 	virtual UCHAR* GetAnaGameType() override;
 
-	WCHAR operator[](UINT loc);
+	WCHAR operator[](UINT loc)const;
 
 	UINT GetSize() const;
 	WCHAR GetAt(UINT c)const;
 
 	// Relics from MFC CString that we now hve to implement ourselves
-	void AppendFormat(WCHAR* format, ...);
-	void AppendFormat(TString& format, ...);
-	void Format(WCHAR* format, ...);
-	void Format(TString& format, ...);
-	void AppendChar(WCHAR ch);
-	void Append(TString&);
+	void AppendFormat(const WCHAR* format, ...);
+	void AppendFormat(const TString& format, ...);
+	void Format(const WCHAR* format, ...);
+	void Format(const TString& format, ...);
+	void AppendChar(const WCHAR ch);
+	void Append(const TString&);
 
-	static TString GetFormattedString(TString& format, va_list& data);
+	static TString GetFormattedString(const TString& format, va_list& data);
 
-	int Compare(const TString& other);
-	int Compare(const WCHAR* other);
+	int Compare(const TString& other)const ;
+	int Compare(const WCHAR* other)const;
 	int CompareNoCase(const TString& other) ;
-	static int Compare(TString& str1, TString& str2);
+	static int Compare(const TString& str1, const TString& str2);
 
 	int Delete(int index, int count = 1);
 	TString GetDelete(int& ret, int index, int count = 1);
 
-	int Find(TString& sub, int start = 0);
+	int Find(const TString& sub, int start = 0);
 	int Find(WCHAR sub, int start = 0);
-	int FindOneOf(TString& chars, int start = 0);
+	int FindOneOf(const TString& chars, int start = 0);
 
-	int FindLast(TString& sub, int start = -1);
+	int FindLast(const TString& sub, int start = -1);
 	int FindLast(WCHAR sub, int start = -1);
-	int FindLastOneOf(TString& chars, int start = -1);
+	int FindLastOneOf(const TString& chars, int start = -1);
 
 	bool SetAsEnvironmentVariable(TString& var);
 
@@ -144,7 +143,7 @@ public:
 	int Remove(WCHAR c);
 	TString GetRemove(int& ret, WCHAR c);
 
-	int Replace(TString& oldStr, TString& newStr);
+	int Replace(const TString& oldStr, const TString& newStr);
 	TString GetReplace(int& ret, TString& oldStr, TString& newStr);
 	int Replace(WCHAR& oldStr, WCHAR& newStr);
 	TString GetReplace(int& ret, WCHAR& oldStr, WCHAR& newStr);

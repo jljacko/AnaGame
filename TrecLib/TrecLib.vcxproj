@@ -84,13 +84,15 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;TRECLIB_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <TreatWarningAsError>false</TreatWarningAsError>
+      <AdditionalOptions>/IGNORE:C6386 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -172,11 +174,8 @@
     <ClInclude Include="TMapBase.h" />
     <ClInclude Include="TML_Reader_.h" />
     <ClInclude Include="TObject.h" />
-    <ClInclude Include="TrecComPointer.h" />
     <ClInclude Include="TrecLib.h" />
-    <ClInclude Include="TrecPointer.h" />
-    <ClInclude Include="TrecPointerBase.h" />
-    <ClInclude Include="TrecPointerI.h" />
+    <ClInclude Include="TrecReference.h" />
     <ClInclude Include="TString.h" />
   </ItemGroup>
   <ItemGroup>
@@ -192,18 +191,13 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="TArray.cpp" />
     <ClCompile Include="TArrayBase.cpp" />
     <ClCompile Include="TDataArrayBase.cpp" />
     <ClCompile Include="TFile.cpp" />
-    <ClCompile Include="TMap.cpp" />
     <ClCompile Include="TMapBase.cpp" />
     <ClCompile Include="TML_Reader_.cpp" />
     <ClCompile Include="TObject.cpp" />
     <ClCompile Include="TrecLib.cpp" />
-    <ClCompile Include="TrecPointer.cpp" />
-    <ClCompile Include="TrecPointerBase.cpp" />
-    <ClCompile Include="TrecPointerI.cpp" />
     <ClCompile Include="TString.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

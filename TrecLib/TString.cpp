@@ -145,7 +145,6 @@ TString::TString(WCHAR c)
 */
 short TString::ConvertToInt(int* value)
 {
-	int size = this->GetSize();
 	if (!size)
 		return NOT_NUMB;
 	int temp = *value;
@@ -185,9 +184,6 @@ short TString::ConvertToInt(int* value)
 */
 short TString::ConvertToLong(long long* value)
 {
-	
-	int size = this->GetSize();
-
 	if (!size)
 		return NOT_NUMB;
 	long long temp = *value;
@@ -229,7 +225,6 @@ short TString::ConvertToLong(long long* value)
 */
 short TString::ConvertToDouble(double* value)
 {
-	int size = this->GetSize();
 	if (!size)
 		return NOT_NUMB;
 	double temp = *value;
@@ -283,7 +278,6 @@ short TString::ConvertToDouble(double* value)
 */
 short TString::ConvertToFloat(float* value)
 {
-	int size = this->GetSize();
 	if (!size)
 		return NOT_NUMB;
 	float temp = *value;
@@ -340,7 +334,7 @@ TrecPointer<TDataArray<TString>> TString::split(TString str, bool checkBackSlash
 {
 	//TArray<TString>* tats = new TArray<TString>();
 	TrecPointer<TDataArray<TString>> ret;
-	ret = new TDataArray<TString>();
+	ret = TrecPointerKey::GetNewTrecPointer<TDataArray<TString>>();
 
 	if (!this->GetSize())
 	{
@@ -350,7 +344,7 @@ TrecPointer<TDataArray<TString>> TString::split(TString str, bool checkBackSlash
 	TString tok;
 
 	int pos = 0, begPos = 0;
-	tok = this->Tokenize(str, pos);
+	tok.Set(this->Tokenize(str, pos));
 	while (!tok.IsEmpty())
 	{
 		if (checkBackSlash)
@@ -358,16 +352,16 @@ TrecPointer<TDataArray<TString>> TString::split(TString str, bool checkBackSlash
 			
 			while (tok[tok.GetSize() - 1] == L'\\' && (tok.GetSize() == 1 || tok[tok.GetSize() - 2] != L'\\'))
 			{
-				tok = this->Tokenize(str, pos);
-				tok = this->SubString(begPos, pos);
+				tok.Set(this->Tokenize(str, pos));
+				tok.Set(this->SubString(begPos, pos));
 			}
 		}
 
-		(ret).get()->push_back(tok);
+		(ret).Get()->push_back(tok);
 		begPos = pos;
-		tok = this->Tokenize(str, pos);
+		tok.Set(this->Tokenize(str, pos));
 	}
-	ret.Boost();
+
 	return ret;
 }
 
@@ -377,10 +371,10 @@ TrecPointer<TDataArray<TString>> TString::split(TString str, bool checkBackSlash
 * Parameters: void
 * Returns: WCHAR* - the copy of the TStrings buffer
 */
-WCHAR * TString::GetBufferCopy()
+WCHAR * TString::GetBufferCopy() const 
 {
 	WCHAR* returnable = new WCHAR[capacity];
-	for (int c = 0; c < GetSize(); c++)
+	for (UINT c = 0; c < GetSize(); c++)
 		returnable[c] = string[c];
 	returnable[capacity - 1] = L'\0';
 	return returnable;
@@ -399,15 +393,15 @@ TString TString::SubString(UINT beginningIndex, int endIndex)
 	TString returnable;
 	if (endIndex == -1)
 	{
-		for (int c = beginningIndex; c < GetSize(); c++)
+		for (UINT c = beginningIndex; c < GetSize(); c++)
 			returnable.AppendChar(GetAt(c));
 	}
 	else
 	{
 		endIndex = abs(endIndex);
-		if (endIndex > GetSize())
+		if (static_cast<UINT>(endIndex) > GetSize())
 			return returnable;
-		for (UINT c = beginningIndex; c < endIndex; c++)
+		for (UINT c = beginningIndex; c < static_cast<UINT>(endIndex); c++)
 			returnable.AppendChar(GetAt(c));
 	}
 	return returnable;
@@ -493,7 +487,7 @@ std::string TString::GetRegString()
 	std::string reg;
 	char* regString = new char[size + 1];
 	BOOL bFlag = FALSE;
-	int convert = WideCharToMultiByte(CP_ACP, 0, string, size, regString, size, NULL, &bFlag);
+	/*int convert =*/ WideCharToMultiByte(CP_ACP, 0, string, size, regString, size, NULL, &bFlag);
 
 	regString[size] = '\0';
 	reg = regString;
@@ -541,9 +535,9 @@ bool TString::ConvertToColor(D2D1_COLOR_F & color, ColorFormat& cf)
 		{
 			return false;
 		}
-		UCHAR r = value >> 24;
-		UCHAR g = value >> 16;
-		UCHAR b = value >> 8;
+		UCHAR r = static_cast<UCHAR>(value >> 24);
+		UCHAR g = static_cast<UCHAR>(value >> 16);
+		UCHAR b = static_cast<UCHAR>(value >> 8);
 		UCHAR a = static_cast<UCHAR>(value);
 
 		color.r = static_cast<float>(r) / 255.0f;
@@ -555,7 +549,7 @@ bool TString::ConvertToColor(D2D1_COLOR_F & color, ColorFormat& cf)
 
 	// This wasn't a hex, try AnaGames format
 	TrecPointer<TDataArray<TString>> values = split(TString(L", "));
-	if (values.get() && values->Size() > 2)
+	if (values.Get() && values->Size() > 2)
 	{
 		bool works = true;
 		D2D1_COLOR_F tempColor = { 0.0f,0.0f,0.0f,0.0f };
@@ -587,7 +581,7 @@ bool TString::ConvertToColor(D2D1_COLOR_F & color, ColorFormat& cf)
 
 	// Okay, check for rbg[a] or hsl[a]
 	values = split(TString(L", ()"));
-	if (!values.get() || values->Size() < 4) // We don't have enough data for either format
+	if (!values.Get() || values->Size() < 4) // We don't have enough data for either format
 		return false;
 
 
@@ -851,10 +845,10 @@ TString TString::operator=(WCHAR w)
 * Parameters: TString& t - the TString to append
 * Returns: void
 */
-TString TString::operator+(TString & t)
+TString TString::operator+(const TString & t)
 {
 	TString returnString = this;
-	for (int c = 0; c < t.GetSize();c++)
+	for (UINT c = 0; c < t.GetSize();c++)
 		returnString.AppendChar(t.GetAt(c));
 	return returnString;
 }
@@ -867,12 +861,12 @@ TString TString::operator+(TString & t)
 * Parameters: TString& t - the TString to append
 * Returns: void
 */
-TString TString::operator+(TString *t)
+TString TString::operator+(const TString *t)
 {
 	if (t)
 	{
 		TString returnString = this;
-		for (int c = 0; c < t->GetSize(); c++)
+		for (UINT c = 0; c < t->GetSize(); c++)
 			returnString.AppendChar(t->GetAt(c));
 		return returnString;
 	}
@@ -887,7 +881,7 @@ TString TString::operator+(TString *t)
 * Parameters: WCHAR* w - the wide string to append
 * Returns: void
 */
-TString TString::operator+(WCHAR * w)
+TString TString::operator+(const WCHAR * w)
 {
 	if (w)
 	{
@@ -912,9 +906,9 @@ TString TString::operator+(WCHAR w)
 * Parameters: TString& t - the TString to append
 * Returns: void
 */
-TString TString::operator+=(TString& t)
+TString TString::operator+=(const TString& t)
 {
-	for (int c = 0; c < t.GetSize(); c++)
+	for (UINT c = 0; c < t.GetSize(); c++)
 		AppendChar(t.GetAt(c));
 	return this;
 }
@@ -926,11 +920,11 @@ TString TString::operator+=(TString& t)
 * Parameters: TString& t - the TString to append
 * Returns: void
 */
-TString TString::operator+=(TString* t)
+TString TString::operator+=(const TString* t)
 {
 	if (t)
 	{
-		for (int c = 0; c < t->GetSize(); c++)
+		for (UINT c = 0; c < t->GetSize(); c++)
 			AppendChar(t->GetAt(c));
 	}
 	return this;
@@ -944,7 +938,7 @@ TString TString::operator+=(TString* t)
 * Parameters: WCHAR* w - the wide string to append
 * Returns: void
 */
-TString TString::operator+=(WCHAR* w)
+TString TString::operator+=(const WCHAR* w)
 {
 	if (w)
 	{
@@ -970,7 +964,7 @@ bool TString::operator==(TString & s)
 {
 	if (GetSize() != s.GetSize())
 		return false;
-	for (int c = 0; c < GetSize(); c++)
+	for (UINT c = 0; c < GetSize(); c++)
 		if (GetAt(c) != s[c])
 			return false;
 	return true;
@@ -990,7 +984,7 @@ bool TString::operator==(TString * s)
 	return false;
 	if (GetSize() != s->GetSize())
 		return false;
-	for (int c = 0; c < GetSize(); c++)
+	for (UINT c = 0; c < GetSize(); c++)
 		if (GetAt(c) != s->GetAt(c))
 			return false;
 	return true;
@@ -1007,7 +1001,7 @@ bool TString::operator==(WCHAR * s)
 {
 	if(!s)
 		return false;
-	for (int c = 0; c < GetSize(); c++,s++)
+	for (UINT c = 0; c < GetSize(); c++,s++)
 	{
 		if (*s == L'\0')
 			return false;
@@ -1054,7 +1048,7 @@ bool TString::operator!=(WCHAR * s)
 	return !(*this == s);
 }
 
-WCHAR TString::operator[](UINT loc)
+WCHAR TString::operator[](UINT loc) const 
 {
 	return GetAt(loc);
 }
@@ -1082,7 +1076,7 @@ WCHAR TString::GetAt(UINT c) const
 	return L'\0';
 }
 
-void TString::AppendFormat(WCHAR* format, ...)
+void TString::AppendFormat(const WCHAR* format, ...)
 {
 	if (!format)
 		return;
@@ -1095,7 +1089,7 @@ void TString::AppendFormat(WCHAR* format, ...)
 	Append(result);
 }
 
-void TString::AppendFormat(TString& format, ...)
+void TString::AppendFormat(const TString& format, ...)
 {
 	va_list vList;
 
@@ -1104,7 +1098,7 @@ void TString::AppendFormat(TString& format, ...)
 	Append(result);
 }
 
-void TString::Format(WCHAR* format, ...)
+void TString::Format(const WCHAR* format, ...)
 {
 	if (!format)
 		return;
@@ -1117,7 +1111,7 @@ void TString::Format(WCHAR* format, ...)
 	Set(result);
 }
 
-void TString::Format(TString& format, ...)
+void TString::Format(const TString& format, ...)
 {
 	va_list vList;
 
@@ -1141,7 +1135,7 @@ void TString::AppendChar(WCHAR ch)
 	string[size] = L'\0';
 }
 
-void TString::Append(TString& app)
+void TString::Append(const TString& app)
 {
 	capacity += app.capacity;
 
@@ -1319,11 +1313,11 @@ WCHAR ReturnWCharType(char c)
 
 TString formatSpecifiers(L"diuoxXfFeEgGaAcCsSpT");
 
-TString TString::GetFormattedString(TString& format, va_list& data)
+TString TString::GetFormattedString(const TString& format, va_list& data)
 {
 	WCHAR* formatedString = new WCHAR[format.capacity * 2];
 
-	int result = swprintf(formatedString, (format.capacity * 2) - 1, format.string, data);
+	int result = vswprintf(formatedString, (format.capacity * 2) - 1, format.string, data);
 
 	TString ret;
 	if (result > -1)
@@ -1337,12 +1331,12 @@ TString TString::GetFormattedString(TString& format, va_list& data)
 }
 
 
-int TString::Compare(const TString& other)
+int TString::Compare(const TString& other) const
 {
 	return Compare(other.string);
 }
 
-int TString::Compare(const WCHAR* other)
+int TString::Compare(const WCHAR* other) const
 {
 	int min = min(size, lstrlenW(other));
 	for (int c = 0; c < min; c++)
@@ -1367,7 +1361,7 @@ int TString::CompareNoCase(const TString& other)
 	return _this.Compare(_other);
 }
 
-int TString::Compare(TString& str1, TString& str2)
+int TString::Compare(const TString& str1, const TString& str2)
 {
 	return str1.Compare(str2);
 }
@@ -1405,7 +1399,7 @@ TString TString::GetDelete(int& ret, int index, int count)
 	return retStr;
 }
 
-int TString::Find(TString& sub, int start)
+int TString::Find(const TString& sub, int start)
 {
 	int indexStart = start;
 
@@ -1443,7 +1437,7 @@ int TString::Find(WCHAR sub, int start)
 	return -1;
 }
 
-int TString::FindOneOf(TString& chars, int start)
+int TString::FindOneOf(const TString& chars, int start)
 {
 	for (int c = start; c < size; c++)
 	{
@@ -1458,7 +1452,7 @@ int TString::FindOneOf(TString& chars, int start)
 	return -1;
 }
 
-int TString::FindLast(TString& sub, int start)
+int TString::FindLast(const TString& sub, int start)
 {
 	if (start >= size)
 		return -1;
@@ -1494,7 +1488,7 @@ int TString::FindLast(WCHAR sub, int start)
 	return -1;
 }
 
-int TString::FindLastOneOf(TString& chars, int start)
+int TString::FindLastOneOf(const TString& chars, int start)
 {
 	if (start >= size)
 		return -1;
@@ -1661,7 +1655,7 @@ TString TString::GetRemove(int& ret, WCHAR c)
 	return retStr;
 }
 
-int TString::Replace(TString& oldStr, TString& newStr)
+int TString::Replace(const TString& oldStr, const TString& newStr)
 {
 	TDataArray<int> indices;
 
