@@ -8,7 +8,7 @@
 #include <DirectoryInterface.h>
 #include <Logger.h>
 
-TDataArray<ArenaEngine*> engineList;
+TDataArray<TrecPointer<ArenaEngine>> engineList;
 
 const CHAR* sem_V = "POSITION";
 const CHAR* sem_BN = "BINORMAL";
@@ -38,18 +38,18 @@ void ArenaEngine::UnloadAnaGameShaders()
 {
 	for (UINT c = 0; c < ANAGAME_DAFAULT_SHADER_COUNT; c++)
 	{
-		defaultShaders[c].vs = nullptr;
-		defaultShaders[c].ps = nullptr;
-		defaultShaders[c].cs = nullptr;
-		defaultShaders[c].ds = nullptr;
-		defaultShaders[c].gs = nullptr;
-		defaultShaders[c].hs = nullptr;
+		defaultShaders[c].vs.Nullify();
+		defaultShaders[c].ps.Nullify();
+		defaultShaders[c].cs.Nullify();
+		defaultShaders[c].ds.Nullify();
+		defaultShaders[c].gs.Nullify();
+		defaultShaders[c].hs.Nullify();
 
 		if (defaultShaders[c].elements)
 			delete[] defaultShaders[c].elements;
 		defaultShaders[c].elements = nullptr;
 
-		defaultShaders[c].layout = nullptr;
+		defaultShaders[c].layout.Nullify();
 
 	}
 }
@@ -88,10 +88,7 @@ ArenaEngine::ArenaEngine()
 	isInit = false;*/
 	driver = D3D_DRIVER_TYPE_NULL;    // System will pick best configuration
 	version = D3D_FEATURE_LEVEL_11_0; // Target Windows 7 and above
-	graphicsDevice = NULL;
-	contextDevice = NULL;
-	swapper = NULL;
-	renderTarget = NULL;
+
 	Initialized = false;
 
 	// Zero the Memory
@@ -114,11 +111,6 @@ ArenaEngine::ArenaEngine()
 
 	isDefaultInit = false;
 
-	graphicsDevice = nullptr;
-	contextDevice = nullptr;
-	swapper = nullptr;
-	renderTarget = nullptr;
-	dxDev = nullptr;
 	viewBuffer = DirectX::XMMatrixIdentity();
 	//InitializeDefaultShaders();
 
@@ -140,7 +132,7 @@ ArenaEngine::~ArenaEngine()
 	Unload();
 	for (UINT c = 0; c < engineList.Size(); c++)
 	{
-		if (engineList[c] == this)
+		if (engineList[c].Get() == this)
 		{
 			engineList.RemoveAt(c);
 			break;
@@ -178,8 +170,8 @@ int ArenaEngine::InitializeDefaultShaders()
 
 	tDirectory.Append(L"\\Resources\\DefaultShaders");
 
-	CFile* file = nullptr;
-	CArchive* arch = nullptr;
+	TFile* file = nullptr;
+
 	TML_Reader_* read = nullptr;
 
 	TString tempDir;
@@ -194,16 +186,15 @@ int ArenaEngine::InitializeDefaultShaders()
 
 
 	try {
-		file = new CFile(tempDir.GetBuffer(), CFile::modeRead);
-		arch = new CArchive(file, CArchive::load);
-		TML_Reader_* read = new TML_Reader_(arch,parse);
+		file = new TFile(tempDir, CFile::modeRead);
+		
+		TML_Reader_* read = new TML_Reader_(file,parse);
 		int error = 0;
 		parse->SetDefaultShader(default_shader_Single_Color);
 		if (!read->read(&error))
 		{
-			arch->Close();
+
 			file->Close();
-			delete arch;
 			delete file;
 			delete read;
 			delete parse;
@@ -216,13 +207,13 @@ int ArenaEngine::InitializeDefaultShaders()
 		return 2;
 	}
 
-	arch->Close();
+
 	file->Close();
-	delete arch;
+
 	delete file;
 	delete read;
 	delete parse;
-	arch = nullptr;
+
 	file = nullptr;
 	read = nullptr;
 	parse = nullptr;
@@ -237,16 +228,13 @@ int ArenaEngine::InitializeDefaultShaders()
 
 
 	try {
-		file = new CFile(tempDir.GetBuffer(), CFile::modeRead);
-		arch = new CArchive(file, CArchive::load);
-		TML_Reader_* read = new TML_Reader_(arch, parse);
+		file = new TFile(tempDir, OF_READ);
+		TML_Reader_* read = new TML_Reader_(file, parse);
 		int error = 0;
 		parse->SetDefaultShader(default_shader_3D_Color);
 		if (!read->read(&error))
 		{
-			arch->Close();
 			file->Close();
-			delete arch;
 			delete file;
 			delete read;
 			delete parse;
@@ -258,13 +246,10 @@ int ArenaEngine::InitializeDefaultShaders()
 
 		return 3;
 	}
-	arch->Close();
 	file->Close();
-	delete arch;
 	delete file;
 	delete read;
 	delete parse;
-	arch = nullptr;
 	file = nullptr;
 	read = nullptr;
 	parse = nullptr;
@@ -279,16 +264,13 @@ int ArenaEngine::InitializeDefaultShaders()
 
 
 	try {
-		file = new CFile(tempDir.GetBuffer(), CFile::modeRead);
-		arch = new CArchive(file, CArchive::load);
-		TML_Reader_* read = new TML_Reader_(arch, parse);
+		file = new TFile(tempDir, OF_READ);
+		TML_Reader_* read = new TML_Reader_(file, parse);
 		int error = 0;
 		parse->SetDefaultShader(default_Shader_4D_Color);
 		if (!read->read(&error))
 		{
-			arch->Close();
 			file->Close();
-			delete arch;
 			delete file;
 			delete read;
 			delete parse;
@@ -300,13 +282,10 @@ int ArenaEngine::InitializeDefaultShaders()
 
 		return 4;
 	}
-	arch->Close();
 	file->Close();
-	delete arch;
 	delete file;
 	delete read;
 	delete parse;
-	arch = nullptr;
 	file = nullptr;
 	read = nullptr;
 	parse = nullptr;
@@ -320,16 +299,13 @@ int ArenaEngine::InitializeDefaultShaders()
 
 
 	try {
-		file = new CFile(tempDir.GetBuffer(), CFile::modeRead);
-		arch = new CArchive(file, CArchive::load);
-		TML_Reader_* read = new TML_Reader_(arch, parse);
+		file = new TFile(tempDir, CFile::modeRead);
+		TML_Reader_* read = new TML_Reader_(file, parse);
 		int error = 0;
 		parse->SetDefaultShader(default_Shader_Texture);
 		if (!read->read(&error))
 		{
-			arch->Close();
 			file->Close();
-			delete arch;
 			delete file;
 			delete read;
 			delete parse;
@@ -341,13 +317,10 @@ int ArenaEngine::InitializeDefaultShaders()
 
 		return 5;
 	}
-	arch->Close();
 	file->Close();
-	delete arch;
 	delete file;
 	delete read;
 	delete parse;
-	arch = nullptr;
 	file = nullptr;
 	read = nullptr;
 	parse = nullptr;
@@ -360,16 +333,13 @@ int ArenaEngine::InitializeDefaultShaders()
 
 
 	try {
-		file = new CFile(tempDir.GetBuffer(), CFile::modeRead);
-		arch = new CArchive(file, CArchive::load);
-		TML_Reader_* read = new TML_Reader_(arch, parse);
+		file = new TFile(tempDir, CFile::modeRead);
+		TML_Reader_* read = new TML_Reader_(file, parse);
 		int error = 0;
 		parse->SetDefaultShader(default_Shader_Texture2);
 		if (!read->read(&error))
 		{
-			arch->Close();
 			file->Close();
-			delete arch;
 			delete file;
 			delete read;
 			delete parse;
@@ -381,13 +351,10 @@ int ArenaEngine::InitializeDefaultShaders()
 
 		return 6;
 	}
-	arch->Close();
 	file->Close();
-	delete arch;
 	delete file;
 	delete read;
 	delete parse;
-	arch = nullptr;
 	file = nullptr;
 	read = nullptr;
 	parse = nullptr;
@@ -418,12 +385,12 @@ bool ArenaEngine::IsDefaultShadersReady()
 *				TDataArray<unsigned short>& bufferDesc - list of buffer information
 * Return: int - location of the shader in the list if successful, 0 or negative otherwise
 */
-int ArenaEngine::SetNewBasicShader(TString & vs, TString & ps, CHAR * vf, CHAR * sf, TDataArray<unsigned short>& bufferDesc)
+int ArenaEngine::SetNewBasicShader(TString & vs, TString & ps, const CHAR * vf, const CHAR * sf, TDataArray<unsigned short>& bufferDesc)
 {
 	ShaderProgram newShader;
 	ResetShaderProgram(newShader);
 
-	if (!vf || !sf || !graphicsDevice.get())
+	if (!vf || !sf || !graphicsDevice.Get())
 		return -1;
 
 	int test = SetNewBasicShader(vs, vf, bufferDesc, true, newShader);
@@ -435,7 +402,7 @@ int ArenaEngine::SetNewBasicShader(TString & vs, TString & ps, CHAR * vf, CHAR *
 	if (test)
 	{
 		//newShader.vs->Release();
-		newShader.vs = nullptr;
+		newShader.vs.Nullify();
 		return test - 3;
 	}
 
@@ -455,7 +422,7 @@ int ArenaEngine::SetNewBasicShader(TString & vs, TString & ps, CHAR * vf, CHAR *
 *				TDataArray<unsigned short>& bufferDesc - list of buffer information
 * Return: int
 */
-int ArenaEngine::SetNewBasicShader(TString & s, CHAR * vf, CHAR * sf, TDataArray<unsigned short>& bufferDesc)
+int ArenaEngine::SetNewBasicShader(TString & s, const CHAR * vf, const CHAR * sf, TDataArray<unsigned short>& bufferDesc)
 {
 	if (!vf || !sf)
 		return -1;
@@ -471,7 +438,7 @@ int ArenaEngine::SetNewBasicShader(TString & s, CHAR * vf, CHAR * sf, TDataArray
 	if (test)
 	{
 		//newShader.vs->Release();
-		newShader.vs = nullptr;
+		newShader.vs.Nullify();
 		return test - 3;
 	}
 
@@ -488,7 +455,7 @@ int ArenaEngine::SetNewBasicShader(TString & s, CHAR * vf, CHAR * sf, TDataArray
 *				CHAR* cf - function name of the compute shader
 * Return: int - 0 if successful, otherwise error code
 */
-int ArenaEngine::AddComputeShader(int shaderID, TString & cs, CHAR * cf)
+int ArenaEngine::AddComputeShader(int shaderID, TString & cs, const CHAR * cf)
 {
 	if (!cf)
 		return 1;
@@ -499,16 +466,16 @@ int ArenaEngine::AddComputeShader(int shaderID, TString & cs, CHAR * cf)
 	ID3DBlob* buffer = nullptr, *errorBuffer = nullptr;
 
 	DWORD flags = D3DCOMPILE_ENABLE_STRICTNESS;
-
-	HRESULT res = D3DCompileFromFile(cs.GetBuffer(), 0, 0, cf, "vs_4_0", flags, 0, &buffer, &errorBuffer);
-
+	WCHAR* csBuff = cs.GetBufferCopy();
+	HRESULT res = D3DCompileFromFile(csBuff, 0, 0, cf, "vs_4_0", flags, 0, &buffer, &errorBuffer);
+	delete[] csBuff;
 	if (!SUCCEEDED(res))
 	{
 		return 3;
 	}
-	ID3D11ComputeShader* css = nullptr;
-	res = graphicsDevice->CreateComputeShader(buffer->GetBufferPointer(), buffer->GetBufferSize(), 0, &css);
-	shaderList[shaderID].cs = css;
+	TrecComPointer<ID3D11ComputeShader>::TrecComHolder css;
+	res = graphicsDevice->CreateComputeShader(buffer->GetBufferPointer(), buffer->GetBufferSize(), 0, css.GetPointerAddress());
+	shaderList[shaderID].cs = css.Extract();
 	buffer->Release();
 	buffer = nullptr;
 	errorBuffer->Release();
@@ -530,7 +497,7 @@ int ArenaEngine::AddComputeShader(int shaderID, TString & cs, CHAR * cf)
 *				CHAR* df - function name of the domain shader
 * Return: int - 0 if successful, otherwise error code
 */
-int ArenaEngine::AddDomainShader(int shaderID, TString & ds, CHAR * df)
+int ArenaEngine::AddDomainShader(int shaderID, TString & ds, const CHAR * df)
 {
 	if (!df)
 		return 1;
@@ -541,16 +508,16 @@ int ArenaEngine::AddDomainShader(int shaderID, TString & ds, CHAR * df)
 	ID3DBlob* buffer = nullptr, *errorBuffer = nullptr;
 
 	DWORD flags = D3DCOMPILE_ENABLE_STRICTNESS;
-
-	HRESULT res = D3DCompileFromFile(ds.GetBuffer(), 0, 0, df, "vs_4_0", flags, 0, &buffer, &errorBuffer);
-
+	WCHAR* dsBuff = ds.GetBufferCopy();
+	HRESULT res = D3DCompileFromFile(dsBuff, 0, 0, df, "vs_4_0", flags, 0, &buffer, &errorBuffer);
+	delete[] dsBuff;
 	if (!SUCCEEDED(res))
 	{
 		return 3;
 	}
-	ID3D11DomainShader* d = nullptr;
-	res = graphicsDevice->CreateDomainShader(buffer->GetBufferPointer(), buffer->GetBufferSize(), 0, &d);
-	shaderList[shaderID].ds = d;
+	TrecComPointer<ID3D11DomainShader>::TrecComHolder d;
+	res = graphicsDevice->CreateDomainShader(buffer->GetBufferPointer(), buffer->GetBufferSize(), 0, d.GetPointerAddress());
+	shaderList[shaderID].ds = d.Extract();
 	buffer->Release();
 	buffer = nullptr;
 	errorBuffer->Release();
@@ -570,7 +537,7 @@ int ArenaEngine::AddDomainShader(int shaderID, TString & ds, CHAR * df)
 *				CHAR* gf - function name of the geometry shader
 * Return: int - 0 if successful, otherwise error code
 */
-int ArenaEngine::AddGeometryShader(int shaderID, TString & gs, CHAR * gf)
+int ArenaEngine::AddGeometryShader(int shaderID, TString & gs, const CHAR * gf)
 {
 	if (!gf)
 		return 1;
@@ -582,15 +549,16 @@ int ArenaEngine::AddGeometryShader(int shaderID, TString & gs, CHAR * gf)
 
 	DWORD flags = D3DCOMPILE_ENABLE_STRICTNESS;
 
-	HRESULT res = D3DCompileFromFile(gs.GetBuffer(), 0, 0, gf, "vs_4_0", flags, 0, &buffer, &errorBuffer);
-
+	WCHAR* gsBuff = gs.GetBufferCopy();
+	HRESULT res = D3DCompileFromFile(gsBuff, 0, 0, gf, "vs_4_0", flags, 0, &buffer, &errorBuffer);
+	delete[] gsBuff;
 	if (!SUCCEEDED(res))
 	{
 		return 3;
 	}
-	ID3D11GeometryShader* g = nullptr;
-	res = graphicsDevice->CreateGeometryShader(buffer->GetBufferPointer(), buffer->GetBufferSize(), 0, &g);
-	shaderList[shaderID].gs = g;
+	TrecComPointer<ID3D11GeometryShader>::TrecComHolder g;
+	res = graphicsDevice->CreateGeometryShader(buffer->GetBufferPointer(), buffer->GetBufferSize(), 0, g.GetPointerAddress());
+	shaderList[shaderID].gs = g.Extract();
 	buffer->Release();
 	buffer = nullptr;
 	errorBuffer->Release();
@@ -610,7 +578,7 @@ int ArenaEngine::AddGeometryShader(int shaderID, TString & gs, CHAR * gf)
 *				CHAR* hf - function name of the hull shader
 * Return: int - 0 if successful, otherwise error code
 */
-int ArenaEngine::AddHullShader(int shaderID, TString & hs, CHAR * hf)
+int ArenaEngine::AddHullShader(int shaderID, TString & hs, const CHAR * hf)
 {
 	if (!hf)
 		return 1;
@@ -621,16 +589,16 @@ int ArenaEngine::AddHullShader(int shaderID, TString & hs, CHAR * hf)
 	ID3DBlob* buffer = nullptr, *errorBuffer = nullptr;
 
 	DWORD flags = D3DCOMPILE_ENABLE_STRICTNESS;
-
-	HRESULT res = D3DCompileFromFile(hs.GetBuffer(), 0, 0, hf, "vs_4_0", flags, 0, &buffer, &errorBuffer);
-
+	WCHAR* hsBuff = hs.GetBufferCopy();
+	HRESULT res = D3DCompileFromFile(hsBuff, 0, 0, hf, "vs_4_0", flags, 0, &buffer, &errorBuffer);
+	delete[] hsBuff;
 	if (!SUCCEEDED(res))
 	{
 		return 3;
 	}
-	ID3D11HullShader* h = nullptr;
-	res = graphicsDevice->CreateHullShader(buffer->GetBufferPointer(), buffer->GetBufferSize(), 0, &h);
-	shaderList[shaderID].hs = h;
+	TrecComPointer<ID3D11HullShader>::TrecComHolder h;
+	res = graphicsDevice->CreateHullShader(buffer->GetBufferPointer(), buffer->GetBufferSize(), 0, h.GetPointerAddress());
+	shaderList[shaderID].hs = h.Extract();
 
 	buffer->Release();
 	buffer = nullptr;
@@ -651,7 +619,7 @@ int ArenaEngine::AddHullShader(int shaderID, TString & hs, CHAR * hf)
 */
 bool ArenaEngine::setShader(int shaderID)
 {
-	if (!contextDevice.get())
+	if (!contextDevice.Get())
 		return false;
 	if (shaderID < 0 || shaderID >= shaderList.Size())
 		return false;
@@ -660,37 +628,37 @@ bool ArenaEngine::setShader(int shaderID)
 
 	ShaderProgram* sp = &(shaderList[shaderID]);
 
-	if (!sp->layout.get())
+	if (!sp->layout.Get())
 		return false;
 
-	contextDevice->IASetInputLayout(sp->layout.get());
+	contextDevice->IASetInputLayout(sp->layout.Get());
 
-	contextDevice->CSSetShader(sp->cs.get(), 0, 0);
-	contextDevice->DSSetShader(sp->ds.get(), 0, 0);
-	contextDevice->GSSetShader(sp->gs.get(), 0, 0);
-	contextDevice->HSSetShader(sp->hs.get(), 0, 0);
-	contextDevice->PSSetShader(sp->ps.get(), 0, 0);
-	contextDevice->VSSetShader(sp->vs.get(), 0, 0);
+	contextDevice->CSSetShader(sp->cs.Get(), 0, 0);
+	contextDevice->DSSetShader(sp->ds.Get(), 0, 0);
+	contextDevice->GSSetShader(sp->gs.Get(), 0, 0);
+	contextDevice->HSSetShader(sp->hs.Get(), 0, 0);
+	contextDevice->PSSetShader(sp->ps.Get(), 0, 0);
+	contextDevice->VSSetShader(sp->vs.Get(), 0, 0);
 
 	if (sp->cameraLoc >= 0 && sp->cameraLoc < sp->constantBuffers.Size())
 	{
-		if (!sp->constantBuffers[sp->cameraLoc].buff.get())
+		if (!sp->constantBuffers[sp->cameraLoc].buff.Get())
 		{
 			GetConstantBuffer(sizeof(DirectX::XMMATRIX), sp->constantBuffers[sp->cameraLoc].buff);
 		}
-		if (sp->constantBuffers[sp->cameraLoc].buff.get())
-			contextDevice->UpdateSubresource(sp->constantBuffers[sp->cameraLoc].buff.get(), 0, 0, &currentCameraProj, 0, 0);
+		if (sp->constantBuffers[sp->cameraLoc].buff.Get())
+			contextDevice->UpdateSubresource(sp->constantBuffers[sp->cameraLoc].buff.Get(), 0, 0, &currentCameraProj, 0, 0);
 
 	}
 
 	if (sp->viewLoc >= 0 && sp->viewLoc < sp->constantBuffers.Size())
 	{
-		if (!sp->constantBuffers[sp->viewLoc].buff.get())
+		if (!sp->constantBuffers[sp->viewLoc].buff.Get())
 		{
 			GetConstantBuffer(sizeof(DirectX::XMMATRIX), sp->constantBuffers[sp->viewLoc].buff);
 		}
-		if (sp->constantBuffers[sp->viewLoc].buff.get())
-			contextDevice->UpdateSubresource(sp->constantBuffers[sp->viewLoc].buff.get(), 0, 0, &camera, 0, 0);
+		if (sp->constantBuffers[sp->viewLoc].buff.Get())
+			contextDevice->UpdateSubresource(sp->constantBuffers[sp->viewLoc].buff.Get(), 0, 0, &camera, 0, 0);
 	}
 
 	for (int c = 0; c < sp->constantBuffers.Size(); c++)
@@ -698,28 +666,26 @@ bool ArenaEngine::setShader(int shaderID)
 		ConstantBufferMark cbm = sp->constantBuffers[c];
 		unsigned char slot = cbm.label >> 4;
 		unsigned char shaderType = cbm.label & 0b00000111;
-		ID3D11Buffer* buff = nullptr;
 		switch (shaderType)
 		{
 		case 1: // PixelShader
-			UpdateConstantBuffer(&buff, sp_Pixel, slot);
+			UpdateConstantBuffer(cbm.buff, sp_Pixel, slot);
 			break;
 		case 2: // GeometryShader
-			UpdateConstantBuffer(&buff, sp_Geometry, slot);
+			UpdateConstantBuffer(cbm.buff, sp_Geometry, slot);
 			break;
 		case 3: // HULL Shader
-			UpdateConstantBuffer(&buff, sp_Hull, slot);
+			UpdateConstantBuffer(cbm.buff, sp_Hull, slot);
 			break;
 		case 4: // Compute Shader
-			UpdateConstantBuffer(&buff, sp_Compute, slot);
+			UpdateConstantBuffer(cbm.buff, sp_Compute, slot);
 			break;
 		case 5: // Domain Shader
-			UpdateConstantBuffer(&buff, sp_Domain, slot);
+			UpdateConstantBuffer(cbm.buff, sp_Domain, slot);
 			break;
 		default: // Vertex Shader
-			UpdateConstantBuffer(&buff, sp_Vertex, slot);
+			UpdateConstantBuffer(cbm.buff, sp_Vertex, slot);
 		}
-		cbm.buff = buff;
 	}
 	NeedsMVPCalculation = sp->mvp_cpu;
 	
@@ -739,37 +705,37 @@ bool ArenaEngine::setShader(DefaultShader id)
 {
 	ShaderProgram* sp = &defaultShaders[static_cast<int>(id)];
 
-	if (!sp->layout.get())
+	if (!sp->layout.Get())
 		return false;
 
-	contextDevice->IASetInputLayout(sp->layout.get());
+	contextDevice->IASetInputLayout(sp->layout.Get());
 
-	contextDevice->CSSetShader(sp->cs.get(), 0, 0);
-	contextDevice->DSSetShader(sp->ds.get(), 0, 0);
-	contextDevice->GSSetShader(sp->gs.get(), 0, 0);
-	contextDevice->HSSetShader(sp->hs.get(), 0, 0);
-	contextDevice->PSSetShader(sp->ps.get(), 0, 0);
-	contextDevice->VSSetShader(sp->vs.get(), 0, 0);
+	contextDevice->CSSetShader(sp->cs.Get(), 0, 0);
+	contextDevice->DSSetShader(sp->ds.Get(), 0, 0);
+	contextDevice->GSSetShader(sp->gs.Get(), 0, 0);
+	contextDevice->HSSetShader(sp->hs.Get(), 0, 0);
+	contextDevice->PSSetShader(sp->ps.Get(), 0, 0);
+	contextDevice->VSSetShader(sp->vs.Get(), 0, 0);
 
 	if (sp->cameraLoc >= 0 && sp->cameraLoc < sp->constantBuffers.Size())
 	{
-		if (!sp->constantBuffers[sp->cameraLoc].buff.get())
+		if (!sp->constantBuffers[sp->cameraLoc].buff.Get())
 		{
 			GetConstantBuffer(sizeof(DirectX::XMMATRIX), sp->constantBuffers[sp->cameraLoc].buff);
 		}
-		if (sp->constantBuffers[sp->cameraLoc].buff.get())
-			contextDevice->UpdateSubresource(sp->constantBuffers[sp->cameraLoc].buff.get(), 0, 0, &currentCameraProj, 0, 0);
+		if (sp->constantBuffers[sp->cameraLoc].buff.Get())
+			contextDevice->UpdateSubresource(sp->constantBuffers[sp->cameraLoc].buff.Get(), 0, 0, &currentCameraProj, 0, 0);
 
 	}
 
 	if (sp->viewLoc >= 0 && sp->viewLoc < sp->constantBuffers.Size())
 	{
-		if (!sp->constantBuffers[sp->viewLoc].buff.get())
+		if (!sp->constantBuffers[sp->viewLoc].buff.Get())
 		{
 			GetConstantBuffer(sizeof(DirectX::XMMATRIX), sp->constantBuffers[sp->viewLoc].buff);
 		}
-		if (sp->constantBuffers[sp->viewLoc].buff.get())
-			contextDevice->UpdateSubresource(sp->constantBuffers[sp->viewLoc].buff.get(), 0, 0, &camera, 0, 0);
+		if (sp->constantBuffers[sp->viewLoc].buff.Get())
+			contextDevice->UpdateSubresource(sp->constantBuffers[sp->viewLoc].buff.Get(), 0, 0, &camera, 0, 0);
 	}
 
 	
@@ -779,28 +745,26 @@ bool ArenaEngine::setShader(DefaultShader id)
 		ConstantBufferMark cbm = sp->constantBuffers[c];
 		unsigned char slot = cbm.label >> 4;
 		unsigned char shaderType = cbm.label & 0b00000111;
-		ID3D11Buffer* buff = cbm.buff.get();
 		switch (shaderType)
 		{
 		case 1: // PixelShader
-			UpdateConstantBuffer(&buff, sp_Pixel, slot);
+			UpdateConstantBuffer(cbm.buff, sp_Pixel, slot);
 			break;
 		case 2: // GeometryShader
-			UpdateConstantBuffer(&buff, sp_Geometry, slot);
+			UpdateConstantBuffer(cbm.buff, sp_Geometry, slot);
 			break;
 		case 3: // HULL Shader
-			UpdateConstantBuffer(&buff, sp_Hull, slot);
+			UpdateConstantBuffer(cbm.buff, sp_Hull, slot);
 			break;
 		case 4: // Compute Shader
-			UpdateConstantBuffer(&buff, sp_Compute, slot);
+			UpdateConstantBuffer(cbm.buff, sp_Compute, slot);
 			break;
 		case 5: // Domain Shader
-			UpdateConstantBuffer(&buff, sp_Domain, slot);
+			UpdateConstantBuffer(cbm.buff, sp_Domain, slot);
 			break;
 		default: // Vertex Shader
-			UpdateConstantBuffer(&buff, sp_Vertex, slot);
+			UpdateConstantBuffer(cbm.buff, sp_Vertex, slot);
 		}
-		cbm.buff = buff;
 	}
 	NeedsMVPCalculation = sp->mvp_cpu;
 	return true;
@@ -874,7 +838,7 @@ int ArenaEngine::getBufferSize(DefaultShader ds)
 *			int bufferLoc - index of the constant buffer in the shader
 *			ID3D11Buffer* buff - the new constant buffer
 * Return: bool - true if successful, false otherwise
-*/
+
 bool ArenaEngine::UpdateConstantBuffer(int shaderID, int bufferLoc, ID3D11Buffer * buff)
 {
 	if(shaderID < 0 || shaderID >= shaderList.Size() || !buff)
@@ -885,7 +849,7 @@ bool ArenaEngine::UpdateConstantBuffer(int shaderID, int bufferLoc, ID3D11Buffer
 
 	sp.constantBuffers[bufferLoc].buff = buff;
 	return true;
-}
+}*/
 
 /*
 * Method: ArenaEngine - UpdateConstantBuffer
@@ -894,7 +858,7 @@ bool ArenaEngine::UpdateConstantBuffer(int shaderID, int bufferLoc, ID3D11Buffer
 *			int bufferLoc - index of the constant buffer in the shader
 *			ID3D11Buffer* buff - the new constant buffer
 * Return: bool - true if successful, false otherwise
-*/
+
 bool ArenaEngine::UpdateConstantBuffer(DefaultShader shader, int bufferLoc, ID3D11Buffer * buff)
 {
 	ShaderProgram sp = shaderList[static_cast<int>(shader)];
@@ -903,7 +867,7 @@ bool ArenaEngine::UpdateConstantBuffer(DefaultShader shader, int bufferLoc, ID3D
 
 	sp.constantBuffers[bufferLoc].buff = buff;
 	return true;
-}
+}*/
 
 /*
 * Method: ArenaEngine - GetLayoutError
@@ -1042,7 +1006,7 @@ bool ArenaEngine::CompareElementLayout(DefaultShader shader, D3D11_INPUT_ELEMENT
 */
 bool ArenaEngine::SetNewConstantBuffer(TrecComPointer<ID3D11Buffer>& buff, int slot, bool isModelBuffer, ShaderPhase sp, int shaderID, unsigned char purp)
 {
-	if(!buff.get() || shaderID < 0 || shaderID >= shaderList.Size() || slot < 0 || slot > 15)
+	if(!buff.Get() || shaderID < 0 || shaderID >= shaderList.Size() || slot < 0 || slot > 15)
 		return false;
 	ShaderProgram* spr = &(shaderList[shaderID]);
 
@@ -1054,7 +1018,7 @@ bool ArenaEngine::SetNewConstantBuffer(TrecComPointer<ID3D11Buffer>& buff, int s
 	}
 
 	ConstantBufferMark cbm;
-	cbm.buff = nullptr;
+	cbm.buff.Nullify();
 	cbm.label = 0;
 
 	switch (sp)
@@ -1103,8 +1067,8 @@ bool ArenaEngine::SetNewConstantBuffer(TrecComPointer<ID3D11Buffer>& buff, int s
 	case 4:
 		spr->viewLoc = spr->constantBuffers.Size() - 1;
 		spr->mvp_cpu = false; // If view was in the shader memory, it would have to calculate
-		if (cbm.buff.get())
-			contextDevice->UpdateSubresource(cbm.buff.get(), 0, 0, &viewBuffer,0,0);
+		if (cbm.buff.Get())
+			contextDevice->UpdateSubresource(cbm.buff.Get(), 0, 0, &viewBuffer,0,0);
 		break;
 	case 5:
 		spr->modelLoc = spr->constantBuffers.Size() - 1;
@@ -1138,7 +1102,7 @@ bool ArenaEngine::SetNewConstantBuffer(TrecComPointer<ID3D11Buffer>& buff, int s
 	}
 
 	ConstantBufferMark cbm;
-	cbm.buff = nullptr;
+	cbm.buff.Nullify();
 	cbm.label = 0;
 	switch (sp)
 	{
@@ -1186,8 +1150,8 @@ bool ArenaEngine::SetNewConstantBuffer(TrecComPointer<ID3D11Buffer>& buff, int s
 	case 4:
 		spr->viewLoc = spr->constantBuffers.Size() - 1;
 		spr->mvp_cpu = false; // If view was in the shader memory, it would have to calculate
-		if (cbm.buff.get())
-			contextDevice->UpdateSubresource(cbm.buff.get(), 0, 0, &viewBuffer, 0, 0);
+		if (cbm.buff.Get())
+			contextDevice->UpdateSubresource(cbm.buff.Get(), 0, 0, &viewBuffer, 0, 0);
 		break;
 	case 5:
 		spr->modelLoc = spr->constantBuffers.Size() - 1;
@@ -1299,13 +1263,14 @@ signed char ArenaEngine::getColorBufferLocation(DefaultShader shader)
 */
 void ArenaEngine::ModelSetFillMode(D3D11_FILL_MODE fill)
 {
-	if (!contextDevice.get())
+	if (!contextDevice.Get())
 		return;
 	rasterizer.FillMode = fill;
-	ID3D11RasterizerState* state = nullptr;
-	graphicsDevice->CreateRasterizerState(&rasterizer, &state);
-	contextDevice->RSSetState(state);
-	rasterizerState = state;
+	TrecComPointer<ID3D11RasterizerState>::TrecComHolder state;
+	graphicsDevice->CreateRasterizerState(&rasterizer, state.GetPointerAddress());
+	rasterizerState = state.Extract();
+	contextDevice->RSSetState(rasterizerState.Get());
+	
 	
 	if (fill == D3D11_FILL_SOLID)
 	{
@@ -1326,13 +1291,14 @@ void ArenaEngine::ModelSetFillMode(D3D11_FILL_MODE fill)
 */
 void ArenaEngine::ModelSetCullMode(D3D11_CULL_MODE cull)
 {
-	if (!contextDevice.get())
+	if (!contextDevice.Get())
 		return;
 	rasterizer.CullMode = cull;
-	ID3D11RasterizerState* state = nullptr;
-	graphicsDevice->CreateRasterizerState(&rasterizer, &state);
-	contextDevice->RSSetState(state);
-	rasterizerState = state;
+	TrecComPointer<ID3D11RasterizerState>::TrecComHolder state;
+	graphicsDevice->CreateRasterizerState(&rasterizer, state.GetPointerAddress());
+	rasterizerState = state.Extract();
+	contextDevice->RSSetState(rasterizerState.Get());
+	
 	cullMode = static_cast<unsigned char>(cull);
 
 }
@@ -1345,14 +1311,14 @@ void ArenaEngine::ModelSetCullMode(D3D11_CULL_MODE cull)
 */
 void ArenaEngine::SetDefaultRasterization()
 {
-	if (contextDevice.get())
+	if (contextDevice.Get())
 	{
 		rasterizer.CullMode = D3D11_CULL_BACK;
 		rasterizer.FillMode = D3D11_FILL_SOLID;
-		ID3D11RasterizerState* state = nullptr;
-		graphicsDevice->CreateRasterizerState(&rasterizer, &state);
-		rasterizerState = state;
-		contextDevice->RSSetState(state);
+		TrecComPointer<ID3D11RasterizerState>::TrecComHolder state;
+		graphicsDevice->CreateRasterizerState(&rasterizer, state.GetPointerAddress());
+		rasterizerState = state.Extract();
+		contextDevice->RSSetState(rasterizerState.Get());
 		isFill = true;
 		cullMode = CULL_BACK + 1;
 	}
@@ -1369,7 +1335,7 @@ int ArenaEngine::GetConstantBuffer(int size, TrecComPointer<ID3D11Buffer>& buff)
 {
 	if (!size)
 		return 1;
-	if (!contextDevice.get())
+	if (!contextDevice.Get())
 		return 2;
 	D3D11_BUFFER_DESC conBuf;
 	
@@ -1379,10 +1345,10 @@ int ArenaEngine::GetConstantBuffer(int size, TrecComPointer<ID3D11Buffer>& buff)
 	conBuf.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	conBuf.ByteWidth = size;
 	conBuf.Usage = D3D11_USAGE_DEFAULT;
-	buff = nullptr;
-	ID3D11Buffer* b = nullptr;
-	HRESULT res = graphicsDevice->CreateBuffer(&conBuf, 0, &b);
-	buff = b;
+	buff.Nullify();
+	TrecComPointer<ID3D11Buffer>::TrecComHolder b;
+	HRESULT res = graphicsDevice->CreateBuffer(&conBuf, 0, b.GetPointerAddress());
+	buff = b.Extract();
 	return !SUCCEEDED(res);
 }
 
@@ -1394,31 +1360,37 @@ int ArenaEngine::GetConstantBuffer(int size, TrecComPointer<ID3D11Buffer>& buff)
 *				int slot - the slot that the buffer takes up
 * Return: void
 */
-void ArenaEngine::UpdateConstantBuffer( ID3D11Buffer  ** buff, ShaderPhase sp, int slot)
+void ArenaEngine::UpdateConstantBuffer( TrecComPointer<ID3D11Buffer>& buff, ShaderPhase sp, int slot)
 {
-	if ((!buff || !*buff) || !contextDevice.get())
+	if (!buff.Get() || !contextDevice.Get())
 		return;
+
+	TrecComPointer<ID3D11Buffer>::TrecComHolder buffHolder;
+	buffHolder.OfferValue(buff);
+
 	switch (sp)
 	{
 	case sp_Compute:
-		contextDevice->CSSetConstantBuffers(slot,1,buff);
+		contextDevice->CSSetConstantBuffers(slot,1,buffHolder.GetPointerAddress());
 		break;
 	case sp_Domain:
-		contextDevice->DSSetConstantBuffers(slot, 1, buff);
+		contextDevice->DSSetConstantBuffers(slot, 1, buffHolder.GetPointerAddress());
 		break;
 	case sp_Geometry:
-		contextDevice->GSSetConstantBuffers(slot, 1, buff);
+		contextDevice->GSSetConstantBuffers(slot, 1, buffHolder.GetPointerAddress());
 		break;
 	case sp_Hull:
-		contextDevice->HSSetConstantBuffers(slot, 1, buff);
+		contextDevice->HSSetConstantBuffers(slot, 1, buffHolder.GetPointerAddress());
 		break;
 	case sp_Pixel:
-		contextDevice->PSSetConstantBuffers(slot, 1, buff);
+		contextDevice->PSSetConstantBuffers(slot, 1, buffHolder.GetPointerAddress());
 		break;
 	case sp_Vertex:
-		contextDevice->VSSetConstantBuffers(slot, 1, buff);
+		contextDevice->VSSetConstantBuffers(slot, 1, buffHolder.GetPointerAddress());
 		break;
 	}
+
+	buffHolder.Extract(buff);
 }
 
 /*
@@ -1429,7 +1401,7 @@ void ArenaEngine::UpdateConstantBuffer( ID3D11Buffer  ** buff, ShaderPhase sp, i
 *				ID3D11Buffer * buff - the new buffer to update the Constant buffer with
 * Return: int - 0 if successful, error otherwise
 */
-int ArenaEngine::ReplaceConstantBuffer(int shaderID, unsigned char slot, ID3D11Buffer * buff)
+int ArenaEngine::ReplaceConstantBuffer(int shaderID, unsigned char slot, TrecComPointer<ID3D11Buffer> buff)
 {
 	if (shaderID < 0 || shaderID >= shaderList.Size())
 		return 1;
@@ -1437,7 +1409,7 @@ int ArenaEngine::ReplaceConstantBuffer(int shaderID, unsigned char slot, ID3D11B
 	if (slot > shaderList[shaderID].constantBuffers.Size())
 		return 2;
 
-	if (!buff)
+	if (!buff.Get())
 		return 3;
 
 
@@ -1455,12 +1427,12 @@ int ArenaEngine::ReplaceConstantBuffer(int shaderID, unsigned char slot, ID3D11B
 *				ID3D11Buffer * buff - the new buffer to update the Constant buffer with
 * Return: int - 0 if successful, error otherwise
 */
-int ArenaEngine::ReplaceConstantBuffer(DefaultShader shaderID, unsigned char slot, ID3D11Buffer * buff)
+int ArenaEngine::ReplaceConstantBuffer(DefaultShader shaderID, unsigned char slot, TrecComPointer<ID3D11Buffer> buff)
 {
 	if (slot > defaultShaders[static_cast<int>(shaderID)].constantBuffers.Size())
 		return 2;
 
-	if (!buff)
+	if (!buff.Get())
 		return 3;
 
 
@@ -1482,32 +1454,32 @@ TrecPointer<ArenaEngine> ArenaEngine::GetArenaEngine(TString& d, HWND w, HINSTAN
 
 	for (UINT c = 0; c < engineList.Size(); c++)
 	{
-		if (engineList[c] && !StrCmpW(d, engineList[c]->name))
+		if (engineList[c].Get() && !TString::Compare(d, engineList[c]->name))
 		{
 			//engineList[c].count++;
 			return TrecPointer<ArenaEngine>(engineList[c]);
 		}
 	}
-	ArenaEngine* ae = nullptr;
+	TrecPointer<ArenaEngine> ae;
 
 	for (UINT c = 0; c < engineList.Size(); c++)
 	{
-		if (engineList[c] && w == engineList[c]->window)
+		if (engineList[c].Get() && w == engineList[c]->window)
 		{
 			ae = engineList[c];
 			break;
 		}
 	}
-	ArenaEngine* engine = nullptr;
-	if (ae)
-		engine = new ArenaEngine(*ae);
+	TrecPointer<ArenaEngine> engine;
+	if (ae.Get())
+		engine = TrecPointerKey::GetNewTrecPointer<ArenaEngine>(*ae.Get());
 	else
-		engine = new ArenaEngine();
-	if (engine)
+		engine = TrecPointerKey::GetNewTrecPointer<ArenaEngine>();
+	if (engine.Get())
 	{
 		engine->name.Set(d);
 		engineList.push_back(engine);
-		if (ae)
+		if (ae.Get())
 		{
 			engine->SetDefaultRasterization();
 			engine->isInit = true;
@@ -1612,12 +1584,12 @@ UCHAR ArenaEngine::initialize(HWND w, HINSTANCE i)
 
 	HRESULT results;
 
-	ID3D11Device* d = nullptr;
-	ID3D11DeviceContext* cd = nullptr;
+	TrecComPointer<ID3D11Device>::TrecComHolder d;
+	TrecComPointer<ID3D11DeviceContext>::TrecComHolder cd;
 	results = D3D11CreateDevice(0, D3D_DRIVER_TYPE_HARDWARE, 0, flags,
-		0, 0, D3D11_SDK_VERSION, &(d), &version, &(cd));
-	graphicsDevice = d;
-	contextDevice = cd;
+		0, 0, D3D11_SDK_VERSION, d.GetPointerAddress(), &version, cd.GetPointerAddress());
+	graphicsDevice = d.Extract();
+	contextDevice = cd.Extract();
 	
 
 	if (FAILED(results))
@@ -1625,26 +1597,26 @@ UCHAR ArenaEngine::initialize(HWND w, HINSTANCE i)
 		return NO_DEVICE;
 	}
 
-	dxDev = nullptr;
-	IDXGIDevice* raw_dxDev = nullptr;
+	dxDev.Nullify();
+	TrecComPointer<IDXGIDevice>::TrecComHolder raw_dxDev;
 	IDXGIAdapter* dxAdpt = nullptr;
 	IDXGIFactory* dxFact = nullptr;
-	results = (graphicsDevice->QueryInterface(__uuidof(IDXGIDevice), (void**)&raw_dxDev));
+	results = (graphicsDevice->QueryInterface(__uuidof(IDXGIDevice), (void**)raw_dxDev.GetPointerAddress()));
 	if (FAILED(results))
 	{
 
-		graphicsDevice = nullptr;
-		contextDevice = nullptr;
+		graphicsDevice.Nullify();
+		contextDevice.Nullify();
 		return NO_DEVICE;
 	}
-	dxDev = raw_dxDev;
+	dxDev = raw_dxDev.Extract();
 	results = dxDev->GetParent(__uuidof(IDXGIAdapter), (void**)&dxAdpt);
 	if (FAILED(results))
 	{
 
-		graphicsDevice = nullptr;
-		contextDevice = nullptr;
-		dxDev = nullptr;
+		graphicsDevice.Nullify();
+		contextDevice.Nullify();
+		dxDev.Nullify();
 		return NO_DEVICE;
 	}
 	results = dxAdpt->GetParent(__uuidof(IDXGIFactory), (void**)&dxFact);
@@ -1655,26 +1627,24 @@ UCHAR ArenaEngine::initialize(HWND w, HINSTANCE i)
 
 
 		dxAdpt->Release();
-		graphicsDevice = nullptr;
-		contextDevice = nullptr;
-		dxDev = nullptr;
+		graphicsDevice.Nullify();
+		contextDevice.Nullify();
+		dxDev.Nullify();
 		return NO_DEVICE;
 	}
 
 
-	IDXGISwapChain* sc = nullptr;
-	results = dxFact->CreateSwapChain(graphicsDevice.get(), &swapChainDescription, &sc);
-	swapper = sc;
+	TrecComPointer<IDXGISwapChain>::TrecComHolder sc;
+	results = dxFact->CreateSwapChain(graphicsDevice.Get(), &swapChainDescription, sc.GetPointerAddress());
+	swapper = sc.Extract();
 
 	if (FAILED(results))
 	{
-
-
 		dxAdpt->Release();
 		dxFact->Release();
-		dxDev = nullptr;
-		graphicsDevice = nullptr;
-		contextDevice = nullptr;
+		dxDev.Nullify();
+		graphicsDevice.Nullify();
+		contextDevice.Nullify();
 		return NO_DEVICE;
 
 
@@ -1695,9 +1665,9 @@ UCHAR ArenaEngine::initialize(HWND w, HINSTANCE i)
 	rendDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 	rendDesc.Texture2D.MipSlice = 0;
 
-	ID3D11RenderTargetView* rt = nullptr;
-	results = graphicsDevice->CreateRenderTargetView(texture, &rendDesc, &rt);
-	renderTarget = rt;
+	TrecComPointer<ID3D11RenderTargetView>::TrecComHolder rt;
+	results = graphicsDevice->CreateRenderTargetView(texture, &rendDesc, rt.GetPointerAddress());
+	renderTarget = rt.Extract();
 
 	if (texture)
 		texture->Release();
@@ -1718,7 +1688,7 @@ UCHAR ArenaEngine::initialize(HWND w, HINSTANCE i)
 	ID3D11DepthStencilView* depthStencil = nullptr;
 	results = graphicsDevice->CreateDepthStencilView(texture, &stencilDesc, &depthStencil);
 
-	ID3D11RenderTargetView* const renderer = renderTarget.get();
+	ID3D11RenderTargetView* const renderer = renderTarget.Get();
 	if(SUCCEEDED(results))
 		contextDevice->OMSetRenderTargets(1, &renderer, depthStencil);
 	else
@@ -1850,11 +1820,11 @@ bool ArenaEngine::DoMVP()
 */
 void ArenaEngine::PrepareScene(D2D1::ColorF color)
 {	
-	if (!contextDevice.get() || !renderTarget.get())
+	if (!contextDevice.Get() || !renderTarget.Get())
 		return;
 	float clearColor[4] = { color.r, color.g ,color.b,color.a };
 
-	contextDevice->ClearRenderTargetView(renderTarget.get(), clearColor);
+	contextDevice->ClearRenderTargetView(renderTarget.Get(), clearColor);
 }
 
 /*
@@ -1867,7 +1837,7 @@ void ArenaEngine::PrepareScene(D2D1::ColorF color)
 */
 void ArenaEngine::RenderScene(DirectX::XMMATRIX& proj, DirectX::XMMATRIX& cam, D3D11_VIEWPORT& viewPort)
 {
-	if (!contextDevice.get())
+	if (!contextDevice.Get())
 		return;
 
 	contextDevice->RSSetViewports(1, &viewPort);
@@ -1893,7 +1863,7 @@ void ArenaEngine::RenderScene(DirectX::XMMATRIX& proj, DirectX::XMMATRIX& cam, D
 */
 void ArenaEngine::FinalizeScene()
 {
-	if (swapper.get())
+	if (swapper.Get())
 		swapper->Present(0, 0);
 }
 
@@ -2039,9 +2009,9 @@ UCHAR ArenaEngine::OnWindowResize()
 		return NO_DEVICE;
 	}
 
-	IDXGISwapChain* sc = nullptr;
-	 results = dxFact->CreateSwapChain(graphicsDevice.get(), &swapChainDescription, &sc);
-	swapper = sc;
+	TrecComPointer<IDXGISwapChain>::TrecComHolder sc;
+	 results = dxFact->CreateSwapChain(graphicsDevice.Get(), &swapChainDescription, sc.GetPointerAddress());
+	swapper = sc.Extract();
 
 	if (FAILED(results))
 	{
@@ -2068,9 +2038,9 @@ UCHAR ArenaEngine::OnWindowResize()
 	rendDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 	rendDesc.Texture2D.MipSlice = 0;
 
-	ID3D11RenderTargetView* rt = nullptr;
-	results = graphicsDevice->CreateRenderTargetView(texture, &rendDesc, &rt);
-	renderTarget = rt;
+	TrecComPointer<ID3D11RenderTargetView>::TrecComHolder rt;
+	results = graphicsDevice->CreateRenderTargetView(texture, &rendDesc, rt.GetPointerAddress());
+	renderTarget = rt.Extract();
 
 	if (texture)
 		texture->Release();
@@ -2091,7 +2061,7 @@ UCHAR ArenaEngine::OnWindowResize()
 	ID3D11DepthStencilView* depthStencil = nullptr;
 	results = graphicsDevice->CreateDepthStencilView(texture, &stencilDesc, &depthStencil);
 
-	ID3D11RenderTargetView* const renderer = renderTarget.get();
+	ID3D11RenderTargetView* const renderer = renderTarget.Get();
 	if (SUCCEEDED(results))
 		contextDevice->OMSetRenderTargets(1, &renderer, depthStencil);
 	else
@@ -2125,12 +2095,12 @@ TDataArray<ArenaModel*>* ArenaEngine::getModelList()
 void ArenaEngine::Unload()
 {
 
-	graphicsDevice = nullptr;
-	contextDevice = nullptr;
-	swapper = nullptr;
-	renderTarget = nullptr;
+	graphicsDevice.Nullify();
+	contextDevice.Nullify();
+	swapper.Nullify();
+	renderTarget.Nullify();
 
-	dxDev = nullptr;
+	dxDev.Nullify();
 	ShaderProgram sp;
 
 }
@@ -2145,7 +2115,7 @@ void ArenaEngine::Unload()
 *				ShaderProgram& sp - the shader module holding these shaders
 * Return: int - 0 if successful, error otherwise
 */
-int ArenaEngine::SetNewBasicShader(TString & s, CHAR * f, TDataArray<unsigned short>& bufferDesc, bool isVertex, ShaderProgram& sp)
+int ArenaEngine::SetNewBasicShader(TString & s, const CHAR * f, TDataArray<unsigned short>& bufferDesc, bool isVertex, ShaderProgram& sp)
 {
 	if (!f)
 		return -1;
@@ -2155,12 +2125,13 @@ int ArenaEngine::SetNewBasicShader(TString & s, CHAR * f, TDataArray<unsigned sh
 	DWORD flags = D3DCOMPILE_ENABLE_STRICTNESS;
 
 	HRESULT res;
-		
+	WCHAR* sBuff = s.GetBufferCopy();
 		if(isVertex)
-			res = D3DCompileFromFile(s.GetBuffer(), 0, 0, f, "vs_4_0", flags, 0, &buffer, &errorBuffer);
+			res = D3DCompileFromFile(sBuff, 0, 0, f, "vs_4_0", flags, 0, &buffer, &errorBuffer);
 		else
-			res = D3DCompileFromFile(s.GetBuffer(), 0, 0, f, "ps_4_0", flags, 0, &buffer, &errorBuffer);
-
+			res = D3DCompileFromFile(sBuff, 0, 0, f, "ps_4_0", flags, 0, &buffer, &errorBuffer);
+		delete[] sBuff;
+		sBuff = nullptr;
 	if (!SUCCEEDED(res))
 	{
 		if (errorBuffer)
@@ -2180,17 +2151,17 @@ int ArenaEngine::SetNewBasicShader(TString & s, CHAR * f, TDataArray<unsigned sh
 
 	if (isVertex)
 	{
-		ID3D11VertexShader* vs = nullptr;
-		ID3D11InputLayout* il = nullptr;
+		TrecComPointer<ID3D11VertexShader>::TrecComHolder vs;
+		TrecComPointer<ID3D11InputLayout>::TrecComHolder il;
 
-		res = graphicsDevice->CreateVertexShader(buffer->GetBufferPointer(), buffer->GetBufferSize(), 0, &vs);
-		sp.vs = vs;
+		res = graphicsDevice->CreateVertexShader(buffer->GetBufferPointer(), buffer->GetBufferSize(), 0, vs.GetPointerAddress());
+		sp.vs = vs.Extract();
 
 		// Now handle the input Layout
 		TDataArray<D3D11_INPUT_ELEMENT_DESC>* desc = getInputDescription(bufferDesc, sp.bufferSize);
 		D3D11_INPUT_ELEMENT_DESC* dec = desc->data();
-		sp.layoutError = graphicsDevice->CreateInputLayout(dec, desc->Size(), buffer->GetBufferPointer(), buffer->GetBufferSize(), &il);
-		sp.layout = il;
+		sp.layoutError = graphicsDevice->CreateInputLayout(dec, desc->Size(), buffer->GetBufferPointer(), buffer->GetBufferSize(), il.GetPointerAddress());
+		sp.layout = il.Extract();
 		sp.elements = new D3D11_INPUT_ELEMENT_DESC[(sizeof(D3D11_INPUT_ELEMENT_DESC) * desc->Size())];
 		sp.elementCount = desc->Size();
 		for (UINT c = 0; c < desc->Size(); c++)
@@ -2202,9 +2173,9 @@ int ArenaEngine::SetNewBasicShader(TString & s, CHAR * f, TDataArray<unsigned sh
 	}
 	else
 	{
-		ID3D11PixelShader* ps = nullptr;
-		res = graphicsDevice->CreatePixelShader(buffer->GetBufferPointer(), buffer->GetBufferSize(), 0, &ps);
-		sp.ps = ps;
+		TrecComPointer<ID3D11PixelShader>::TrecComHolder ps;
+		res = graphicsDevice->CreatePixelShader(buffer->GetBufferPointer(), buffer->GetBufferSize(), 0, ps.GetPointerAddress());
+		sp.ps = ps.Extract();
 	}
 
 	if(buffer)
@@ -2435,7 +2406,7 @@ void ArenaEngine::SetResources(TrecComPointer<ID3D11DeviceContext>& c, TrecComPo
 *				DefaultShader ds - the shader identity
 * Return: bool - true if successful, false otherwise
 */
-bool ArenaEngine::SetNewBasicShader(TString & vs, TString & ps, CHAR * vf, CHAR * sf, TDataArray<unsigned short>& bufferDesc, DefaultShader ds)
+bool ArenaEngine::SetNewBasicShader(TString & vs, TString & ps, const CHAR * vf, const CHAR * sf, TDataArray<unsigned short>& bufferDesc, DefaultShader ds)
 {
 	ShaderProgram newShader;
 	ResetShaderProgram(newShader);
@@ -2448,7 +2419,7 @@ bool ArenaEngine::SetNewBasicShader(TString & vs, TString & ps, CHAR * vf, CHAR 
 	targetShader->modelLoc = -1;
 	targetShader->viewLoc = -1;
 
-	if (!vf || !sf || !graphicsDevice.get())
+	if (!vf || !sf || !graphicsDevice.Get())
 		return false;
 
 	int test = SetNewBasicShader(vs, vf, bufferDesc, true, newShader);
@@ -2460,7 +2431,7 @@ bool ArenaEngine::SetNewBasicShader(TString & vs, TString & ps, CHAR * vf, CHAR 
 	if (test)
 	{
 		//newShader.vs->Release();
-		newShader.vs = nullptr;
+		newShader.vs.Nullify();
 		return false;
 	}
 
@@ -2491,21 +2462,21 @@ bool ArenaEngine::GetMostRecentBasicShader(DefaultShader & ds)
 *				CHAR* cf - function name of the compute shader
 * Return: int - 0 if successful, otherwise error code
 */
-int ArenaEngine::AddComputeShader(DefaultShader ds, TString & cs, CHAR * cf)
+int ArenaEngine::AddComputeShader(DefaultShader ds, TString & cs, const CHAR * cf)
 {
 	ID3DBlob* buffer = nullptr, *errorBuffer = nullptr;
 
 	DWORD flags = D3DCOMPILE_ENABLE_STRICTNESS;
-
-	HRESULT res = D3DCompileFromFile(cs.GetBuffer(), 0, 0, cf, "vs_4_0", flags, 0, &buffer, &errorBuffer);
-
+	WCHAR* csBuff = cs.GetBufferCopy();
+	HRESULT res = D3DCompileFromFile(csBuff, 0, 0, cf, "vs_4_0", flags, 0, &buffer, &errorBuffer);
+	delete[] csBuff;
 	if (!SUCCEEDED(res))
 	{
 		return 3;
 	}
-	ID3D11ComputeShader* c = nullptr;
-	res = graphicsDevice->CreateComputeShader(buffer->GetBufferPointer(), buffer->GetBufferSize(), 0, &c);
-	defaultShaders[static_cast<int>(ds)].cs = c;
+	TrecComPointer<ID3D11ComputeShader>::TrecComHolder c;
+	res = graphicsDevice->CreateComputeShader(buffer->GetBufferPointer(), buffer->GetBufferSize(), 0, c.GetPointerAddress());
+	defaultShaders[static_cast<int>(ds)].cs = c.Extract();
 
 	buffer->Release();
 	buffer = nullptr;
@@ -2526,21 +2497,23 @@ int ArenaEngine::AddComputeShader(DefaultShader ds, TString & cs, CHAR * cf)
 *				CHAR* df - function name of the domain shader
 * Return: int - 0 if successful, otherwise error code
 */
-int ArenaEngine::AddDomainShader(DefaultShader s, TString & ds, CHAR * df)
+int ArenaEngine::AddDomainShader(DefaultShader s, TString & ds, const CHAR * df)
 {
 	ID3DBlob* buffer = nullptr, *errorBuffer = nullptr;
 
 	DWORD flags = D3DCOMPILE_ENABLE_STRICTNESS;
 
-	HRESULT res = D3DCompileFromFile(ds.GetBuffer(), 0, 0, df, "vs_4_0", flags, 0, &buffer, &errorBuffer);
+	WCHAR* dsBuff = ds.GetBufferCopy();
+	HRESULT res = D3DCompileFromFile(dsBuff, 0, 0, df, "vs_4_0", flags, 0, &buffer, &errorBuffer);
+	delete[] dsBuff;
 
 	if (!SUCCEEDED(res))
 	{
 		return 3;
 	}
-	ID3D11DomainShader* d = nullptr;
-	res = graphicsDevice->CreateDomainShader(buffer->GetBufferPointer(), buffer->GetBufferSize(), 0, &d);
-	shaderList[static_cast<int>(s)].ds = d;
+	TrecComPointer<ID3D11DomainShader>::TrecComHolder d;
+	res = graphicsDevice->CreateDomainShader(buffer->GetBufferPointer(), buffer->GetBufferSize(), 0, d.GetPointerAddress());
+	shaderList[static_cast<int>(s)].ds = d.Extract();
 
 	buffer->Release();
 	buffer = nullptr;
@@ -2561,21 +2534,23 @@ int ArenaEngine::AddDomainShader(DefaultShader s, TString & ds, CHAR * df)
 *				CHAR* gf - function name of the geometry shader
 * Return: int - 0 if successful, otherwise error code
 */
-int ArenaEngine::AddGeometryShader(DefaultShader ds, TString & gs, CHAR * gf)
+int ArenaEngine::AddGeometryShader(DefaultShader ds, TString & gs, const CHAR * gf)
 {
 	ID3DBlob* buffer = nullptr, *errorBuffer = nullptr;
 
 	DWORD flags = D3DCOMPILE_ENABLE_STRICTNESS;
 
-	HRESULT res = D3DCompileFromFile(gs.GetBuffer(), 0, 0, gf, "vs_4_0", flags, 0, &buffer, &errorBuffer);
+	WCHAR* gsBuff = gs.GetBufferCopy();
+	HRESULT res = D3DCompileFromFile(gsBuff, 0, 0, gf, "vs_4_0", flags, 0, &buffer, &errorBuffer);
+	delete[] gsBuff;
 
 	if (!SUCCEEDED(res))
 	{
 		return 3;
 	}
-	ID3D11GeometryShader* g = nullptr;
-	res = graphicsDevice->CreateGeometryShader(buffer->GetBufferPointer(), buffer->GetBufferSize(), 0, &g);
-	defaultShaders[static_cast<int>(ds)].gs = g;
+	TrecComPointer<ID3D11GeometryShader>::TrecComHolder g;
+	res = graphicsDevice->CreateGeometryShader(buffer->GetBufferPointer(), buffer->GetBufferSize(), 0, g.GetPointerAddress());
+	defaultShaders[static_cast<int>(ds)].gs = g.Extract();
 
 	buffer->Release();
 	buffer = nullptr;
@@ -2596,21 +2571,22 @@ int ArenaEngine::AddGeometryShader(DefaultShader ds, TString & gs, CHAR * gf)
 *				CHAR* hf - function name of the hull shader
 * Return: int - 0 if successful, otherwise error code
 */
-int ArenaEngine::AddHullShader(DefaultShader ds, TString & hs, CHAR * hf)
+int ArenaEngine::AddHullShader(DefaultShader ds, TString & hs, const CHAR * hf)
 {
 	ID3DBlob* buffer = nullptr, *errorBuffer = nullptr;
 
 	DWORD flags = D3DCOMPILE_ENABLE_STRICTNESS;
 
-	HRESULT res = D3DCompileFromFile(hs.GetBuffer(), 0, 0, hf, "vs_4_0", flags, 0, &buffer, &errorBuffer);
-
+	WCHAR* hsBuff = hs.GetBufferCopy();
+	HRESULT res = D3DCompileFromFile(hsBuff, 0, 0, hf, "vs_4_0", flags, 0, &buffer, &errorBuffer);
+	delete[] hsBuff;
 	if (!SUCCEEDED(res))
 	{
 		return 3;
 	}
-	ID3D11HullShader* h = nullptr;
-	res = graphicsDevice->CreateHullShader(buffer->GetBufferPointer(), buffer->GetBufferSize(), 0, &h);
-	defaultShaders[static_cast<int>(ds)].hs = h;
+	TrecComPointer<ID3D11HullShader>::TrecComHolder h;
+	res = graphicsDevice->CreateHullShader(buffer->GetBufferPointer(), buffer->GetBufferSize(), 0, h.GetPointerAddress());
+	defaultShaders[static_cast<int>(ds)].hs = h.Extract();
 
 	buffer->Release();
 	buffer = nullptr;
@@ -2660,18 +2636,18 @@ void ArenaEngine::SetTextureCount(DefaultShader shaderID, unsigned char c)
 void ArenaEngine::ResetShaderProgram(ShaderProgram & sp)
 {
 	sp.bufferSize = 0;
-	sp.cs = nullptr;
-	sp.ds = nullptr;
+	sp.cs.Nullify();
+	sp.ds.Nullify();
 	sp.elementCount = 0;
 	sp.elements = 0;
-	sp.gs = nullptr;
-	sp.hs = nullptr;
-	sp.layout = nullptr;
+	sp.gs.Nullify();
+	sp.hs.Nullify();
+	sp.layout.Nullify();
 	sp.layoutError = 0;
 	sp.mvp_cpu = false;
-	sp.ps = nullptr;
+	sp.ps.Nullify();
 	sp.TextureCount = 0;
-	sp.vs = nullptr;
+	sp.vs.Nullify();
 	sp.cameraLoc = -1;
 	sp.colorLoc = -1;
 	sp.modelLoc = -1;

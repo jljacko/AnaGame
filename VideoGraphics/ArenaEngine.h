@@ -6,7 +6,7 @@
 #include <d3d11.h>
 #include <DirectXMath.h>
 #include "VideoGraphics.h"
-#include <TrecComPointer.h>
+#include <TrecReference.h>
 #include <vector>
 
 class ArenaModel;
@@ -120,6 +120,7 @@ class _VIDEO_GRAPHICS ArenaEngine :	public TObject
 {
 	friend class ShaderParser;
 	friend class ArenaModel;
+	friend class TrecPointerKey;
 public:
 	ArenaEngine();
 	~ArenaEngine();
@@ -128,13 +129,13 @@ public:
 	bool IsDefaultShadersReady();
 
 	// Shader Creater Methods
-	int SetNewBasicShader(TString& vs, TString& ps, CHAR* vf, CHAR* sf, TDataArray<unsigned short>& bufferDesc);
-	int SetNewBasicShader(TString& s, CHAR* vf, CHAR* sf, TDataArray<unsigned short>& bufferDesc);
+	int SetNewBasicShader(TString& vs, TString& ps, const CHAR* vf, const CHAR* sf, TDataArray<unsigned short>& bufferDesc);
+	int SetNewBasicShader(TString& s, const CHAR* vf, const CHAR* sf, TDataArray<unsigned short>& bufferDesc);
 
-	int AddComputeShader(int shaderID, TString& cs, CHAR* cf);
-	int AddDomainShader(int shaderID, TString& ds, CHAR* df);
-	int AddGeometryShader(int shaderID, TString& gs, CHAR* gf);
-	int AddHullShader(int shaderID, TString& hs, CHAR* hf);
+	int AddComputeShader(int shaderID, TString& cs, const CHAR* cf);
+	int AddDomainShader(int shaderID, TString& ds, const CHAR* df);
+	int AddGeometryShader(int shaderID, TString& gs, const CHAR* gf);
+	int AddHullShader(int shaderID, TString& hs, const CHAR* hf);
 
 	// Shader Modification Methods
 	bool setShader(int shaderID);
@@ -143,8 +144,8 @@ public:
 	ShaderLayoutDesc getLayoutDesc(DefaultShader ds);
 	int getBufferSize(int shaderID);
 	int getBufferSize(DefaultShader ds);
-	bool UpdateConstantBuffer(int shaderID, int BufferLoc, ID3D11Buffer* buff);
-	bool UpdateConstantBuffer(DefaultShader shader, int BufferLoc, ID3D11Buffer* buff);
+	//bool UpdateConstantBuffer(int shaderID, int BufferLoc, ID3D11Buffer* buff);
+	//bool UpdateConstantBuffer(DefaultShader shader, int BufferLoc, ID3D11Buffer* buff);
 
 	bool GetLayoutError(int shaderID, HRESULT& res);
 	bool GetLayoutError(DefaultShader ds, HRESULT& res);
@@ -168,10 +169,11 @@ public:
 	void SetDefaultRasterization();
 
 	int GetConstantBuffer(int size, TrecComPointer<ID3D11Buffer>& buff);
-	void UpdateConstantBuffer(ID3D11Buffer** buff, ShaderPhase sp, int slot);
+	void UpdateConstantBuffer(TrecComPointer<ID3D11Buffer>& buff, ShaderPhase sp, int slot);
 
-	int ReplaceConstantBuffer(int shaderID, unsigned char slot, ID3D11Buffer* buff);
-	int ReplaceConstantBuffer(DefaultShader shaderID, unsigned char slot, ID3D11Buffer* buff);
+	int ReplaceConstantBuffer(int shaderID, unsigned char slot, TrecComPointer<ID3D11Buffer> buff);
+	int ReplaceConstantBuffer(DefaultShader shaderID, unsigned char slot, TrecComPointer<ID3D11Buffer> buff);
+
 
 	// Basic Methods, imported from D3DEngine
 	static TrecPointer<ArenaEngine> GetArenaEngine(TString& d, HWND w, HINSTANCE h);
@@ -229,7 +231,7 @@ private:
 	DirectX::XMMATRIX viewBuffer;
 
 	// Basic Shader Information
-	int SetNewBasicShader(TString& s, CHAR* f, TDataArray<unsigned short>& bufferDesc, bool isVertex, ShaderProgram& sp);
+	int SetNewBasicShader(TString& s, const CHAR* f, TDataArray<unsigned short>& bufferDesc, bool isVertex, ShaderProgram& sp);
 	TDataArray<D3D11_INPUT_ELEMENT_DESC>* getInputDescription(TDataArray<unsigned short>& bufferDesc, int& buffSize);
 	void assignDescriptionFormat(D3D11_INPUT_ELEMENT_DESC& desc, unsigned char valueSize, unsigned short valueCount);
 	TDataArray<ShaderProgram> shaderList;
@@ -238,7 +240,7 @@ private:
 	void AddModel(ArenaModel& ae);
 	void RemoveModel(ArenaModel* ae);
 	// Functions and data for setting up Default Shaders
-	bool SetNewBasicShader(TString& vs, TString& ps, CHAR* vf, CHAR* sf, TDataArray<unsigned short>& bufferDesc, DefaultShader ds);
+	bool SetNewBasicShader(TString& vs, TString& ps, const CHAR* vf, const CHAR* sf, TDataArray<unsigned short>& bufferDesc, DefaultShader ds);
 	bool GetMostRecentBasicShader(DefaultShader& ds);
 
 	DefaultShader mostRecentDefault;
@@ -284,10 +286,10 @@ private:
 
 
 
-	int AddComputeShader(DefaultShader ds, TString& cs, CHAR* cf);
-	int AddDomainShader(DefaultShader s, TString& ds, CHAR* df);
-	int AddGeometryShader(DefaultShader ds, TString& gs, CHAR* gf);
-	int AddHullShader(DefaultShader ds, TString& hs, CHAR* hf);
+	int AddComputeShader(DefaultShader ds, TString& cs, const CHAR* cf);
+	int AddDomainShader(DefaultShader s, TString& ds, const CHAR* df);
+	int AddGeometryShader(DefaultShader ds, TString& gs, const CHAR* gf);
+	int AddHullShader(DefaultShader ds, TString& hs, const CHAR* hf);
 
 	void SetTextureCount(int shaderID, unsigned char c);
 	void SetTextureCount(DefaultShader shaderID, unsigned char c);

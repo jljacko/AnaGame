@@ -354,7 +354,7 @@ void TFile::Write(const void* buffer, UINT count)
 		return;
 	LPDWORD resCount = new DWORD;
 	LPDWORD resCount2 = resCount;
-	LPOVERLAPPED lap = new _OVERLAPPED;
+	LPOVERLAPPED lap = new OVERLAPPED;
 	LPOVERLAPPED lap2 = lap;
 	BOOL res = WriteFile((HANDLE)fileHandle, buffer, count, resCount, lap);
 

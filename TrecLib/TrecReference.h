@@ -108,7 +108,12 @@ public:
 		pointer = nullptr;
 	}
 
-
+	void Nullify()
+	{
+		if (pointer)
+			pointer->Decrement();
+		pointer = nullptr;
+	}
 
 	void operator=(const TrecPointer<t>& other)
 	{
@@ -212,10 +217,27 @@ public:
 			return &holder;
 		}
 
+		void OfferValue(TrecComPointer<t>& point)
+		{
+			holder = point.Get();
+		}
+
+		void Extract(TrecComPointer<t>& point)
+		{
+			if (!holder)
+				throw L"Error! Cannot Extract Smart Pointer with raw value!";
+			if (holder != point.Get())
+			{
+				point.Nullify();
+				point = TrecComPointer<t>(holder);
+			}
+			holder = nullptr;
+		}
+
 		TrecComPointer<t> Extract()
 		{
 			if (!holder)
-				throw (L"Error!, Cannot Extract Smart Pointer with raw value!");
+				throw L"Error! Cannot Extract Smart Pointer with raw value!";
 			TrecComPointer<t> ret(holder);
 			holder = nullptr;
 			return ret;
@@ -247,10 +269,15 @@ protected:
 	{
 		if (!raw)
 			throw (L"Error! TrecPointers must be initialized with a pointer, not NULL!");
-		pointer = new TrecBoxPointer<t>(raw);
+		pointer = new TrecComBoxPointer<t>(raw);
 	}
 
 public:
+
+	TrecComPointer()
+	{
+		pointer = nullptr;
+	}
 
 	void operator=(const TrecComPointer<t>& other)
 	{
@@ -259,13 +286,25 @@ public:
 		if (other.pointer == pointer)
 			return;
 
+		if(pointer)
 		pointer->Decrement();
 		pointer = other.pointer;
+		if(pointer)
 		pointer->Increment();
+	}
+
+
+	void Nullify()
+	{
+		if (pointer)
+			pointer->Decrement();
+		pointer = nullptr;
 	}
 
 	template<class u> u* As()
 	{
+		if (!pointer) return nullptr;
+
 		t* raw = pointer->Get();
 		if (!raw)
 			return nullptr;
@@ -279,16 +318,19 @@ public:
 
 	t* Get()
 	{
+		if (!pointer)return nullptr;
 		return pointer->Get();
 	}
 
 	t* operator->()
 	{
+		if (!pointer)return nullptr;
 		return pointer->Get();
 	}
 
 	void Delete()
 	{
+		if(pointer)
 		pointer->Delete();
 	}
 

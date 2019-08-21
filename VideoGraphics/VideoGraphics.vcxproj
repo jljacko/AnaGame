@@ -217,8 +217,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="ModelReader.cpp" />
-    <ClCompile Include="ObjReader.cpp" />
     <ClCompile Include="ShaderParser.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -238,8 +236,6 @@
     <ClInclude Include="ArenaEngine.h" />
     <ClInclude Include="ArenaModel.h" />
     <ClInclude Include="InlineMatrixOperators.h" />
-    <ClInclude Include="ModelReader.h" />
-    <ClInclude Include="ObjReader.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ShaderParser.h" />
     <ClInclude Include="stdafx.h" />

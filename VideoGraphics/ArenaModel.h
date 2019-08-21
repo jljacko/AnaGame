@@ -15,11 +15,15 @@ typedef struct ShaderKey
 	ShaderCard card;
 }ShaderKey;
 
-typedef struct TextureResources
+class TextureResources
 {
+public:
+	TextureResources();
+	TextureResources(const TextureResources& copy);
+	void operator=( TextureResources& copy);
 	TrecComPointer<ID3D11ShaderResourceView> colorMap;
 	TrecComPointer<ID3D11SamplerState> sampleState;
-}TextureResources;
+};
 
 
 class _VIDEO_GRAPHICS ArenaModel : public TObject

@@ -58,7 +58,7 @@ bool ShaderParser::Obj(TString * v)
 	}
 	else if (*v == TString(L"Const"))
 	{
-		TrecComPointer<ID3D11Buffer> buff = (ID3D11Buffer*)nullptr;
+		TrecComPointer<ID3D11Buffer> buff;
 		if (engine->GetConstantBuffer(cbd.size, buff))
 			return false;
 		bool newConst = false;
@@ -82,59 +82,59 @@ bool ShaderParser::Obj(TString * v)
 bool ShaderParser::Attribute(TrecPointer<TString> v, TString& e)
 {
 	// Quick Null check so we don't have to worry about it later down the line
-	if (!v.get())
+	if (!v.Get())
 		return false;
 
-	if (!wcscmp(e, L"|InputSlot"))
+	if (!TString::Compare(e, L"|InputSlot"))
 	{
-		if (!v.get())
+		if (!v.Get())
 			return false;
-		return SetInputSlot(*v.get());
+		return SetInputSlot(*v.Get());
 	}
-	else if (!wcscmp(e, L"|BufferPurpose"))
+	else if (!TString::Compare(e, L"|BufferPurpose"))
 	{
-		if (!v.get())
+		if (!v.Get())
 			return false;
-		return SetBufferPurpose(*v.get());
+		return SetBufferPurpose(*v.Get());
 	}
-	else if (!wcscmp(e, L"|BufferWidth"))
+	else if (!TString::Compare(e, L"|BufferWidth"))
 	{
-		if (!v.get())
+		if (!v.Get())
 			return false;
-		return SetDataWidth(*v.get());
+		return SetDataWidth(*v.Get());
 	}
-	else if (!wcscmp(e, L"|BufferSize"))
+	else if (!TString::Compare(e, L"|BufferSize"))
 	{
-		if (!v.get())
+		if (!v.Get())
 		return false;
-		return SetDataCount(*v.get());
+		return SetDataCount(*v.Get());
 	}
-	else if (!wcscmp(e, L"|InputBufferCount"))
+	else if (!TString::Compare(e, L"|InputBufferCount"))
 	{
 
 	}
-	else if (!wcscmp(e, L"|PixelFile"))
+	else if (!TString::Compare(e, L"|PixelFile"))
 	{
-		TrecPointer<TString> sh_str = new TString(fileLocation);
+		TrecPointer<TString> sh_str = TrecPointerKey::GetNewTrecPointer<TString>(fileLocation);
 		sh_str->Append(L"\\");
-		*sh_str.get() + *v.get();
+		*sh_str.Get() + *v.Get();
 		bsd.pixelFile = sh_str;
 		bsd.pixelFileSet = true;
 	}
-	else if (!wcscmp(e, L"|VertexFile"))
+	else if (!TString::Compare(e, L"|VertexFile"))
 	{
-		TrecPointer<TString> sh_str = new TString(fileLocation);
+		TrecPointer<TString> sh_str = TrecPointerKey::GetNewTrecPointer<TString>(fileLocation);
 		sh_str->Append(L"\\");
-		*sh_str.get() + *v.get();
+		*sh_str.Get() + *v.Get();
 		bsd.vertexFile = sh_str;
 		bsd.vertexFileSet = true;
 	}
-	else if (!wcscmp(e, L"|PixelFunction"))
+	else if (!TString::Compare(e, L"|PixelFunction"))
 	{
 		bsd.pixelFunction = v;
 		bsd.pixelFunctionSet = true;
 	}
-	else if (!wcscmp(e, L"|VertexFunction"))
+	else if (!TString::Compare(e, L"|VertexFunction"))
 	{
 		bsd.vertexFunction = v;
 		bsd.vertexFunctionSet = true;
@@ -142,69 +142,69 @@ bool ShaderParser::Attribute(TrecPointer<TString> v, TString& e)
 
 	else if (shaderIDd)
 	{
-		if (!wcscmp(e, L"|DomainFile"))
+		if (!TString::Compare(e, L"|DomainFile"))
 		{
-			TrecPointer<TString> sh_str = new TString(fileLocation);
+			TrecPointer<TString> sh_str = TrecPointerKey::GetNewTrecPointer<TString>(fileLocation);
 			sh_str->Append(L"\\");
-			*sh_str.get() + *v.get();
+			*sh_str.Get() + *v.Get();
 			shaderFile = sh_str;
 			phase = sp_Domain;
 		}
-		else if (!wcscmp(e, L"|DomainFunction"))
+		else if (!TString::Compare(e, L"|DomainFunction"))
 		{
 			if (phase == sp_Domain)
-				return AddShaderToProgram(*v.get());
+				return AddShaderToProgram(*v.Get());
 		}
-		else if (!wcscmp(e, L"|ComputeFile"))
+		else if (!TString::Compare(e, L"|ComputeFile"))
 		{
-			TrecPointer<TString> sh_str = new TString(fileLocation);
+			TrecPointer<TString> sh_str = TrecPointerKey::GetNewTrecPointer<TString>(fileLocation);
 			sh_str->Append(L"\\");
-			*sh_str.get() + *v.get();
+			*sh_str.Get() + *v.Get();
 			shaderFile = sh_str;
 			phase = sp_Compute;
 		}
-		else if (!wcscmp(e, L"|ComputeFunction"))
+		else if (!TString::Compare(e, L"|ComputeFunction"))
 		{
 			if (phase == sp_Compute)
-				return AddShaderToProgram(*v.get());
+				return AddShaderToProgram(*v.Get());
 		}
-		if (!wcscmp(e, L"|HullFile"))
+		if (!TString::Compare(e, L"|HullFile"))
 		{
-			TrecPointer<TString> sh_str = new TString(fileLocation);
+			TrecPointer<TString> sh_str = TrecPointerKey::GetNewTrecPointer<TString>(fileLocation);
 			sh_str->Append(L"\\");
-			*sh_str.get() + *v.get();
+			*sh_str.Get() + *v.Get();
 			shaderFile = sh_str;
 			phase = sp_Hull;
 		}
-		else if (!wcscmp(e, L"|HullFunction"))
+		else if (!TString::Compare(e, L"|HullFunction"))
 		{
 			if (phase == sp_Hull)
-				return AddShaderToProgram(*v.get());
+				return AddShaderToProgram(*v.Get());
 		}
-		if (!wcscmp(e, L"|GeometryFile"))
+		if (!TString::Compare(e, L"|GeometryFile"))
 		{
-			TrecPointer<TString> sh_str = new TString(fileLocation);
+			TrecPointer<TString> sh_str = TrecPointerKey::GetNewTrecPointer<TString>(fileLocation);
 			sh_str->Append(L"\\");
-			*sh_str.get() + *v.get();
+			*sh_str.Get() + *v.Get();
 			shaderFile = sh_str;
 			phase = sp_Geometry;
 		}
-		else if (!wcscmp(e, L"|GeometryFunction"))
+		else if (!TString::Compare(e, L"|GeometryFunction"))
 		{
 			if (phase == sp_Geometry)
-				return AddShaderToProgram(*v.get());
+				return AddShaderToProgram(*v.Get());
 		}
-		else if (!wcscmp(e, L"|TextureCount"))
+		else if (!TString::Compare(e, L"|TextureCount"))
 		{
-			return SetTextureCount(*v.get());
+			return SetTextureCount(*v.Get());
 		
 		}
-		else if (!wcscmp(e, L"|ModelBuffer"))
+		else if (!TString::Compare(e, L"|ModelBuffer"))
 		{
-			if ((*v.get()) == TString(L"True"))
+			if ((*v.Get()) == TString(L"True"))
 				cbd.ModelBuffer = true;
 		}
-		else if (!wcscmp(e,L"|ConstantSize"))
+		else if (!TString::Compare(e,L"|ConstantSize"))
 		{
 			int value = 0;
 			if (!v->ConvertToInt(&value))
@@ -214,25 +214,25 @@ bool ShaderParser::Attribute(TrecPointer<TString> v, TString& e)
 			else
 				return false;
 		}
-		else if (!wcscmp(e, L"|ConstantShaderPhase"))
+		else if (!TString::Compare(e, L"|ConstantShaderPhase"))
 		{
-			if (*v.get() == TString(L"Pixel") || *v.get() == TString(L"Fragment"))
+			if (*v.Get() == TString(L"Pixel") || *v.Get() == TString(L"Fragment"))
 			{
 				cbd.sp = sp_Pixel;
 			}
-			else if (*v.get() == TString(L"Hull"))
+			else if (*v.Get() == TString(L"Hull"))
 			{
 				cbd.sp = sp_Hull;
 			}
-			else if (*v.get() == TString(L"Domain"))
+			else if (*v.Get() == TString(L"Domain"))
 			{
 				cbd.sp = sp_Domain;
 			}
-			else if (*v.get() == TString(L"Compute"))
+			else if (*v.Get() == TString(L"Compute"))
 			{
 				cbd.sp = sp_Compute;
 			}
-			else if (*v.get() == TString(L"Geometry"))
+			else if (*v.Get() == TString(L"Geometry"))
 			{
 				cbd.sp = sp_Geometry;
 			}
@@ -242,7 +242,7 @@ bool ShaderParser::Attribute(TrecPointer<TString> v, TString& e)
 			}
 
 		}
-		else if (!wcscmp(e, L"|ConstantSlot"))
+		else if (!TString::Compare(e, L"|ConstantSlot"))
 		{
 			int value = 0;
 			if (!v->ConvertToInt(&value))
@@ -255,21 +255,21 @@ bool ShaderParser::Attribute(TrecPointer<TString> v, TString& e)
 			}
 			return false;
 		}
-		else if (!wcscmp(e, L"|ConstantPurpose"))
+		else if (!TString::Compare(e, L"|ConstantPurpose"))
 		{
-			if (*v.get() == TString(L"Color"))
+			if (*v.Get() == TString(L"Color"))
 			{
 				cbd.purpose = 1;
 			}
-			else if (*v.get() == TString(L"Camera"))
+			else if (*v.Get() == TString(L"Camera"))
 			{
 				cbd.purpose = 2;
 			}
-			else if (*v.get() == TString(L"MVP"))
+			else if (*v.Get() == TString(L"MVP"))
 				cbd.purpose = 3;
-			else if (*v.get() == TString(L"View"))
+			else if (*v.Get() == TString(L"View"))
 				cbd.purpose = 4;
-			else if (*v.get() == TString(L"Model"))
+			else if (*v.Get() == TString(L"Model"))
 				cbd.purpose = 5;
 		}
 	}
@@ -348,35 +348,24 @@ UCHAR * ShaderParser::GetAnaGameType()
 */
 bool ShaderParser::AddShaderToProgram(TString & str)
 {
-	WCHAR* wStr = str.GetBuffer();
+	std::string cStr = str.GetRegString();
 
-	char* cStr = new char[str.GetLength() + 1];
-	size_t convert = 0;
-	int err = wcstombs_s(&convert, cStr,static_cast<size_t>(str.GetLength()), wStr, static_cast<size_t>(str.GetLength()));
-	str.ReleaseBuffer();
-	if (err)
-	{
-		// Error! Handle!
-		delete[] cStr;
-		return false;
-	}
-	
-
+	int err = 0;
 	if (shaderID.default)
 	{
 		switch (phase)
 		{
 		case sp_Domain:
-			err = engine->AddDomainShader(shaderID.card.dID, *shaderFile.get(), cStr);
+			err = engine->AddDomainShader(shaderID.card.dID, *shaderFile.Get(), cStr.c_str());
 			break;
 		case sp_Compute:
-			err = engine->AddComputeShader(shaderID.card.dID, *shaderFile.get(), cStr);
+			err = engine->AddComputeShader(shaderID.card.dID, *shaderFile.Get(), cStr.c_str());
 			break;
 		case sp_Hull:
-			err = engine->AddHullShader(shaderID.card.dID, *shaderFile.get(), cStr);
+			err = engine->AddHullShader(shaderID.card.dID, *shaderFile.Get(), cStr.c_str());
 			break;
 		case sp_Geometry:
-			err = engine->AddGeometryShader(shaderID.card.dID, *shaderFile.get(), cStr);
+			err = engine->AddGeometryShader(shaderID.card.dID, *shaderFile.Get(), cStr.c_str());
 			break;
 		}
 	}
@@ -385,16 +374,16 @@ bool ShaderParser::AddShaderToProgram(TString & str)
 		switch (phase)
 		{
 		case sp_Domain:
-			err = engine->AddDomainShader(shaderID.card.id, *shaderFile.get(), cStr);
+			err = engine->AddDomainShader(shaderID.card.id, *shaderFile.Get(), cStr.c_str());
 				break;
 		case sp_Compute:
-			err = engine->AddComputeShader(shaderID.card.id, *shaderFile.get(), cStr);
+			err = engine->AddComputeShader(shaderID.card.id, *shaderFile.Get(), cStr.c_str());
 			break;
 		case sp_Hull:
-			err = engine->AddHullShader(shaderID.card.id, *shaderFile.get(), cStr);
+			err = engine->AddHullShader(shaderID.card.id, *shaderFile.Get(), cStr.c_str());
 			break;
 		case sp_Geometry:
-			err = engine->AddGeometryShader(shaderID.card.id, *shaderFile.get(), cStr);
+			err = engine->AddGeometryShader(shaderID.card.id, *shaderFile.Get(), cStr.c_str());
 			break;
 		}
 	}
@@ -411,42 +400,16 @@ bool ShaderParser::SetBasicShader()
 {
 	if (bsd.vertexFileSet && bsd.pixelFileSet && bsd.vertexFunctionSet && bsd.pixelFunctionSet && !shaderIDd)
 	{
-		WCHAR* wStr = bsd.pixelFunction->GetBuffer();
-
-		char* cStr = new char[bsd.pixelFunction->GetLength() + 2];
-		size_t convert = 0;
-		int err = wcstombs_s(&convert, cStr, static_cast<size_t>(bsd.pixelFunction->GetLength() +1), wStr, static_cast<size_t>(bsd.pixelFunction->GetLength()));
-		bsd.pixelFunction->ReleaseBuffer();
-		if (err)
-		{
-			// Error! Handle!
-			delete[] cStr;
-			return false;
-		}
-
-		wStr = bsd.vertexFunction->GetBuffer();
-
-		char* cStr2 = new char[bsd.vertexFunction->GetLength() + 2];
-		convert = 0;
-		err = wcstombs_s(&convert, cStr2, static_cast<size_t>(bsd.vertexFunction->GetLength()+1), wStr, static_cast<size_t>(bsd.vertexFunction->GetLength()));
-		bsd.vertexFunction->ReleaseBuffer();
-		if (err)
-		{
-			// Error! Handle!
-			delete[] cStr2;
-			return false;
-		}
-
+		std::string cStr2 = bsd.vertexFunction->GetRegString();
+		std::string cStr = bsd.pixelFunction->GetRegString();
+		int err = 0;
 		if (isDefaultShader)
 		{
-			if(!engine->SetNewBasicShader(*bsd.vertexFile.get(), *bsd.pixelFile.get(), cStr2, cStr, bufferDesc, defaultShader))
+			if(!engine->SetNewBasicShader(*bsd.vertexFile.Get(), *bsd.pixelFile.Get(), cStr2.c_str(), cStr.c_str(), bufferDesc, defaultShader))
 				return false;
 		}
 		else
-			err = engine->SetNewBasicShader(*bsd.vertexFile.get(), *bsd.pixelFile.get(), cStr2, cStr, bufferDesc);
-
-		delete[] cStr;
-		delete[] cStr2;
+			err = engine->SetNewBasicShader(*bsd.vertexFile.Get(), *bsd.pixelFile.Get(), cStr2.c_str(), cStr.c_str(), bufferDesc);
 
 		if (err <= 0) // Succeeded
 		{
