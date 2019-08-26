@@ -1408,7 +1408,12 @@ int TString::Find(const TString& sub, int start)
 		bool works = true;
 		for (int c = 0, rust = indexStart; c < sub.GetSize() || rust < size; c++, rust++)
 		{
-			if (c == sub.GetSize() || rust == size)
+			if (c == sub.GetSize())
+			{
+				works = true;
+				break;
+			}
+			if (rust == size)
 			{
 				works = false;
 				break;
@@ -1424,11 +1429,16 @@ int TString::Find(const TString& sub, int start)
 		{
 			return indexStart;
 		}
+		indexStart++;
 	}
+
+	return -1;
 }
 
 int TString::Find(WCHAR sub, int start)
 {
+	if (start < 0)
+		return -1;
 	for (int c = start; c < size; c++)
 	{
 		if (string[c] == sub)
@@ -1439,6 +1449,8 @@ int TString::Find(WCHAR sub, int start)
 
 int TString::FindOneOf(const TString& chars, int start)
 {
+	if (start < 0)
+		return -1;
 	for (int c = start; c < size; c++)
 	{
 		for (UINT rust = 0; rust < chars.GetSize(); rust++)
@@ -1454,7 +1466,7 @@ int TString::FindOneOf(const TString& chars, int start)
 
 int TString::FindLast(const TString& sub, int start)
 {
-	if (start >= size)
+	if (start >= static_cast<int>(size))
 		return -1;
 	for (int c = start; c >= 0; c--)
 	{
@@ -1478,9 +1490,9 @@ int TString::FindLast(const TString& sub, int start)
 
 int TString::FindLast(WCHAR sub, int start)
 {
-	if (start >= size)
+	if (start >= static_cast<int>(size))
 		return -1;
-	for (int rust = start; rust >= 0; rust--)
+	for (int rust = ((start == -1) ? size - 1 : start); rust >= 0; rust--)
 	{
 		if (string[rust] == sub)
 			return rust;
@@ -1490,7 +1502,7 @@ int TString::FindLast(WCHAR sub, int start)
 
 int TString::FindLastOneOf(const TString& chars, int start)
 {
-	if (start >= size)
+	if (start >= static_cast<int>(size))
 		return -1;
 	for (int c = start; c >= 0; c--)
 	{

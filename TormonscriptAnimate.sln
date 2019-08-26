@@ -40,6 +40,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DocAnimation", "DocAnimatio
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TrecLib", "TrecLib\TrecLib.vcxproj", "{D51F30ED-A597-4CB8-9BEB-7EC42AECE350}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AnaGameTester", "AnaGameTester\AnaGameTester.vcxproj", "{F4F60728-3110-40AB-B9A2-3B55972E711B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D51F30ED-A597-4CB8-9BEB-7EC42AECE350} = {D51F30ED-A597-4CB8-9BEB-7EC42AECE350}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -136,6 +141,14 @@ Global
 		{D51F30ED-A597-4CB8-9BEB-7EC42AECE350}.Release|x64.Build.0 = Release|x64
 		{D51F30ED-A597-4CB8-9BEB-7EC42AECE350}.Release|x86.ActiveCfg = Release|Win32
 		{D51F30ED-A597-4CB8-9BEB-7EC42AECE350}.Release|x86.Build.0 = Release|Win32
+		{F4F60728-3110-40AB-B9A2-3B55972E711B}.Debug|x64.ActiveCfg = Debug|x64
+		{F4F60728-3110-40AB-B9A2-3B55972E711B}.Debug|x64.Build.0 = Debug|x64
+		{F4F60728-3110-40AB-B9A2-3B55972E711B}.Debug|x86.ActiveCfg = Debug|Win32
+		{F4F60728-3110-40AB-B9A2-3B55972E711B}.Debug|x86.Build.0 = Debug|Win32
+		{F4F60728-3110-40AB-B9A2-3B55972E711B}.Release|x64.ActiveCfg = Release|x64
+		{F4F60728-3110-40AB-B9A2-3B55972E711B}.Release|x64.Build.0 = Release|x64
+		{F4F60728-3110-40AB-B9A2-3B55972E711B}.Release|x86.ActiveCfg = Release|Win32
+		{F4F60728-3110-40AB-B9A2-3B55972E711B}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
