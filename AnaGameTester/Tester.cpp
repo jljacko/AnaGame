@@ -34,7 +34,7 @@ void Tester::ExpectTrue(std::string& output, std::string& testName, bool value)
 
 	if (value) // Assume passed
 	{
-		output += "PASSED!";
+		output += "PASSED!"; passed++;
 	}
 	else
 	{
@@ -44,7 +44,7 @@ void Tester::ExpectTrue(std::string& output, std::string& testName, bool value)
 	output += "\n";
 }
 
-void Tester::ExpectEquals(std::string& output, std::string& testName, char* value1, char* value2)
+void Tester::ExpectEquals(std::string& output, std::string& testName, const char* value1, const char* value2)
 {
 	testCount++;
 
@@ -52,7 +52,7 @@ void Tester::ExpectEquals(std::string& output, std::string& testName, char* valu
 
 	if (!strcmp(value1, value2)) // Assume passed
 	{
-		output += "PASSED!";
+		output += "PASSED!"; passed++;
 	}
 	else
 	{
@@ -62,14 +62,17 @@ void Tester::ExpectEquals(std::string& output, std::string& testName, char* valu
 	output += "\n";
 }
 
-void Tester::ExpectEquals(std::string& output, std::string& testName, WCHAR* value1, WCHAR* value2)
+void Tester::ExpectEquals(std::string& output, std::string& testName, const WCHAR* value1, const WCHAR* value2)
 {
 	testCount++;
 
 	output += std::string("Test ") + std::to_string(testCount) + " \"" + testName + "\" ";
 
-	char* cValue1 = new char[lstrlenW(value2) + 2];
-	char* cValue2 = new char[lstrlenW(value2) + 2];
+	UINT wSize1 = lstrlenW(value1), wSize2 = lstrlenW(value2);
+
+
+	char* cValue1 = new char[wSize1 + 2];
+	char* cValue2 = new char[wSize2 + 2];
 
 	size_t con1 = 0;
 	wcstombs_s(&con1, cValue1, lstrlenW(value1) + 1, value1, lstrlenW(value1) + 1);
@@ -81,7 +84,7 @@ void Tester::ExpectEquals(std::string& output, std::string& testName, WCHAR* val
 
 	if (!wcscmp(value1, value2)) // Assume passed
 	{
-		output += "PASSED!";
+		output += "PASSED!"; passed++;
 	}
 	else
 	{
@@ -103,6 +106,7 @@ void Tester::ExpectEquals(std::string& output, std::string& testName, char ch1, 
 	if (ch1 == ch2) // Assume passed
 	{
 		output += "PASSED!";
+		passed++;
 	}
 	else
 	{
@@ -120,7 +124,7 @@ void Tester::ExpectEquals(std::string& output, std::string& testName, WCHAR wch1
 
 	if (wch1 == wch2) // Assume passed
 	{
-		output += "PASSED!";
+		output += "PASSED!"; passed++;
 	}
 	else
 	{
@@ -138,7 +142,7 @@ void Tester::ExpectEquals(std::string& output, std::string& testName, long long 
 
 	if (expected == actual) // Assume passed
 	{
-		output += "PASSED!";
+		output += "PASSED!"; passed++;
 	}
 	else
 	{
@@ -156,7 +160,7 @@ void Tester::ExpectEquals(std::string& output, std::string& testName, double exp
 
 	if (expected == actual) // Assume passed
 	{
-		output += "PASSED!";
+		output += "PASSED!"; passed++;
 	}
 	else
 	{
@@ -174,7 +178,7 @@ void Tester::ExpectEquals(std::string& output, std::string& testName, UINT expec
 
 	if (expected == actual) // Assume passed
 	{
-		output += "PASSED!";
+		output += "PASSED!"; passed++;
 	}
 	else
 	{

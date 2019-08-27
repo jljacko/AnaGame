@@ -15,8 +15,8 @@ protected:
 	virtual void After();
 
 	void ExpectTrue(std::string& output, std::string& testName, bool value);
-	void ExpectEquals(std::string& output, std::string& testName, char* value1, char* value2);
-	void ExpectEquals(std::string& output, std::string& testName, WCHAR* value1, WCHAR* value2);
+	void ExpectEquals(std::string& output, std::string& testName, const char* value1, const char* value2);
+	void ExpectEquals(std::string& output, std::string& testName, const WCHAR* value1, const WCHAR* value2);
 	void ExpectEquals(std::string& output, std::string& testName, char ch1, char ch2);
 	void ExpectEquals(std::string& output, std::string& testName, WCHAR wch1, WCHAR wch2);
 

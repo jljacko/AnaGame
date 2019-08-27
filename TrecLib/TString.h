@@ -101,9 +101,9 @@ public:
 
 	// Relics from MFC CString that we now hve to implement ourselves
 	void AppendFormat(const WCHAR* format, ...);
-	void AppendFormat(const TString& format, ...);
+	void AppendFormat(const TString format, ...);
 	void Format(const WCHAR* format, ...);
-	void Format(const TString& format, ...);
+	void Format(const TString format, ...);
 	void AppendChar(const WCHAR ch);
 	void Append(const TString&);
 
@@ -127,7 +127,7 @@ public:
 
 	bool SetAsEnvironmentVariable(TString& var);
 
-	int Insert(int index, TString& subStr);
+	int Insert(int index, const TString& subStr);
 	TString GetInsert(int& ret, int index, TString& subStr);
 	int Insert(int index, WCHAR ch);
 	TString GetInsert(int& ret, int index, WCHAR ch);
@@ -144,7 +144,7 @@ public:
 	TString GetRemove(int& ret, WCHAR c);
 
 	int Replace(const TString& oldStr, const TString& newStr);
-	TString GetReplace(int& ret, TString& oldStr, TString& newStr);
+	TString GetReplace(int& ret, const TString& oldStr, const TString& newStr);
 	int Replace(WCHAR& oldStr, WCHAR& newStr);
 	TString GetReplace(int& ret, WCHAR& oldStr, WCHAR& newStr);
 

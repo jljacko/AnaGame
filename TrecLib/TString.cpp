@@ -49,7 +49,7 @@ TString::TString(const TString * orig)
 	size = orig->size;
 
 	string = new WCHAR[capacity];
-	memcpy(&string, &(orig->string), capacity * sizeof(WCHAR));
+	memcpy(string, (orig->string), capacity * sizeof(WCHAR));
 }
 
 /*
@@ -373,10 +373,10 @@ TrecPointer<TDataArray<TString>> TString::split(TString str, bool checkBackSlash
 */
 WCHAR * TString::GetBufferCopy() const 
 {
-	WCHAR* returnable = new WCHAR[capacity];
+	WCHAR* returnable = new WCHAR[size+1];
 	for (UINT c = 0; c < GetSize(); c++)
 		returnable[c] = string[c];
-	returnable[capacity - 1] = L'\0';
+	returnable[size] = L'\0';
 	return returnable;
 }
 
@@ -1080,44 +1080,97 @@ void TString::AppendFormat(const WCHAR* format, ...)
 {
 	if (!format)
 		return;
+	va_list vList;
+	va_start(vList, format);
 	TString tFormat(format);
 
-	va_list vList;
+	WCHAR* formatedString = new WCHAR[tFormat.capacity * 2 + 100];
 
-	TString result = GetFormattedString(tFormat, vList);
 
-	Append(result);
+
+	int result = vswprintf(formatedString, (tFormat.capacity * 2) + 99, tFormat.string, vList);
+
+	va_end(vList);
+
+
+	TString ret;
+	if (result > -1)
+	{
+		formatedString[result] = L'\0';
+		Append(formatedString);
+	}
+
+	delete[] formatedString;
 }
 
-void TString::AppendFormat(const TString& format, ...)
+void TString::AppendFormat(const TString format, ...)
 {
+	WCHAR* formatedString = new WCHAR[format.capacity * 2 + 100];
+
+
 	va_list vList;
+	va_start(vList, format);
+	int result = vswprintf(formatedString, (format.capacity * 2) + 99, format.string, vList);
 
-	TString result = GetFormattedString(format, vList);
+	va_end(vList);
 
-	Append(result);
+
+	TString ret;
+	if (result > -1)
+	{
+		formatedString[result] = L'\0';
+		Append(formatedString);
+	}
+
+	delete[] formatedString;
 }
 
 void TString::Format(const WCHAR* format, ...)
 {
 	if (!format)
 		return;
+	va_list vList;
+	va_start(vList, format);
 	TString tFormat(format);
 
-	va_list vList;
+	WCHAR* formatedString = new WCHAR[tFormat.capacity * 2 + 100];
 
-	TString result = GetFormattedString(tFormat, vList);
 
-	Set(result);
+	int result = vswprintf(formatedString, (tFormat.capacity * 2) + 99, tFormat.string, vList);
+
+	va_end(vList);
+
+	TString ret;
+	if (result > -1)
+	{
+		formatedString[result] = L'\0';
+		Set(formatedString);
+	}
+
+	delete[] formatedString;
 }
 
-void TString::Format(const TString& format, ...)
+void TString::Format(const TString format, ...)
 {
 	va_list vList;
+	va_start(vList, format);
+	WCHAR* formatedString = new WCHAR[format.capacity * 2 + 100];
 
-	TString result = GetFormattedString(format, vList);
 
-	Set(result);
+
+	int result = vswprintf(formatedString, (format.capacity * 2) + 99, format.string, vList);
+
+	va_end(vList);
+
+
+	TString ret;
+	if (result > -1)
+	{
+		formatedString[result] = L'\0';
+		Set(formatedString);
+	}
+
+	delete[] formatedString;
 }
 
 void TString::AppendChar(WCHAR ch)
@@ -1126,7 +1179,7 @@ void TString::AppendChar(WCHAR ch)
 	{
 		WCHAR* newString = new WCHAR[++capacity];
 
-		memcpy(newString, string, capacity - 1);
+		memcpy(newString, string, (capacity - 1) * sizeof(WCHAR));
 		delete[] string;
 		string = newString;
 	}
@@ -1315,13 +1368,20 @@ TString formatSpecifiers(L"diuoxXfFeEgGaAcCsSpT");
 
 TString TString::GetFormattedString(const TString& format, va_list& data)
 {
-	WCHAR* formatedString = new WCHAR[format.capacity * 2];
+	WCHAR* formatedString = new WCHAR[format.capacity * 2 + 100];
+	WCHAR* cop = format.GetBufferCopy();
 
-	int result = vswprintf(formatedString, (format.capacity * 2) - 1, format.string, data);
+	va_start(data, cop);
+
+	int result = vswprintf(formatedString, (format.capacity * 2) + 99, format.string, data);
+
+	va_end(data);
+	delete[] cop;
 
 	TString ret;
 	if (result > -1)
 	{
+		formatedString[result] = L'\0';
 		ret.Set(formatedString);
 	}
 
@@ -1544,7 +1604,7 @@ bool TString::SetAsEnvironmentVariable(TString& var)
 	return true;
 }
 
-int TString::Insert(int index, TString& subStr)
+int TString::Insert(int index, const TString& subStr)
 {
 	if(index < 0 || index > size)
 		return size;
@@ -1725,7 +1785,7 @@ int TString::Replace(const TString& oldStr, const TString& newStr)
 	return indices.Size();
 }
 
-TString TString::GetReplace(int& ret, TString& oldStr, TString& newStr)
+TString TString::GetReplace(int& ret, const TString& oldStr, const TString& newStr)
 {
 	TString retStr(this);
 	ret = retStr.Replace(oldStr, newStr);
