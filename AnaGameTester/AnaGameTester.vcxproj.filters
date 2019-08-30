@@ -36,6 +36,9 @@
     <ClInclude Include="TestRunner.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TFileTester.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnaGameTester.cpp">
@@ -48,6 +51,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TestRunner.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TFileTester.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

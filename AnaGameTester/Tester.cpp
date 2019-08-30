@@ -7,7 +7,6 @@ Tester::Tester()
 
 void Tester::Run(std::string& output)
 {
-	output.clear();
 	output += "\n\n--------" + GetTestName() + " --------\n\n";
 
 	Before();

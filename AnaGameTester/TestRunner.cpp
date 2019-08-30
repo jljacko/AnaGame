@@ -4,10 +4,13 @@
 TestRunner tester;
 
 
-void TestRunner::DoTests()
+void TestRunner::DoTests(std::string& directory)
 {
-	TStringTester tStringTester;
-	tStringTester.Run(testResults);
+	//TStringTester tStringTester;
+	//tStringTester.Run(testResults);
+
+	TFileTester tFileTester(directory + "file1.txt", directory + "file2.txt");
+	tFileTester.Run(testResults);
 }
 
 void TestRunner::Draw(HWND window, PAINTSTRUCT structure)
@@ -28,7 +31,8 @@ void TestRunner::Draw(HWND window, PAINTSTRUCT structure)
 
 void RunTests()
 {
-	tester.DoTests();
+	std::string dir("");
+	tester.DoTests(dir);
 }
 
 void DoDraw(HWND window, PAINTSTRUCT structure)

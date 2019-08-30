@@ -473,7 +473,7 @@ void TString::Empty()
 	size = capacity = 0;
 
 	string = new WCHAR[3];
-	capacity = 5;
+	capacity = 3;
 	string[0] = string[1] = string[2] = L'\0';
 }
 
@@ -767,7 +767,7 @@ void TString::Set(const TString* s)
 
 		for (UINT c = 0; c < size; c++)
 			string[c] = s->string[c];
-		string[size] = L'0';
+		string[size] = L'\0';
 	}
 }
 

@@ -1,11 +1,12 @@
 #pragma once
 
 #include "TStringTester.h"
+#include "TFileTester.h"
 
 class TestRunner
 {
 public:
-	void DoTests();
+	void DoTests(std::string& directory);
 
 	void Draw(HWND window, PAINTSTRUCT structure);
 

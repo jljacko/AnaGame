@@ -53,11 +53,13 @@ bool TFile::Open(TString& lpszFileName, UINT nOpenFlags)
 {
 	fileEncode = fet_unknown;
 
-	std::string fName = lpszFileName.GetRegString();
-	OFSTRUCT structure;
-	fileHandle = OpenFile(fName.c_str(), &structure, nOpenFlags);
+	WCHAR* fName = lpszFileName.GetBufferCopy();
+	UINT readWrite = 0, sharing = 0, atts = 0;
+	ConvertFlags(nOpenFlags, readWrite, sharing, atts);
+	fileHandle = CreateFileW(fName, readWrite, sharing, nullptr, atts, FILE_ATTRIBUTE_NORMAL, nullptr);
 
-	if (fileHandle == HFILE_ERROR)
+	
+	if (fileHandle == INVALID_HANDLE_VALUE)
 	{
 		fileHandle = 0;
 		return false;
@@ -83,11 +85,16 @@ BOOL TFile::ReadString(TString & rString)
 {
 	bool success = false;
 	rString.Empty();
+	char letter[1];
+	UCHAR letter2[2];
+	WCHAR cLetter;
+	UCHAR temp;
+	WCHAR wLetter;
 	switch (fileEncode)
 	{
 	case fet_acsii:
-		char letter[1];
-		while (Read(&letter, 1))
+		
+		while (Read(&letter[0], 1))
 		{
 			if (letter[0] == '\n')
 				break;
@@ -97,11 +104,10 @@ BOOL TFile::ReadString(TString & rString)
 		
 		break;
 	case fet_unicode:
-		UCHAR letter2[2];
-		while (Read(&letter2, 2))
+		
+		while (Read(letter2, 2))
 		{
-			WCHAR cLetter;
-			UCHAR temp = letter2[0];
+			temp = letter2[0];
 			letter2[0] = letter2[1];
 			letter2[1] = temp;
 			memcpy(&cLetter, letter2, 2);
@@ -113,7 +119,7 @@ BOOL TFile::ReadString(TString & rString)
 
 		break;
 	case fet_unicode_little:
-		WCHAR wLetter;
+		
 		while (Read(&wLetter, 2))
 		{
 			if (wLetter == L'\n')
@@ -356,14 +362,22 @@ void TFile::Write(const void* buffer, UINT count)
 	LPDWORD resCount2 = resCount;
 	LPOVERLAPPED lap = new OVERLAPPED;
 	LPOVERLAPPED lap2 = lap;
-	BOOL res = WriteFile((HANDLE)fileHandle, buffer, count, resCount, lap);
+	BOOL res = WriteFile((HANDLE)fileHandle, buffer, count, resCount, nullptr);
 
 	if (!res)
+	{
+		int err = GetLastError();
 		return;
+	}
 	position += *resCount;
 
 	delete resCount2;
 	delete lap2;
+}
+
+FileEncodingType TFile::GetEncodingType()
+{
+	return fileEncode;
 }
 
 /*
@@ -454,6 +468,14 @@ FileEncodingType TFile::DeduceEncodingType()
 	return fet_unknown;
 }
 
+void TFile::ConvertFlags(UINT& input, UINT& open, UINT& security, UINT& creation)
+{
+	open = input & 0xff000000;
+
+	security = (input >> 8) & 0x000000ff;
+	creation = (input >> 16) & 0x000000ff;
+}
+
 TString TFile::GetFileName()
 {
 	TString sep(L"/\\");
@@ -509,7 +531,7 @@ UINT TFile::Read(void* buffer, UINT count)
 	LPDWORD resCount2 = resCount;
 	LPOVERLAPPED lap = new _OVERLAPPED;
 	LPOVERLAPPED lap2 = lap;
-	BOOL res = ReadFile((HANDLE)fileHandle, buffer, count, resCount, lap);
+	BOOL res = ReadFile((HANDLE)fileHandle, buffer, count, resCount, nullptr);
 
 	if (!res)
 		return 0;

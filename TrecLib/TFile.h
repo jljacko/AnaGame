@@ -26,6 +26,18 @@ typedef enum FileEncodingType
 class _TREC_LIB_DLL TFile : public TObject
 {
 public:
+
+	static const UINT t_file_read = GENERIC_READ;
+	static const UINT t_file_write = GENERIC_WRITE;
+	static const UINT t_file_share_delete = 0x00000400;
+	static const UINT t_file_share_read = 0x00000100;
+	static const UINT t_file_share_write = 0x00000200;
+	static const UINT t_file_create_always = (CREATE_ALWAYS << 16);
+	static const UINT t_file_create_new = (CREATE_NEW << 16);
+	static const UINT t_file_open_always = (OPEN_ALWAYS << 16);
+	static const UINT t_file_open_existing = (OPEN_EXISTING << 16);
+	static const UINT t_file_truncate_existing = TRUNCATE_EXISTING << 16;
+
 	TFile();
 	TFile(TString& lpszFileName,
 		UINT nOpenFlags);
@@ -65,12 +77,17 @@ public:
 	ULONGLONG SeekToEnd();
 	void Write(const void* buffer, UINT count);
 
+	FileEncodingType GetEncodingType();
+
 protected:
 	FileEncodingType DeduceEncodingType();
+
+	void ConvertFlags(UINT& input, UINT& open, UINT& security, UINT& creation);
+
 private:
 	TString filePath;
 	FileEncodingType fileEncode;
-	HFILE fileHandle;
+	HANDLE fileHandle;
 	ULONGLONG position;
 };
 

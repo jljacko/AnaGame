@@ -160,12 +160,14 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Tester.h" />
     <ClInclude Include="TestRunner.h" />
+    <ClInclude Include="TFileTester.h" />
     <ClInclude Include="TStringTester.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnaGameTester.cpp" />
     <ClCompile Include="Tester.cpp" />
     <ClCompile Include="TestRunner.cpp" />
+    <ClCompile Include="TFileTester.cpp" />
     <ClCompile Include="TStringTester.cpp" />
   </ItemGroup>
   <ItemGroup>
