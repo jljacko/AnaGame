@@ -1,5 +1,5 @@
 #pragma once
-#include "TrecPointer.h"
+#include "TrecReference.h"
 #include "TArrayBase.h"
 
 /*
@@ -17,7 +17,7 @@ public:
 	*/
 	TArray() 
 	{
-		extension = nullptr;
+		
 	}
 
 	/*
@@ -28,7 +28,7 @@ public:
 	*/
 	virtual ~TArray()
 	{
-		extension = nullptr;
+		extension.Nullify();
 	}
 
 	/*
@@ -39,16 +39,16 @@ public:
 	*/
 	bool Add(TrecPointer<t> loc)
 	{
-		if (loc.get() == NULL)
+		if (loc.Get() == NULL)
 			return false;
 		if (count == 100) // first container is full
 		{
-			extension = new TArray<t>();
+			extension = TrecPointerKey::GetNewTrecPointer<TArray<t>>();
 			extension->Add(loc);
 		}
 		else if (count > 100)
 		{
-			if (!extension.get())
+			if (!extension.Get())
 				return false;
 			extension->Add(loc);
 		}
@@ -63,7 +63,7 @@ public:
 	* Method: TArray - ElementAt
 	* Purpose: Retrieves the Element stored at a specified location
 	* Parameters: UINT at - the element to look at
-	* Returns: TrecPointer<t> loc - the element at the location (call .get() to make sure it's not NULL)
+	* Returns: TrecPointer<t> loc - the element at the location (call .Get() to make sure it's not NULL)
 	*/
 	TrecPointer<t> ElementAt(UINT at)
 	{
@@ -71,7 +71,7 @@ public:
 			return TrecPointer<t>();
 		if (at >= 100)
 		{
-			if (!(extension.get()))
+			if (!(extension.Get()))
 				return TrecPointer<t>();
 			return extension->ElementAt(at - 100);
 		}
@@ -82,7 +82,7 @@ public:
 	{
 		try
 		{
-			return dynamic_cast<TObject*>(ElementAt(loc).get());
+			return dynamic_cast<TObject*>(ElementAt(loc).Get());
 		}
 		catch (...)
 		{
@@ -99,19 +99,19 @@ public:
 	TrecPointer<t> RemoveAt(UINT loc)
 	{
 		if (loc > count)
-			return nullptr;
+			return TrecPointer<t>();
 		count--;
 		if (loc > 99)
 		{
-			if (!extension.get())
-				return NULL;
+			if (!extension.Get())
+				return TrecPointer<t>();
 			return extension->RemoveAt(loc - 100);
 		}
 		else
 		{
 			TrecPointer<t> point;
 			point = data[loc / 10][loc % 10];
-			data[loc / 10][loc % 10] = NULL;
+			data[loc / 10][loc % 10] = TrecPointer<t>();
 			clearNull();
 			return point;
 		}
@@ -137,7 +137,7 @@ public:
 		else
 		{
 			data[loc / 10][loc % 10].Delete();
-			data[loc / 10][loc % 10] = NULL;
+			data[loc / 10][loc % 10].Nullify();
 			clearNull();
 			return true;
 		}
@@ -151,11 +151,11 @@ public:
 	*/
 	void Clear()
 	{
-		if (extension.get())
+		if (extension.Get())
 		{
 			extension->Clear();
 			//delete extension;
-			extension = null<TArray<t>>();
+			extension.Nullify();
 		}
 		else
 		{
@@ -163,7 +163,7 @@ public:
 			{
 				for (int d = 0; d < 10; d++)
 				{
-					data[c][d] = nullptr;
+					data[c][d].Nullify();
 				}
 			}
 		}
@@ -221,15 +221,15 @@ private:
 	{
 		bool foundNull = false;
 		if (isExt)
-			data[0][0] = nullptr;
+			data[0][0].Nullify();
 		for (UINT c = 0; c < count + 1 && c < 100; c++)
 		{
-			if (ElementAt(c).get() == nullptr)
+			if (ElementAt(c).Get() == nullptr)
 				foundNull = true;
 			if (foundNull)
 				data[c/10][c%10] = data[(c+1)/10][(c+1)%10];
 		}
-		if (extension.get())
+		if (extension.Get())
 		{
 			data[99/10][99%10] = extension->ElementAt(0);
 			extension->clearNull(true);

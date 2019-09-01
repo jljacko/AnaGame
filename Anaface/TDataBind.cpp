@@ -17,7 +17,7 @@ void TDataBind::onDraw(TObject * obj)
 
 	UINT startElement = 0, startRow = 0, startCol = 0;
 	TrecPointer<TControl> cont = children.ElementAt(0);
-	if (!cont.get())
+	if (!cont.Get())
 		return;
 
 	switch (organization)
@@ -138,7 +138,7 @@ bool TDataBind::onCreate(RECT r)
 {
 	byRow = false;
 	TrecPointer<TString> valpoint = attributes.retrieveEntry(TString(L"|DataDirection"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
 		if (!valpoint->Compare(L"Row") || !valpoint->Compare(L"Horizontal"))
 			byRow = true;

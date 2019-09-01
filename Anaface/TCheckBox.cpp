@@ -33,13 +33,13 @@ TCheckBox::~TCheckBox()
 bool TCheckBox::onCreate(RECT r)
 {
 	TGadgetControl::onCreate(r);
-	if (text1.get())
+	if (text1.Get())
 	{
 		text1->bounds.left = text1->bounds.left + bSize;
 	}
 	else
 	{
-		text1 = new TText(renderTarget, this);
+		text1 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, this);
 		text1->text = L"Check-Box";
 
 
@@ -62,15 +62,15 @@ void TCheckBox::onDraw(TObject* obj)
 
 
 
-	renderTarget->DrawRectangle(&DxLocation, brush.get());
+	renderTarget->DrawRectangle(&DxLocation, brush.Get());
 	if (isClicked)
 	{
 		D2D1_POINT_2F upLeft = D2D1::Point2F(DxLocation.left, DxLocation.top);
 		D2D1_POINT_2F upRight = D2D1::Point2F(DxLocation.right, DxLocation.top);
 		D2D1_POINT_2F downLeft = D2D1::Point2F(DxLocation.left, DxLocation.bottom);
 		D2D1_POINT_2F downRight = D2D1::Point2F(DxLocation.right, DxLocation.bottom);
-		renderTarget->DrawLine(upLeft, downRight, brush.get());
-		renderTarget->DrawLine(upRight, downLeft, brush.get());
+		renderTarget->DrawLine(upLeft, downRight, brush.Get());
+		renderTarget->DrawLine(upRight, downLeft, brush.Get());
 	}
 }
 
@@ -108,7 +108,7 @@ void TCheckBox::OnLButtonDown(UINT nFlags, CPoint point, messageOutput * mOut, T
 
 			args.eventType = On_check;
 			args.positive = isClicked;
-			if (text1.get())
+			if (text1.Get())
 				args.text = text1->text;
 			args.methodID = getEventID(On_check);
 		}

@@ -42,7 +42,7 @@ TagCheck AndExpression::ProcessTag(TString & bounds, VariableContainer & globalV
 	case AG_I_FUNCTION:
 	case AG_I_OBJECT:
 	
-		rightBool = de.right.returnValue->value.object.get();
+		rightBool = de.right.returnValue->value.object.Get();
 		break;
 	case AG_I_UNDEFINED:
 		rightBool = false;
@@ -50,7 +50,7 @@ TagCheck AndExpression::ProcessTag(TString & bounds, VariableContainer & globalV
 	case AG_I_STRING:
 		try
 		{
-			expString = dynamic_cast<TString*>(de.right.returnValue->value.object.get());
+			expString = dynamic_cast<TString*>(de.right.returnValue->value.object.Get());
 			if (expString->ConvertToLong(&rightInt))
 			{
 				
@@ -96,7 +96,7 @@ TagCheck AndExpression::ProcessTag(TString & bounds, VariableContainer & globalV
 	case AG_I_FUNCTION:
 	case AG_I_OBJECT:
 
-		leftBool = de.right.returnValue->value.object.get();
+		leftBool = de.right.returnValue->value.object.Get();
 		break;
 	case AG_I_UNDEFINED:
 		leftBool = false;
@@ -104,7 +104,7 @@ TagCheck AndExpression::ProcessTag(TString & bounds, VariableContainer & globalV
 	case AG_I_STRING:
 		try
 		{
-			expString = dynamic_cast<TString*>(de.left.returnValue->value.object.get());
+			expString = dynamic_cast<TString*>(de.left.returnValue->value.object.Get());
 			if (expString->ConvertToLong(&leftInt))
 			{
 

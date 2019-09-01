@@ -7,8 +7,8 @@
 
 namespace
 {
-	static TrecComPointer<ID2D1SolidColorBrush> scrollBrush = nullptr;
-	TArray<TScrollBar> scrollBarList;
+
+	TDataArray<TScrollBar*> scrollBarList;
 }
 
 /*
@@ -23,11 +23,11 @@ TScrollBar::TScrollBar(TControl& tc,SCROLL_ORIENTATION so)
 	parent = &tc;
 	orient = so;
 	renderer = parent->getRenderTarget();
-	if (!scrollBrush.get() && renderer.get())
+	if (!scrollBrush.Get() && renderer.Get())
 	{
-		ID2D1SolidColorBrush* sb = nullptr;
-		renderer->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &sb);
-		scrollBrush = sb;
+		TrecComPointer<ID2D1SolidColorBrush>::TrecComHolder sb;
+		renderer->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), sb.GetPointerAddress());
+		scrollBrush = sb.Extract();
 	}
 
 
@@ -50,8 +50,8 @@ TScrollBar::TScrollBar(TControl& tc,SCROLL_ORIENTATION so)
 	hover_scroller = D2D1::ColorF(0.0f, 0.2f, 1.0f, 0.6f);
 
 	// Add to ArrayList
-	TrecPointer<TScrollBar> addable(this);
-	scrollBarList.Add(addable);
+
+	scrollBarList.push_back(this);
 }
 
 /*
@@ -63,14 +63,17 @@ TScrollBar::TScrollBar(TControl& tc,SCROLL_ORIENTATION so)
 TScrollBar::~TScrollBar()
 {
 
-	/*for (int c = 0; c < scrollBarList.Count();c++)
+	for (int c = 0; c < scrollBarList.Size();c++)
 	{
-		if (scrollBarList.ElementAt(c).get() == this)
+		if (scrollBarList.at(c) == this)
 		{
 			scrollBarList.RemoveAt(c);
 			break;
 		}
-	}*/
+	}
+
+	if (!scrollBarList.Size())
+		scrollBrush.Nullify();
 }
 
 /*
@@ -87,35 +90,35 @@ void TScrollBar::updateDraw()
 	if (!isZeroRect(wholeBar))
 	{
 		scrollBrush->SetColor(default_back);
-		renderer->FillRectangle(wholeBar,scrollBrush.get());
+		renderer->FillRectangle(wholeBar,scrollBrush.Get());
 
 		scrollBrush->SetColor(outline);
-		renderer->DrawRectangle(tipBar1, scrollBrush.get());
+		renderer->DrawRectangle(tipBar1, scrollBrush.Get());
 	}
 	if (!isZeroRect(BodyBar))
 	{
 		scrollBrush->SetColor(default_scroller);
-		renderer->FillRectangle(BodyBar, scrollBrush.get());
+		renderer->FillRectangle(BodyBar, scrollBrush.Get());
 
 		scrollBrush->SetColor(outline);
-		renderer->DrawRectangle(BodyBar,scrollBrush.get());
+		renderer->DrawRectangle(BodyBar,scrollBrush.Get());
 	}
 	if (!isZeroRect(tipBar1))
 	{
 		scrollBrush->SetColor(default_tip);
-		renderer->FillRectangle(tipBar1, scrollBrush.get());
+		renderer->FillRectangle(tipBar1, scrollBrush.Get());
 
 		scrollBrush->SetColor(outline);
-		renderer->DrawRectangle(tipBar1, scrollBrush.get());
+		renderer->DrawRectangle(tipBar1, scrollBrush.Get());
 	}
 
 	if (!isZeroRect(tipBar2))
 	{
 		scrollBrush->SetColor(default_tip);
-		renderer->FillRectangle(tipBar2, scrollBrush.get());
+		renderer->FillRectangle(tipBar2, scrollBrush.Get());
 
 		scrollBrush->SetColor(outline);
-		renderer->DrawRectangle(tipBar2, scrollBrush.get());
+		renderer->DrawRectangle(tipBar2, scrollBrush.Get());
 	}
 	
 }
@@ -528,9 +531,9 @@ bool isZeroRect(D2D1_RECT_F& r)
 */
 void ScrollLButtonDown(UINT nFlags, CPoint point, messageOutput * mOut)
 {
-	for (int c = 0; c < scrollBarList.Count();c++)
+	for (int c = 0; c < scrollBarList.Size();c++)
 	{
-		TScrollBar* scroller = scrollBarList.ElementAt(c).get();
+		TScrollBar* scroller = scrollBarList.at(c);
 		if (scroller)
 			scroller->OnLButtonDown(nFlags, point, mOut);
 		if (*mOut != negative && *mOut != negativeUpdate)
@@ -548,9 +551,9 @@ void ScrollLButtonDown(UINT nFlags, CPoint point, messageOutput * mOut)
 */
 void ScrollLButtonUp(UINT nFlags, CPoint point, messageOutput * mOut)
 {
-	for (int c = 0; c < scrollBarList.Count();c++)
+	for (int c = 0; c < scrollBarList.Size();c++)
 	{
-		TScrollBar* scroller = scrollBarList.ElementAt(c).get();
+		TScrollBar* scroller = scrollBarList.at(c);
 		if (scroller)
 			scroller->OnLButtonUp(nFlags, point, mOut);
 		if (*mOut != negative && *mOut == negativeUpdate)
@@ -568,9 +571,9 @@ void ScrollLButtonUp(UINT nFlags, CPoint point, messageOutput * mOut)
 */
 void ScrollMouseMove(UINT nFlags, CPoint point, messageOutput * mOut)
 {
-	for (int c = 0; c < scrollBarList.Count();c++)
+	for (int c = 0; c < scrollBarList.Size();c++)
 	{
-		TScrollBar* scroller = scrollBarList.ElementAt(c).get();
+		TScrollBar* scroller = scrollBarList.at(c);
 		if (scroller)
 			scroller->OnMouseMove(nFlags, point, mOut);
 		if (*mOut != negative && *mOut != negativeUpdate)

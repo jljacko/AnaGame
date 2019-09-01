@@ -33,7 +33,7 @@ TContextMenu::~TContextMenu()
 bool TContextMenu::onCreate(RECT l)
 {
 	TrecPointer<TString> valpoint = attributes.retrieveEntry(TString(L"|SubHeight"));
-	if (valpoint.get() && !valpoint->ConvertToInt(&childHeight))
+	if (valpoint.Get() && !valpoint->ConvertToInt(&childHeight))
 	{
 
 	}
@@ -48,7 +48,7 @@ bool TContextMenu::onCreate(RECT l)
 	int occ = 0;
 	valpoint = attributes.retrieveEntry(TString(L"|ContextMenuItem"),occ++);
 	
-	while (valpoint.get())
+	while (valpoint.Get())
 	{
 		addOption(valpoint);
 		valpoint = attributes.retrieveEntry(TString(L"|ContextMenuItem"), occ++);
@@ -68,15 +68,15 @@ bool TContextMenu::onCreate(RECT l)
 bool TContextMenu::addOption(TrecPointer<TString> c)
 {
 	//TControlPointer* tcp = getNewTControl();
-	TrecPointer<TControl> tc = new TControl(renderTarget,styles);
+	TrecPointer<TControl> tc = TrecPointerKey::GetNewTrecPointer<TControl>(renderTarget, styles);
 
-	tc->addAttribute(TString(L"|BorderColor"), new TString(L"1.0,1.0,1.0,1.0"));
-	tc->addAttribute(TString(L"|ContentColor"), new TString(L"0.0,0.4,1.0,0.7"));
-	tc->addAttribute(TString(L"|HoverContentColor"), new TString(L"0.4,0.4,1.0,0.7"));
+	tc->addAttribute(TString(L"|BorderColor"), TrecPointerKey::GetNewTrecPointer<TString>(L"1.0,1.0,1.0,1.0"));
+	tc->addAttribute(TString(L"|ContentColor"), TrecPointerKey::GetNewTrecPointer<TString>(L"0.0,0.4,1.0,0.7"));
+	tc->addAttribute(TString(L"|HoverContentColor"), TrecPointerKey::GetNewTrecPointer<TString>(L"0.4,0.4,1.0,0.7"));
 	tc->addAttribute(TString(L"|Caption"), c);
-	tc->addAttribute(TString(L"|FontColor"), new TString(L"0.0,0.0,0.0,1.0"));
-	tc->addAttribute(TString(L"|FontSize"), new TString(L"18"));
-	tc->addAttribute(TString(L"|Font"), new TString(L"TimesNewRoman"));
+	tc->addAttribute(TString(L"|FontColor"), TrecPointerKey::GetNewTrecPointer<TString>(L"0.0,0.0,0.0,1.0"));
+	tc->addAttribute(TString(L"|FontSize"), TrecPointerKey::GetNewTrecPointer<TString>(L"18"));
+	tc->addAttribute(TString(L"|Font"), TrecPointerKey::GetNewTrecPointer<TString>(L"TimesNewRoman"));
 	//TrecPointer<TContainer> tco = new TContainer();
 	//tco->setTControl(tc);
 	tc->onCreate(RECT{ location.left,0,location.right,childHeight });
@@ -94,7 +94,7 @@ bool TContextMenu::addOption(TrecPointer<TString> c)
 *				bool ov - 
 * Returns: void
 */
-void TContextMenu::storeInTML(CArchive * ar, int childLevel,bool ov)
+void TContextMenu::storeInTML(TFile * ar, int childLevel,bool ov)
 {
 //	_Unreferenced_parameter_(ov);
 
@@ -110,11 +110,11 @@ void TContextMenu::storeInTML(CArchive * ar, int childLevel,bool ov)
 	for (int c = 0; c < children.Count();c++)
 	{
 		appendable.Append(L"|ContextMenuItem:");
-		if (children.ElementAt(c).get() && children.ElementAt(c).get())
+		if (children.ElementAt(c).Get() && children.ElementAt(c).Get())
 
-		tc = children.ElementAt(c).get();
+		tc = children.ElementAt(c).Get();
 
-		if (tc && tc->getText(1).get() && tc->getText(1)->text)
+		if (tc && tc->getText(1).Get() && tc->getText(1)->text.GetSize())
 		{
 			appendable.Append(tc->getText(1)->text);
 		}
@@ -140,7 +140,7 @@ void TContextMenu::onDraw(CPoint cp)
 	for (int c = 0; c < children.Count(); c++)
 	{
 
-		if (children.ElementAt(c).get())
+		if (children.ElementAt(c).Get())
 		{
 			children.ElementAt(c)->offsetLocation(cp);
 			cp.y += childHeight;

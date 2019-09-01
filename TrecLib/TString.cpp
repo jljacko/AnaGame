@@ -11,8 +11,8 @@ UCHAR TStringType[] = { 2, 0b10000000, 1 };
 */
 TString::TString()
 {
-	size = capacity = 0;
 	string = nullptr;
+	Empty();
 }
 
 
@@ -62,8 +62,8 @@ TString::TString(const char* cps)
 {
 	if(!cps)
 	{
-		size = capacity = 0;
 		string = nullptr;
+		Empty();
 		return;
 	}
 
@@ -85,8 +85,8 @@ TString::TString(const WCHAR * wcps)
 {
 	if (!wcps)
 	{
-		size = capacity = 0;
 		string = nullptr;
+		Empty();
 		return;
 	}
 
@@ -345,7 +345,7 @@ TrecPointer<TDataArray<TString>> TString::split(TString str, bool checkBackSlash
 
 	int pos = 0, begPos = 0;
 	tok.Set(this->Tokenize(str, pos));
-	while (!tok.IsEmpty())
+	while (!tok.IsEmpty() && begPos != -1)
 	{
 		if (checkBackSlash)
 		{
@@ -378,6 +378,11 @@ WCHAR * TString::GetBufferCopy() const
 		returnable[c] = string[c];
 	returnable[size] = L'\0';
 	return returnable;
+}
+
+const WCHAR* TString::GetConstantBuffer() const
+{
+	return string;
 }
 
 /*

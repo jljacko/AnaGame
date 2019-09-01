@@ -22,7 +22,7 @@ public:
 	void onDraw();
 	bool addAttribute(WCHAR* attr, TrecPointer<TString> value);
 
-	void addGeometry(TGeometry*);
+	void addGeometry(TrecPointer<TGeometry>);
 
 private:
 	TrecComPointer<ID2D1DCRenderTarget> renderTarget;

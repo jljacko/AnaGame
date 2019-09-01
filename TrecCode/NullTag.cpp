@@ -38,7 +38,7 @@ TagCheck NullTag::ProcessTag(TString & bounds, VariableContainer & globalVariabl
 		if (syntax[c][0].mark == bounds)
 		{
 			ret.returnValue = new intVariable();
-			ret.returnValue->value.object = nullptr;  // Since this is a Null Tag
+			ret.returnValue->value.object.Nullify();  // Since this is a Null Tag
 
 			// TO-DO: Determine the means of expressing the object (as oppposed to a number)
 			ret.success = true;

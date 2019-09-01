@@ -86,13 +86,13 @@ bool TRadioButton::onCreate(RECT r)
 		}
 	}
 
-	if (text1.get())
+	if (text1.Get())
 	{
 		text1->bounds.left = text1->bounds.left + bSize;
 	}
 	else
 	{
-		text1 = new TText(renderTarget, this);
+		text1 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, this);
 		text1->text = L"Radio-Button";
 
 
@@ -119,9 +119,9 @@ void TRadioButton::onDraw(TObject* obj)
 		return;
 
 	if (isClicked)
-		renderTarget->FillEllipse(&ellBut, brush.get());
+		renderTarget->FillEllipse(&ellBut, brush.Get());
 	else
-		renderTarget->DrawEllipse(&ellBut,brush.get());
+		renderTarget->DrawEllipse(&ellBut,brush.Get());
 }
 
 /*
@@ -152,7 +152,7 @@ void TRadioButton::OnLButtonDown(UINT nFlags, CPoint point, messageOutput * mOut
 		
 			args.eventType = On_radio_change;
 			args.positive = isClicked;
-			if (text1.get())
+			if (text1.Get())
 				args.text = text1->text;
 			args.methodID = getEventID(On_radio_change);
 		}
@@ -221,9 +221,9 @@ void TRadioButton::addButton(TRadioButton* trb)
 void TRadioButton::onCreateClass()
 {
 	TrecPointer<TString> valpoint = attributes.retrieveEntry(TString(L"|RadioClass"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		buttonClass = new TString(valpoint.get());
+		buttonClass = new TString(valpoint.Get());
 	}
 }
 
@@ -235,7 +235,7 @@ void TRadioButton::onCreateClass()
 *				bool overrideChildren - UNUSED
 * Returns: void
 */
-void TRadioButton::storeInTML(CArchive * ar, int childLevel, bool overrideChildren)
+void TRadioButton::storeInTML(TFile * ar, int childLevel, bool overrideChildren)
 {
 	//_Unreferenced_parameter_(overrideChildren);
 
@@ -245,8 +245,7 @@ void TRadioButton::storeInTML(CArchive * ar, int childLevel, bool overrideChildr
 		resetAttributeString(&appendable, childLevel + 1);
 
 		appendable.Append(L"|RadioClass:");
-		appendable.Append(buttonClass->GetBuffer());
-		buttonClass->ReleaseBuffer();
+		appendable.Append(buttonClass->GetConstantBuffer());
 		_WRITE_THE_STRING;
 	}
 	TControl::storeInTML(ar, childLevel);

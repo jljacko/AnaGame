@@ -6,7 +6,6 @@ TGeometry::TGeometry()
 {
 	thickness = 1.0f;
 	fill = false;
-	sinker = nullptr;
 }
 
 TGeometry::TGeometry(bool fill)

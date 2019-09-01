@@ -1,6 +1,6 @@
 #pragma once
 #include <d2d1.h>
-#include <TrecComPointer.h>
+#include <TrecReference.h>
 #include "Anaface.h"
 
 class _ANAFACE_DLL TGeometry

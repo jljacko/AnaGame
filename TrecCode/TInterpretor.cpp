@@ -95,21 +95,18 @@ TInterpretor::TInterpretor(IntLanguage * lang)
 
 bool TInterpretor::SetFile(TrecPointer<TFile> file)
 {
-	if (!file.get() || !file->IsOpen())
+	if (!file.Get() || !file->IsOpen())
 		return false;
 	fileLoc = 0;
 
 	TString sourceName = file->GetFileDirectory();
-	TString fileName = L"_NO_COM_" + file->GetFileName();
+	TString fileName = TString(L"_NO_COM_") + file->GetFileName();
 
-	CFileException ex;
-	TFile* p_sourceFile = new TFile();
-	sourceFile = p_sourceFile;
 
-	if (!sourceFile->Open(sourceName + fileName, CFile::modeWrite | CFile::typeText | CFile::modeCreate, &ex))
+	sourceFile = TrecPointerKey::GetNewTrecPointer<TFile>();
+
+	if (!sourceFile->Open(sourceName + fileName, TFile::t_file_write | TFile::t_file_create_always))
 	{
-		WCHAR buff[200];
-		ex.GetErrorMessage(buff, 200);
 		return false;
 	}
 	TString inBuffer;
@@ -128,7 +125,7 @@ bool TInterpretor::SetFile(TrecPointer<TFile> file)
 	{
 		UpdateDoubIndex(inBuffer, 0, sinCom, newL, multiCom, multiComE, sinStr, mulStr);
 		outbuffer.Set(L"");
-		for (UINT c = 0; c < inBuffer.GetLength(); c++)
+		for (UINT c = 0; c < inBuffer.GetSize(); c++)
 		{
 			
 			switch (sourceMode)
@@ -146,14 +143,14 @@ bool TInterpretor::SetFile(TrecPointer<TFile> file)
 				{
 					sourceMode = cm_sinStr;
 					outbuffer += sinStr.stringQ;
-					c += sinStr.stringQ.GetLength() - 1;
+					c += sinStr.stringQ.GetSize() - 1;
 					sinStr = getNextSingleString(inBuffer, c + 1);
 				}
 				else if (c == mulStr.strInd)
 				{
 					sourceMode = cm_mulStr;
 					outbuffer += mulStr.stringQ;
-					c += mulStr.stringQ.GetLength() - 1;
+					c += mulStr.stringQ.GetSize() - 1;
 					mulStr = getNextMultiString(inBuffer, c + 1);
 				}
 				else
@@ -180,7 +177,7 @@ bool TInterpretor::SetFile(TrecPointer<TFile> file)
 				}
 				if (multiComE.strInd != -1)
 				{
-					c = multiComE.strInd + multiComE.stringQ.GetLength() - 1;
+					c = multiComE.strInd + multiComE.stringQ.GetSize() - 1;
 					sourceMode = cm_reg;
 					UpdateDoubIndex(inBuffer, c + 1, sinCom, newL, multiCom, multiComE, sinStr, mulStr);
 				}
@@ -189,7 +186,7 @@ bool TInterpretor::SetFile(TrecPointer<TFile> file)
 				if (c == sinStr.strInd)
 				{
 					outbuffer += sinStr.stringQ;
-					c += sinStr.stringQ.GetLength() - 1;
+					c += sinStr.stringQ.GetSize() - 1;
 					sourceMode = cm_reg;
 					UpdateDoubIndex(inBuffer, c + 1, sinCom, newL, multiCom, multiComE, sinStr, mulStr);
 				}
@@ -209,7 +206,7 @@ bool TInterpretor::SetFile(TrecPointer<TFile> file)
 				if (c == mulStr.strInd)
 				{
 					outbuffer += mulStr.stringQ;
-					c += mulStr.stringQ.GetLength() - 1;
+					c += mulStr.stringQ.GetSize() - 1;
 					sourceMode = cm_reg;
 					UpdateDoubIndex(inBuffer, c + 1, sinCom, newL, multiCom, multiComE, sinStr, mulStr);
 				}
@@ -227,10 +224,9 @@ bool TInterpretor::SetFile(TrecPointer<TFile> file)
 
 	}
 	sourceFile->Close();
-	if (!sourceFile->Open(sourceName + fileName, CFile::modeRead | CFile::typeText, &ex))
+	if (!sourceFile->Open(sourceName + fileName, TFile::t_file_read))
 	{
-		WCHAR buff[200];
-		ex.GetErrorMessage(buff, 200);
+
 		return false;
 	}
 	sourceFile->Seek(0, CFile::SeekPosition::begin);
@@ -260,19 +256,19 @@ void TInterpretor::SetParams(TString& params, WCHAR paramDivider)
 	parameters.RemoveAll();
 	auto paramList = params.split(TString(paramDivider));
 
-	for (UINT c = 0; c < paramList->Count(); c++)
+	for (UINT c = 0; c < paramList->Size(); c++)
 	{
-		TString param = paramList->ElementAt(c).get();
+		TString param = paramList->at(c);
 		auto paramComponents = param.split(L" \n\t");
 		
 		TString type;
-		for (UINT Rust = 0; Rust < paramComponents->Count() - 1; Rust++)
+		for (UINT Rust = 0; Rust < paramComponents->Size() - 1; Rust++)
 		{
-			type.Append(*(paramComponents->ElementAt(Rust).get()) + TString(L" "));
+			type.Append((paramComponents->at(Rust)) + TString(L" "));
 		}
 		type.Trim();
 
-		parameters.push_back({ type, *paramComponents->ElementAt(paramComponents->Count() - 1).get() });
+		parameters.push_back({ type, paramComponents->at(paramComponents->Size() - 1) });
 	}
 
 }
@@ -323,7 +319,7 @@ intVariable * TInterpretor::GetVariable(TString & name)
 
 UINT TInterpretor::Run()
 {
-	if (!sourceFile.get() || !sourceFile->IsOpen())
+	if (!sourceFile.Get() || !sourceFile->IsOpen())
 		return 1;
 
 	TString code;
@@ -473,11 +469,11 @@ UINT TInterpretor::GetNextStatement(TString & statement, ULONGLONG& startSeek)
 
 	appendStatement: // Used for adding to the statement, in case the "statement end" was actually in a string 
 
-	for (UINT c = 0; c < language->statementEnd.GetLength(); c++)
+	for (UINT c = 0; c < language->statementEnd.GetSize(); c++)
 	{
 		TString tempStatement;
 		sourceFile->ReadString(tempStatement, language->statementEnd.GetAt(c));
-		if (!baseStatement.GetLength() || tempStatement.GetLength() < baseStatement.GetLength())
+		if (!baseStatement.GetSize() || tempStatement.GetSize() < baseStatement.GetSize())
 		{
 			baseStatement.Set(tempStatement);
 			statementEnd = language->statementEnd.GetAt(c);
@@ -486,27 +482,27 @@ UINT TInterpretor::GetNextStatement(TString & statement, ULONGLONG& startSeek)
 	}
 
 	// If the file ends in string mode, then we're screwed.
-	if (!baseStatement.GetLength() && sourceMode != cm_reg)
+	if (!baseStatement.GetSize() && sourceMode != cm_reg)
 		return 0;
 
 	statement += baseStatement;
 	if (statementEnd)
 		statement += statementEnd;
 	else
-		return statement.GetLength();
+		return statement.GetSize();
 	sourceMode = EndsAsString(statement, sourceMode, stringPart);
-	stringPart = statement.GetLength();
+	stringPart = statement.GetSize();
 
 	if (sourceMode != cm_reg)
 		goto appendStatement;
-	return statement.GetLength();
+	return statement.GetSize();
 }
 
 CodeMode TInterpretor::EndsAsString(TString & statement, CodeMode sourceMode, UINT start)
 {
 	DoubIndex sin, mul, line;
 
-	for (UINT Rust = start; Rust < statement.GetLength(); Rust++)
+	for (UINT Rust = start; Rust < statement.GetSize(); Rust++)
 	{
 		switch (sourceMode)
 		{
@@ -530,7 +526,7 @@ CodeMode TInterpretor::EndsAsString(TString & statement, CodeMode sourceMode, UI
 				return cm_sinStr;
 			if (sin.strInd != -1 && (line.strInd == -1 || sin.strInd < line.strInd))
 			{
-				Rust += sin.stringQ.GetLength() - 1;
+				Rust += sin.stringQ.GetSize() - 1;
 				sourceMode = cm_reg;
 			}
 			break;
@@ -538,7 +534,7 @@ CodeMode TInterpretor::EndsAsString(TString & statement, CodeMode sourceMode, UI
 			mul = getNextMultiString(statement, Rust);
 			if (mul.strInd == -1)
 				return cm_mulStr;
-			Rust += mul.stringQ.GetLength() - 1;
+			Rust += mul.stringQ.GetSize() - 1;
 			sourceMode = cm_reg;
 		}
 	}

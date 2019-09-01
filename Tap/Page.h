@@ -4,6 +4,14 @@
 #include <AnafaceUI.h>
 #include <TObject.h>
 
+typedef enum RenderTargetType
+{
+	render_target_unknown,
+	render_target_device_context,
+	render_target_hwnd,
+	render_target_dc,
+
+}RenderTargetType;
 
 /* Class: Page
 * Purpose: Provide the foundation through which Drawing resources can be set up on a certain Window or device context,
@@ -34,15 +42,17 @@ protected:
 	int width, height; // The Current Dimentions of the page
 	HDC deviceH;
 
+	RenderTargetType rt_type;
+
 
 	// 2D - only Resources
 	CDC* cdc;  // The Device context to use
-	TrecComPointer<ID2D1DCRenderTarget> renderTarget;
+
 	RECT area;
 
 	// 3D mixing with 2D Resources
 	TrecComPointer<ID2D1Device> device;
-	TrecComPointer<ID2D1DeviceContext> contextDevice;
+	// TrecComPointer<ID2D1DeviceContext> contextDevice;
 	TrecComPointer<ID2D1GdiInteropRenderTarget> gdiRender;
 	TrecComPointer<ID2D1Bitmap1> bit;
 	TrecComPointer<ID2D1Factory1> fact;

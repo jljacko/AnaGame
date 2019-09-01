@@ -30,7 +30,7 @@ TDropMenu::~TDropMenu()
 */
 bool TDropMenu::onCreate(RECT l)
 {
-	if (!renderTarget.get())
+	if (!renderTarget.Get())
 		return false;
 	renderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &dotBrush);
 	return true;
@@ -46,7 +46,7 @@ void TDropMenu::onDraw(TObject* obj)
 {
 	TControl::onDraw(obj);
 	TrecPointer<DropMenuNode> currentNode = rootNode;
-	if (!currentNode.get())
+	if (!currentNode.Get())
 		return;
 	
 	DrawNode(snip.top, currentNode);
@@ -60,7 +60,7 @@ void TDropMenu::onDraw(TObject* obj)
 */
 bool TDropMenu::SetFolderAsRoot(TString & folder)
 {
-	DWORD dwAttrib = GetFileAttributes(folder);
+	DWORD dwAttrib = GetFileAttributes(folder.GetConstantBuffer());
 
 	if (!(dwAttrib != INVALID_FILE_ATTRIBUTES &&
 		(dwAttrib & FILE_ATTRIBUTE_DIRECTORY)))
@@ -91,7 +91,7 @@ UCHAR * TDropMenu::GetAnaGameType()
 */
 void TDropMenu::DrawNode(long & top, TrecPointer<DropMenuNode> node)
 {
-	if (!node.get() || !text1.get() || !dotBrush)
+	if (!node.Get() || !text1.Get() || !dotBrush)
 		return;
 	RECT curLoc = snip;
 	curLoc.top = top;

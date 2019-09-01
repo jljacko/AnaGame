@@ -22,7 +22,7 @@ TagCheck SimpleTag::ProcessTag(TString & bounds, VariableContainer & globalVaria
 {
 	int split = -1;
 
-	for (UINT c = 0; c < enders.GetLength(); c++)
+	for (UINT c = 0; c < enders.GetSize(); c++)
 	{
 		int sp = bounds.Find(enders[c]);
 		if (split == -1 || sp < split)
@@ -36,7 +36,7 @@ TagCheck SimpleTag::ProcessTag(TString & bounds, VariableContainer & globalVaria
 
 	if (split == -1)
 	{
-		ret.error.Set(L"No Stateent Terminator: valid terminators include '" + enders + L"'");
+		ret.error.Set(TString(L"No Stateent Terminator: valid terminators include '") + enders + L"'");
 		ret.success = false;
 		return ret;
 	}
@@ -74,7 +74,7 @@ void SimpleTag::addAttribute(TString & att, TString & val)
 {
 	if (att == TString(L"GreekEqualsSemi"))
 	{
-		if (val.MakeLower() == TString(L"false"))
+		if (val.GetLower() == TString(L"false"))
 			equateGreekQandSemiC = false;
 	}
 

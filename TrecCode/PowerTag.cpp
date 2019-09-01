@@ -44,7 +44,7 @@ TagCheck PowerTag::ProcessTag(TString & bounds, VariableContainer & globalVariab
 	case AG_I_STRING:
 		try
 		{
-			expString = dynamic_cast<TString*>(de.right.returnValue->value.object.get());
+			expString = dynamic_cast<TString*>(de.right.returnValue->value.object.Get());
 			if (expString->ConvertToLong(&rightInt))
 			{
 				tryRightDouble = true;
@@ -81,7 +81,7 @@ TagCheck PowerTag::ProcessTag(TString & bounds, VariableContainer & globalVariab
 	case AG_I_STRING:
 		try
 		{
-			expString = dynamic_cast<TString*>(de.left.returnValue->value.object.get());
+			expString = dynamic_cast<TString*>(de.left.returnValue->value.object.Get());
 			if (expString->ConvertToLong(&leftInt))
 			{
 				tryLeftDouble = true;

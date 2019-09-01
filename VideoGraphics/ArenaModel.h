@@ -15,7 +15,7 @@ typedef struct ShaderKey
 	ShaderCard card;
 }ShaderKey;
 
-class TextureResources
+class _VIDEO_GRAPHICS TextureResources
 {
 public:
 	TextureResources();

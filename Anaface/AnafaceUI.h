@@ -17,7 +17,7 @@ class AnafaceUI;
 typedef struct _ANAFACE_DLL auiHold {
 	TArray<TControl> children;
 	RECT location = { 0,0,0,0 };
-	TrecPointer<TControl> current = nullptr;
+	TrecPointer<TControl> current;
 	TArray<TString> source;
 }auiHold;
 

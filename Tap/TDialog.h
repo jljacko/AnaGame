@@ -6,7 +6,7 @@
 #include <AnafaceUI.h>
 #include "AnafaceParser.h"
 #include "Page.h"
-#include <TrecPointer.h>
+#include <TrecReference.h>
 typedef struct EventLine
 {
 	EventID_Cred eventID;
@@ -56,8 +56,8 @@ protected:
 
 	// Anaface Specific resources
 	TrecPointer<TControl> pointer;
-	CFile file;
-	CArchive* archer;
+	TFile file;
+
 
 	void ShutdownWindow();
 	/*TrecComPointer<ID2D1Factory1> fact;

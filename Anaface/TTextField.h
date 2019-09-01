@@ -93,9 +93,9 @@ public:
 	bool onClick(CPoint);
 
 	//virtual int loadFromTML(CArchive* ar) override;
-	virtual int loadFromHTML(CArchive* ar) override;
-	virtual void storeInTML(CArchive* ar, int childLevel, bool ov = false) override;
-	virtual void storeInHTML(CArchive* ar) override;
+	virtual int loadFromHTML(TFile* ar) override;
+	virtual void storeInTML(TFile* ar, int childLevel, bool ov = false) override;
+	virtual void storeInHTML(TFile* ar) override;
 
 	virtual bool onCreate(RECT) override;
 

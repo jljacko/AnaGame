@@ -20,7 +20,7 @@ bool TCanvas::onCreate(RECT r)
 
 void TCanvas::addGeoGroup(TrecPointer<GeoGroup> gg)
 {
-	if (gg.get())
+	if (gg.Get())
 		geometry.Add(gg);
 }
 

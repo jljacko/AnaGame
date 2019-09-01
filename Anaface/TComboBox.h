@@ -19,7 +19,7 @@ public:
 	void onDraw(ID2D1RenderTarget* rt);
 	void addElement(TString);
 	bool removeElement(TString);
-	virtual void storeInTML(CArchive* ar, int childLevel,bool ov = true)override;
+	virtual void storeInTML(TFile* ar, int childLevel,bool ov = true)override;
 
 	bool GetExtensionStatus();
 

@@ -43,7 +43,7 @@ TagCheck SubtractExpressionTag::ProcessTag(TString & bounds, VariableContainer &
 	case AG_I_STRING:
 		try
 		{
-			expString = dynamic_cast<TString*>(de.right.returnValue->value.object.get());
+			expString = dynamic_cast<TString*>(de.right.returnValue->value.object.Get());
 			if (expString->ConvertToLong(&rightInt))
 			{
 				tryRightDouble = true;
@@ -80,7 +80,7 @@ TagCheck SubtractExpressionTag::ProcessTag(TString & bounds, VariableContainer &
 	case AG_I_STRING:
 		try
 		{
-			expString = dynamic_cast<TString*>(de.left.returnValue->value.object.get());
+			expString = dynamic_cast<TString*>(de.left.returnValue->value.object.Get());
 			if (expString->ConvertToLong(&leftInt))
 			{
 				tryLeftDouble = true;

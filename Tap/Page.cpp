@@ -4,7 +4,7 @@
 
 Page::Page()
 {
-
+	rt_type = render_target_unknown;
 }
 
 Page::Page(HWND window)
@@ -13,48 +13,49 @@ Page::Page(HWND window)
 	ZeroMemory(&factOpts, sizeof(factOpts));
 	factOpts.debugLevel = D2D1_DEBUG_LEVEL_INFORMATION;
 
-	ID2D1Factory1* rawFact = nullptr;
-	if (FAILED(D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, factOpts, &rawFact)))
-		fact = nullptr;
+	TrecComPointer<ID2D1Factory1>::TrecComHolder rawFact;
+	if (FAILED(D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, factOpts, rawFact.GetPointerAddress())))
+		fact.Nullify();
 	else
-		fact = rawFact;
+		fact = rawFact.Extract();
+
+	rt_type = render_target_unknown;
 }
 
 
 Page::~Page()
 {
-	regRenderTarget = nullptr;
 	// 3D mixing with 2D Resources
 	device.Delete();
-	contextDevice.Delete();
 	gdiRender.Delete();
 	bit.Delete();
 	fact.Delete();
-	renderTarget.Delete();
+	regRenderTarget.Delete();
 	
 }
 
 int Page::Initialize2D(CDC * cdc)
 {
-	if (!fact.get())
+	if (!fact.Get())
 		return 1;
 	if (!cdc)
 		return 2;
 
 
 
-	ID2D1DCRenderTarget* tempDC = nullptr;
+	TrecComPointer<ID2D1DCRenderTarget>::TrecComHolder tempDC;
 	HRESULT hr = fact->CreateDCRenderTarget(&(D2D1::RenderTargetProperties(
 		D2D1_RENDER_TARGET_TYPE_DEFAULT,
 		D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE),
 		0, 0,
 		D2D1_RENDER_TARGET_USAGE_GDI_COMPATIBLE,
 		D2D1_FEATURE_LEVEL_DEFAULT
-	)), &tempDC);
+	)), tempDC.GetPointerAddress());
 	ASSERT(SUCCEEDED(hr));
 
-	renderTarget = tempDC;
-	regRenderTarget = TrecComPointer<ID2D1RenderTarget>(tempDC);
+	rt_type = render_target_dc;
+
+	regRenderTarget = TrecPointerKey::GetComPointer<ID2D1RenderTarget, ID2D1DCRenderTarget>(tempDC);
 
 	HDC hdc = cdc->GetSafeHdc();
 	this->cdc = cdc;
@@ -63,7 +64,7 @@ int Page::Initialize2D(CDC * cdc)
 	GetClientRect(windowHandle, &area);
 //	width = area.right - area.left;
 //	height = area.bottom - area.top;
-	renderTarget->BindDC(hdc, &area);
+	dynamic_cast<ID2D1DCRenderTarget*>(regRenderTarget.Get())->BindDC(hdc, &area);
 	return 0;
 }
 
@@ -74,15 +75,15 @@ int Page::Initialize3D(TString & engineName)
 	if (!windowHandle)
 		return false;
 
-	if (!fact.get())
+	if (!fact.Get())
 		return 1;
 
 
 	engine = ArenaEngine::GetArenaEngine(engineName, windowHandle, instance);
 
-	if (!engine.get())
+	if (!engine.Get())
 		return 1;
-	IDXGISwapChain* swapper = engine->getSwapChain().get();
+	IDXGISwapChain* swapper = engine->getSwapChain().Get();
 	if (!swapper)
 		return 2;
 	IDXGISurface* surf = nullptr;
@@ -94,32 +95,32 @@ int Page::Initialize3D(TString & engineName)
 	}
 
 	// Here, we diverge from the conventional DCRenderTarget to the Direct 2D Device and Context Device
-	IDXGIDevice* dev = engine->getDeviceD_U().get();
+	IDXGIDevice* dev = engine->getDeviceD_U().Get();
 
 	D2D1_CREATION_PROPERTIES cr;
 	cr.debugLevel = D2D1_DEBUG_LEVEL_INFORMATION;
 	cr.options = D2D1_DEVICE_CONTEXT_OPTIONS_NONE;
 	cr.threadingMode = D2D1_THREADING_MODE_SINGLE_THREADED;
-	ID2D1Device* d2Dev = nullptr;
-	res = fact->CreateDevice(dev, &d2Dev);
-	device = d2Dev;
+	TrecComPointer<ID2D1Device>::TrecComHolder d2Dev;
+	res = fact->CreateDevice(dev, d2Dev.GetPointerAddress());
+	device = d2Dev.Extract();
 	if (FAILED(res))
 	{
 		//*error = -3;
 		return false;
 	}
 
-	ID2D1DeviceContext* cd = nullptr;
+	TrecComPointer<ID2D1DeviceContext>::TrecComHolder cd;
 
-	res = device->CreateDeviceContext(D2D1_DEVICE_CONTEXT_OPTIONS_NONE, &cd);
-	contextDevice = cd;
+	res = device->CreateDeviceContext(D2D1_DEVICE_CONTEXT_OPTIONS_NONE, cd.GetPointerAddress());
+
 	if (FAILED(res))
 	{
-		device = nullptr;
+		device.Nullify();
 		return false;
 	}
 
-	regRenderTarget = contextDevice.get();
+	regRenderTarget = TrecPointerKey::GetComPointer<ID2D1RenderTarget, ID2D1DeviceContext>(cd);
 
 	D2D1_BITMAP_PROPERTIES1 bmp1;
 	bmp1.colorContext = nullptr;
@@ -131,23 +132,22 @@ int Page::Initialize3D(TString & engineName)
 	bmp1.bitmapOptions = D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_GDI_COMPATIBLE
 		| D2D1_BITMAP_OPTIONS_CANNOT_DRAW;
 
-	ID2D1Bitmap1* rawBit = nullptr;
-	res = contextDevice->CreateBitmapFromDxgiSurface(surf, bmp1, &rawBit);
-	bit = rawBit;
+	TrecComPointer<ID2D1Bitmap1>::TrecComHolder rawBit;
+	res = dynamic_cast<ID2D1DeviceContext*>(regRenderTarget.Get())->CreateBitmapFromDxgiSurface(surf, bmp1, rawBit.GetPointerAddress());
+	bit = rawBit.Extract();
 
 	if (FAILED(res))
 	{
 
-		device = nullptr;
-		contextDevice = nullptr;
+		device.Nullify();
 		return false;
 	}
 
-	contextDevice->SetTarget(bit.get());
-	ID2D1GdiInteropRenderTarget* gdiRender_raw = nullptr;
-	res = contextDevice->QueryInterface(__uuidof(ID2D1GdiInteropRenderTarget), (void**)&gdiRender_raw);
-	gdiRender = gdiRender_raw;
-	bit = nullptr;
+	dynamic_cast<ID2D1DeviceContext*>(regRenderTarget.Get())->SetTarget(bit.Get());
+	TrecComPointer<ID2D1GdiInteropRenderTarget>::TrecComHolder gdiRender_raw;
+	res = dynamic_cast<ID2D1DeviceContext*>(regRenderTarget.Get())->QueryInterface(__uuidof(ID2D1GdiInteropRenderTarget), (void**)gdiRender_raw.GetPointerAddress());
+	gdiRender = gdiRender_raw.Extract();
+	bit.Nullify();
 	//renderTarget = TrecComPointer<ID2D1RenderTarget>(gdiRender_raw);
 
 	deviceH = GetDC(windowHandle);
@@ -157,6 +157,8 @@ int Page::Initialize3D(TString & engineName)
 
 //	width = area.right - area.left;
 //	height = area.bottom - area.top;
+
+	rt_type = render_target_device_context;
 
 	return 0;
 }
@@ -177,23 +179,26 @@ UCHAR * Page::GetAnaGameType()
 
 void Page::OnSize(UINT nType, int cx, int cy)
 {
+	if (rt_type == render_target_unknown)
+		return;
+
 	HDC deviceHandle = GetWindowDC(windowHandle);
 	GetBoundsRect(deviceH, &area, 0);
 	GetClientRect(windowHandle, &area);
 //	width = area.right - area.left;
 //	height = area.bottom - area.top;
-	if (renderTarget.get())
+	if (rt_type == render_target_dc)
 	{
-		renderTarget->BindDC(deviceH, &area);
+		dynamic_cast<ID2D1DCRenderTarget*>(regRenderTarget.Get())->BindDC(deviceH, &area);
 	}
-	else if (contextDevice.get())
+	else if (rt_type == render_target_device_context)
 	{
 	
-		if (!engine.get())
+		if (!engine.Get())
 			return;
 		engine->OnWindowResize();
 
-		IDXGISwapChain* swapper = engine->getSwapChain().get();
+		IDXGISwapChain* swapper = engine->getSwapChain().Get();
 		if (!swapper)
 			return;
 		HRESULT res/* = swapper->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0)*/;
@@ -208,21 +213,21 @@ void Page::OnSize(UINT nType, int cx, int cy)
 			//*error = -5;
 			return;
 		}
-		IDXGIDevice* dev = engine->getDeviceD_U().get();
+		IDXGIDevice* dev = engine->getDeviceD_U().Get();
 
 		D2D1_CREATION_PROPERTIES cr;
 		cr.debugLevel = D2D1_DEBUG_LEVEL_INFORMATION;
 		cr.options = D2D1_DEVICE_CONTEXT_OPTIONS_NONE;
 		cr.threadingMode = D2D1_THREADING_MODE_SINGLE_THREADED;
-		ID2D1Device* d2Dev = nullptr;
-		res = fact->CreateDevice(dev, &d2Dev);
+		TrecComPointer<ID2D1Device>::TrecComHolder d2Dev;
+		res = fact->CreateDevice(dev, d2Dev.GetPointerAddress());
 		
 		if (FAILED(res))
 		{
 			//*error = -3;
 			return;
 		}
-		device = d2Dev;
+		device = d2Dev.Extract();
 		D2D1_BITMAP_PROPERTIES1 bmp1;
 		bmp1.colorContext = nullptr;
 		bmp1.dpiX = bmp1.dpiY = 0;
@@ -233,10 +238,10 @@ void Page::OnSize(UINT nType, int cx, int cy)
 		bmp1.bitmapOptions = D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_GDI_COMPATIBLE
 			| D2D1_BITMAP_OPTIONS_CANNOT_DRAW;
 
-		ID2D1Bitmap1* rawBit = nullptr;
-		res = contextDevice->CreateBitmapFromDxgiSurface(surf, bmp1, &rawBit);
-		bit = rawBit;
-		contextDevice->SetTarget(bit.get());
+		TrecComPointer<ID2D1Bitmap1>::TrecComHolder rawBit;
+		res = dynamic_cast<ID2D1DeviceContext*>(regRenderTarget.Get())->CreateBitmapFromDxgiSurface(surf, bmp1, rawBit.GetPointerAddress());
+		bit = rawBit.Extract();
+		dynamic_cast<ID2D1DeviceContext*>(regRenderTarget.Get())->SetTarget(bit.Get());
 	}
 
 	// Now update the Controls to their new change
@@ -246,29 +251,29 @@ void Page::OnSize(UINT nType, int cx, int cy)
 
 bool Page::Initialize2D(HDC deviceH)
 {
-	if (!fact.get())
+	if (!fact.Get())
 		return false;
 
 
 
 
-	ID2D1DCRenderTarget* tempDC = nullptr;
+	TrecComPointer<ID2D1DCRenderTarget>::TrecComHolder tempDC;
 	HRESULT hr = fact->CreateDCRenderTarget(&(D2D1::RenderTargetProperties(
 		D2D1_RENDER_TARGET_TYPE_DEFAULT,
 		D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE),
 		0, 0,
 		D2D1_RENDER_TARGET_USAGE_GDI_COMPATIBLE,
 		D2D1_FEATURE_LEVEL_DEFAULT
-	)), &tempDC);
+	)), tempDC.GetPointerAddress());
 	ASSERT(SUCCEEDED(hr));
 
-	renderTarget = tempDC;
-	regRenderTarget = TrecComPointer<ID2D1RenderTarget>(tempDC);
+	regRenderTarget = TrecPointerKey::GetComPointer<ID2D1RenderTarget, ID2D1DCRenderTarget>(tempDC);
+
 	deviceH = GetDC(windowHandle);
 
 	GetBoundsRect(deviceH, &area, 0);
 	GetClientRect(windowHandle, &area);
-	renderTarget->BindDC(deviceH, &area);
+	dynamic_cast<ID2D1DCRenderTarget*>(regRenderTarget.Get())->BindDC(deviceH, &area);
 
 	//width = area.right - area.left;
 	//height = area.bottom - area.top;

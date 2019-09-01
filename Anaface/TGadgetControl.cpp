@@ -16,7 +16,6 @@ TGadgetControl::TGadgetControl(TrecComPointer<ID2D1RenderTarget> rt, TrecPointer
 		isTextControl = false;
 	bSize = 30;
 	checker = RECT{ 0,0,0,0 };
-	brush = nullptr;
 	thickness = 1.0;
 }
 
@@ -33,18 +32,8 @@ TGadgetControl::~TGadgetControl()
 	
 }
 
-/*
-* Method: TGadgetControl - storeInTML
-* Purpose: Saves the Gadget Control to a TML file
-* Parameters: CArchive * ar - the File to use
-*				int childLevel - the level control is in the tree
-*				bool ov - UNUSED
-* Return: void
-*/
-void TGadgetControl::storeInTML(CArchive * ar, int childLevel, bool ov)
+void TGadgetControl::storeInTML(TFile* ar, int childLevel, bool ov)
 {
-	//_Unreferenced_parameter_(ov);
-
 	TString appendable;
 	resetAttributeString(&appendable, childLevel + 1);
 
@@ -52,9 +41,10 @@ void TGadgetControl::storeInTML(CArchive * ar, int childLevel, bool ov)
 	appendable.AppendFormat(_T("%d"), bSize);
 	_WRITE_THE_STRING;
 
-	TControl::storeInTML(ar, childLevel,ov);
-
+	TControl::storeInTML(ar, childLevel, ov);
 }
+
+
 
 /*
 * Method: TGadgetControl - onCreate
@@ -77,9 +67,9 @@ bool TGadgetControl::onCreate(RECT r)
 	if (bSize > 30)
 		bSize = 30;
 
-	if (!content1.get())
+	if (!content1.Get())
 	{
-		content1 = new TContent(renderTarget, this);
+		content1 = TrecPointerKey::GetNewTrecPointer<TContent>(renderTarget, this);
 		content1->color = D2D1::ColorF(D2D1::ColorF::White);
 		content1->onCreate(location,snip);                         // this this isn't covered by the TControl
 															// as it didn't exist yet
@@ -87,7 +77,7 @@ bool TGadgetControl::onCreate(RECT r)
 
 
 	TrecPointer<TString> valpoint = attributes.retrieveEntry(TString(L"|BoxSize"));
-	if(valpoint.get())
+	if(valpoint.Get())
 	{
 		int tSize = bSize;
 		if (!valpoint->ConvertToInt(&bSize))
@@ -109,11 +99,11 @@ bool TGadgetControl::onCreate(RECT r)
 	DxLocation.right = checker.right;
 	DxLocation.top = checker.top;
 
-	if (renderTarget.get())
+	if (renderTarget.Get())
 	{
-		ID2D1SolidColorBrush* brushRaw;
-		renderTarget->CreateSolidColorBrush(color, &brushRaw);
-		brush = brushRaw;
+		TrecComPointer<ID2D1SolidColorBrush>::TrecComHolder brushRaw;
+		renderTarget->CreateSolidColorBrush(color, brushRaw.GetPointerAddress());
+		brush = brushRaw.Extract();
 	}
 
 	return false;

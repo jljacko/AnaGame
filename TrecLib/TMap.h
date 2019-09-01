@@ -1,5 +1,4 @@
 #pragma once
-#include "stdafx.h"
 #include "TArray.h"
 #include "TString.h"
 #include "TMapBase.h"
@@ -53,7 +52,7 @@ public:
 	*/
 	void addEntry(TString& str, TrecPointer<t2> obj)
 	{
-		TrecPointer<tEntry<t2>> ent = new tEntry<t2>();
+		TrecPointer<tEntry<t2>> ent = TrecPointerKey::GetNewTrecPointer<tEntry<t2>>();
 
 		ent->key = str;
 		ent->object = obj;

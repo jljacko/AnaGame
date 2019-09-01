@@ -52,7 +52,7 @@ public:
 class BNFTag :	public TObject
 {
 protected:
-	BNFTag(TString& tagName);
+	BNFTag(const TString& tagName);
 	~BNFTag();
 
 public:

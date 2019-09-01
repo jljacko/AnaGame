@@ -59,9 +59,9 @@ public:
 	//bool setMainChild(int, int);
 
 	//int loadFromTML(CArchive* ar) override;
-	int loadFromHTML(CArchive* ar) override;
-	void storeInTML(CArchive* ar, int childLevel,bool ov = false)override;
-	void storeInHTML(CArchive* ar)override;
+	int loadFromHTML(TFile* ar) override;
+	void storeInTML(TFile* ar, int childLevel,bool ov = false)override;
+	void storeInHTML(TFile* ar)override;
 
 	virtual bool onCreate(RECT)override;
 	virtual void onDraw(TObject* obj = nullptr) override;

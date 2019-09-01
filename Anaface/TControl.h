@@ -9,8 +9,9 @@
 #include "ControlTypeSafety.h"
 #include "TScrollBar.h"
 #include "EventTarget.h"
-#include <TrecComPointer.h>
+#include <TrecReference.h>
 #include <TDataArray.h>
+#include <TFile.h>
 
 //#define _TREC_LIB_DLL __declspec(dllimport)
 #include <TMap.h>
@@ -169,9 +170,7 @@ private:
 	//CMap<CString, CString, CString, CString> styles;
 
 	TrecComPointer<ID2D1Brush> brush;												// The Brush to Paint with
-	TrecComPointer<ID2D1RadialGradientBrush> rb;
-	TrecComPointer<ID2D1LinearGradientBrush> lb;
-	TrecComPointer<ID2D1SolidColorBrush> sb;
+
 	TrecComPointer <ID2D1SolidColorBrush> BuilderFocusBrush;						// Used by the Builder to Highlight Controls under editing
 	float thickness = 1.0f;											// Thickness
 	CString style;													// Holds a special style, NOTE: Feature not Implemented
@@ -180,7 +179,7 @@ private:
 	TrecComPointer<ID2D1RenderTarget> rt;											// Pointer to the Render Target to Draw to
 	TrecComPointer<ID2D1BitmapBrush> bitBrush;										// In the event that an image is part of the Border
 	TrecComPointer<ID2D1Bitmap> image;												// the Image of the above structure
-	int storeInTML(CArchive* ar, int childLevel,messageState);		// Method to save the border in a TML File for later reconstrcting
+	int storeInTML(TFile* ar, int childLevel,messageState);		// Method to save the border in a TML File for later reconstrcting
 	TControl* cap;									// The TControl that owns the Border
 	TShape shape;													// Shape to Draw
 	bool secondColor;												// Whether or not a second color is being used
@@ -276,9 +275,7 @@ private:
 	TString text;										// Text stored
 	UINT32 textLength;									// Length of text
 	TrecComPointer<ID2D1Brush> penBrush;								// Brush to draw with
-	TrecComPointer<ID2D1RadialGradientBrush> rb;
-	TrecComPointer<ID2D1LinearGradientBrush> lb;
-	TrecComPointer<ID2D1SolidColorBrush> sb;
+
 
 	DWRITE_FONT_WEIGHT fontWeight;
 	DWRITE_FONT_STYLE fontStyle;
@@ -291,7 +288,7 @@ private:
 	TString locale;
 	TString font;
 	D2D1::ColorF color = D2D1::ColorF(D2D1::ColorF::Black, 1.0);
-	int storeInTML(CArchive* ar, int childLevel,messageState);
+	int storeInTML(TFile* ar, int childLevel,messageState);
 	TControl* cap;
 
 	bool secondColor;
@@ -339,16 +336,14 @@ public:
 	void SetLinearImage(TDataArray<D2D1_GRADIENT_STOP>& colors);
 
 private:
-	ID2D1GradientStopCollection* getStopCollection(TDataArray<D2D1_COLOR_F>& colors);
+	TrecComPointer<ID2D1GradientStopCollection> getStopCollection(TDataArray<D2D1_COLOR_F>& colors);
 
 
 	//CMap<CString, CString, CString, CString> styles;
 	TrecComPointer<ID2D1RenderTarget> rt;
 
 	TrecComPointer<ID2D1Brush> brush;
-	TrecComPointer<ID2D1RadialGradientBrush> rb;
-	TrecComPointer<ID2D1LinearGradientBrush> lb;
-	TrecComPointer<ID2D1SolidColorBrush> sb;
+
 	TrecComPointer<ID2D1BitmapBrush> bitmap;
 
 	float thickness = 1.0f;
@@ -359,7 +354,7 @@ private:
 	TrecComPointer<ID2D1Bitmap> cropImage;
 
 
-	int storeInTML(CArchive* ar, int childLevel,messageState);
+	int storeInTML(TFile* ar, int childLevel,messageState);
 	TControl* cap;
 	TShape shape;
 	bool secondColor;
@@ -432,10 +427,12 @@ public:
 	TControl();
 	virtual ~TControl();
 
+	void SetSelf(TrecPointer<TControl> self);
+
 	//virtual int loadFromTML(CArchive* ar);
-	virtual int loadFromHTML(CArchive* ar);
-	virtual void storeInTML(CArchive* ar, int childLevel, bool overrideChildren = false);
-	virtual void storeInHTML(CArchive* ar);
+	virtual int loadFromHTML(TFile* ar);
+	virtual void storeInTML(TFile* ar, int childLevel, bool overrideChildren = false);
+	virtual void storeInHTML(TFile* ar);
 
 	// Normal running messages
 	afx_msg void OnRButtonUp(UINT nFlags, CPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
@@ -448,9 +445,9 @@ public:
 	afx_msg virtual bool OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlags, messageOutput *mOut, TDataArray<EventID_Cred>& eventAr);
 
 	// Builder Messages
-	afx_msg void Builder_OnLButtonUp(UINT flags, CPoint point, const TrecPointer<TControl>& mOut);
-	afx_msg void Builder_OnLButtonDown(UINT flags, CPoint point, TrecPointer<TControl>& mOut, messageOutput* o);
-	afx_msg void Builder_OnMouseMove(UINT flags, CPoint, TrecPointer<TControl>& mOut,const RECT&, messageOutput* o);
+	afx_msg void Builder_OnLButtonUp(UINT flags, CPoint point, TControl** mOut);
+	afx_msg void Builder_OnLButtonDown(UINT flags, CPoint point, TControl** mOut, messageOutput* o);
+	afx_msg void Builder_OnMouseMove(UINT flags, CPoint, TControl** mOut,const RECT&, messageOutput* o);
 	afx_msg void Remove_Builder_Click_Focus();
 
 	void setActive(bool act);
@@ -524,7 +521,10 @@ protected:
 	TScrollBar *vScroll, *hScroll;
 	TrecComPointer<ID2D1Factory> factory;
 	TrecComPointer<ID2D1RenderTarget> renderTarget;
-	TrecPointer<TControl> parent;
+	
+	TrecPointerSoft<TControl> parent;
+	TrecPointerSoft<TControl> tThis;
+
 	//TrecPointer<TControl> PointerCase;
 	BYTE treeLevel;
 	TrecPointer<TBorder> border1, border2, border3;
@@ -602,7 +602,7 @@ void _ANAFACE_DLL resetAttributeString(TString* st, int cou);
 * Parameters: D2D1::ColorF - the color to convert
 * Returns: CString - the Color in string form
 */
-CString _ANAFACE_DLL convertD2DColorToString(D2D1::ColorF);
+TString _ANAFACE_DLL convertD2DColorToString(D2D1::ColorF);
 
 /*
 * Function: convertRectToString
@@ -610,7 +610,7 @@ CString _ANAFACE_DLL convertD2DColorToString(D2D1::ColorF);
 * Parameters: RECT - the Rectangle to convert
 * Returns: CString - the Representation of a rectangle in string form
 */
-CString _ANAFACE_DLL convertRectToString(RECT);
+TString _ANAFACE_DLL convertRectToString(RECT);
 
 /*
 * Function: convertStringToRECT

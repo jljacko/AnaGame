@@ -69,30 +69,28 @@ bool TVideo::onCreate(RECT r)
 		return false;
 	bool returnable = TControl::onCreate(r);
 	TrecPointer<TString> valpoint = attributes.retrieveEntry(TString(L"|MediaSource"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!setVideo(valpoint->GetBuffer()))
+		if (!setVideo(valpoint->GetConstantBuffer()))
 			returnable = false;
-		valpoint->ReleaseBuffer();
-
 	}
 	player->ResizeVideo(snip);
 
 	valpoint = attributes.retrieveEntry(TString(L"|ExternalPlayButton"));
-	if (!valpoint.get() || !valpoint->Compare(L"False"))
+	if (!valpoint.Get() || !valpoint->Compare(L"False"))
 	{
 		//TrecPointer<TContainer> cont = new TContainer();
-		TrecPointer<TPlayPauseButton> tppb = new TPlayPauseButton(renderTarget, TrecPointer<TArray<styleTable>>());
+		TrecPointer<TControl> tppb = TrecPointerKey::GetNewTrecPointerAlt<TControl, TPlayPauseButton>(renderTarget, TrecPointer<TArray<styleTable>>());
 		//TControlPointer* tcp = new TControlPointer{ tc_TControl, tppb,TrecPointer<TControl>(tppb) };
 
-		if (tppb.get())
-			tppb->targetPlayer = this;
+		if (tppb.Get())
+			dynamic_cast<TPlayPauseButton*>(tppb.Get())->targetPlayer = this;
 
-		tppb->setParent(TrecPointer<TControl>(this));
-		//cont->setTControl(tppb.get());
+		tppb->setParent(TrecPointerKey::GetTrecPointerFromSoft<TControl>(tThis));
+		//cont->setTControl(tppb.Get());
 		tppb->onCreate(RECT{ snip.left,snip.bottom - 40, snip.left + 50, snip.bottom });
 		TrecPointer<TControl> tc;
-		tc = tppb.get();
+		tc = tppb;
 		children.Add(tc);
 	}
 
@@ -109,11 +107,11 @@ void TVideo::onDraw(TObject* obj)
 
 TPlayPauseButton::TPlayPauseButton(TrecComPointer<ID2D1RenderTarget> rt, TrecPointer<TArray<styleTable>> ta):TControl(rt,ta,false)
 {
-	if (rt.get())
+	if (rt.Get())
 	{
-		ID2D1SolidColorBrush* brushRaw =nullptr;
-		rt->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White), &brushRaw);
-		brush = brushRaw;
+		TrecComPointer<ID2D1SolidColorBrush>::TrecComHolder brushRaw;
+		rt->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White), brushRaw.GetPointerAddress());
+		brush = brushRaw.Extract();
 	}
 	targetPlayer = nullptr;
 	state = true;
@@ -122,7 +120,7 @@ TPlayPauseButton::TPlayPauseButton(TrecComPointer<ID2D1RenderTarget> rt, TrecPoi
 
 TPlayPauseButton::~TPlayPauseButton()
 {
-	brush = nullptr;
+	brush.Nullify();
 }
 
 void TPlayPauseButton::OnLButtonDown(UINT nFlags, CPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr)
@@ -155,16 +153,16 @@ void TPlayPauseButton::onDraw(TObject* obj)
 		D2D1_POINT_2F down = D2D1::Point2F(left, bottom);
 		D2D1_POINT_2F middle = D2D1::Point2F(right, mid);
 		
-		renderTarget->DrawLine(up, down, brush.get(), 2.0f);
-		renderTarget->DrawLine(up, middle, brush.get(), 2.0f);
-		renderTarget->DrawLine(down, middle, brush.get(), 2.0f);
+		renderTarget->DrawLine(up, down, brush.Get(), 2.0f);
+		renderTarget->DrawLine(up, middle, brush.Get(), 2.0f);
+		renderTarget->DrawLine(down, middle, brush.Get(), 2.0f);
 	}
 	else // Play
 	{
 		D2D1_RECT_F leftRect = D2D1::RectF(left, top, left + 5, bottom);
 		D2D1_RECT_F rightRect = D2D1::RectF(right - 5,top,right,bottom);
-		renderTarget->FillRectangle(leftRect, brush.get());
-		renderTarget->FillRectangle(rightRect, brush.get());
+		renderTarget->FillRectangle(leftRect, brush.Get());
+		renderTarget->FillRectangle(rightRect, brush.Get());
 	}
 }
 

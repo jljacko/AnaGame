@@ -26,16 +26,14 @@
 */
 AnafaceParser::AnafaceParser(TrecComPointer<ID2D1RenderTarget> rt, HWND hWin,TString directory)
 {
-	ASSERT(rt.get());
+	ASSERT(rt.Get());
 	renderer = rt;
-	rootObj = nullptr;
-	currentObj = nullptr;
-	baseObj = nullptr;
+
 	fileLoc.Set(directory);
 	windowHandle = hWin;
 	events = NULL;
-	classList = new TArray<styleTable>();
-	currentStyle = nullptr;
+	classList = TrecPointerKey::GetNewTrecPointerPlain<TArray<styleTable>>();
+
 }
 
 /*
@@ -46,8 +44,7 @@ AnafaceParser::AnafaceParser(TrecComPointer<ID2D1RenderTarget> rt, HWND hWin,TSt
 */
 AnafaceParser::~AnafaceParser()
 {
-	rootObj.Boost();
-	renderer.Boost();
+
 }
 /*
 * Method: AnafaceParser - setEventSystem
@@ -72,30 +69,30 @@ bool AnafaceParser::Obj(TString* va)
 
 	positionSet = false;
 
-	TrecPointer<TString> v = va;
-	v.hold();
-	TrecPointer<TArray<TString>> strings;
+	TString v(va);
 
-	if (v->Find(L"("))                  // first check if there is additional information on location
+	TrecPointer<TDataArray<TString>> strings;
+
+	if (v.Find(L"("))                  // first check if there is additional information on location
 	{
-		strings = v->split(L"(");
+		strings = v.split(L"(");
 
 
-		if (strings->Count() > 1)       // IF true, then so fr, so good
+		if (strings->Size() > 1)       // IF true, then so fr, so good
 		{
-			v = strings->ElementAt(0);
+			v = strings->at(0);
 			
-			TrecPointer<TArray<TString>> numbers = strings->ElementAt(1)->split(L",)");
+			TrecPointer<TDataArray<TString>> numbers = strings->at(1).split(L",)");
 
-			if (numbers->Count() > 1)  // expecting at least two strings, which should represent numbers
+			if (numbers->Size() > 1)  // expecting at least two strings, which should represent numbers
 			{
 				short firstNum, secondNum;
 				int xValue = 0, yValue= 0; // declare numbers to be set nd assign them something logical
 
 				
 
-				firstNum = numbers->ElementAt(0)->ConvertToInt(&xValue);
-				secondNum = numbers->ElementAt(1)->ConvertToInt(&yValue);
+				firstNum = numbers->at(0).ConvertToInt(&xValue);
+				secondNum = numbers->at(1).ConvertToInt(&yValue);
 				if (firstNum == 0 && secondNum == 0) // YES! we now know where to place this object
 				{
 					positionSet = true;
@@ -104,10 +101,10 @@ bool AnafaceParser::Obj(TString* va)
 				}
 
 				// Now Check for the next two numbers
-				if (numbers->Count() > 3)
+				if (numbers->Size() > 3)
 				{
-					firstNum = numbers->ElementAt(2)->ConvertToInt(&xValue);
-					secondNum = numbers->ElementAt(3)->ConvertToInt(&yValue);
+					firstNum = numbers->at(2).ConvertToInt(&xValue);
+					secondNum = numbers->at(3).ConvertToInt(&yValue);
 					if (firstNum == 0 && secondNum == 0) // YES! we now know where to place this object
 					{
 						extendPos = true;
@@ -124,164 +121,161 @@ bool AnafaceParser::Obj(TString* va)
 		}
 		else
 		{
-			singleParam.Set(strings->ElementAt(0).get());
+			singleParam.Set(strings->at(0));
 			singleParam.Remove(L')');
 		}
 	}
 
 
-	if (currentStyle.get())
+	if (currentStyle.Get())
 	{
 		classList->Add(currentStyle);
-		currentStyle = nullptr;
+		currentStyle.Nullify();
 	}
 
 
-	if (v->Compare(L"ContextMenu") == 0)
+	if (v.Compare(L"ContextMenu") == 0)
 	{
-		if (!baseObj.get())
+		if (!baseObj.Get())
 		{
-			v.clean();
 			return false;
 		}
-		currentObj = TrecPointer<TControl>((new TContextMenu(renderer, classList)));
-		if (!currentObj.get())
+		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TContextMenu>(renderer, classList);   // <TControl>((new TContextMenu()));
+		if (!currentObj.Get())
 		{
-			v.clean();
 			return false;
 		}
 		return baseObj->SetContextMenu(currentObj);
 	}
-	else if (v->Compare(L"TVideo") == 0)
+	else if (v.Compare(L"TVideo") == 0)
 	{
-		currentObj = TrecPointer<TControl>((new TVideo(renderer, classList,windowHandle)));
+		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TVideo>(renderer, classList, windowHandle);// TrecPointer<TControl>((new TVideo(renderer, classList,windowHandle)));
 		addToTree(currentObj);
 	}
-	else if (v->Compare(L"TArena") == 0)
+	else if (v.Compare(L"TArena") == 0)
 	{
-		currentObj = TrecPointer<TControl>((new TArena(renderer, classList, windowHandle)));
+		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TArena>(renderer, classList, windowHandle);// TrecPointer<TControl>((new TArena(renderer, classList, windowHandle)));
 		addToTree(currentObj);
 	}
-	else if (v->Compare(L"TGraphic")==0)
+	else if (v.Compare(L"TGraphic")==0)
 	{
 
 		addToTree(currentObj);
 	}
-	else if (v->Compare(L"TGrid")==0)
+	else if (v.Compare(L"TGrid")==0)
 	{
-		currentObj = TrecPointer<TControl>((new TLayout(renderer, classList)));
-		dynamic_cast<TLayout*>(currentObj.get())->setLayout(grid);
+		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TLayout>(renderer, classList);// TrecPointer<TControl>((new TLayout(renderer, classList)));
+		dynamic_cast<TLayout*>(currentObj.Get())->setLayout(grid);
 		addToTree(currentObj);
 	}
-	else if (!v->Compare(L"TGridEx") || !v->Compare(L"GridEx"))
+	else if (!v.Compare(L"TGridEx") || !v.Compare(L"GridEx"))
 	{
-		currentObj = TrecPointer<TControl>((new TLayoutEx(renderer, classList)));
-		dynamic_cast<TLayout*>(currentObj.get())->setLayout(grid);
+		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TLayoutEx>(renderer, classList);// TrecPointer<TControl>((new TLayoutEx(renderer, classList)));
+		dynamic_cast<TLayout*>(currentObj.Get())->setLayout(grid);
 		addToTree(currentObj);
 	}
-	else if (v->Compare(L"TStack") == 0)
+	else if (v.Compare(L"TStack") == 0)
 	{
-		currentObj = TrecPointer<TControl>((new TLayout(renderer, classList)));
-		dynamic_cast<TLayout*>(currentObj.get())->setLayout(VMix);
+		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TLayout>(renderer, classList);// TrecPointer<TControl>((new TLayout(renderer, classList)));
+		dynamic_cast<TLayout*>(currentObj.Get())->setLayout(VMix);
 		addToTree(currentObj);
 	}
-	else if (!v->Compare(L"TStackEx") || !v->Compare(L"StackEx"))
+	else if (!v.Compare(L"TStackEx") || !v.Compare(L"StackEx"))
 	{
-		currentObj = TrecPointer<TControl>(new TLayoutEx(renderer, classList));
-		dynamic_cast<TLayout*>(currentObj.get())->setLayout(VMix);
+		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TLayoutEx>(renderer, classList);// TrecPointer<TControl>(new TLayoutEx(renderer, classList));
+		dynamic_cast<TLayout*>(currentObj.Get())->setLayout(VMix);
 		addToTree(currentObj);
 	}
-	else if (v->Compare(L"TGallery") == 0)
+	else if (v.Compare(L"TGallery") == 0)
 	{
-		currentObj = TrecPointer<TControl>((new TLayout(renderer, classList)));
-		dynamic_cast<TLayout*>(currentObj.get())->setLayout(HMix);
+		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TLayout>(renderer, classList);// TrecPointer<TControl>((new TLayout(renderer, classList)));
+		dynamic_cast<TLayout*>(currentObj.Get())->setLayout(HMix);
 		addToTree(currentObj);
 	}
-	else if (!v->Compare(L"TGalleryEx") || !v->Compare(L"GalleryEx"))
+	else if (!v.Compare(L"TGalleryEx") || !v.Compare(L"GalleryEx"))
 	{
-		currentObj = TrecPointer<TControl>((new TLayoutEx(renderer, classList)));
-		dynamic_cast<TLayout*>(currentObj.get())->setLayout(HMix);
+		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TLayout>(renderer, classList);// TrecPointer<TControl>((new TLayoutEx(renderer, classList)));
+		dynamic_cast<TLayout*>(currentObj.Get())->setLayout(HMix);
 		addToTree(currentObj);
 	}
-	else if (!v->Compare(L"ComboBox") || !v->Compare(L"TComboBox"))
+	else if (!v.Compare(L"ComboBox") || !v.Compare(L"TComboBox"))
 	{
-		currentObj = TrecPointer<TControl>((new TComboBox(renderer, classList)));
+		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TComboBox>(renderer, classList);// TrecPointer<TControl>((new TComboBox(renderer, classList)));
 		addToTree(currentObj);
 	}
-	else if (v->Compare(L"Flyout") == 0)
+	else if (v.Compare(L"Flyout") == 0)
 	{
-		currentObj = TrecPointer<TControl>((new TFlyout(renderer, classList)));
+		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TFlyout>(renderer, classList);// TrecPointer<TControl>((new TFlyout(renderer, classList)));
 		addToTree(currentObj);
 	}
-	else if (v->Compare(L"List") == 0)
+	else if (v.Compare(L"List") == 0)
 	{
-		currentObj = TrecPointer<TControl>((new TLayout(renderer, classList)));
+		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TLayout>(renderer, classList);// TrecPointer<TControl>((new TLayout(renderer, classList)));
 		addToTree(currentObj);
 	}
-	else if (!v->Compare(L"TextField") || !v->Compare(L"TTextField"))
+	else if (!v.Compare(L"TextField") || !v.Compare(L"TTextField"))
 	{
-		currentObj = TrecPointer<TControl>((new TTextField(renderer, classList, windowHandle)));
+		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TTextField>(renderer, classList, windowHandle);// TrecPointer<TControl>((new TTextField(renderer, classList, windowHandle)));
 		addToTree(currentObj);
 	}
-	else if (v->Compare(L"NumberField") == 0)
+	else if (v.Compare(L"NumberField") == 0)
 	{
-		currentObj = TrecPointer<TControl>((new TTextField(renderer, classList, windowHandle)));
-		dynamic_cast<TTextField*>(currentObj.get())->isNumber = true;
+		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TTextField>(renderer, classList, windowHandle);// TrecPointer<TControl>((new TTextField(renderer, classList, windowHandle)));
+		dynamic_cast<TTextField*>(currentObj.Get())->isNumber = true;
 		addToTree(currentObj);
 	}
-	else if (v->Compare(L"RadioButton") == 0 || v->Compare(L"TRadioButton") == 0)
+	else if (v.Compare(L"RadioButton") == 0 || v.Compare(L"TRadioButton") == 0)
 	{
 
-		currentObj = TrecPointer<TControl>((new TRadioButton(renderer, classList)));
+		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TRadioButton>(renderer, classList);// TrecPointer<TControl>((new TRadioButton(renderer, classList)));
 		addToTree(currentObj);
 	}
-	else if (v->Compare(L"CheckBox") == 0)
+	else if (v.Compare(L"CheckBox") == 0)
 	{
-		currentObj = TrecPointer<TControl>((new TCheckBox(renderer, classList)));
+		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TCheckBox>(renderer, classList);// TrecPointer<TControl>((new TCheckBox(renderer, classList)));
 		addToTree(currentObj);
 	}
-	else if (!v->Compare(L"TUI") || !v->Compare(L"AnafaceUI"))
+	else if (!v.Compare(L"TUI") || !v.Compare(L"AnafaceUI"))
 	{
-		currentObj = TrecPointer<TControl>(new AnafaceUI(renderer, classList, windowHandle));
+		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, AnafaceUI>(renderer, classList, windowHandle);// TrecPointer<TControl>(new AnafaceUI(renderer, classList, windowHandle));
 		addToTree(currentObj);
 	}
-	else if (!v->Compare(L"Spreadsheet") || !v->Compare(L"TSpreadsheet"))
+	else if (!v.Compare(L"Spreadsheet") || !v.Compare(L"TSpreadsheet"))
 	{
-		currentObj = TrecPointer<TControl>(new TSpreadSheet(renderer, classList, windowHandle));
+		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TSpreadSheet>(renderer, classList, windowHandle);// TrecPointer<TControl>(new TSpreadSheet(renderer, classList, windowHandle));
 		addToTree(currentObj);
 	}
-	else if (!v->Compare(L"Image") || !!v->Compare(L"TImage"))
+	else if (!v.Compare(L"Image") || !!v.Compare(L"TImage"))
 	{
-		currentObj = TrecPointer<TControl>(new TImage(renderer, classList));
+		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TImage>(renderer, classList);// TrecPointer<TControl>(new TImage(renderer, classList));
 		addToTree(currentObj);
 	}
-	else if (!v->Compare(L"TDataBind") || !v->Compare(L"DataLayout"))
+	else if (!v.Compare(L"TDataBind") || !v.Compare(L"DataLayout"))
 	{
-		currentObj = TrecPointer<TControl>((new TDataBind(renderer, classList)));
+		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TDataBind>(renderer, classList);// TrecPointer<TControl>((new TDataBind(renderer, classList)));
 		
 		if(!singleParam.Compare(L"Horizontal"))
-			dynamic_cast<TLayout*>(currentObj.get())->setLayout(HMix);
+			dynamic_cast<TLayout*>(currentObj.Get())->setLayout(HMix);
 		else if(!singleParam.Compare(L"Grid"))
-			dynamic_cast<TLayout*>(currentObj.get())->setLayout(grid);
+			dynamic_cast<TLayout*>(currentObj.Get())->setLayout(grid);
 		else
-			dynamic_cast<TLayout*>(currentObj.get())->setLayout(VMix);
+			dynamic_cast<TLayout*>(currentObj.Get())->setLayout(VMix);
 		addToTree(currentObj);
 	}
-	else if (!v->Compare(L"Class"))
+	else if (!v.Compare(L"Class"))
 	{
-		currentStyle = new styleTable();
+	currentStyle = TrecPointerKey::GetNewTrecPointer<styleTable>(); //  new styleTable();
 		addToTree(currentObj);
-		currentObj = null<TControl>();
+		currentObj.Nullify();//  null<TControl>();
 	}
 	else
 	{
 
-		currentObj = TrecPointer<TControl>(new TControl(renderer, classList));
+		currentObj = TrecPointerKey::GetNewSelfTrecPointer<TControl>(renderer, classList);
 		addToTree(currentObj);
 
 		
 	}
-	v.clean();
 	return true;
 }
 
@@ -294,17 +288,17 @@ bool AnafaceParser::Obj(TString* va)
 */
 bool AnafaceParser::Attribute(TrecPointer<TString> v, TString& e)
 {
-	if (!currentObj.get() && !currentStyle.get() )
+	if (!currentObj.Get() && !currentStyle.Get() )
 		return false;
 
 	// Check Style first
-	if (currentStyle.get())
+	if (currentStyle.Get())
 	{
-		if (!wcscmp(e, L"|Class"))
+		if (!TString::Compare(e, L"|Class"))
 		{
-			if (!v.get())
+			if (!v.Get())
 				return false;
-			currentStyle->style.Set(v.get());
+			currentStyle->style.Set(v.Get());
 				return true;
 		}
 
@@ -313,11 +307,11 @@ bool AnafaceParser::Attribute(TrecPointer<TString> v, TString& e)
 	}
 
 	int value;
-	if (wcscmp(e, L"|ColumnWidth") == 0)
+	if (TString::Compare(e, L"|ColumnWidth") == 0)
 	{
 		bool flex = v->Find(L"*") != -1;
 		v->Remove(L'*');
-		if (v.get()->ConvertToInt(&value))
+		if (v.Get()->ConvertToInt(&value))
 			return false;
 		else
 		{
@@ -325,11 +319,11 @@ bool AnafaceParser::Attribute(TrecPointer<TString> v, TString& e)
 			columnFlex.push_back(flex);
 		}
 	}
-	else if (wcscmp(e, L"|RowHeight") == 0)
+	else if (TString::Compare(e, L"|RowHeight") == 0)
 	{
 		bool flex = v->Find(L"*") != -1;
 		v->Remove(L'*');
-		if (v.get()->ConvertToInt(&value))
+		if (v.Get()->ConvertToInt(&value))
 			return false;
 		else
 		{
@@ -337,13 +331,12 @@ bool AnafaceParser::Attribute(TrecPointer<TString> v, TString& e)
 			rowFlex.push_back(flex);
 		}
 	}
-	else if (wcscmp(e, L"|ImageSource") == 0 ||
-		wcscmp(e, L"|HoverImageSource") == 0 ||
-		wcscmp(e, L"|ClickImageSource") == 0 ||
-		wcscmp(e, L"|MediaSource") == 0)
+	else if (TString::Compare(e, L"|ImageSource") == 0 ||
+		TString::Compare(e, L"|HoverImageSource") == 0 ||
+		TString::Compare(e, L"|ClickImageSource") == 0 ||
+		TString::Compare(e, L"|MediaSource") == 0)
 	{
-		v->Insert(0, fileLoc.GetBuffer());
-		fileLoc.ReleaseBuffer();
+		v->Insert(0, fileLoc);
 		currentObj->addAttribute(TString(e), v);
 	}
 	else if(!handleEventAttribute(v, e))
@@ -359,7 +352,7 @@ bool AnafaceParser::Attribute(TrecPointer<TString> v, TString& e)
 */
 bool AnafaceParser::submitType(TString v)
 {
-	if (v == "Anaface_UI")
+	if (v == L"Anaface_UI")
 		return true;
 	return false;
 }
@@ -397,7 +390,7 @@ bool AnafaceParser::goChild()
 void AnafaceParser::goParent()
 {
 	currentObj = baseObj;
-	if (baseObj.get())
+	if (baseObj.Get())
 		baseObj = baseObj->getParent();
 	
 }
@@ -435,11 +428,11 @@ void AnafaceParser::setLayoutParam()
 	bool result;
 	int res = 4;
 	TLayout* layoutObject = NULL;
-	if (currentObj.get())
+	if (currentObj.Get())
 	{
 		try
 		{
-			layoutObject = dynamic_cast<TLayout*>(currentObj.get());
+			layoutObject = dynamic_cast<TLayout*>(currentObj.Get());
 		}
 		catch (std::bad_cast e)
 		{
@@ -496,10 +489,10 @@ void AnafaceParser::setLayoutPointer()
 
 bool isLayout(TrecPointer<TControl> cont)
 {
-	return !strcmp(typeid(*(cont.get())).name(), typeid(TLayout).name()) ||
-		!strcmp(typeid(*(cont.get())).name(), typeid(TLayoutEx).name()) ||
-		!strcmp(typeid(*(cont.get())).name(), typeid(TSpreadSheet).name()) ||
-		!strcmp(typeid(*(cont.get())).name(), typeid(TDataBind).name());
+	return !strcmp(typeid(*(cont.Get())).name(), typeid(TLayout).name()) ||
+		!strcmp(typeid(*(cont.Get())).name(), typeid(TLayoutEx).name()) ||
+		!strcmp(typeid(*(cont.Get())).name(), typeid(TSpreadSheet).name()) ||
+		!strcmp(typeid(*(cont.Get())).name(), typeid(TDataBind).name());
 }
 
 /*
@@ -510,16 +503,16 @@ bool isLayout(TrecPointer<TControl> cont)
 */
 void AnafaceParser::addToTree(TrecPointer<TControl> tc)
 {
-	if (!rootObj.get())
+	if (!rootObj.Get())
 	{
 		rootObj = tc;
 		baseObj = rootObj;
 		currentObj = rootObj;
 		return;
 	}
-	if (baseObj.get() && isLayout(baseObj) && positionSet)
+	if (baseObj.Get() && isLayout(baseObj) && positionSet)
 	{
-		TLayout* lBase = dynamic_cast<TLayout*>(baseObj.get());
+		TLayout* lBase = dynamic_cast<TLayout*>(baseObj.Get());
 		if (lBase)
 		{
 			if (extendPos)
@@ -532,7 +525,7 @@ void AnafaceParser::addToTree(TrecPointer<TControl> tc)
 	{
 		//TrecPointer<TContainer> cont = new TContainer();
 		//cont->setTControl(tc);
-		ASSERT(baseObj.get()); // It should mean something, if it doesn't, gracefully crash
+		ASSERT(baseObj.Get()); // It should mean something, if it doesn't, gracefully crash
 		baseObj->addChild(tc);
 	}
 }
@@ -546,7 +539,7 @@ void AnafaceParser::addToTree(TrecPointer<TControl> tc)
 */
 void AnafaceParser::AddToEventList(R_Message_Type rmt, int id)
 {
-	if (currentObj.get())
+	if (currentObj.Get())
 		currentObj->addEventID(rmt, id);
 }
 
@@ -560,20 +553,20 @@ void AnafaceParser::AddToEventList(R_Message_Type rmt, int id)
 bool AnafaceParser::handleEventAttribute(TrecPointer<TString>& v, TString& e)
 {
 	// Quick NULL checks, don't proceed if any are NULL
-	if (!events || !currentObj.get())
+	if (!events || !currentObj.Get())
 		return false;
 
 	bool returnable = false;
 
 	int eventID = -1;
 
-	if (!v.get())
+	if (!v.Get())
 		return false;
 	
 	
 	for (int c = 0; c < events->Size();c++)
 	{
-		if (events->at(c).name && !v->Compare(events->at(c).name))
+		if (events->at(c).name.GetSize() && !v->Compare(events->at(c).name.GetSize()))
 		{
 			returnable = true;
 			eventID = events->at(c).eventID;
@@ -586,71 +579,71 @@ bool AnafaceParser::handleEventAttribute(TrecPointer<TString>& v, TString& e)
 	if (eventID == -1)
 		return false;
 
-	if (!wcscmp(e, L"|EventOnClick"))
+	if (!TString::Compare(e, L"|EventOnClick"))
 	{
 		AddToEventList(On_Click, eventID);
 		return true;
 	}
-	else if (!wcscmp(e, L"|EventOnHover"))
+	else if (!TString::Compare(e, L"|EventOnHover"))
 	{
 		AddToEventList(On_Hover, eventID);
 		return true;
 	}
-	else if (!wcscmp(e, L"|EventOnHoverLeave"))
+	else if (!TString::Compare(e, L"|EventOnHoverLeave"))
 	{
 		AddToEventList(On_Hover_Leave, eventID);
 		return true;
 	}
-	else if (!wcscmp(e, L"|EventOnRightClick"))
+	else if (!TString::Compare(e, L"|EventOnRightClick"))
 	{
 		AddToEventList(On_Right_Click, eventID);
 		return true;
 	}
-	else if (!wcscmp(e, L"|EventOnRelease"))
+	else if (!TString::Compare(e, L"|EventOnRelease"))
 	{
 		AddToEventList(On_Click_Release, eventID);
 		return true;
 	}
-	else if (!wcscmp(e, L"|EventOnRightRelease"))
+	else if (!TString::Compare(e, L"|EventOnRightRelease"))
 	{
 		AddToEventList(On_Right_Release, eventID);
 		return true;
 	}
-	else if (!wcscmp(e, L"|EventOnChar"))
+	else if (!TString::Compare(e, L"|EventOnChar"))
 	{
 		AddToEventList(On_Char, eventID);
 		return true;
 	}
-	else if (!wcscmp(e, L"|EventOnDblClick"))
+	else if (!TString::Compare(e, L"|EventOnDblClick"))
 	{
 
 	}
-	else if (!wcscmp(e, L"|EventOnRadioChange"))
+	else if (!TString::Compare(e, L"|EventOnRadioChange"))
 	{
 		AddToEventList(On_radio_change, eventID);
 		return true;
 	}
-	else if (!wcscmp(e, L"|EventCheck"))
+	else if (!TString::Compare(e, L"|EventCheck"))
 	{
 		AddToEventList(On_check, eventID);
 		return true;
 	}
-	else if (!wcscmp(e, L"|EventSelectionChange"))
+	else if (!TString::Compare(e, L"|EventSelectionChange"))
 	{
 		AddToEventList(On_sel_change, eventID);
 		return true;
 	}
-	else if (!wcscmp(e, L"|EventOnTextChange"))
+	else if (!TString::Compare(e, L"|EventOnTextChange"))
 	{
 		AddToEventList(On_Text_Change, eventID);
 		return true;
 	}
-	else if (!wcscmp(e, L"|OnFocus"))
+	else if (!TString::Compare(e, L"|OnFocus"))
 	{
 		AddToEventList(On_Focus, eventID);
 		return true;
 	}
-	else if (!wcscmp(e, L"|OnLoseFocus"))
+	else if (!TString::Compare(e, L"|OnLoseFocus"))
 	{
 		AddToEventList(On_Lose_Focus, eventID);
 		return true;

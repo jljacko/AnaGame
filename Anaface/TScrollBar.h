@@ -1,5 +1,5 @@
 #pragma once
-#include <TrecComPointer.h>
+#include <TrecReference.h>
 #include "Anaface.h"
 
 #define SCROLL_ORIENTATION bool
@@ -71,6 +71,8 @@ private:
 		default_tip, hover_tip,
 		default_back, hover_back,
 		default_scroller, hover_scroller;
+
+	TrecComPointer<ID2D1SolidColorBrush> scrollBrush;
 };
 
 void ZeroRect(RECT&);

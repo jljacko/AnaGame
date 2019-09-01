@@ -9,7 +9,7 @@ public:
 
 	bool onCreate(RECT location) override;
 	bool addOption(TrecPointer<TString>);
-	virtual void storeInTML(CArchive* ar, int childLevel,bool)override;
+	virtual void storeInTML(TFile* ar, int childLevel,bool)override;
 	void onDraw(CPoint);
 	virtual UCHAR* GetAnaGameType()override;
 private:

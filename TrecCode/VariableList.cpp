@@ -18,7 +18,7 @@ int VariableList::insertVariable(TString name, TrecPointer<TInterpretor> value)
 		if (variables[c].varName && !variables[c].reference.varName.Compare(name))
 		{
 			variables[c].hold = AG_I_FUNCTION;
-			variables[c].value.object = dynamic_cast<TObject*>(value.get());
+			variables[c].value.object = (value);
 			return 1;
 		}
 	}

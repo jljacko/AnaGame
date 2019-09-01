@@ -114,32 +114,32 @@ UINT TImage::onFill(CPoint& pixel, D2D1_COLOR_F& color, float tolerance)
 
 UINT TImage::setLinearGradient(TDataArray<D2D1_COLOR_F>& colors)
 {
-	if (!cover.get())
-		cover = new TContent(renderTarget, this);
+	if (!cover.Get())
+		cover = TrecPointerKey::GetNewTrecPointer<TContent>(renderTarget, this);
 	cover->SetLinearImage(colors);
 	return 0;
 }
 
 UINT TImage::setRadialGradient(TDataArray<D2D1_COLOR_F>& colors)
 {
-	if (!cover.get())
-		cover = new TContent(renderTarget, this);
+	if (!cover.Get())
+		cover = TrecPointerKey::GetNewTrecPointer<TContent>(renderTarget, this);
 	cover->SetRadialImage(colors);
 	return 0;
 }
 
 UINT TImage::setLinearGradient(TDataArray<D2D1_GRADIENT_STOP>& colors)
 {
-	if (!cover.get())
-		cover = new TContent(renderTarget, this);
+	if (!cover.Get())
+		cover = TrecPointerKey::GetNewTrecPointer<TContent>(renderTarget, this);
 	cover->SetLinearImage(colors);
 	return 0;
 }
 
 UINT TImage::setRadialGradient(TDataArray<D2D1_GRADIENT_STOP>& colors)
 {
-	if (!cover.get())
-		cover = new TContent(renderTarget, this);
+	if (!cover.Get())
+		cover =TrecPointerKey::GetNewTrecPointer<TContent>(renderTarget, this);
 	cover->SetRadialImage(colors);
 	return 0;
 }
@@ -156,7 +156,7 @@ UINT TImage::rotate(CPoint& point)
 
 void TImage::onDraw(TObject* obj)
 {
-	if (!renderTarget.get()) return;
+	if (!renderTarget.Get()) return;
 	renderTarget->SetTransform(rotation);
 	TControl::onDraw(obj);
 	renderTarget->SetTransform(identityMatrix);

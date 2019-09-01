@@ -55,6 +55,9 @@ public:
 
 	TrecPointer<typename TDataArray<TString>> split(TString, bool checkBackSlash = false);
 	WCHAR* GetBufferCopy()const ;
+
+	const WCHAR* GetConstantBuffer() const;
+
 	TString SubString(UINT beginningIndex, int endIndex = -1);
 
 	bool ConvertToColor(D2D1_COLOR_F& color, ColorFormat& cf);

@@ -17,7 +17,7 @@ public:
 	void onDraw(TObject* obj = nullptr) override;
 	void onCreateClass();
 
-	void storeInTML(CArchive* ar, int childLevel, bool overrideChildren = false) override;
+	void storeInTML(TFile* ar, int childLevel, bool overrideChildren = false) override;
 
 
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);

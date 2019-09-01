@@ -43,7 +43,7 @@ bool TFlyout::onCreate(RECT r)
 {
 	TrecPointer<TString> valpoint = attributes.retrieveEntry(TString(L"|Type"));
 
-	if (!valpoint.get() || valpoint->Compare(L"TCanvas"))
+	if (!valpoint.Get() || valpoint->Compare(L"TCanvas"))
 	{
 		organization = tCanvas;
 	}
@@ -66,7 +66,7 @@ bool TFlyout::onCreate(RECT r)
 	{
 		valpoint = attributes.retrieveEntry(TString(L"|OnAppear"));
 
-		if (!valpoint.get())
+		if (!valpoint.Get())
 		{
 			appearWhen = appear_onClick;
 

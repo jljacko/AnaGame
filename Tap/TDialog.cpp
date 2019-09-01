@@ -64,28 +64,22 @@ namespace
 
 TDialog::TDialog(int width, int height)
 {
-	engine = nullptr;
-	renderTarget = nullptr;
-	regRenderTarget = nullptr;
-	device = nullptr;
-	contextDevice = nullptr;
-	gdiRender = nullptr;
 	ZeroMemory(&windowFeatures, sizeof(windowFeatures));
 	
 	windowHandle = 0;
 	instance = 0;
 
-	archer = nullptr;
+
 
 	D2D1_FACTORY_OPTIONS factOpts;
 	
 	factOpts.debugLevel = D2D1_DEBUG_LEVEL_INFORMATION;
 
-	ID2D1Factory1* rawFact = nullptr;
-	if (FAILED(D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, factOpts, &rawFact)))
-		fact = nullptr;
+	TrecComPointer<ID2D1Factory1>::TrecComHolder rawFact;
+	if (FAILED(D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, factOpts, rawFact.GetPointerAddress())))
+		fact.Nullify();
 	else
-		fact = rawFact;
+		fact = rawFact.Extract();
 
 	this->width = width;
 	this->height = height;
@@ -116,11 +110,6 @@ TDialog::~TDialog()
 	pointer.Delete();
 	device.Delete();
 
-	renderTarget.Delete();
-
-
-	contextDevice.Delete();
-
 
 	fact.Delete();
 
@@ -137,12 +126,12 @@ TDialog::~TDialog()
 
 bool TDialog::setAnaface(TString& path)
 {
-	if (!path)
+	if (!path.GetSize())
 		return false;
-	CFile file;
-	FileOpened = file.Open(path, CFile::modeRead);
+	TFile file;
+	FileOpened = file.Open(path, TFile::t_file_read);
 
-	for (unsigned int c = 0; c < wcslen(path);c++)
+	for (unsigned int c = 0; c < path.GetSize(); c++)
 		filePath += path[c];
 
 	if(FileOpened)
@@ -179,12 +168,9 @@ bool TDialog::InitializeWindow(int& error)
 		windowFeatures.hCursor = nullptr;//LoadCursor(NULL, IDC_ARROW);
 		windowFeatures.hbrBackground = nullptr;//(HBRUSH)CreateSolidBrush(RGB(255, 255, 255));
 		windowFeatures.lpszMenuName = nullptr;
-		windowFeatures.lpszClassName = name.GetBuffer();
+		windowFeatures.lpszClassName = name.GetConstantBuffer();
 
 		//windowFeatures.hIconSm = nullptr;
-		
-
-		name.ReleaseBuffer();
 
 
 	if (!at)
@@ -207,8 +193,8 @@ bool TDialog::InitializeWindow(int& error)
 			return false;
 		}
 	}
-	windowHandle = CreateWindow(name.GetBuffer(),
-		name.GetBuffer(),
+	windowHandle = CreateWindow(name.GetConstantBuffer(),
+		name.GetConstantBuffer(),
 		WS_OVERLAPPEDWINDOW,
 		10,
 		10,
@@ -218,7 +204,7 @@ bool TDialog::InitializeWindow(int& error)
 		nullptr,
 		windowFeatures.hInstance,
 		nullptr);
-	name.ReleaseBuffer();
+
 	if (!windowHandle)
 	{
 		error = -3;
@@ -233,8 +219,8 @@ bool TDialog::InitializeWindow(int& error)
 
 bool TDialog::InitializeAnaface(int & error)
 {
-	FileOpened = file.Open(filePath.GetBuffer(), CFile::modeRead);
-	filePath.ReleaseBuffer();
+	FileOpened = file.Open(filePath, TFile::t_file_read);
+
 	if (!FileOpened)
 	{
 		error = -1;
@@ -247,14 +233,12 @@ bool TDialog::InitializeAnaface(int & error)
 	TString fileName = file.GetFileName();
 	int ind = directory.Find(fileName, 0);
 	if (ind > 0)
-		directory.Delete(ind, fileName.GetLength());
+		directory.Delete(ind, fileName.GetSize());
 	
 	AnafaceParser* aParse = new AnafaceParser(regRenderTarget, windowHandle, &directory);
 	aParse->setEventSystem(idMatch);
-	
-	archer = new CArchive(&file, CArchive::load);
 
-	TML_Reader_* reader = new TML_Reader_(archer, aParse);
+	TML_Reader_* reader = new TML_Reader_(&file, aParse);
 	int readingError;
 	if (!reader->read(&readingError))
 	{
@@ -264,7 +248,7 @@ bool TDialog::InitializeAnaface(int & error)
 	else
 	{
 		TrecPointer<TControl> rootControl = aParse->getRootControl();
-		if (rootControl.get())
+		if (rootControl.Get())
 		{
 			pointer = rootControl;
 
@@ -282,9 +266,10 @@ bool TDialog::InitializeAnaface(int & error)
 
 }
 
+
 bool TDialog::Initialize2D(int & er)
 {
-	if (!fact.get())
+	if (!fact.Get())
 	{
 		er = 1;
 		return false;
@@ -296,24 +281,24 @@ bool TDialog::Initialize2D(int & er)
 		return false;
 	}
 	
-	ID2D1DCRenderTarget* tempDC = nullptr;
+	TrecComPointer<ID2D1DCRenderTarget>::TrecComHolder tempDC;
 	HRESULT hr = fact->CreateDCRenderTarget(&(D2D1::RenderTargetProperties(
 		D2D1_RENDER_TARGET_TYPE_DEFAULT,
 		D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE),
 		0, 0,
 		D2D1_RENDER_TARGET_USAGE_GDI_COMPATIBLE,
 		D2D1_FEATURE_LEVEL_DEFAULT
-	)), &tempDC);
+	)), tempDC.GetPointerAddress());
 	ASSERT(SUCCEEDED(hr));
 
-	renderTarget = tempDC;
-	regRenderTarget = TrecComPointer<ID2D1RenderTarget>(tempDC);
+	regRenderTarget = TrecPointerKey::GetComPointer<ID2D1RenderTarget, ID2D1DCRenderTarget>(tempDC);
+	rt_type = render_target_dc;
 
 	HDC hdc = GetDC(windowHandle);
 	//UINT boundResult = cdc->GetBoundsRect(&area, 0);
 	GetClientRect(windowHandle, &area);
 
-	renderTarget->BindDC(hdc, &area);
+	dynamic_cast<ID2D1DCRenderTarget*>(regRenderTarget.Get())->BindDC(hdc, &area);
 
 	return true;
 }
@@ -374,7 +359,7 @@ void TDialog::onButtonDown(bool isLeft, LPARAM lp)
 	CPoint point;
 	point.x = GET_X_LPARAM(lp);
 	point.y = GET_Y_LPARAM(lp);
-	if (pointer.get())
+	if (pointer.Get())
 	{
 		messageOutput mOut = negative;
 		if (isLeft)
@@ -394,7 +379,7 @@ void TDialog::onButtonUp(bool isLeft, LPARAM lp)
 	CPoint point;
 	point.x = GET_X_LPARAM(lp);
 	point.y = GET_Y_LPARAM(lp);
-	if (pointer.get())
+	if (pointer.Get())
 	{
 		messageOutput mOut = negative;
 		if (isLeft)
@@ -413,7 +398,7 @@ void TDialog::onMouseMove(LPARAM lp)
 	CPoint point;
 	point.x = GET_X_LPARAM(lp);
 	point.y = GET_Y_LPARAM(lp);
-	if (pointer.get())
+	if (pointer.Get())
 	{
 		messageOutput mOut = negative;
 		pointer->OnMouseMove(0, point, &mOut, EventCred);
@@ -426,24 +411,27 @@ void TDialog::onMouseMove(LPARAM lp)
 
 void TDialog::onDraw()
 {
-	if (!pointer.get())
+	if (!pointer.Get())
 		return;
-	if (renderTarget.get())
+
+	if (rt_type == render_target_unknown) return;
+
+	if (rt_type == render_target_dc)
 	{
 		//renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::White));
-		renderTarget->BeginDraw();
-		renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::White));
+		regRenderTarget->BeginDraw();
+		regRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::White));
 		pointer->onDraw();
-		DrawActiveComboBox(renderTarget.get());
-		HRESULT res = renderTarget->EndDraw();
+		DrawActiveComboBox(regRenderTarget.Get());
+		HRESULT res = regRenderTarget->EndDraw();
 		int e = 3;
 	}
-	else if (contextDevice.get())
+	else if (rt_type == render_target_device_context)
 	{
-		
+		ID2D1DeviceContext* contextDevice = dynamic_cast<ID2D1DeviceContext*>(regRenderTarget.Get());
 
 		contextDevice->BeginDraw();
-		if (engine.get())
+		if (engine.Get())
 			engine->PrepareScene(D2D1::ColorF(D2D1::ColorF::White));
 		if (firstDraw)
 		{
@@ -451,10 +439,10 @@ void TDialog::onDraw()
 			firstDraw = false;
 		}
 		pointer->onDraw();
-		DrawActiveComboBox(contextDevice.get());
+		DrawActiveComboBox(contextDevice);
 
 		HDC contDC = 0;
-		if (gdiRender.get() && SUCCEEDED(gdiRender->GetDC(D2D1_DC_INITIALIZE_MODE_COPY, &contDC)))
+		if (gdiRender.Get() && SUCCEEDED(gdiRender->GetDC(D2D1_DC_INITIALIZE_MODE_COPY, &contDC)))
 		{
 			HDC windDC = GetDC(windowHandle);
 			if (windDC)
@@ -462,7 +450,7 @@ void TDialog::onDraw()
 				SelectObject(windDC, GetStockObject(DC_BRUSH));
 				SetDCBrushColor(windDC, RGB(255, 255, 255));
 			}
-			if (engine.get())
+			if (engine.Get())
 				engine->FinalizeScene();
 			RECT winLoc;
 			if (GetWindowRect(windowHandle, &winLoc))
@@ -486,7 +474,7 @@ void TDialog::onChar(LPARAM lp, WPARAM wp)
 	//WCHAR ch = static_cast<WCHAR>(wp);
 	short times = static_cast<short>(lp);
 
-	if (pointer.get())
+	if (pointer.Get())
 	{
 		messageOutput mOut = negative;
 		pointer->OnChar(true, wp, times, 0, &mOut, EventCred);
@@ -505,7 +493,7 @@ UCHAR * TDialog::GetAnaGameType()
 void TDialog::ShutdownWindow()
 {
 	if(windowFeatures.hInstance)
-		UnregisterClass(name, windowFeatures.hInstance);
+		UnregisterClass(name.GetConstantBuffer(), windowFeatures.hInstance);
 	DestroyWindow(windowHandle);
 }
 
