@@ -1,4 +1,4 @@
-#include "stdafx.h"
+
 #include "TLayout.h"
 
 /*
@@ -453,13 +453,13 @@ void TLayout::storeInTML(TFile * ar, int childLevel,bool ov)
 		for (int c = 0; c < columnLines.Size();c++)
 		{
 			appendable.Append(L"|ColumnWidth:");
-			appendable.AppendFormat(_T("%d"), columnLines[c]);
+			appendable.AppendFormat(L"%d", columnLines[c]);
 			_WRITE_THE_STRING
 		}
 		for (int c = 0;c < rowLines.Size();c++)
 		{
 			appendable.Append(L"|RowHeight:");
-			appendable.AppendFormat(_T("%d"), rowLines[c]);
+			appendable.AppendFormat(L"%d", rowLines[c]);
 			_WRITE_THE_STRING
 		}
 		break;
@@ -469,7 +469,7 @@ void TLayout::storeInTML(TFile * ar, int childLevel,bool ov)
 		for (int c = 0;c < rowLines.Size();c++)
 		{
 			appendable.Append(L"|RowHeight:");
-			appendable.AppendFormat(_T("%d"), rowLines[c]);
+			appendable.AppendFormat(L"%d", rowLines[c]);
 			_WRITE_THE_STRING
 		}
 		break;
@@ -479,7 +479,7 @@ void TLayout::storeInTML(TFile * ar, int childLevel,bool ov)
 		for (int c = 0; c < columnLines.Size();c++)
 		{
 			appendable.Append(L"|ColumnWidth:");
-			appendable.AppendFormat(_T("%d"), columnLines[c]);
+			appendable.AppendFormat(L"%d", columnLines[c]);
 			_WRITE_THE_STRING
 		}
 	}
@@ -613,7 +613,7 @@ bool TLayout::onCreate(RECT margin)
 		int x = lChildren.ElementAt(c)->x, y = lChildren.ElementAt(c)->y;
 		tempCont->setLocation(getRawSectionLocation(y, x));
 
-		if (isZeroRect(tempCont->getLocation()))
+		if (isSnipZero(tempCont->getLocation()))
 		{
 			tempCont->setLocation(location);
 		}
@@ -1172,7 +1172,7 @@ UINT TLayout::determineMinHeightNeeded()
 * Parameters: RECT& r - the new location to occupy
 * Returns: void
 */
-void TLayout::SetNewLocation(RECT & r)
+void TLayout::SetNewLocation(const RECT & r)
 {
 	TControl::SetNewLocation(r);
 

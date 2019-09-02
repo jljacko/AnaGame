@@ -1,4 +1,4 @@
-#include "stdafx.h"
+
 #include "AnafaceUI.h"
 
 /*
@@ -109,7 +109,7 @@ int AnafaceUI::loadFromTML(CArchive * ar)
 *			TDataArray<EventID_Cred>& eventAr - events and their handlers documented by the control
 * Returns: void
 */
-void AnafaceUI::OnLButtonDown(UINT nFlags, CPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr)
+void AnafaceUI::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr)
 {
 	if (tabs.Get())
 	{
@@ -158,7 +158,7 @@ bool AnafaceUI::onCreate(RECT container)
 		if (valpoint->ConvertToInt(&tabHeight))
 			tabHeight = 30;
 
-		 r = CRect(location.left, location.top, location.right, location.top + tabHeight);
+		r = RECT{ location.left, location.top, location.right, location.top + tabHeight };
 		for (UINT C = 0; C < children.Count(); C++)
 		{
 			TControl* tcon = children.ElementAt(C).Get();
@@ -288,15 +288,15 @@ int AnafaceUI::addControl(TrecPointer<TControl> control, TString tabName)
 * Returns: int - 0 if successful
 * Note: INCOMPLETE - not properly implimented, DEPRECIATED - CArchive should be replaced with TFile
 */
-int AnafaceUI::addControl(CArchive * arch)
+int AnafaceUI::addControl(TFile * arch)
 {
 	if (!arch)
 		return -2;
 
-	CFile* file = arch->GetFile();
-	if (!file)
+
+	if (!arch)
 		return -3;
-	TString fileName = file->GetFileName();
+	TString fileName = arch->GetFileName();
 
 	return 0;
 }
@@ -447,7 +447,7 @@ void AnafaceUI::AddNewTab(TString t)
 			}
 
 		}
-		if (t == TString(L""))
+		if (!t.Compare(L""))
 		{
 			t.Format(L"Unknown (%d)", unknownTab++);
 		}

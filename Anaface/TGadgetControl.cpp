@@ -1,4 +1,4 @@
-#include "stdafx.h"
+
 #include "TGadgetControl.h"
 
 /*
@@ -38,7 +38,7 @@ void TGadgetControl::storeInTML(TFile* ar, int childLevel, bool ov)
 	resetAttributeString(&appendable, childLevel + 1);
 
 	appendable.Append(L"|BoxSize:");
-	appendable.AppendFormat(_T("%d"), bSize);
+	appendable.AppendFormat(L"%d", bSize);
 	_WRITE_THE_STRING;
 
 	TControl::storeInTML(ar, childLevel, ov);

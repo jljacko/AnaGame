@@ -1,6 +1,5 @@
 #pragma once
 #include "TGeometry.h"
-#include "stdafx.h"
 class TPathGeometry :
 	public TGeometry
 {

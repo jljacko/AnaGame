@@ -1,7 +1,7 @@
 //#include "stdafx.h"
 #include "AnafaceUI.h"
-#include "stdafx.h"
 #include <Logger.h>
+#include <wincodec.h>
 
 /*
 * Method:
@@ -296,31 +296,31 @@ void TControl::storeInTML(TFile * ar, int childLevel, bool overrideChildren)
 	}
 
 
-	if (className != L"")
+	if (className.GetSize())
 	{
 		appendable.Append(L"|Class:");
 		appendable.Append(className);
 		ar->WriteString(appendable);
-		ar->WriteString(_T("\n"));
+		ar->WriteString(L"\n");
 		resetAttributeString(&appendable, childLevel + 1);
 	}
-	if (ID != L"")
+	if (ID.GetSize())
 	{
 		appendable.Append(L"|id:");
 		appendable.Append(ID);
 		ar->WriteString(appendable);
-		ar->WriteString(_T("\n"));
+		ar->WriteString(L"\n");
 		resetAttributeString(&appendable, childLevel + 1);
 	}
 	appendable.Append(L"|VerticalScroll:"); 
 	appendable.Append(boolToString(vScroll));
 	ar->WriteString(appendable);
-	ar->WriteString(_T("\n"));
+	ar->WriteString(L"\n");
 	resetAttributeString(&appendable, childLevel + 1);
 	appendable.Append(L"|HorizontalScroll:");
 	appendable.Append(boolToString(hScroll));
 	ar->WriteString(appendable);
-	ar->WriteString(_T("\n"));
+	ar->WriteString(L"\n");
 	resetAttributeString(&appendable, childLevel + 1);
 
 	appendable.Append(L"|FixedHeight:");
@@ -336,7 +336,7 @@ void TControl::storeInTML(TFile * ar, int childLevel, bool overrideChildren)
 		appendable.Append(L"|Margin:");
 		appendable.Append(convertRectToString(margin));
 		ar->WriteString(appendable);
-		ar->WriteString(_T("\n"));
+		ar->WriteString(L"\n");
 		resetAttributeString(&appendable, childLevel + 1);
 	}
 
@@ -346,37 +346,37 @@ void TControl::storeInTML(TFile * ar, int childLevel, bool overrideChildren)
 		if (dimensions->height)
 		{
 			appendable.Append(L"|Height:");
-			appendable.AppendFormat(_T("%d"), dimensions->height);
+			appendable.AppendFormat(L"%d", dimensions->height);
 			_WRITE_THE_STRING
 		}
 		if (dimensions->width)
 		{
 			appendable.Append(L"|Width:");
-			appendable.AppendFormat(_T("%d"), dimensions->width);
+			appendable.AppendFormat(L"%d", dimensions->width);
 			_WRITE_THE_STRING
 		}
 		if (dimensions->maxHeight)
 		{
 			appendable.Append(L"|MaxHeight:");
-			appendable.AppendFormat(_T("%d"), dimensions->maxHeight);
+			appendable.AppendFormat(L"%d", dimensions->maxHeight);
 			_WRITE_THE_STRING
 		}
 		if (dimensions->maxWidth)
 		{
 			appendable.Append(L"|MaxWidth:");
-			appendable.AppendFormat(_T("%d"), dimensions->maxWidth);
+			appendable.AppendFormat(L"%d", dimensions->maxWidth);
 			_WRITE_THE_STRING
 		}
 		if (dimensions->minHeight)
 		{
 			appendable.Append(L"|MinHeight:");
-			appendable.AppendFormat(_T("%d"), dimensions->minHeight);
+			appendable.AppendFormat(L"%d", dimensions->minHeight);
 			_WRITE_THE_STRING
 		}
 		if (dimensions->minWidth)
 		{
 			appendable.Append(L"|MinWidth:");
-			appendable.AppendFormat(_T("%d"), dimensions->minWidth);
+			appendable.AppendFormat(L"%d", dimensions->minWidth);
 			_WRITE_THE_STRING
 		}
 	}
@@ -394,10 +394,10 @@ void TControl::storeInTML(TFile * ar, int childLevel, bool overrideChildren)
 		appendable.Append(L"|Shape:RoundedRectangle");
 		_WRITE_THE_STRING;
 		appendable.Append(L"|RoundedRectX:");
-		appendable.AppendFormat(_T("%f"), ellipse.radiusX);
+		appendable.AppendFormat(L"%f", ellipse.radiusX);
 		_WRITE_THE_STRING;
 		appendable.Append(L"|RoundedRectY:");
-		appendable.AppendFormat(_T("%f"), ellipse.radiusY);
+		appendable.AppendFormat(L"%f", ellipse.radiusY);
 		_WRITE_THE_STRING;
 	}
 
@@ -440,7 +440,7 @@ void TControl::storeInTML(TFile * ar, int childLevel, bool overrideChildren)
 
 	resetAttributeString(&appendable, childLevel + 1);
 	ar->WriteString(appendable);
-	ar->WriteString(_T("/\n"));
+	ar->WriteString(L"/\n");
 }
 
 /*
@@ -872,8 +872,8 @@ void TControl::Resize(RECT r)
 			if (!children.ElementAt(rust).Get())
 				continue;
 			RECT curLoc = children.ElementAt(rust)->getLocation();
-			CPoint curPoint = CPoint(curLoc.left - location.left, curLoc.top - location.top);
-			CPoint curSize = CPoint(curLoc.right - curLoc.left, curLoc.bottom - curLoc.top);
+			TPoint curPoint = TPoint(curLoc.left - location.left, curLoc.top - location.top);
+			TPoint curSize = TPoint(curLoc.right - curLoc.left, curLoc.bottom - curLoc.top);
 			curLoc.top = curLoc.top - curPoint.y + curPoint.y * t_ratio;
 			curLoc.left = curLoc.left - curPoint.x + curPoint.x * l_ratio;
 			curLoc.bottom = curLoc.bottom - curSize.y + curSize.y * h_ratio;
@@ -1123,17 +1123,17 @@ void TControl::BreakShared()
 * Parameters: TString& t - Class Name to add
 * Returns: void
 */
-void TControl::AddClass(TString & t)
+void TControl::AddClass(const TString & t)
 {
-	t.Trim();
+	TString trimmedT = t.GetTrim();
 	if (className.GetSize())
 	{
 
 		className += L";";
-		className += t;
+		className += trimmedT;
 	}
 	else
-		className = t;
+		className = trimmedT;
 }
 /*
 * Method: TControl - GetID
@@ -1294,10 +1294,10 @@ bool TControl::getLayoutStatus()
 /*
 * Method: TControl - offsetLocation
 * Purpose: Moves the Control to the specified point
-* Parameters: CPoint cp - the point to move the control to 
+* Parameters: TPoint cp - the point to move the control to 
 * Returns: void
 */
-void TControl::offsetLocation(CPoint cp)
+void TControl::offsetLocation(TPoint cp)
 {
 	int height = location.bottom - location.top;
 	int width = location.right - location.left;
@@ -1322,7 +1322,7 @@ void TControl::ShiftHorizontal(int degrees)
 {
 	location.left += degrees;
 	location.right += degrees;
-	if (!isZeroRect(convertRECTToD2DRectF(snip)))
+	if (!isSnipZero(convertRECTToD2DRectF(snip)))
 	{
 		snip.left += degrees;
 		snip.right += degrees;
@@ -1360,7 +1360,7 @@ void TControl::ShiftVertical(int degrees)
 {
 	location.top += degrees;
 	location.bottom += degrees;
-	if (!isZeroRect(convertRECTToD2DRectF(snip)))
+	if (!isSnipZero(convertRECTToD2DRectF(snip)))
 	{
 		snip.top += degrees;
 		snip.bottom += degrees;
@@ -1475,7 +1475,7 @@ void TControl::setHeight(int h)
 * Note: Call this method BEFORE calling onCreate. Otherwise, it will have no effect on the Control's
 *	appearence or functionality
 */
-bool TControl::addAttribute(TString& attr, TrecPointer<TString> val)
+bool TControl::addAttribute(const TString& attr, TrecPointer<TString> val)
 {
 	if(!attr.GetSize() || !val.Get())
 	return false;
@@ -1576,10 +1576,10 @@ UINT TControl::determineMinHeightNeeded()
 * Parameters:
 * Returns:
 */
-void TControl::SetNewLocation(RECT & r)
+void TControl::SetNewLocation(const RECT & r)
 {
 	location = r;
-	if (!isZeroRect(convertRECTToD2DRectF(snip)))
+	if (!isSnipZero(convertRECTToD2DRectF(snip)))
 		snip = r;
 
 	if (text1.Get())
@@ -3168,12 +3168,12 @@ void TControl::addEventID(R_Message_Type rmt, int e_id)
 * Method: TControl - OnRButtonUp
 * Purpose: Allows Control to catch the Right Mouse button release event and act accordingly
 * Parameters: UINT nFlags - flags provided by MFC's Message system, not used
-*				CPoint point - the point on screen where the event occured
+*				TPoint point - the point on screen where the event occured
 *				messageOutput* mOut - allows controls to keep track of whether ohter controls have caught the event
 *				TDataArray<EventID_Cred>& eventAr - allows Controls to add whatever Event Handler they have been assigned
 * Returns: void
 */
-afx_msg void TControl::OnRButtonUp(UINT nFlags, CPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+afx_msg void TControl::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
 	if (!isActive)
 		return;
@@ -3214,12 +3214,12 @@ afx_msg void TControl::OnRButtonUp(UINT nFlags, CPoint point, messageOutput* mOu
 * Method: TControl - OnLButtonDown
 * Purpose: Allows Control to catch the Left Mouse Button Down event and act accordingly
 * Parameters: UINT nFlags - flags provided by MFC's Message system, not used
-*				CPoint point - the point on screen where the event occured
+*				TPoint point - the point on screen where the event occured
 *				messageOutput* mOut - allows controls to keep track of whether ohter controls have caught the event
 *				TDataArray<EventID_Cred>& eventAr - allows Controls to add whatever Event Handler they have been assigned
 * Returns: void
 */
-afx_msg void TControl::OnLButtonDown(UINT nFlags, CPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+afx_msg void TControl::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
 	if (!isActive)
 		return;
@@ -3314,12 +3314,12 @@ afx_msg void TControl::OnLButtonDown(UINT nFlags, CPoint point, messageOutput* m
 * Method: TControl - OnRButtonDown
 * Purpose: Allows Control to catch the Right Mouse button down event and act accordingly
 * Parameters: UINT nFlags - flags provided by MFC's Message system, not used
-*				CPoint point - the point on screen where the event occured
+*				TPoint point - the point on screen where the event occured
 *				messageOutput* mOut - allows controls to keep track of whether ohter controls have caught the event
 *				TDataArray<EventID_Cred>& eventAr - allows Controls to add whatever Event Handler they have been assigned
 * Returns: void
 */
-afx_msg void TControl::OnRButtonDown(UINT nFlags, CPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+afx_msg void TControl::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
 	if (!isActive)
 		return;
@@ -3376,12 +3376,12 @@ afx_msg void TControl::OnRButtonDown(UINT nFlags, CPoint point, messageOutput* m
 * Method: TControl - OnMouseMove
 * Purpose: Allows Controls to catch the Mouse Move event and deduce if the cursor has hovered over it
 * Parameters: UINT nFlags - flags provided by MFC's Message system, not used
-*				CPoint point - the point on screen where the event occured
+*				TPoint point - the point on screen where the event occured
 *				messageOutput* mOut - allows controls to keep track of whether ohter controls have caught the event
 *				TDataArray<EventID_Cred>& eventAr - allows Controls to add whatever Event Handler they have been assigned
 * Returns: void
 */
-afx_msg void TControl::OnMouseMove(UINT nFlags, CPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+afx_msg void TControl::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
 	if (!isActive)
 		return;
@@ -3444,28 +3444,28 @@ afx_msg void TControl::OnMouseMove(UINT nFlags, CPoint point, messageOutput* mOu
 * Method: TControl - OnContextMenu
 * Purpose: Allows Anaface to catch onContextMenu calls from MFC
 * Parameters: CWnd* pWnd - The window involved
-*				CPoint point - the point on screen where the event occured
+*				TPoint point - the point on screen where the event occured
 *				messageOutput* mOut - allows controls to keep track of whether ohter controls have caught the event
 *				TDataArray<EventID_Cred>& eventAr - allows Controls to add whatever Event Handler they have been assigned
 * Returns: void
 * Note: UNUSED - Anaface's own Context Menu system is preferable
-*/
-afx_msg void TControl::OnContextMenu(CWnd* pWnd, CPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+
+afx_msg void TControl::OnContextMenu(CWnd* pWnd, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
 	if (!isActive)
 		return;
-}
+}*/
 
 /*
 * Method: TControl - OnLButtonDblClk
 * Purpose: Allows control to catch the DOuble Click event and act accordingly
 * Parameters: UINT nFlags - flags provided by MFC's Message system, not used
-*				CPoint point - the point on screen where the event occured
+*				TPoint point - the point on screen where the event occured
 *				messageOutput* mOut - allows controls to keep track of whether ohter controls have caught the event
 *				TDataArray<EventID_Cred>& eventAr - allows Controls to add whatever Event Handler they have been assigned
 * Returns: void
 */
-afx_msg void TControl::OnLButtonDblClk(UINT nFlags, CPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+afx_msg void TControl::OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
 	if (!isActive)
 		return;
@@ -3475,12 +3475,12 @@ afx_msg void TControl::OnLButtonDblClk(UINT nFlags, CPoint point, messageOutput*
 * Method: TControl - OnLButtonUp
 * Purpose: Allows control to catch the Left Button Up event and act accordingly
 * Parameters: UINT nFlags - flags provided by MFC's Message system, not used
-*				CPoint point - the point on screen where the event occured
+*				TPoint point - the point on screen where the event occured
 *				messageOutput* mOut - allows controls to keep track of whether ohter controls have caught the event
 *				TDataArray<EventID_Cred>& eventAr - allows Controls to add whatever Event Handler they have been assigned
 * Returns: void
 */
-afx_msg void TControl::OnLButtonUp(UINT nFlags, CPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+afx_msg void TControl::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
 	if (!isActive)
 		return;
@@ -3579,11 +3579,11 @@ afx_msg bool TControl::OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlag
 * Method: TControl - Builder_OnLButtonUp
 * Purpose: Allows special calls from the Builder to know when the control is no longer being dragged
 * Parameters: UINT flags - Flags provided by MFC, not used
-*				CPoint point - the Point where event occured
+*				TPoint point - the Point where event occured
 *				TrecPointer<TControl>& mOut - allows control to mark itself - not used in this method
 * Returns: void 
 */
-afx_msg void TControl::Builder_OnLButtonUp(UINT flags, CPoint point, TControl** mOut)
+afx_msg void TControl::Builder_OnLButtonUp(UINT flags, TPoint point, TControl** mOut)
 {
 	for (int c = 0; c < children.Count();c++)
 	{
@@ -3599,12 +3599,12 @@ afx_msg void TControl::Builder_OnLButtonUp(UINT flags, CPoint point, TControl** 
 * Method: TControl - Builder_OnLButtonDown
 * Purpose: Allows Controls to tell if a use of the Builder is planning to move them around
 * Parameters: UINT flags - Flags provided by MFC, not used
-*				CPoint point - the Point where event occured
+*				TPoint point - the Point where event occured
 *				TrecPointer<TControl>& mOut - allows control to mark itself - not used in this method
 *				messageOutput* o - Allows control to keep track of how other controls respond to the call
 * Returns: void
 */
-afx_msg void TControl::Builder_OnLButtonDown(UINT flags, CPoint point, TControl** mOut, messageOutput* o)
+afx_msg void TControl::Builder_OnLButtonDown(UINT flags, TPoint point, TControl** mOut, messageOutput* o)
 {
 	for (int c = 0; c < children.Count();c++)
 	{
@@ -3682,13 +3682,13 @@ afx_msg void TControl::Builder_OnLButtonDown(UINT flags, CPoint point, TControl*
 * Method: TControl - Builder_OnMouseMove
 * Purpose: Allows controls to know when they are being moved
 * Parameters: UINT flags - Flags provided by MFC, not used
-*				CPoint point - the Point where event occured
+*				TPoint point - the Point where event occured
 *				TrecPointer<TControl>& mOut - allows control to mark itself - not used in this method
 *				const RECT& bounds - bounds of the parent
 *				messageOutput* o - Allows control to keep track of how other controls respond to the call
 * Returns: void
 */
-afx_msg void TControl::Builder_OnMouseMove(UINT flags, CPoint cp, TControl** mOut, const RECT& bounds, messageOutput* o)
+afx_msg void TControl::Builder_OnMouseMove(UINT flags, TPoint cp, TControl** mOut, const RECT& bounds, messageOutput* o)
 {
 	if (!onClickFocus)
 	{
@@ -4414,7 +4414,7 @@ void TBorder::ShiftHorizontal(int degrees)
 {
 	loci.left += degrees;
 	loci.right += degrees;
-	if (!isZeroRect(snip))
+	if (!isSnipZero(snip))
 	{
 		snip.left += degrees;
 		snip.right += degrees;
@@ -4431,7 +4431,7 @@ void TBorder::ShiftVertical(int degrees)
 {
 	loci.top += degrees;
 	loci.bottom += degrees;
-	if (!isZeroRect(snip))
+	if (!isSnipZero(snip))
 	{
 		snip.top += degrees;
 		snip.bottom += degrees;
@@ -4451,23 +4451,23 @@ int TBorder::storeInTML(TFile * ar, int childLevel,messageState ms)
 	TString writable;
 	resetAttributeString(&writable, childLevel +1);
 	TString val;
-	val.Format(_T("%f"), thickness);
+	val.Format(L"%f", thickness);
 	ar->WriteString(writable);
 	switch (ms)
 	{
 	case normal:
-		ar->WriteString(_T("|BorderThickness:"));
+		ar->WriteString(L"|BorderThickness:");
 		break;
 	case mouseHover:
-		ar->WriteString(_T("|HoverBorderThickness:"));
+		ar->WriteString(L"|HoverBorderThickness:");
 		break;
 	case mouseLClick:
-		ar->WriteString(_T("|ClickBorderThickness:"));
+		ar->WriteString(L"|ClickBorderThickness:");
 		break;
 	}
 	
 	ar->WriteString(val);
-	ar->WriteString(_T("\n"));
+	ar->WriteString("\n");
 	val = convertD2DColorToString(color);
 	//ar->WriteString(writable);
 
@@ -4487,7 +4487,7 @@ int TBorder::storeInTML(TFile * ar, int childLevel,messageState ms)
 	ar->WriteString(writable);
 
 	ar->WriteString(val);
-	ar->WriteString(_T("\n"));
+	ar->WriteString(L"\n");
 	return 0;
 }
 
@@ -5067,7 +5067,7 @@ void TText::ShiftHorizontal(int degrees)
 {
 	bounds.left += degrees;
 	bounds.right += degrees;
-	//if (!isZeroRect(snip))
+	//if (!isSnipZero(snip))
 	//{
 	//	snip->left += degrees;
 	//	snip->right += degrees;
@@ -5104,131 +5104,131 @@ int TText::storeInTML(TFile * ar, int childLevel,messageState ms)
 	switch (ms)
 	{
 	case normal:
-		ar->WriteString(_T("|Caption:"));
+		ar->WriteString(L"|Caption:");
 		break;
 	case mouseHover:
-		ar->WriteString(_T("|HoverCaption:"));
+		ar->WriteString(L"|HoverCaption:");
 		break;
 	case mouseLClick:
-		ar->WriteString(_T("|ClickCaption:"));
+		ar->WriteString(L"|ClickCaption:");
 	}
 
 	ar->WriteString(text);
-	ar->WriteString(_T("\n"));
+	ar->WriteString(L"\n");
 
 	ar->WriteString(writable);
 
 	switch (ms)
 	{
 	case normal:
-		ar->WriteString(_T("|CaptionLocale:"));
+		ar->WriteString(L"|CaptionLocale:");
 		break;
 	case mouseHover:
-		ar->WriteString(_T("|HoverCaptionLocale:"));
+		ar->WriteString(L"|HoverCaptionLocale:");
 		break;
 	case mouseLClick:
-		ar->WriteString(_T("|ClickCaptionLocale:"));
+		ar->WriteString(L"|ClickCaptionLocale:");
 	}
 	ar->WriteString(locale);
-	ar->WriteString(_T("\n"));
+	ar->WriteString(L"\n");
 
 	ar->WriteString(writable);
 	switch (ms)
 	{
 	case normal:
-		ar->WriteString(_T("|Font:"));
+		ar->WriteString(L"|Font:");
 		break;
 	case mouseHover:
-		ar->WriteString(_T("|HoverFont:"));
+		ar->WriteString(L"|HoverFont:");
 		break;
 	case mouseLClick:
-		ar->WriteString(_T("|ClickFont:"));
+		ar->WriteString(L"|ClickFont:");
 	}
 
 	ar->WriteString(font);
-	ar->WriteString(_T("\n"));
+	ar->WriteString(L"\n");
 
 	TString val = convertD2DColorToString(color);
 	ar->WriteString(writable);
 	switch (ms)
 	{
 	case normal:
-		ar->WriteString(_T("|FontColor:"));
+		ar->WriteString(L"|FontColor:");
 		break;
 	case mouseHover:
-		ar->WriteString(_T("|HoverFontColor:"));
+		ar->WriteString(L"|HoverFontColor:");
 		break;
 	case mouseLClick:
-		ar->WriteString(_T("|ClickFontColor:"));
+		ar->WriteString(L"|ClickFontColor:");
 	}
 
 	ar->WriteString(val);
-	ar->WriteString(_T("\n"));
-	val.Format(_T("%f"), fontSize);
+	ar->WriteString(L"\n");
+	val.Format(L"%f", fontSize);
 	ar->WriteString(writable);
 	switch (ms)
 	{
 	case normal:
-		ar->WriteString(_T("|FontSize:"));
+		ar->WriteString(L"|FontSize:");
 		break;
 	case mouseHover:
-		ar->WriteString(_T("|HoverFontSize:"));
+		ar->WriteString(L"|HoverFontSize:");
 		break;
 	case mouseLClick:
-		ar->WriteString(_T("|ClickFontSize:"));
+		ar->WriteString(L"|ClickFontSize:");
 	}
 
 	ar->WriteString(val);
-	ar->WriteString(_T("\n"));
+	ar->WriteString(L"\n");
 	resetAttributeString(&writable, childLevel +1);
 	ar->WriteString(writable);
 	switch (ms)
 	{
 	case normal:
-		ar->WriteString(_T("|VerticalAlignment:"));
+		ar->WriteString(L"|VerticalAlignment:");
 		break;
 	case mouseHover:
-		ar->WriteString(_T("|HoverVerticalAlignment:"));
+		ar->WriteString(L"|HoverVerticalAlignment:");
 		break;
 	case mouseLClick:
-		ar->WriteString(_T("|ClickVerticalAlignment:"));
+		ar->WriteString(L"|ClickVerticalAlignment:");
 	}
 	switch (verticalAlignment)
 	{
 	case DWRITE_PARAGRAPH_ALIGNMENT_FAR:
-		ar->WriteString(_T("Bottom\n"));
+		ar->WriteString(L"Bottom\n");
 		break;
 	case DWRITE_PARAGRAPH_ALIGNMENT_NEAR:
-		ar->WriteString(_T("Top\n"));
+		ar->WriteString(L"Top\n");
 		break;
 	default:
-		ar->WriteString(_T("Center\n"));
+		ar->WriteString(L"Center\n");
 	}
 	ar->WriteString(writable);
 	switch (ms)
 	{
 	case normal:
-		ar->WriteString(_T("|HorizontalAlignment:"));
+		ar->WriteString(L"|HorizontalAlignment:");
 		break;
 	case mouseHover:
-		ar->WriteString(_T("|HoverHorizontalAlignment:"));
+		ar->WriteString(L"|HoverHorizontalAlignment:");
 		break;
 	case mouseLClick:
-		ar->WriteString(_T("|ClickHorizontalAlignment:"));
+		ar->WriteString(L"|ClickHorizontalAlignment:");
 	}
 	switch (horizontalAlignment)
 	{
 	case DWRITE_TEXT_ALIGNMENT_JUSTIFIED:
-		ar->WriteString(_T("Justified\n"));
+		ar->WriteString(L"Justified\n");
 		break;
 	case DWRITE_TEXT_ALIGNMENT_LEADING:
-		ar->WriteString(_T("Right\n"));
+		ar->WriteString(L"Right\n");
 		break;
 	case DWRITE_TEXT_ALIGNMENT_TRAILING:
-		ar->WriteString(_T("Left\n"));
+		ar->WriteString(L"Left\n");
 		break;
 	default:
-		ar->WriteString(_T("Center\n"));
+		ar->WriteString(L"Center\n");
 	}
 
 
@@ -5544,7 +5544,7 @@ void TContent::ShiftHorizontal(int degrees)
 {
 	location.left += degrees;
 	location.right += degrees;
-	if (!isZeroRect(snip))
+	if (!isSnipZero(snip))
 	{
 		snip.left += degrees;
 		snip.right += degrees;
@@ -5561,7 +5561,7 @@ void TContent::ShiftVertical(int degrees)
 {
 	location.top += degrees;
 	location.bottom += degrees;
-	if (!isZeroRect(snip))
+	if (!isSnipZero(snip))
 	{
 		snip.top += degrees;
 		snip.bottom += degrees;
@@ -5783,38 +5783,38 @@ int TContent::storeInTML(TFile * ar, int childLevel,messageState ms)
 	TString writable;
 	resetAttributeString(&writable, childLevel + 1);
 	TString val;
-	val.Format(_T("%f"), thickness);
+	val.Format(L"%f", thickness);
 	ar->WriteString(writable);
 	switch (ms)
 	{
 	case normal:
-		ar->WriteString(_T("|ContentThickness:"));
+		ar->WriteString(L"|ContentThickness:");
 		break;
 	case mouseHover:
-		ar->WriteString(_T("|HoverContentThickness:"));
+		ar->WriteString(L"|HoverContentThickness:");
 		break;
 	case mouseLClick:
-		ar->WriteString(_T("|ClickContentThickness:"));
+		ar->WriteString(L"|ClickContentThickness:");
 	}
 
 	ar->WriteString(val);
-	ar->WriteString(_T("\n"));
+	ar->WriteString(L"\n");
 	val = convertD2DColorToString(color);
 	ar->WriteString(writable);
 	switch (ms)
 	{
 	case normal:
-		ar->WriteString(_T("|ContentColor:"));
+		ar->WriteString(L"|ContentColor:");
 		break;
 	case mouseHover:
-		ar->WriteString(_T("|HoverContentColor:"));
+		ar->WriteString(L"|HoverContentColor:");
 		break;
 	case mouseLClick:
-		ar->WriteString(_T("|ClickContentColor:"));
+		ar->WriteString(L"|ClickContentColor:");
 	}
 
 	ar->WriteString(val);
-	ar->WriteString(_T("\n"));
+	ar->WriteString(L"\n");
 	return 0;
 }
 
@@ -5969,7 +5969,7 @@ void TContainer::ShiftHorizontal(int degrees)
 {
 	location.left += degrees;
 	location.right += degrees;
-	if (!isZeroRect(snip))
+	if (!isSnipZero(snip))
 	{
 		snip.left += degrees;
 		snip.right += degrees;
@@ -5986,7 +5986,7 @@ void TContainer::ShiftVertical(int degrees)
 {
 	location.top += degrees;
 	location.bottom += degrees;
-	if (!isZeroRect(snip))
+	if (!isSnipZero(snip))
 	{
 		snip.top += degrees;
 		snip.bottom += degrees;
@@ -5997,12 +5997,12 @@ void TContainer::ShiftVertical(int degrees)
 * Method: TContainer - OnLButtonUp
 * Purpose: Allows control to catch the Left Button Up event and act accordingly
 * Parameters: UINT u - flags provided by MFC's Message system, not used
-*				CPoint point - the point on screen where the event occured
+*				TPoint point - the point on screen where the event occured
 *				messageOutput* mOut - allows controls to keep track of whether ohter controls have caught the event
 *				TDataArray<EventID_Cred>& eventAr - allows Controls to add whatever Event Handler they have been assigned
 * Returns: void
 *
-void TContainer::OnLButtonUp(UINT u, CPoint cp, messageOutput * mo, TDataArray<EventID_Cred>& eventAr)
+void TContainer::OnLButtonUp(UINT u, TPoint cp, messageOutput * mo, TDataArray<EventID_Cred>& eventAr)
 {
 	if (child.Get())
 	{
@@ -6014,12 +6014,12 @@ void TContainer::OnLButtonUp(UINT u, CPoint cp, messageOutput * mo, TDataArray<E
 * Method: TContainer - OnLButtonDown
 * Purpose: Allows Control to catch the Left Mouse Button Down event and act accordingly
 * Parameters: UINT u - flags provided by MFC's Message system, not used
-*				CPoint point - the point on screen where the event occured
+*				TPoint point - the point on screen where the event occured
 *				messageOutput* mOut - allows controls to keep track of whether ohter controls have caught the event
 *				TDataArray<EventID_Cred>& eventAr - allows Controls to add whatever Event Handler they have been assigned
 * Returns: void
 *
-void TContainer::OnLButtonDown(UINT u, CPoint cp, messageOutput* mo, TDataArray<EventID_Cred>& eventAr)
+void TContainer::OnLButtonDown(UINT u, TPoint cp, messageOutput* mo, TDataArray<EventID_Cred>& eventAr)
 {
 	if (child.Get())
 	{
@@ -6031,12 +6031,12 @@ void TContainer::OnLButtonDown(UINT u, CPoint cp, messageOutput* mo, TDataArray<
 * Method: TContainer - OnMouseMove
 * Purpose: Allows Controls to catch the Mouse Move event and deduce if the cursor has hovered over it
 * Parameters: UINT u - flags provided by MFC's Message system, not used
-*				CPoint point - the point on screen where the event occured
+*				TPoint point - the point on screen where the event occured
 *				messageOutput* mOut - allows controls to keep track of whether ohter controls have caught the event
 *				TDataArray<EventID_Cred>& eventAr - allows Controls to add whatever Event Handler they have been assigned
 * Returns: void
 *
-void TContainer::OnMouseMove(UINT u, CPoint cp, messageOutput* mo, TDataArray<EventID_Cred>& eventAr)
+void TContainer::OnMouseMove(UINT u, TPoint cp, messageOutput* mo, TDataArray<EventID_Cred>& eventAr)
 {
 	if (child.Get())
 	{
@@ -6068,9 +6068,9 @@ int TContainer::storeInTML(CArchive * ar, int childLevel)
 	resetAttributeString(&str, childLevel);
 	CString val = convertRectToString(location);
 	ar->WriteString(str);
-	ar->WriteString(_T("|ContainerLoc:"));
+	ar->WriteString(L"|ContainerLoc:"));
 	ar->WriteString(val);
-	ar->WriteString(_T("\n"));
+	ar->WriteString(L"\n"));
 	if (child.Get())
 	{
 		child->storeInTML(ar, childLevel + 1);
@@ -6163,13 +6163,13 @@ void resetAttributeString(TString* st, int cou)
 TString convertD2DColorToString(D2D1::ColorF color) 
 {
 	TString val;
-	val.Format(_T("%f"), color.r);
+	val.Format(L"%f", color.r);
 	TString col = val + TString(",");
-	val.Format(_T("%f"), color.g);
+	val.Format(L"%f", color.g);
 	col = col + val + TString(",");
-	val.Format(_T("%f"), color.b);
+	val.Format(L"%f", color.b);
 	col = col + val + TString(",");
-	val.Format(_T("%f"), color.a);
+	val.Format(L"%f", color.a);
 	col = col + val;
 	return col;
 }
@@ -6184,16 +6184,16 @@ TString convertD2DColorToString(D2D1::ColorF color)
 TString convertRectToString(RECT sty) 
 {
 	TString val;
-	val.Format(_T("%d"), sty.top);
+	val.Format(L"%d", sty.top);
 
 	TString comma(L",");
 
 	TString col = val + comma;
-	val.Format(_T("%d"), sty.left);
+	val.Format(L"%d", sty.left);
 	col = col + val + comma;
-	val.Format(_T("%d"), sty.bottom);
+	val.Format(L"%d", sty.bottom);
 	col = col + val + comma;
-	val.Format(_T("%d"), sty.right);
+	val.Format(L"%d", sty.right);
 	col = col + val;
 	return col;
 }
@@ -6294,11 +6294,11 @@ bool convertCRectToD2DRect(RECT* mfcr, D2D_RECT_F* d2dr)
 /*
 * Function: isContained
 * Purpose: Checks of a point is within a given MFC Rectangle
-* Parameters: const CPoint* - the point to check
+* Parameters: const TPoint* - the point to check
 *				const RECT* - the rectangle to check
 * Returns: bool - whether the point is withing the bounds
 */
-bool isContained(const CPoint* cp, const RECT* r)
+bool isContained(const TPoint* cp, const RECT* r)
 {
 	if (!cp || !r)
 		return false;
@@ -6309,11 +6309,11 @@ bool isContained(const CPoint* cp, const RECT* r)
 /*
 * Function: isContained
 * Purpose: Checks of a point is within a given Direct2D Rectangle
-* Parameters: const CPoint* - the point to check
+* Parameters: const TPoint* - the point to check
 *				const D2D1_RECT_F* - the rectangle to check
 * Returns: bool - whether the point is withing the bounds
 */
-bool isContained(const CPoint* cp, const D2D1_RECT_F* r)
+bool isContained(const TPoint* cp, const D2D1_RECT_F* r)
 {
 	if (!cp || !r)
 		return false;
@@ -6324,12 +6324,12 @@ bool isContained(const CPoint* cp, const D2D1_RECT_F* r)
 /*
 * Function: isContained
 * Purpose: Checks if a point is in a certain ellipse
-* Parameters: const CPoint* - the point to check
+* Parameters: const TPoint* - the point to check
 *				const D2D1_ELLIPSE* - the ellipse to check
 * Returns: bool - whether the point is within the specified bounds
 */
 // To-Do: improve function as more math is learned
-bool isContained(const CPoint& cp, const D2D1_ELLIPSE& el) 
+bool isContained(const TPoint& cp, const D2D1_ELLIPSE& el) 
 {
 
 	return (pow((cp.x - el.point.x),2) / pow(el.radiusX,2)
@@ -6386,7 +6386,7 @@ void ZeroMemory_(EventArgs & ea)
 	ea.isClick = false;
 	ea.isLeftClick = false;
 	ea.methodID = -1;
-	ea.point = CPoint(0, 0);
+	ea.point = TPoint(0, 0);
 	ea.positive = false;
 	ea.text = L"";
 }
@@ -6414,6 +6414,11 @@ void switchLongs(LONG & l1, LONG & l2)
 * Returns: bool - whether the RECT is "Zero" or not
 */
 bool isSnipZero(const RECT & snip)
+{
+	return !snip.bottom && !snip.left && !snip.right && !snip.top;
+}
+
+bool _ANAFACE_DLL isSnipZero(const D2D1_RECT_F& snip)
 {
 	return !snip.bottom && !snip.left && !snip.right && !snip.top;
 }

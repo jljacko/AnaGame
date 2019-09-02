@@ -1,4 +1,4 @@
-#include "stdafx.h"
+
 #include "SSGenerator.h"
 
 /*
@@ -7,7 +7,7 @@
 * Parameters: CArchive& a - the file to read
 * Returns: void
 */
-CSSGenerator::CSSGenerator(CArchive& a)
+CSSGenerator::CSSGenerator(TFile& a)
 {
 	Arch = &a;
 	styleList = TrecPointerKey::GetNewTrecPointer<TArray<styleTable>>();

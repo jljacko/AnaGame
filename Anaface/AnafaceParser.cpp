@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include <cassert>
 #include "AnafaceParser.h"
 //#include "TLayoutEx.h"
 
@@ -26,7 +26,7 @@
 */
 AnafaceParser::AnafaceParser(TrecComPointer<ID2D1RenderTarget> rt, HWND hWin,TString directory)
 {
-	ASSERT(rt.Get());
+	assert(rt.Get());
 	renderer = rt;
 
 	fileLoc.Set(directory);
@@ -147,11 +147,11 @@ bool AnafaceParser::Obj(TString* va)
 		}
 		return baseObj->SetContextMenu(currentObj);
 	}
-	else if (v.Compare(L"TVideo") == 0)
+	/*else if (v.Compare(L"TVideo") == 0)
 	{
 		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TVideo>(renderer, classList, windowHandle);// TrecPointer<TControl>((new TVideo(renderer, classList,windowHandle)));
 		addToTree(currentObj);
-	}
+	}*/
 	else if (v.Compare(L"TArena") == 0)
 	{
 		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TArena>(renderer, classList, windowHandle);// TrecPointer<TControl>((new TArena(renderer, classList, windowHandle)));
@@ -352,7 +352,7 @@ bool AnafaceParser::Attribute(TrecPointer<TString> v, TString& e)
 */
 bool AnafaceParser::submitType(TString v)
 {
-	if (v == L"Anaface_UI")
+	if (!v.Compare(L"Anaface_UI"))
 		return true;
 	return false;
 }
@@ -525,7 +525,7 @@ void AnafaceParser::addToTree(TrecPointer<TControl> tc)
 	{
 		//TrecPointer<TContainer> cont = new TContainer();
 		//cont->setTControl(tc);
-		ASSERT(baseObj.Get()); // It should mean something, if it doesn't, gracefully crash
+		assert(baseObj.Get()); // It should mean something, if it doesn't, gracefully crash
 		baseObj->addChild(tc);
 	}
 }

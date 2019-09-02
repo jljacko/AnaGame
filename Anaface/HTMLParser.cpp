@@ -1,4 +1,4 @@
-#include "stdafx.h"
+
 #include "HTMLParser.h"
 #include "SSGenerator.h"
 
@@ -184,7 +184,7 @@ bool HTMLParser::Obj(TString * v)
 		}
 		catch (std::bad_cast& e)
 		{
-			TRACE(e.what());
+			//TRACE(e.what());
 		}
 		currentColunm = 0;
 	}
@@ -208,7 +208,7 @@ bool HTMLParser::Obj(TString * v)
 		}
 		catch (std::bad_cast& e)
 		{
-			TRACE(e.what());
+			//TRACE(e.what());
 		}
 		//currentColunm++;
 		
@@ -310,13 +310,13 @@ bool HTMLParser::Attribute(TrecPointer<TString> v, TString& e)
 			if (mode & 0b00010000) // Unordered List
 			{
 				WCHAR* buff = cap.GetBufferCopy();
-				v->Format(_T("*  %ws"), buff);
+				v->Format(L"*  %ws", buff);
 				delete[] buff;
 			}
 			else if (mode & 0b00001000) // Ordered List
 			{
 				WCHAR* buff = cap.GetBufferCopy();
-				v->Format(_T("%hu. %ws"), listCount, buff);
+				v->Format(L"%hu. %ws", listCount, buff);
 				delete[] buff;
 			}
 		}
@@ -410,8 +410,8 @@ bool HTMLParser::Attribute(TrecPointer<TString> v, TString& e)
 	{
 		if (linkMode & 0b00000011)
 		{
-			CFile file;
-			CFileException cfe;
+			TFile file;
+			//CFileException cfe;
 			//TString* str = v.Get();
 			if(fileLoc.GetSize())
 				if (fileLoc.GetAt(fileLoc.GetSize() - 1) != L'\\')
@@ -419,15 +419,13 @@ bool HTMLParser::Attribute(TrecPointer<TString> v, TString& e)
 			TString str = fileLoc;
 			if(v.Get())
 				str += *v.Get();
-			WCHAR* buff = str.GetBufferCopy();
-			if (!file.Open(buff, CFile::modeRead, &cfe))
+
+			if (!file.Open(str, TFile::t_file_read))
 			{
-				delete[] buff;
 				return true;
 			}
-			delete[] buff;
-			CArchive* archie = new CArchive(&file, CArchive::load);
-			CSSGenerator* css = new CSSGenerator(*archie);
+
+			CSSGenerator* css = new CSSGenerator(file);
 			css->Parse();
 			// To-Do: retrieve styles from CSS object
 			TrecPointer<TArray<styleTable>> st = css->GetStyles();
@@ -439,8 +437,7 @@ bool HTMLParser::Attribute(TrecPointer<TString> v, TString& e)
 
 			//
 			delete css;
-			archie->Close();
-			delete archie;
+
 			file.Close();
 		}
 	}
@@ -558,7 +555,7 @@ TTextField * HTMLParser::GetTextField()
 */
 void HTMLParser::AddToTree()
 {
-	ASSERT(rootObj.Get());
+	assert(rootObj.Get());
 	if (!baseObj.Get())
 		baseObj = rootObj;
 	else

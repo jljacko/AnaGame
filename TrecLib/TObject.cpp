@@ -46,7 +46,7 @@ UCHAR * TObject::GetAnaGameType()
  * Parameters: TString& varName - the name of the variable to seek
  * Returns: TString - the variable value in String form, or an empty string if variable does not exist
  */
-TString TObject::getVariableValueStr(TString & varName)
+TString TObject::getVariableValueStr(const TString & varName)
 {
 	return TString();
 }

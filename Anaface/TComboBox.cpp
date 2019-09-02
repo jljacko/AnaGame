@@ -1,4 +1,4 @@
-#include "stdafx.h"
+
 #include "TComboBox.h"
 
 TDataArray<TComboBox*> boxList;
@@ -311,7 +311,7 @@ void TComboBox::storeInTML(TFile* ar, int childLevel, bool ov)
 	TString appendable;
 	resetAttributeString(&appendable, childLevel + 1);
 	appendable.Append(L"|SubHeight:");
-	appendable.AppendFormat(_T("%d"), childHeight);
+	appendable.AppendFormat("%d", childHeight);
 	_WRITE_THE_STRING;
 
 
@@ -365,7 +365,7 @@ bool TComboBox::GetExtensionStatus()
 *				TDataArray<EventID_Cred>& eventAr - allows Controls to add whatever Event Handler they have been assigned
 * Returns: void
 */
-void TComboBox::OnLButtonDown(UINT nFlags, CPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr)
+void TComboBox::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr)
 {
 
 

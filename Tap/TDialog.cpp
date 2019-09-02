@@ -1,9 +1,11 @@
-#include "stdafx.h"
+#include <Windows.h>
 #include "TDialog.h"
 #include "TML_Reader_.h"
 #include "AnafaceParser.h"
 #include <Windows.h>
 #include <d2d1.h>
+
+// #include <afxglobals.h>
 
 namespace
 {
@@ -162,7 +164,7 @@ bool TDialog::InitializeWindow(int& error)
 		windowFeatures.lpfnWndProc = WindowProctor;
 		windowFeatures.cbClsExtra = 0;
 		windowFeatures.cbWndExtra = 0;
-		windowFeatures.hInstance = AfxGetInstanceHandle();
+		windowFeatures.hInstance = GetModuleHandle(nullptr);
 		instance = windowFeatures.hInstance;
 		windowFeatures.hIcon = nullptr;//LoadIcon(NULL, IDI_APPLICATION);
 		windowFeatures.hCursor = nullptr;//LoadCursor(NULL, IDC_ARROW);
@@ -289,7 +291,7 @@ bool TDialog::Initialize2D(int & er)
 		D2D1_RENDER_TARGET_USAGE_GDI_COMPATIBLE,
 		D2D1_FEATURE_LEVEL_DEFAULT
 	)), tempDC.GetPointerAddress());
-	ASSERT(SUCCEEDED(hr));
+	//assert(SUCCEEDED(hr));
 
 	regRenderTarget = TrecPointerKey::GetComPointer<ID2D1RenderTarget, ID2D1DCRenderTarget>(tempDC);
 	rt_type = render_target_dc;
@@ -311,22 +313,22 @@ bool TDialog::Initialize2D(int & er)
 
 int TDialog::DoModal()
 {
-	if (!isReady)
-		return -1;
-	CWnd* parentWindow = AfxGetMainWnd();
+	/*	if (!isReady)
+			return -1;
+		CWnd* parentWindow = AfxGetMainWnd();
 
-	if (!parentWindow)
-		return -1;
+		if (!parentWindow)
+			return -1;
 
-	if (parentWindow && parentWindow->IsWindowEnabled())
-	{
-		parentWindow->EnableWindow(false);
-	}
-	
-	int result = Create();
-	
-	parentWindow->EnableWindow(true);
-	return result;
+		if (parentWindow && parentWindow->IsWindowEnabled())
+		{
+			parentWindow->EnableWindow(false);
+		}
+
+		int result = Create();
+
+		parentWindow->EnableWindow(true);
+		return result;*/return 1;
 }
 
 int TDialog::Create()
@@ -356,9 +358,9 @@ const HWND TDialog::getWindowHandle()
 
 void TDialog::onButtonDown(bool isLeft, LPARAM lp)
 {
-	CPoint point;
-	point.x = GET_X_LPARAM(lp);
-	point.y = GET_Y_LPARAM(lp);
+	TPoint point;
+	point.x = static_cast<UINT>(lp & 0x0000ffff);
+	point.y = static_cast<UINT>((lp >> 16) & 0x0000ffff);
 	if (pointer.Get())
 	{
 		messageOutput mOut = negative;
@@ -376,9 +378,9 @@ void TDialog::onButtonDown(bool isLeft, LPARAM lp)
 
 void TDialog::onButtonUp(bool isLeft, LPARAM lp)
 {
-	CPoint point;
-	point.x = GET_X_LPARAM(lp);
-	point.y = GET_Y_LPARAM(lp);
+	TPoint point;
+	point.x = static_cast<UINT>(lp & 0x0000ffff);
+	point.y = static_cast<UINT>((lp >> 16) & 0x0000ffff);
 	if (pointer.Get())
 	{
 		messageOutput mOut = negative;
@@ -395,9 +397,9 @@ void TDialog::onButtonUp(bool isLeft, LPARAM lp)
 
 void TDialog::onMouseMove(LPARAM lp)
 {
-	CPoint point;
-	point.x = GET_X_LPARAM(lp);
-	point.y = GET_Y_LPARAM(lp);
+	TPoint point;
+	point.x = static_cast<UINT>(lp & 0x0000ffff);
+	point.y = static_cast<UINT>((lp >> 16) & 0x0000ffff);
 	if (pointer.Get())
 	{
 		messageOutput mOut = negative;

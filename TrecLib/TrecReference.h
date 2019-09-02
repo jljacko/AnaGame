@@ -1,5 +1,6 @@
 #pragma once
 #include <WinBase.h>
+#include <Windows.h>
 
 template<class T> class TrecBoxPointer
 {
@@ -393,14 +394,9 @@ public:
 
 
 		// Need to make sure that the alternative type 'u' is compatible with this type 't'
-		try
-		{
-			raw_t = dynamic_cast<t*>(raw);
-		}
-		catch (std::bad_cast& ex)
-		{
-			raw_t = nullptr;
-		}
+
+		raw_t = dynamic_cast<t*>(raw);
+
 
 		if (!raw_t)
 		{

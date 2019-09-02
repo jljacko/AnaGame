@@ -23,7 +23,7 @@ public:
 
 	bool GetExtensionStatus();
 
-	afx_msg virtual void OnLButtonDown(UINT nFlags, CPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
+	afx_msg virtual void OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
 	void decrimentLocation();
 	void FinalizeUpdate();
 

@@ -1,7 +1,6 @@
 #pragma once
 #include "Tap_dll.h"
 #include "TObject.h"
-#include "stdafx.h"
 #include <TString.h>
 #include <AnafaceUI.h>
 #include "AnafaceParser.h"

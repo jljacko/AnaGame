@@ -1,6 +1,9 @@
 #pragma once
 #include <TrecReference.h>
 #include "Anaface.h"
+#include <TPoint.h>
+
+#define afx_msg
 
 #define SCROLL_ORIENTATION bool
 #define SCROLL_VERTICAL    true
@@ -31,9 +34,9 @@ public:
 
 
 	// Messages that the Scroll Bar might respond to
-	afx_msg virtual void OnLButtonUp(UINT nFlags, CPoint point, messageOutput* mOut);
-	afx_msg virtual void OnLButtonDown(UINT nFlags, CPoint point, messageOutput* mOut);
-	afx_msg virtual void OnMouseMove(UINT nFlags, CPoint point, messageOutput* mOut);
+	afx_msg virtual void OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut);
+	afx_msg virtual void OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut);
+	afx_msg virtual void OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut);
 
 
 
@@ -62,7 +65,7 @@ private:
 	int bodySize;
 	
 	// Maintaining messages
-	CPoint mouseTracker;
+	TPoint mouseTracker;
 	bool BodyClicked;
 	bool backClicked;
 
@@ -80,6 +83,6 @@ void ZeroRect(D2D1_RECT_F&);
 bool isZeroRect(RECT&);
 bool isZeroRect(D2D1_RECT_F&);
 
-_ANAFACE_DLL void ScrollLButtonDown(UINT nFlags, CPoint point, messageOutput * mOut);
-_ANAFACE_DLL void ScrollLButtonUp(UINT nFlags, CPoint point, messageOutput * mOut);
-_ANAFACE_DLL void ScrollMouseMove(UINT nFlags, CPoint point, messageOutput * mOut);
+_ANAFACE_DLL void ScrollLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut);
+_ANAFACE_DLL void ScrollLButtonUp(UINT nFlags, TPoint point, messageOutput * mOut);
+_ANAFACE_DLL void ScrollMouseMove(UINT nFlags, TPoint point, messageOutput * mOut);

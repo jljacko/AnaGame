@@ -1,5 +1,4 @@
 #pragma once
-#include "stdafx.h"
 #include "Tap_dll.h"
 #include <AnafaceUI.h>
 #include <TObject.h>
@@ -24,10 +23,9 @@ public:
 	Page(HWND window);
 	~Page();
 
-	int Initialize2D(CDC*);
-	//int Initialize2D();
-	int Initialize3D(TString& engine);
-	int Initialize3D(TString& engine, CDC*);
+	static Page Get2DPage();
+	static Page GetWindowPage();
+	static Page Get3DPage();
 
 	virtual UCHAR* GetAnaGameType()override;
 	afx_msg void OnSize(UINT nType, int cx,	int cy);
@@ -43,10 +41,6 @@ protected:
 	HDC deviceH;
 
 	RenderTargetType rt_type;
-
-
-	// 2D - only Resources
-	CDC* cdc;  // The Device context to use
 
 	RECT area;
 

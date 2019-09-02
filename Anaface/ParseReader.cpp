@@ -1,12 +1,11 @@
-#include "stdafx.h"
+
 #include "ParseReader.h"
 
 
-ParseReader::ParseReader(CArchive* ca, Parser* pa)
+ParseReader::ParseReader(TFile* ca, Parser* pa)
 {
 	reader = ca;
 	respond = pa;
-	fileActualReader = NULL;
 	materials = true;
 	supported = true;
 }

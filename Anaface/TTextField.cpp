@@ -1,4 +1,4 @@
-#include "stdafx.h"
+
 #include "TTextField.h"
 
 // Allows Anaface to keep track of where the caret is
@@ -39,7 +39,7 @@ TTextField::TTextField(TrecComPointer<ID2D1RenderTarget> rt, TrecPointer<TArray<
 	caretLoc = 0;
 	onFocus = false;
 	showPassword = false;
-	circleCenter = CPoint(0, 0);
+	circleCenter = TPoint(0, 0);
 	radius = 0;
 	isNumber = false;
 	offerPasswordPeek = false;
@@ -124,7 +124,7 @@ void TTextField::InputChar(wchar_t cha, int times)
 * Returns: bool - whether the point is present or not
 * Note: Check to see if this Method is used and whether it should be depreciated
 */
-bool TTextField::onClick(CPoint cp)
+bool TTextField::onClick(TPoint cp)
 {
 	if (cp.x > location.left && cp.x < location.right && cp.y > location.top && cp.y < location.bottom)
 	{
@@ -203,12 +203,12 @@ void TTextField::storeInTML(TFile * ar, int childLevel, bool ov)
 		appendable.Append(L"|DefaultIncriment:");
 		if (incriment.type == t_float)
 		{
-			appendable.AppendFormat(_T("%f"), incriment.value.f);
+			appendable.AppendFormat(L"%f", incriment.value.f);
 		}
 		else if (incriment.type == t_int)
-			appendable.AppendFormat(_T("%d"), incriment.value.i);
+			appendable.AppendFormat(L"%d", incriment.value.i);
 		else
-			appendable.AppendFormat(_T("%d"), 1);
+			appendable.AppendFormat(L"%d", 1);
 
 		_WRITE_THE_STRING;
 	}
@@ -247,22 +247,22 @@ bool TTextField::onCreate(RECT r)
 	offerPasswordPeek = false;
 	if (valpoint.Get())
 	{
-		if (*(valpoint.Get()) == TString(L"True"))
+		if (!valpoint->Compare(L"True"))
 		{
 			isPassword = true;
 			valpoint = attributes.retrieveEntry(TString(L"|PasswordPeek"));
-			if (valpoint.Get() &&   *(valpoint.Get()) == TString(L"True"))
+			if (valpoint.Get() &&   !valpoint->Compare(L"True"))
 				offerPasswordPeek = true;
 		}
 
 	}
 	isEditable = true;
 	valpoint = attributes.retrieveEntry(TString(L"|CanEdit"));
-	if (valpoint.Get() && *(valpoint.Get()) == TString(L"False"))
+	if (valpoint.Get() && !valpoint.Get()->Compare(L"False"))
 		isEditable = false;
 
 	valpoint = attributes.retrieveEntry(TString(L"|IsNumberControl"));
-	if (valpoint.Get() && *(valpoint.Get()) == TString(L"True"))
+	if (valpoint.Get() && !valpoint->Compare(L"True"))
 	{
 		isNumber = true;
 	}
@@ -483,7 +483,7 @@ UINT TTextField::determineMinHeightNeeded()
 * Parameters: RECT& r - the new location
 * Returns: void
 */
-void TTextField::SetNewLocation(RECT & r)
+void TTextField::SetNewLocation(const RECT & r)
 {
 	TControl::SetNewLocation(r);
 
@@ -509,12 +509,13 @@ void TTextField::SetNewLocation(RECT & r)
 *				TDataArray<EventID_Cred>& eventAr - allows Controls to add whatever Event Handler they have been assigned
 * Returns: void
 */
-afx_msg void TTextField::OnLButtonDown(UINT nFlags, CPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+afx_msg void TTextField::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
-	if (!isEditable)
-		goto parentCall;
 	BOOL trailing = false, isInside = false;
 	DWRITE_HIT_TEST_METRICS metrics;
+	if (!isEditable)
+		goto parentCall;
+
 	text1->fontLayout->HitTestPoint(point.x, point.y, &trailing, &isInside, &metrics);
 
 	if (isInside)
@@ -644,7 +645,7 @@ bool TTextField::OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags, me
 		}
 		else
 		{
-			CPoint caretPoint;
+			POINT caretPoint;
 			for (int c = 0; c < nRepCnt;c++)
 			{
 				switch (nChar)
@@ -714,7 +715,7 @@ bool TTextField::OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags, me
 *				TDataArray<EventID_Cred>& eventAr - allows Controls to add whatever Event Handler they have been assigned
 * Returns: void
 */
-void TTextField::OnLButtonUp(UINT nFlags, CPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr)
+void TTextField::OnLButtonUp(UINT nFlags, TPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr)
 {
 	if (isContained(&point, &location))
 	{
@@ -729,7 +730,7 @@ void TTextField::OnLButtonUp(UINT nFlags, CPoint point, messageOutput * mOut, TD
 * Parameters: TString& t - the text to add
 * Returns: void
 */
-void TTextField::AppendBoldText(TString & t)
+void TTextField::AppendBoldText(const TString & t)
 {
 	UINT beginFormatting = text.GetSize();
 	if (!text1.Get())
@@ -752,7 +753,7 @@ void TTextField::AppendBoldText(TString & t)
 * Parameters: TString& t - the text to add
 * Returns: void
 */
-void TTextField::AppendItalicText(TString & t)
+void TTextField::AppendItalicText(const TString & t)
 {
 	UINT beginFormatting = text.GetSize();
 	if (!text1.Get())
@@ -775,7 +776,7 @@ void TTextField::AppendItalicText(TString & t)
 * Parameters: TString& t - the text to add
 * Returns: void
 */
-void TTextField::AppendBoldItalicText(TString & t)
+void TTextField::AppendBoldItalicText(const TString & t)
 {
 	UINT beginFormatting = text.GetSize();
 	if (!text1.Get())
@@ -798,7 +799,7 @@ void TTextField::AppendBoldItalicText(TString & t)
 * Parameters: TString& t - the text to add
 * Returns: void
 */
-void TTextField::AppendNormalText(TString & t)
+void TTextField::AppendNormalText(const TString & t)
 {
 	UINT beginFormatting = text.GetSize();
 	if (!text1.Get())
@@ -979,7 +980,7 @@ void TTextField::setNumericText(int i)
 		return;
 	
 	text.Empty();
-	text.Format(_T("%d"), i);
+	text.Format(L"%d", i);
 
 	if (!text1.Get())
 	{
@@ -1004,7 +1005,7 @@ void TTextField::setNumericText(float f)
 		return;
 
 	text.Empty();
-	text.Format(_T("%f"), f);
+	text.Format(L"%f", f);
 
 	if (!text1.Get())
 	{
@@ -1074,7 +1075,7 @@ void TTextField::updateTextString()
 * Parameters: CPoint point - the point to test
 * Returns:void
 */
-void TTextField::moveCaretLeft(CPoint point)
+void TTextField::moveCaretLeft(POINT point)
 {
 	BOOL isInside = true;
 	BOOL isTrailing = FALSE;
@@ -1095,7 +1096,7 @@ void TTextField::moveCaretLeft(CPoint point)
 * Parameters: CPoint point - the point to test
 * Returns: void
 */
-void TTextField::moveCaretRight(CPoint point)
+void TTextField::moveCaretRight(POINT point)
 {
 	BOOL isInside = true;
 	BOOL isTrailing = FALSE;
@@ -1115,7 +1116,7 @@ void TTextField::moveCaretRight(CPoint point)
 * Parameters: CPoint point - the point to test
 * Returns: void
 */
-void TTextField::moveCaretUp(CPoint point)
+void TTextField::moveCaretUp(POINT point)
 {
 	BOOL isInside = true;
 	BOOL isTrailing = FALSE;
@@ -1148,7 +1149,7 @@ void TTextField::moveCaretUp(CPoint point)
 * Parameters: CPoint point - the point to test
 * Returns: void
 */
-void TTextField::moveCaretDown(CPoint point)
+void TTextField::moveCaretDown(POINT point)
 {
 	BOOL isInside = true;
 	BOOL isTrailing = FALSE;

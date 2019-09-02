@@ -24,7 +24,7 @@ public:
 	virtual ~TObject();
 
 	virtual UCHAR* GetAnaGameType();
-	virtual TString getVariableValueStr(TString& varName);
+	virtual TString getVariableValueStr(const TString& varName);
 	virtual TString toString();
 
 protected:

@@ -50,7 +50,7 @@ public:
 	*			TrecPointer<t2> obj - the object itself
 	* Returns: void
 	*/
-	void addEntry(TString& str, TrecPointer<t2> obj)
+	void addEntry(const TString& str, TrecPointer<t2> obj)
 	{
 		TrecPointer<tEntry<t2>> ent = TrecPointerKey::GetNewTrecPointer<tEntry<t2>>();
 
@@ -78,13 +78,13 @@ public:
 	* Parameters: TString& str - the key
 	* Returns: TrecPointer<t2> - the entry (call .get() to check it's null status)
 	*/
-	TrecPointer<t2> retrieveEntry(TString& str)
+	TrecPointer<t2> retrieveEntry(const TString& str)
 	{
 		for (int c = 0; c < map.Count(); c++)
 		{
 			TrecPointer<tEntry<t2>> point = map.ElementAt(c);
 
-			if (str == point->key)
+			if (!str.Compare(point->key))
 				return (point->object);
 		}
 		return TrecPointer<t2>();
@@ -97,14 +97,14 @@ public:
 	*			int occurance - the number of successes to skip
 	* Returns: TrecPointer<t2> - the entry (call .get() to check it's null status)
 	*/
-	TrecPointer<t2> retrieveEntry(TString& str, int occurance)
+	TrecPointer<t2> retrieveEntry(const TString& str, int occurance)
 	{
 		int occ = 0;
 		for (int c = 0; c < map.Count(); c++)
 		{
 			TrecPointer<tEntry<t2>> point = map.ElementAt(c);
 			
-			if (point->key == str)
+			if (!point->key.Compare(str))
 			{
 				if (occ == occurance)
 					return (point->object);

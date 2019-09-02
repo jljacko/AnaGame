@@ -19,14 +19,14 @@ public:
 	TImage();
 	~TImage();
 
-	UINT onFill(CPoint& pixel, D2D1_COLOR_F& color, float tolerance);
+	UINT onFill(TPoint& pixel, D2D1_COLOR_F& color, float tolerance);
 	UINT setLinearGradient(TDataArray<D2D1_COLOR_F>& colors);
 	UINT setLinearGradient(TDataArray<D2D1_GRADIENT_STOP>& colors);
 
 	UINT setRadialGradient(TDataArray<D2D1_COLOR_F>& colors);
 	UINT setRadialGradient(TDataArray<D2D1_GRADIENT_STOP>& colors);
 
-	UINT rotate(CPoint& point);
+	UINT rotate(TPoint& point);
 	virtual void onDraw(TObject* obj) override;
 
 protected:
@@ -36,5 +36,5 @@ protected:
 	UINT currentImage;
 };
 
-void MarkPixels(CPoint& startPoint, UINT idealPixel, float tolerance, TDataArray<TDataArray<PixelMark>>& pixels);
+void MarkPixels(TPoint& startPoint, UINT idealPixel, float tolerance, TDataArray<TDataArray<PixelMark>>& pixels);
 void ConvertD2D1ColorToUIntColor(D2D1_COLOR_F& d2dColor, UINT& uColor);

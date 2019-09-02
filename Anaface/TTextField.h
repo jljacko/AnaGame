@@ -90,7 +90,7 @@ public:
 	~TTextField();
 
 
-	bool onClick(CPoint);
+	bool onClick(TPoint);
 
 	//virtual int loadFromTML(CArchive* ar) override;
 	virtual int loadFromHTML(TFile* ar) override;
@@ -101,16 +101,16 @@ public:
 
 	virtual void onDraw(TObject* obj = nullptr) override;
 	UINT determineMinHeightNeeded()override;
-	void SetNewLocation(RECT& r)override;
+	void SetNewLocation(const RECT& r)override;
 
-	afx_msg virtual void OnLButtonDown(UINT nFlags, CPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
+	afx_msg virtual void OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
 	afx_msg bool OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlags, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
-	afx_msg void OnLButtonUp(UINT nFlags, CPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
+	afx_msg void OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
 
-	void AppendBoldText(TString& t);
-	void AppendItalicText(TString& t);
-	void AppendBoldItalicText(TString& t);
-	void AppendNormalText(TString& t);
+	void AppendBoldText(const TString& t);
+	void AppendItalicText(const TString& t);
+	void AppendBoldItalicText(const TString& t);
+	void AppendNormalText(const TString& t);
 
 	bool isOnFocus();
 	TString GetText();
@@ -135,7 +135,7 @@ private:
 	// extra resources
 	D2D1_ELLIPSE passwordPeek_outer, passwordPeek_inner;
 	bool showPassword;
-	CPoint circleCenter;
+	TPoint circleCenter;
 	int radius;
 
 	D2D1_RECT_F botBut;
@@ -148,10 +148,10 @@ private:
 
 	void InputChar(wchar_t, int);
 	void updateTextString();
-	void moveCaretLeft(CPoint point);
-	void moveCaretRight(CPoint point);
-	void moveCaretUp(CPoint point);
-	void moveCaretDown(CPoint point);
+	void moveCaretLeft(POINT point);
+	void moveCaretRight(POINT point);
+	void moveCaretUp(POINT point);
+	void moveCaretDown(POINT point);
 
 	// For Numbers, handle minumum and maximum
 	bool hasMin, hasMax;

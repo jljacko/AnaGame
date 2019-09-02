@@ -1,4 +1,4 @@
-#include "stdafx.h"
+
 #include "TContextMenu.h"
 
 /*
@@ -102,7 +102,7 @@ void TContextMenu::storeInTML(TFile * ar, int childLevel,bool ov)
 	TString appendable;
 	resetAttributeString(&appendable, childLevel+1);
 	appendable.Append(L"|SubHeight:");
-	appendable.AppendFormat(_T("%d"), childHeight);
+	appendable.AppendFormat(L"%d", childHeight);
 	_WRITE_THE_STRING;
 
 
@@ -133,7 +133,7 @@ void TContextMenu::storeInTML(TFile * ar, int childLevel,bool ov)
 * Parameters: CPoint cp - the location to draw the context menu
 * Returns: void
 */
-void TContextMenu::onDraw(CPoint cp)
+void TContextMenu::onDraw(TPoint cp)
 {
 	this->offsetLocation(cp);
 

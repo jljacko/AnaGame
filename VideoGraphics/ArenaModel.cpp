@@ -1,7 +1,8 @@
-#include "stdafx.h"
+
 #include "ArenaModel.h"
 #include <DirectXTex.h>
 #include <Logger.h>
+#include <TFile.h>
 
 /*
 * Method: ArenaModel
@@ -94,7 +95,7 @@ TString ArenaModel::toString()
 	return TString();
 }
 
-TString ArenaModel::getVariableValueStr(TString & varName)
+TString ArenaModel::getVariableValueStr(const TString & varName)
 {
 	if (!varName.Compare(L"Name"))
 		return name;
@@ -156,7 +157,7 @@ bool ArenaModel::ValidateConstruction()
 * Return:
 * Note: NOT IMPLEMENTED - purpose is not clear yet
 */
-HRESULT ArenaModel::LoadModel(CArchive & ar)
+HRESULT ArenaModel::LoadModel(TFile & ar)
 {
 	return E_NOTIMPL;
 }
@@ -177,7 +178,7 @@ int ArenaModel::SetVertexData(TDataArray<float>& data, int shaderID, D3D11_PRIMI
 	bufferSize = bSize;
 	if(!SetVertexData(data))
 		return 2;
-	shader.default = false;
+	shader._default = false;
 	shader.card.id = shaderID;
 
 	//bufferSize = data.Size();
@@ -197,7 +198,7 @@ int ArenaModel::SetVertexData(TDataArray<float>& data, DefaultShader ds, D3D11_P
 	//GUARD_CODE -1;
 	if (!SetVertexData(data))
 		return 2;
-	shader.default = true;
+	shader._default = true;
 	shader.card.dID = ds;
 
 	bufferSize = engine->getBufferSize(ds);
@@ -331,7 +332,7 @@ void ArenaModel::Render(DirectX::XMMATRIX & proj, DirectX::XMMATRIX& camera, Are
 	}
 	signed char modelLocation = -1;
 	signed char viewLocation = -1;
-	if (shader.default)
+	if (shader._default)
 	{
 		engine->setShader(shader.card.dID);
 		modelLocation = engine->GetModelLocation(shader.card.dID);
@@ -368,7 +369,7 @@ void ArenaModel::Render(DirectX::XMMATRIX & proj, DirectX::XMMATRIX& camera, Are
 	}
 
 	signed char loc = 0;
-	if (shader.default)
+	if (shader._default)
 	{
 		loc = engine->getColorBufferLocation(shader.card.dID);
 	}
@@ -534,7 +535,7 @@ DirectX::XMFLOAT3 ArenaModel::GetDirection()
 bool ArenaModel::setColorBuffer(float r, float g, float b, float a)
 {
 	signed char loc = 0;
-	if (shader.default)
+	if (shader._default)
 	{
 		loc = engine->getColorBufferLocation(shader.card.dID);
 	}
@@ -590,7 +591,7 @@ bool ArenaModel::setPipeColorBuffer(float r, float g, float b, float a)
 	hasPipeColor = true;
 
 	signed char loc = 0;
-	if (shader.default)
+	if (shader._default)
 	{
 		loc = engine->getColorBufferLocation(shader.card.dID);
 	}
@@ -635,7 +636,7 @@ bool ArenaModel::setPipeColorBuffer(float r, float g, float b, float a)
 bool ArenaModel::setSingleColorBuffer(bool solidColor)
 {
 	signed char loc;
-	if (shader.default)
+	if (shader._default)
 	{
 		loc = engine->getColorBufferLocation(shader.card.dID);
 	}
@@ -667,7 +668,7 @@ bool ArenaModel::setSingleColorBuffer(bool solidColor)
 int ArenaModel::AddTexture(TString & fileName)
 {
 	signed char id = -2;
-	if (shader.default)
+	if (shader._default)
 	{
 		id = engine->GetTextureCount(shader.card.dID);
 	}

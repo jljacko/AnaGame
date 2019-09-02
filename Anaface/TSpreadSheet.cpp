@@ -225,12 +225,12 @@ TString TSpreadSheet::GetDataSplitTokens()
 	return splitTokens;
 }
 
-void TSpreadSheet::OnLButtonDown(UINT nFlags, CPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr)
+void TSpreadSheet::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr)
 {
 	if (!isContained(&point, &location))
 		return;
 
-	CPoint relPoint{ point.x - location.left, point.y - location.top };
+	TPoint relPoint{ point.x - location.left, point.y - location.top };
 	UINT Rust, addUp = 0;
 	for (Rust = 0; Rust < columnLines.Size(); Rust++)
 	{

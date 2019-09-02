@@ -1,4 +1,4 @@
-#include "stdafx.h"
+
 #include "TFlyout.h"
 
 TDataArray<TFlyout*> flyouts;
@@ -207,7 +207,7 @@ void TFlyout::Hide()
 *				TDataArray<EventID_Cred>& eventAr - the List of Events in a User's actions
 * Returns: void
 */
-void TFlyout::OnLButtonDown(UINT nFlags, CPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr)
+void TFlyout::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr)
 {
 	if (!isShown)
 	{

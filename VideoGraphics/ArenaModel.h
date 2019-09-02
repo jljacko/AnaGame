@@ -3,6 +3,7 @@
 #include <d3d11.h>
 #include <DirectXMath.h>
 #include "InlineMatrixOperators.h"
+#include <TFile.h>
 typedef union ShaderCard
 {
 	int id;
@@ -11,7 +12,7 @@ typedef union ShaderCard
 
 typedef struct ShaderKey
 {
-	bool default;
+	bool _default;
 	ShaderCard card;
 }ShaderKey;
 
@@ -34,7 +35,7 @@ public:
 	~ArenaModel();
 
 	TString toString() override;
-	TString getVariableValueStr(TString& varName) override;
+	TString getVariableValueStr(const TString& varName) override;
 
 	void setName(TString& newName);
 	TString getName();
@@ -43,7 +44,7 @@ public:
 
 	bool ValidateConstruction();
 
-	HRESULT LoadModel(CArchive& ar);
+	HRESULT LoadModel(TFile& ar);
 	int SetVertexData(TDataArray<float>& data, int shaderID, D3D11_PRIMITIVE_TOPOLOGY prim = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	int SetVertexData(TDataArray<float>& data, DefaultShader ds, D3D11_PRIMITIVE_TOPOLOGY prim = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	int SetVertexData(TDataArray<float>& data);

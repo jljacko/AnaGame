@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include <Windows.h>
 #include "ArenaEngine.h"
 #include <DirectXMath.h>
 #include <d3dcompiler.h>
@@ -7,6 +7,8 @@
 #include <TML_Reader_.h>
 #include <DirectoryInterface.h>
 #include <Logger.h>
+#include <ShlObj.h>
+
 
 TDataArray<TrecPointer<ArenaEngine>> engineList;
 
@@ -186,7 +188,7 @@ int ArenaEngine::InitializeDefaultShaders()
 
 
 	try {
-		file = new TFile(tempDir, CFile::modeRead);
+		file = new TFile(tempDir, TFile::t_file_read);
 		
 		TML_Reader_* read = new TML_Reader_(file,parse);
 		int error = 0;
@@ -201,7 +203,7 @@ int ArenaEngine::InitializeDefaultShaders()
 			return -2;
 		}
 	}
-	catch (CInvalidArgException& e)
+	catch (...)
 	{
 
 		return 2;
@@ -228,7 +230,7 @@ int ArenaEngine::InitializeDefaultShaders()
 
 
 	try {
-		file = new TFile(tempDir, OF_READ);
+		file = new TFile(tempDir, TFile::t_file_read);
 		TML_Reader_* read = new TML_Reader_(file, parse);
 		int error = 0;
 		parse->SetDefaultShader(default_shader_3D_Color);
@@ -241,7 +243,7 @@ int ArenaEngine::InitializeDefaultShaders()
 			return -3;
 		}
 	}
-	catch (CInvalidArgException& e)
+	catch (...)
 	{
 
 		return 3;
@@ -264,7 +266,7 @@ int ArenaEngine::InitializeDefaultShaders()
 
 
 	try {
-		file = new TFile(tempDir, OF_READ);
+		file = new TFile(tempDir, TFile::t_file_read);
 		TML_Reader_* read = new TML_Reader_(file, parse);
 		int error = 0;
 		parse->SetDefaultShader(default_Shader_4D_Color);
@@ -277,7 +279,7 @@ int ArenaEngine::InitializeDefaultShaders()
 			return -4;
 		}
 	}
-	catch (CInvalidArgException& e)
+	catch (...)
 	{
 
 		return 4;
@@ -299,7 +301,7 @@ int ArenaEngine::InitializeDefaultShaders()
 
 
 	try {
-		file = new TFile(tempDir, CFile::modeRead);
+		file = new TFile(tempDir, TFile::t_file_read);
 		TML_Reader_* read = new TML_Reader_(file, parse);
 		int error = 0;
 		parse->SetDefaultShader(default_Shader_Texture);
@@ -312,7 +314,7 @@ int ArenaEngine::InitializeDefaultShaders()
 			return -5;
 		}
 	}
-	catch (CInvalidArgException& e)
+	catch (...)
 	{
 
 		return 5;
@@ -333,7 +335,7 @@ int ArenaEngine::InitializeDefaultShaders()
 
 
 	try {
-		file = new TFile(tempDir, CFile::modeRead);
+		file = new TFile(tempDir, TFile::t_file_read);
 		TML_Reader_* read = new TML_Reader_(file, parse);
 		int error = 0;
 		parse->SetDefaultShader(default_Shader_Texture2);
@@ -346,7 +348,7 @@ int ArenaEngine::InitializeDefaultShaders()
 			return -6;
 		}
 	}
-	catch (CInvalidArgException& e)
+	catch (...)
 	{
 
 		return 6;

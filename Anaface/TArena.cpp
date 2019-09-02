@@ -1,4 +1,4 @@
-#include "stdafx.h"
+
 #include "TArena.h"
 #include <d3d11.h>
 #include <DirectXMath.h>
@@ -17,7 +17,7 @@ TArena::TArena(TrecComPointer<ID2D1RenderTarget> rt, TrecPointer<TArray<styleTab
 {
 	cameraType = type;
 	windowHandle = h;
-	instanceHandle = AfxGetInstanceHandle();
+	instanceHandle = GetModuleHandle(nullptr);
 	viewport = NULL;
 	projector = DirectX::XMMatrixPerspectiveFovLH(0.25f*DirectX::XM_PI, 800.0f / 600.0f, 1.0f, 1000.0f);
 
@@ -63,7 +63,7 @@ bool TArena::onCreate(RECT r )
 
 	if (valpoint.Get())
 	{
-		arenaEngine = ArenaEngine::GetArenaEngine(*(valpoint.Get()),windowHandle,AfxGetInstanceHandle());
+		arenaEngine = ArenaEngine::GetArenaEngine(*(valpoint.Get()),windowHandle, GetModuleHandle(nullptr));
 		if (!arenaEngine.Get())
 			return false;
 

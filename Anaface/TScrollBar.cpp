@@ -1,4 +1,4 @@
-#include "stdafx.h"
+
 #include "AnafaceUI.h"
 #include "TControl.h"
 
@@ -35,7 +35,7 @@ TScrollBar::TScrollBar(TControl& tc,SCROLL_ORIENTATION so)
 	ratio = wholeBlank = bodySize = 0;
 
 	// Maintaining messages
-	mouseTracker = CPoint( 0,0 );
+	mouseTracker = TPoint( 0,0 );
 	BodyClicked = backClicked = false;
 
 	childBar = nullptr;
@@ -208,7 +208,7 @@ int TScrollBar::moveDownRight(int l)
 */
 void TScrollBar::Refresh()
 {
-	if (!parent || isZeroRect(parent->getSnip()))
+	if (!parent || isSnipZero(parent->getSnip()))
 	{
 		setUndrawable();
 		return;
@@ -329,11 +329,11 @@ void TScrollBar::Refresh()
 * Method: TScrollBar - OnLButtonUp
 * Purpose: Frees the Scroll Bar upon user release
 * Parameters: UINT nFlags - Details provided by Windows 
-*				CPoint point - The location of the click 
+*				TPoint point - The location of the click 
 *				messageOutput * mOut - The results of the Event (was a control updated?)
 * Returns: void
 */
-void TScrollBar::OnLButtonUp(UINT nFlags, CPoint point, messageOutput * mOut)
+void TScrollBar::OnLButtonUp(UINT nFlags, TPoint point, messageOutput * mOut)
 {
 	mouseTracker = { 0,0 };
 	BodyClicked = false;
@@ -344,11 +344,11 @@ void TScrollBar::OnLButtonUp(UINT nFlags, CPoint point, messageOutput * mOut)
 * Method: TScrollBar - OnLButtonDown
 * Purpose: Allows the TScroll-Bar to respond to User clicks
 * Parameters: UINT nFlags - Details provided by Windows 
-*				CPoint point - The location of the click 
+*				TPoint point - The location of the click 
 *				messageOutput * mOut - The results of the Event (was a control updated?)
 * Returns: void
 */
-void TScrollBar::OnLButtonDown(UINT nFlags, CPoint point, messageOutput * mOut)
+void TScrollBar::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut)
 {
 	if (!isContained(&point, &wholeBar))
 	{
@@ -409,11 +409,11 @@ void TScrollBar::OnLButtonDown(UINT nFlags, CPoint point, messageOutput * mOut)
 * Method: TScrollBar - OnMouseMove
 * Purpose: Allows the TScrollBar to respond to the mouse-movement
 * Parameters: UINT nFlags - Details provided by Windows 
-*				CPoint point - The location of the click 
+*				TPoint point - The location of the click 
 *				messageOutput * mOut - The results of the Event (was a control updated?)
 * Returns: void
 */
-void TScrollBar::OnMouseMove(UINT nFlags, CPoint point, messageOutput * mOut)
+void TScrollBar::OnMouseMove(UINT nFlags, TPoint point, messageOutput * mOut)
 {
 	if (BodyClicked)
 	{
@@ -525,11 +525,11 @@ bool isZeroRect(D2D1_RECT_F& r)
 * Function: ScrollLButtonDown
 * Purpose: Allows Scroll-bars to be selected by the user
 * Parameters: UINT nFlags - Details provided by Windows 
-*				CPoint point - The location of the click 
+*				TPoint point - The location of the click 
 *				messageOutput * mOut - The results of the Event (was a control updated?)
 * Returns: void
 */
-void ScrollLButtonDown(UINT nFlags, CPoint point, messageOutput * mOut)
+void ScrollLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut)
 {
 	for (int c = 0; c < scrollBarList.Size();c++)
 	{
@@ -545,11 +545,11 @@ void ScrollLButtonDown(UINT nFlags, CPoint point, messageOutput * mOut)
 * Function: ScrollLButtonUp
 * Purpose: Allows Clicked Scroll-bars to release them selves
 * Parameters: UINT nFlags - Details provided by Windows 
-*				CPoint point - The location of the click 
+*				TPoint point - The location of the click 
 *				messageOutput * mOut - The results of the Event (was a control updated?)
 * Returns: void
 */
-void ScrollLButtonUp(UINT nFlags, CPoint point, messageOutput * mOut)
+void ScrollLButtonUp(UINT nFlags, TPoint point, messageOutput * mOut)
 {
 	for (int c = 0; c < scrollBarList.Size();c++)
 	{
@@ -565,11 +565,11 @@ void ScrollLButtonUp(UINT nFlags, CPoint point, messageOutput * mOut)
 * Function: ScrollMouseMove
 * Purpose: Allows a scroll-bar to know when the mouse is moving
 * Parameters:UINT nFlags - Details provided by Windows 
-*				CPoint point - The location of the click 
+*				TPoint point - The location of the click 
 *				messageOutput * mOut - The results of the Event (was a control updated?)
 * Returns: void
 */
-void ScrollMouseMove(UINT nFlags, CPoint point, messageOutput * mOut)
+void ScrollMouseMove(UINT nFlags, TPoint point, messageOutput * mOut)
 {
 	for (int c = 0; c < scrollBarList.Size();c++)
 	{

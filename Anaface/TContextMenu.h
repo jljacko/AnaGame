@@ -10,7 +10,7 @@ public:
 	bool onCreate(RECT location) override;
 	bool addOption(TrecPointer<TString>);
 	virtual void storeInTML(TFile* ar, int childLevel,bool)override;
-	void onDraw(CPoint);
+	void onDraw(TPoint);
 	virtual UCHAR* GetAnaGameType()override;
 private:
 	int childHeight;

@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"					// MFC Support
+
 #include <d2d1.h>					// Direct 2D support
 #include <d2d1_1.h>					// Help with the D2D1Context Device if necessary
 #include <dwrite.h>					// Direct Write
@@ -12,12 +12,16 @@
 #include <TrecReference.h>
 #include <TDataArray.h>
 #include <TFile.h>
+#include <TPoint.h>
 
 //#define _TREC_LIB_DLL __declspec(dllimport)
 #include <TMap.h>
 
+#define afx_msg
+
 class TControl;
 class TFlyout;
+class TContextMenu;
 //using namespace ControlTypeSafety;
 
 // Declare existance of classes so that they can be attributes
@@ -25,7 +29,7 @@ class TFlyout;
 
 
 #define _WRITE_THE_STRING 		ar->WriteString(appendable);      \
-	ar->WriteString(_T("\n"));                  \
+	ar->WriteString(L"\n");                  \
 	resetAttributeString(&appendable, childLevel + 1);
 
 /* Used by the control to determine which to draw */
@@ -73,7 +77,7 @@ typedef struct EventArgs
 {
 	TString text;
 	bool positive;
-	CPoint point;
+	TPoint point;
 	bool isClick;
 	bool isLeftClick;
 	R_Message_Type eventType;
@@ -173,7 +177,7 @@ private:
 
 	TrecComPointer <ID2D1SolidColorBrush> BuilderFocusBrush;						// Used by the Builder to Highlight Controls under editing
 	float thickness = 1.0f;											// Thickness
-	CString style;													// Holds a special style, NOTE: Feature not Implemented
+	TString style;													// Holds a special style, NOTE: Feature not Implemented
 	D2D1::ColorF color = D2D1::ColorF(D2D1::ColorF::Black, 1.0);	// The Color of the Border
 	D2D1::ColorF color2 = D2D1::ColorF(D2D1::ColorF::Black, 1.0);	// The Second color used by multi color styles of the Control
 	TrecComPointer<ID2D1RenderTarget> rt;											// Pointer to the Render Target to Draw to
@@ -347,7 +351,7 @@ private:
 	TrecComPointer<ID2D1BitmapBrush> bitmap;
 
 	float thickness = 1.0f;
-	CString style;
+	TString style;
 	D2D1::ColorF color = D2D1::ColorF(D2D1::ColorF::Black, 1.0);
 	D2D1_RECT_F location, snip;
 	TrecComPointer<ID2D1Bitmap> image;
@@ -392,9 +396,9 @@ public:
 	void ShiftHorizontal(int degrees);
 	void ShiftVertical(int degrees);
 
-	void OnLButtonUp(UINT, CPoint, messageOutput*, TDataArray<EventID_Cred>& eventAr);
-	void OnLButtonDown(UINT, CPoint, messageOutput*, TDataArray<EventID_Cred>& eventAr);
-	void OnMouseMove(UINT, CPoint, messageOutput*, TDataArray<EventID_Cred>& eventAr);
+	void OnLButtonUp(UINT, TPoint, messageOutput*, TDataArray<EventID_Cred>& eventAr);
+	void OnLButtonDown(UINT, TPoint, messageOutput*, TDataArray<EventID_Cred>& eventAr);
+	void OnMouseMove(UINT, TPoint, messageOutput*, TDataArray<EventID_Cred>& eventAr);
 
 	TrecPointer<TControl> getChildControl();
 	int storeInTML(CArchive * ar, int childLevel);
@@ -435,19 +439,19 @@ public:
 	virtual void storeInHTML(TFile* ar);
 
 	// Normal running messages
-	afx_msg void OnRButtonUp(UINT nFlags, CPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
-	afx_msg virtual void OnLButtonDown(UINT nFlags, CPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
-	afx_msg void OnRButtonDown(UINT nFlags, CPoint, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
-	afx_msg virtual void OnMouseMove(UINT nFlags, CPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
-	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
-	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
-	afx_msg virtual void OnLButtonUp(UINT nFlags, CPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
+	afx_msg void OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
+	afx_msg virtual void OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
+	afx_msg void OnRButtonDown(UINT nFlags, TPoint, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
+	afx_msg virtual void OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
+	//afx_msg void OnContextMenu(CWnd* pWnd, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
+	afx_msg void OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
+	afx_msg virtual void OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
 	afx_msg virtual bool OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlags, messageOutput *mOut, TDataArray<EventID_Cred>& eventAr);
 
 	// Builder Messages
-	afx_msg void Builder_OnLButtonUp(UINT flags, CPoint point, TControl** mOut);
-	afx_msg void Builder_OnLButtonDown(UINT flags, CPoint point, TControl** mOut, messageOutput* o);
-	afx_msg void Builder_OnMouseMove(UINT flags, CPoint, TControl** mOut,const RECT&, messageOutput* o);
+	afx_msg void Builder_OnLButtonUp(UINT flags, TPoint point, TControl** mOut);
+	afx_msg void Builder_OnLButtonDown(UINT flags, TPoint point, TControl** mOut, messageOutput* o);
+	afx_msg void Builder_OnMouseMove(UINT flags, TPoint, TControl** mOut,const RECT&, messageOutput* o);
 	afx_msg void Remove_Builder_Click_Focus();
 
 	void setActive(bool act);
@@ -466,7 +470,7 @@ public:
 	TrecPointer<TControl> getParent();
 	void setExternalBounds(RECT);
 	bool getLayoutStatus();
-	void offsetLocation(CPoint);
+	void offsetLocation(TPoint);
 
 	void ShiftHorizontal(int degrees);
 	void ShiftVertical(int degrees);
@@ -486,10 +490,10 @@ public:
 	void setMLeft(int l);
 
 	virtual UINT determineMinHeightNeeded();
-	virtual void SetNewLocation(RECT& r);
+	virtual void SetNewLocation(const RECT& r);
 	virtual void ShrinkHeight();
 
-	bool addAttribute(TString&, TrecPointer<TString>);
+	bool addAttribute(const TString&, TrecPointer<TString>);
 	bool addChild(TrecPointer<TControl>);
 
 	void setParent(TrecPointer<TControl> tcp);
@@ -506,7 +510,7 @@ public:
 	void scroll(RECT& loc);
 	bool SetContextMenu(TrecPointer<TControl> cm);
 	void BreakShared();
-	void AddClass(TString& t);
+	void AddClass(const TString& t);
 	TString GetID();
 
 	virtual UCHAR* GetAnaGameType()override;
@@ -656,30 +660,30 @@ bool convertCRectToD2DRect(RECT*, D2D1_RECT_F*);
 /*
 * Function: isContained
 * Purpose: Checks of a point is within a given MFC Rectangle
-* Parameters: const CPoint* - the point to check
+* Parameters: const TPoint* - the point to check
 *				const RECT* - the rectangle to check
 * Returns: bool - whether the point is withing the bounds
 */
-bool isContained(const CPoint*, const RECT*);
+bool isContained(const TPoint*, const RECT*);
 
 /*
 * Function: isContained
 * Purpose: Checks of a point is within a given Direct2D Rectangle
-* Parameters: const CPoint* - the point to check
+* Parameters: const TPoint* - the point to check
 *				const D2D1_RECT_F* - the rectangle to check
 * Returns: bool - whether the point is withing the bounds
 */
-bool isContained(const CPoint*, const D2D1_RECT_F*);
+bool isContained(const TPoint*, const D2D1_RECT_F*);
 
 /*
 * Function: isContained
 * Purpose: Checks if a point is in a certain ellipse
-* Parameters: const CPoint* - the point to check
+* Parameters: const TPoint* - the point to check
 *				const D2D1_ELLIPSE* - the ellipse to check
 * Returns: bool - whether the point is within the specified bounds
 * Note: Algorithm for function found on https://math.stackexchange.com/questions/76457/check-if-a-point-is-within-an-ellipse
 */
-bool isContained(const CPoint&, const D2D1_ELLIPSE&);
+bool isContained(const TPoint&, const D2D1_ELLIPSE&);
 
 /*
 * Function: convertStringToTextAlignment
@@ -721,6 +725,14 @@ void switchLongs(LONG& l1, LONG& l2);
 * Returns: bool - whether the RECT is "Zero" or not
 */
 bool _ANAFACE_DLL isSnipZero(const RECT& snip);
+
+/*
+* Function: isSnipZero
+* Purpose: Checks if a Rectangle is a "Zero" rectangle
+* Parameters: const D2D1_RECT_F& snip - the Rectangle to check
+* Returns: bool - whether the RECT is "Zero" or not
+*/
+bool _ANAFACE_DLL isSnipZero(const D2D1_RECT_F& snip);
 
 /*
 * Function: zeroSnip

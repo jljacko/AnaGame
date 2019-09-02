@@ -1,4 +1,4 @@
-#include "stdafx.h"
+
 #include "TRadioButton.h"
 
 
@@ -133,7 +133,7 @@ void TRadioButton::onDraw(TObject* obj)
 *				TDataArray<EventID_Cred>& eventAr - list of events to respond to
 * Returns: void
 */
-void TRadioButton::OnLButtonDown(UINT nFlags, CPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr)
+void TRadioButton::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr)
 {
 	TControl::OnLButtonDown(nFlags, point, mOut, eventAr);
 
@@ -169,7 +169,7 @@ void TRadioButton::OnLButtonDown(UINT nFlags, CPoint point, messageOutput * mOut
 *				TDataArray<EventID_Cred>& eventAr - list of events to respond to
 * Returns: void
 */
-void TRadioButton::OnLButtonUp(UINT nFlags, CPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr)
+void TRadioButton::OnLButtonUp(UINT nFlags, TPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr)
 {
 	TControl::OnLButtonUp(nFlags, point, mOut,eventAr);
 }

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+
 #include "Page.h"
 
 
@@ -34,6 +34,21 @@ Page::~Page()
 	
 }
 
+Page Page::Get2DPage()
+{
+	return Page();
+}
+
+Page Page::GetWindowPage()
+{
+	return Page();
+}
+
+Page Page::Get3DPage()
+{
+	return Page();
+}
+/*
 int Page::Initialize2D(CDC * cdc)
 {
 	if (!fact.Get())
@@ -170,7 +185,7 @@ int Page::Initialize3D(TString & engine, CDC * cdc)
 	deviceH = cdc->GetSafeHdc();
 	windowHandle = WindowFromDC(deviceH);
 	return Initialize3D(engine);
-}
+}*/
 
 UCHAR * Page::GetAnaGameType()
 {
@@ -265,7 +280,7 @@ bool Page::Initialize2D(HDC deviceH)
 		D2D1_RENDER_TARGET_USAGE_GDI_COMPATIBLE,
 		D2D1_FEATURE_LEVEL_DEFAULT
 	)), tempDC.GetPointerAddress());
-	ASSERT(SUCCEEDED(hr));
+	assert(SUCCEEDED(hr));
 
 	regRenderTarget = TrecPointerKey::GetComPointer<ID2D1RenderTarget, ID2D1DCRenderTarget>(tempDC);
 

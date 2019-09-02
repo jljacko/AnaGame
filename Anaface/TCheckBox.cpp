@@ -1,4 +1,4 @@
-#include "stdafx.h"
+
 #include "TCheckBox.h"
 
 /*
@@ -94,7 +94,7 @@ bool TCheckBox::IsClicked()
 *				TDataArray<EventID_Cred>& eventAr - the List of Events in a User's actions
 * Returns: void
 */
-void TCheckBox::OnLButtonDown(UINT nFlags, CPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr)
+void TCheckBox::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr)
 {	
 	if (isContained(&point, &location))
 	{
@@ -126,7 +126,7 @@ void TCheckBox::OnLButtonDown(UINT nFlags, CPoint point, messageOutput * mOut, T
 *				TDataArray<EventID_Cred>& eventAr - the List of Events in a User's actions
 * Returns: void
 */
-void TCheckBox::OnLButtonUp(UINT nFlags, CPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr)
+void TCheckBox::OnLButtonUp(UINT nFlags, TPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr)
 {
 	TControl::OnLButtonUp(nFlags, point, mOut,eventAr);
 }

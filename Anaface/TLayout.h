@@ -71,7 +71,7 @@ public:
 	int getColunmWidth(int x);
 	int getRowHeight(int y);
 	virtual UINT determineMinHeightNeeded()override;
-	void SetNewLocation(RECT& r)override;
+	void SetNewLocation(const RECT& r)override;
 	void ShrinkHeight()override;
 
 	void setNewColunmSize(int xLoc, int x);

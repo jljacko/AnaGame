@@ -1,4 +1,4 @@
-#include "stdafx.h"
+
 #include "ShaderParser.h"
 /*
 * Method: ShaderParser
@@ -50,19 +50,19 @@ bool ShaderParser::Obj(TString * v)
 {
 	if(! v)
 	return false;
-	if (*v == TString(L"Buff"))
+	if (!v->Compare(L"Buff"))
 	{
 		bufferDesc.push_back(desc);	
 		desc = 0;
 		return true;
 	}
-	else if (*v == TString(L"Const"))
+	else if (!v->Compare(L"Const"))
 	{
 		TrecComPointer<ID3D11Buffer> buff;
 		if (engine->GetConstantBuffer(cbd.size, buff))
 			return false;
 		bool newConst = false;
-		if (shaderID.default)
+		if (shaderID._default)
 			newConst = engine->SetNewConstantBuffer(buff, cbd.bufferSlot, cbd.ModelBuffer, cbd.sp, shaderID.card.dID, cbd.purpose);
 		else
 			newConst = engine->SetNewConstantBuffer(buff, cbd.bufferSlot, cbd.ModelBuffer, cbd.sp, shaderID.card.id, cbd.purpose);
@@ -201,7 +201,7 @@ bool ShaderParser::Attribute(TrecPointer<TString> v, TString& e)
 		}
 		else if (!TString::Compare(e, L"|ModelBuffer"))
 		{
-			if ((*v.Get()) == TString(L"True"))
+			if (!v->Compare(L"True"))
 				cbd.ModelBuffer = true;
 		}
 		else if (!TString::Compare(e,L"|ConstantSize"))
@@ -216,23 +216,23 @@ bool ShaderParser::Attribute(TrecPointer<TString> v, TString& e)
 		}
 		else if (!TString::Compare(e, L"|ConstantShaderPhase"))
 		{
-			if (*v.Get() == TString(L"Pixel") || *v.Get() == TString(L"Fragment"))
+			if (!v->Compare(L"Pixel") || !v->Compare(L"Fragment"))
 			{
 				cbd.sp = sp_Pixel;
 			}
-			else if (*v.Get() == TString(L"Hull"))
+			else if (!v->Compare(L"Hull"))
 			{
 				cbd.sp = sp_Hull;
 			}
-			else if (*v.Get() == TString(L"Domain"))
+			else if (!v->Compare(L"Domain"))
 			{
 				cbd.sp = sp_Domain;
 			}
-			else if (*v.Get() == TString(L"Compute"))
+			else if (!v->Compare(L"Compute"))
 			{
 				cbd.sp = sp_Compute;
 			}
-			else if (*v.Get() == TString(L"Geometry"))
+			else if (!v->Compare(L"Geometry"))
 			{
 				cbd.sp = sp_Geometry;
 			}
@@ -257,19 +257,19 @@ bool ShaderParser::Attribute(TrecPointer<TString> v, TString& e)
 		}
 		else if (!TString::Compare(e, L"|ConstantPurpose"))
 		{
-			if (*v.Get() == TString(L"Color"))
+			if (!v->Compare(L"Color"))
 			{
 				cbd.purpose = 1;
 			}
-			else if (*v.Get() == TString(L"Camera"))
+			else if (!v->Compare(L"Camera"))
 			{
 				cbd.purpose = 2;
 			}
-			else if (*v.Get() == TString(L"MVP"))
+			else if (!v->Compare(L"MVP"))
 				cbd.purpose = 3;
-			else if (*v.Get() == TString(L"View"))
+			else if (!v->Compare(L"View"))
 				cbd.purpose = 4;
-			else if (*v.Get() == TString(L"Model"))
+			else if (!v->Compare(L"Model"))
 				cbd.purpose = 5;
 		}
 	}
@@ -351,7 +351,7 @@ bool ShaderParser::AddShaderToProgram(TString & str)
 	std::string cStr = str.GetRegString();
 
 	int err = 0;
-	if (shaderID.default)
+	if (shaderID._default)
 	{
 		switch (phase)
 		{
@@ -416,7 +416,7 @@ bool ShaderParser::SetBasicShader()
 			shaderIDd = true;
 			if (!isDefaultShader)
 			{
-				shaderID.default = false;
+				shaderID._default = false;
 				shaderID.card.id = err;
 			}
 		}
@@ -432,47 +432,47 @@ bool ShaderParser::SetBasicShader()
 */
 bool ShaderParser::SetBufferPurpose(TString & t)
 {
-	if (t == TString(L"Position"))
+	if (!t.Compare(L"Position"))
 	{
 		desc = desc | 0b00000011;
 	}
-	else if (t == TString(L"Texture"))
+	else if (!t.Compare(L"Texture"))
 	{
 		desc = desc | 0b00000010;
 	}
-	else if (t == TString(L"Normal"))
+	else if (!t.Compare(L"Normal"))
 	{
 		desc = desc | 0b00000001;
 	}
-	else if(t == TString(L"Color"))
+	else if(!t.Compare(L"Color"))
 	{
 		desc = desc | 0b00000000;
 	}
-	else if (t == TString(L"Binormal"))
+	else if (!t.Compare(L"Binormal"))
 	{
 		desc = desc | static_cast<unsigned char>(4);
 	}
-	else if (t == TString(L"Blendindex"))
+	else if (!t.Compare(L"Blendindex"))
 	{
 		desc = desc | static_cast<unsigned char>(6);
 	}
-	else if (t == TString(L"Blendweight"))
+	else if (!t.Compare(L"Blendweight"))
 	{
 		desc = desc | static_cast<unsigned char>(5);
 	}
-	else if (t == TString(L"T Position"))
+	else if (!t.Compare(L"T Position"))
 	{
 		desc = desc | static_cast<unsigned char>(7);
 	}
-	else if (t == TString(L"Tangent"))
+	else if (!t.Compare(L"Tangent"))
 	{
 		desc = desc | static_cast<unsigned char>(8);
 	}
-	else if (t == TString(L"Fog"))
+	else if (!t.Compare(L"Fog"))
 	{
 		desc = desc | static_cast<unsigned char>(9);
 	}
-	else if (t == TString(L"Tessfactor"))
+	else if (!t.Compare(L"Tessfactor"))
 	{
 		desc = desc | static_cast<unsigned char>(10);
 	}
@@ -559,7 +559,7 @@ bool ShaderParser::SetTextureCount(TString & v)
 	int value = 0;
 	if (!v.ConvertToInt(&value))
 	{
-		if (shaderID.default)
+		if (shaderID._default)
 			engine->SetTextureCount(shaderID.card.dID, static_cast<unsigned char>(value));
 		else
 			engine->SetTextureCount(shaderID.card.id, static_cast<unsigned char>(value));
@@ -578,7 +578,7 @@ bool ShaderParser::SetDefaultShader(DefaultShader ds)
 {
 	isDefaultShader = true;
 	defaultShader = ds;
-	shaderID.default = true;
+	shaderID._default = true;
 	shaderID.card.dID = ds;
 	return false;
 }
