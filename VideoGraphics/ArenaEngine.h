@@ -194,6 +194,7 @@ public:
 	TrecComPointer<ID3D11RenderTargetView> getRederTarget();
 	TrecComPointer<ID3D11Device> getDeviceD();
 	TrecComPointer<IDXGIDevice> getDeviceD_U();
+	TrecComPointer<IDXGISurface> GetSurface();
 
 	// TO-Do: Add Model Method
 	bool DoMVP();
@@ -218,6 +219,7 @@ public:
 	UCHAR OnWindowResize();
 
 	TDataArray<ArenaModel*>* getModelList();
+	HWND GetWindow();
 	
 private:
 	void Unload();

@@ -9,7 +9,7 @@ typedef enum RenderTargetType
 	render_target_device_context,
 	render_target_hwnd,
 	render_target_dc,
-
+	render_target_dxgi
 }RenderTargetType;
 
 /* Class: Page
@@ -19,37 +19,42 @@ typedef enum RenderTargetType
 class _TAP_DLL Page : public TObject
 {
 public:
-	//Page();
-	Page(HWND window);
 	~Page();
 
-	static Page Get2DPage();
-	static Page GetWindowPage();
-	static Page Get3DPage();
+	static TrecPointer<Page> Get2DPage(TrecComPointer<ID2D1Factory1>, HDC);
+	static TrecPointer<Page> GetWindowPage(TrecComPointer<ID2D1Factory1>, HWND);
+	static TrecPointer<Page> Get3DPage(TrecComPointer<ID2D1Factory1>, TrecPointer<ArenaEngine>);
+
+	int SetAnaface(TrecPointer<TFile> file);
 
 	virtual UCHAR* GetAnaGameType()override;
 	afx_msg void OnSize(UINT nType, int cx,	int cy);
+
+	void Draw();
 protected:
 	Page();
-	bool Initialize2D(HDC);
 
-	// Common resources
-	TrecComPointer<ID2D1RenderTarget> regRenderTarget; // The render target which will be used
-	HWND windowHandle; // the Window attached to the page
-	HINSTANCE instance;// the Inatance that was used during page construction
-	int width, height; // The Current Dimentions of the page
-	HDC deviceH;
+	float scale;
 
-	RenderTargetType rt_type;
-
-	RECT area;
-
+	// DirectX Resources
+	TrecComPointer<ID2D1Factory1> fact;						// D2D Factory, provided by our AnaGame Instance Class
+	RenderTargetType rt_type;								// Keeps track of the type of RenderTarget this Page is using
+	TrecComPointer<ID2D1RenderTarget> regRenderTarget;		// The render target which will be used
 	// 3D mixing with 2D Resources
 	TrecComPointer<ID2D1Device> device;
-	// TrecComPointer<ID2D1DeviceContext> contextDevice;
 	TrecComPointer<ID2D1GdiInteropRenderTarget> gdiRender;
 	TrecComPointer<ID2D1Bitmap1> bit;
-	TrecComPointer<ID2D1Factory1> fact;
-	TrecPointer<ArenaEngine> engine;
+
+	// Regular Resources
+	HWND windowHandle;		// the Window attached to the page
+	HINSTANCE instance;		// the Inatance that was used during page construction
+	HDC deviceH;			// Handle to the Context Device used by the Window
+	RECT area;				// Area Within the Window to draw
+
+	// Anagame Specific Resources
+	TrecPointer<ArenaEngine> engine;	// Incase we are using 3D Resources
+	TrecPointer<TControl> rootControl;	// The Control to Draw when
+
+	D2D1_MATRIX_3X2_F adjustMatrix;
 };
 

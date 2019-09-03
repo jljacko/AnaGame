@@ -1671,6 +1671,8 @@ UCHAR ArenaEngine::initialize(HWND w, HINSTANCE i)
 	results = graphicsDevice->CreateRenderTargetView(texture, &rendDesc, rt.GetPointerAddress());
 	renderTarget = rt.Extract();
 
+
+
 	if (texture)
 		texture->Release();
 
@@ -1678,6 +1680,11 @@ UCHAR ArenaEngine::initialize(HWND w, HINSTANCE i)
 	{
 		return NO_RENDER_TARGET;
 	}
+
+	// Create a DXGISurface so that Interoperability with Direct2D is simpler
+	TrecComPointer<IDXGISurface>::TrecComHolder surfaceHolder;
+	results = swapper->GetBuffer(0, __uuidof(IDXGISurface), (void**)surfaceHolder.GetPointerAddress());
+	surface = surfaceHolder.Extract();
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC stencilDesc;
 	ZeroMemory(&stencilDesc, sizeof(stencilDesc));
@@ -1696,6 +1703,7 @@ UCHAR ArenaEngine::initialize(HWND w, HINSTANCE i)
 	else
 		contextDevice->OMSetRenderTargets(1, &renderer, 0);
 
+
 	D3D11_BUFFER_DESC conBuf;
 	ZeroMemory(&conBuf, sizeof(conBuf));
 	conBuf.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
@@ -1705,33 +1713,7 @@ UCHAR ArenaEngine::initialize(HWND w, HINSTANCE i)
 
 	ID3D11RasterizerState* rs = nullptr;
 
-	// Create Rasterization Objects
-	/*graphicsDevice->CreateRasterizerState(&rasterizer, &rs);
-	solidCullBack = rs;
-	rasterizer.CullMode = D3D11_CULL_NONE;
 
-	graphicsDevice->CreateRasterizerState(&rasterizer, &rs);
-	solidNoCull = rs;
-	rasterizer.CullMode = D3D11_CULL_FRONT;
-
-	graphicsDevice->CreateRasterizerState(&rasterizer, &rs);
-	solidCullFront = rs;
-	rasterizer.FillMode = D3D11_FILL_WIREFRAME;
-
-	graphicsDevice->CreateRasterizerState(&rasterizer, &rs);
-	wiredCullFront = rs;
-	rasterizer.CullMode = D3D11_CULL_NONE;
-
-	graphicsDevice->CreateRasterizerState(&rasterizer, &rs);
-	wiredNoCull = rs;
-	rasterizer.CullMode = D3D11_CULL_BACK;
-	graphicsDevice->CreateRasterizerState(&rasterizer, &rs);
-	wiredCullBack = rs;
-
-	isFill = true;
-	cullMode = CULL_BACK;
-
-	isInit = true;*/
 	SetDefaultRasterization();
 	InitializeDefaultShaders();
 	return NO_ERROR;
@@ -1801,6 +1783,11 @@ TrecComPointer<ID3D11Device> ArenaEngine::getDeviceD()
 TrecComPointer<IDXGIDevice> ArenaEngine::getDeviceD_U()
 {
 	return dxDev;
+}
+
+TrecComPointer<IDXGISurface> ArenaEngine::GetSurface()
+{
+	return surface;
 }
 
 /*
@@ -2086,6 +2073,11 @@ UCHAR ArenaEngine::OnWindowResize()
 TDataArray<ArenaModel*>* ArenaEngine::getModelList()
 {
 	return &models;
+}
+
+HWND ArenaEngine::GetWindow()
+{
+	return window;
 }
 
 /*

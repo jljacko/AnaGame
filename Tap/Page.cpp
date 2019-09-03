@@ -1,30 +1,23 @@
 
 #include "Page.h"
-
+#include <AnafaceParser.h>
+#include <TML_Reader_.h>
 
 Page::Page()
 {
 	rt_type = render_target_unknown;
-}
-
-Page::Page(HWND window)
-{
-	D2D1_FACTORY_OPTIONS factOpts;
-	ZeroMemory(&factOpts, sizeof(factOpts));
-	factOpts.debugLevel = D2D1_DEBUG_LEVEL_INFORMATION;
-
-	TrecComPointer<ID2D1Factory1>::TrecComHolder rawFact;
-	if (FAILED(D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, factOpts, rawFact.GetPointerAddress())))
-		fact.Nullify();
-	else
-		fact = rawFact.Extract();
-
-	rt_type = render_target_unknown;
+	windowHandle = nullptr;
+	deviceH = nullptr;
+	adjustMatrix = D2D1::Matrix3x2F::Identity();
+	area = RECT{ 0,0,0,0 };
+	instance = nullptr;
+	scale = 1.0f;
 }
 
 
 Page::~Page()
 {
+	rootControl.Delete();
 	// 3D mixing with 2D Resources
 	device.Delete();
 	gdiRender.Delete();
@@ -34,19 +27,155 @@ Page::~Page()
 	
 }
 
-Page Page::Get2DPage()
+TrecPointer<Page> Page::Get2DPage(TrecComPointer<ID2D1Factory1> fact, HDC dc)
 {
-	return Page();
+	if (!fact.Get())
+		throw L"Error! Factory Object MUST be initialized!";
+
+	HWND windowHandle = WindowFromDC(dc);
+	if (!windowHandle)
+		throw L"Error! Window Handle from provided HDC is NULL!";
+
+	D2D1_RENDER_TARGET_PROPERTIES props;
+	ZeroMemory(&props, sizeof(props));
+
+	props.type = D2D1_RENDER_TARGET_TYPE_DEFAULT;
+	props.pixelFormat = D2D1::PixelFormat();
+	props.dpiX = props.dpiY = 0.0f;
+	props.usage = D2D1_RENDER_TARGET_USAGE_NONE;
+	props.minLevel = D2D1_FEATURE_LEVEL_DEFAULT;
+
+	TrecComPointer<ID2D1DCRenderTarget>::TrecComHolder renderDc;
+	HRESULT res = fact->CreateDCRenderTarget(&props, renderDc.GetPointerAddress());
+
+	if (FAILED(res))
+	{
+		throw L"Error! Failed to Generate DC Render Target for Page to use!";
+	}
+
+	TrecPointer<Page> ret = TrecPointerKey::GetNewTrecPointer<Page>();
+	ret->deviceH = dc;
+	ret->windowHandle = windowHandle;
+	ret->instance = GetModuleHandle(nullptr);
+
+	ret->regRenderTarget = TrecPointerKey::GetComPointer<ID2D1RenderTarget, ID2D1DCRenderTarget>(renderDc);
+
+	ret->rt_type = render_target_dc;
+
+	GetClientRect(ret->windowHandle, &ret->area);
+
+	reinterpret_cast<ID2D1DCRenderTarget*>(ret->regRenderTarget.Get())->BindDC(ret->deviceH, &ret->area);
+	return ret;
 }
 
-Page Page::GetWindowPage()
+TrecPointer<Page> Page::GetWindowPage(TrecComPointer<ID2D1Factory1> fact,HWND window)
 {
-	return Page();
+	if (!fact.Get())
+		throw L"Error! Factory Object MUST be initialized!";
+
+	HDC dc = GetWindowDC(window);
+
+	if (!dc)
+		throw L"Error! Got NULL DC from provided Window handle!";
+
+	D2D1_RENDER_TARGET_PROPERTIES props;
+	ZeroMemory(&props, sizeof(props));
+
+	props.type = D2D1_RENDER_TARGET_TYPE_DEFAULT;
+	props.pixelFormat = D2D1::PixelFormat();
+	props.dpiX = props.dpiY = 0.0f;
+	props.usage = D2D1_RENDER_TARGET_USAGE_NONE;
+	props.minLevel = D2D1_FEATURE_LEVEL_DEFAULT;
+
+	RECT area;
+
+	GetClientRect(window, &area);
+
+	D2D1_HWND_RENDER_TARGET_PROPERTIES hProps;
+	ZeroMemory(&hProps, sizeof(hProps));
+
+	hProps.hwnd = window;
+	hProps.pixelSize = D2D1::SizeU(area.right - area.left,
+		area.bottom - area.top);
+
+	TrecComPointer<ID2D1HwndRenderTarget>::TrecComHolder renderHw;
+	HRESULT res = fact->CreateHwndRenderTarget(props, hProps, renderHw.GetPointerAddress());
+
+	if (FAILED(res))
+		throw L"Error! Failed to Create Window Render Target!";
+
+	TrecPointer<Page> ret = TrecPointerKey::GetNewTrecPointer<Page>();
+	ret->fact = fact;
+	ret->windowHandle = window;
+	ret->deviceH = GetWindowDC(window);
+	ret->regRenderTarget = TrecPointerKey::GetComPointer<ID2D1RenderTarget, ID2D1HwndRenderTarget>(renderHw);
+	ret->instance = GetModuleHandle(nullptr);
+
+	ret->rt_type = render_target_hwnd;
+
+	ret->area = area;
+
+	return ret;
+
 }
 
-Page Page::Get3DPage()
+TrecPointer<Page> Page::Get3DPage(TrecComPointer<ID2D1Factory1> fact, TrecPointer<ArenaEngine> engine)
 {
-	return Page();
+	if (!fact.Get())
+		throw L"Error! Factory Object MUST be initialized!";
+	if (!engine.Get())
+		throw L"Error! ArenaEngine Object MUST be initialized for a 3D enabled Page";
+
+	TrecComPointer<IDXGISurface> surf = engine->GetSurface();
+	if (!surf.Get())
+		throw L"Error! Provided 3D Engine does not have a Surface to create a 2D Render Target with!";
+	
+	HWND window = engine->GetWindow();
+	if(!window)
+		throw L"Error! Window Handle from provided 3D Engine is NULL!";
+	
+	D2D1_RENDER_TARGET_PROPERTIES props;
+	ZeroMemory(&props, sizeof(props));
+
+	props.type = D2D1_RENDER_TARGET_TYPE_DEFAULT;
+	props.pixelFormat = D2D1::PixelFormat();
+	props.dpiX = props.dpiY = 0.0f;
+	props.usage = D2D1_RENDER_TARGET_USAGE_NONE;
+	props.minLevel = D2D1_FEATURE_LEVEL_DEFAULT;
+
+	TrecComPointer<ID2D1RenderTarget>::TrecComHolder dxgiRender;
+	HRESULT res = fact->CreateDxgiSurfaceRenderTarget(surf.Get(), props, dxgiRender.GetPointerAddress());
+	
+	if (FAILED(res))
+		throw L"ERROR! Failed to Generate 3D Compatiblie Render Target!";
+
+	TrecPointer<Page> ret = TrecPointerKey::GetNewTrecPointer<Page>();
+	ret->fact = fact;
+	ret->windowHandle = window;
+	ret->deviceH = GetWindowDC(window);
+	ret->regRenderTarget = dxgiRender.Extract();
+	ret->instance = GetModuleHandle(nullptr);
+
+	ret->rt_type = render_target_dxgi;
+
+	GetClientRect(ret->windowHandle, &ret->area);
+
+	return ret;
+}
+int Page::SetAnaface(TrecPointer<TFile> file)
+{
+	if (!file.Get())
+		return -1;
+	if (!file->IsOpen())
+		return -2;
+	AnafaceParser parser(regRenderTarget, windowHandle, file->GetFileDirectory());
+	TML_Reader_ reader(file.Get(), &parser);
+	int result = 0;
+	reader.read(&result);
+
+
+	rootControl = parser.getRootControl();
+	return 0;
 }
 /*
 int Page::Initialize2D(CDC * cdc)
@@ -263,35 +392,15 @@ void Page::OnSize(UINT nType, int cx, int cy)
 	//rootControl->
 }
 
-
-bool Page::Initialize2D(HDC deviceH)
+void Page::Draw()
 {
-	if (!fact.Get())
-		return false;
+	if (!rootControl.Get() || !regRenderTarget.Get()) return;
 
+	regRenderTarget->BeginDraw();
+	regRenderTarget->SetTransform(adjustMatrix);
+	rootControl->onDraw();
+	regRenderTarget->EndDraw();
 
-
-
-	TrecComPointer<ID2D1DCRenderTarget>::TrecComHolder tempDC;
-	HRESULT hr = fact->CreateDCRenderTarget(&(D2D1::RenderTargetProperties(
-		D2D1_RENDER_TARGET_TYPE_DEFAULT,
-		D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE),
-		0, 0,
-		D2D1_RENDER_TARGET_USAGE_GDI_COMPATIBLE,
-		D2D1_FEATURE_LEVEL_DEFAULT
-	)), tempDC.GetPointerAddress());
-	assert(SUCCEEDED(hr));
-
-	regRenderTarget = TrecPointerKey::GetComPointer<ID2D1RenderTarget, ID2D1DCRenderTarget>(tempDC);
-
-	deviceH = GetDC(windowHandle);
-
-	GetBoundsRect(deviceH, &area, 0);
-	GetClientRect(windowHandle, &area);
-	dynamic_cast<ID2D1DCRenderTarget*>(regRenderTarget.Get())->BindDC(deviceH, &area);
-
-	//width = area.right - area.left;
-	//height = area.bottom - area.top;
-
-	return true;
 }
+
+
