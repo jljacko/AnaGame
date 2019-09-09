@@ -40,7 +40,8 @@ public:
 
 	void Delete()
 	{
-		delete rawPointer;
+		if(rawPointer)
+			delete rawPointer;
 		rawPointer = nullptr;
 	}
 };
@@ -82,7 +83,8 @@ public:
 
 	void Delete()
 	{
-		rawPointer->Release();
+		if(rawPointer)
+			rawPointer->Release();
 		rawPointer = nullptr;
 	}
 };
@@ -198,6 +200,8 @@ public:
 	{
 		if (!pointer) return;
 		pointer->Delete();
+		pointer->Decrement();
+		pointer = nullptr;
 	}
 };
 
@@ -334,8 +338,10 @@ public:
 
 	void Delete()
 	{
-		if(pointer)
+		if (!pointer) return;
 		pointer->Delete();
+		pointer->Decrement();
+		pointer = nullptr;
 	}
 };
 

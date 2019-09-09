@@ -27,10 +27,13 @@ Page::~Page()
 	
 }
 
-TrecPointer<Page> Page::Get2DPage(TrecComPointer<ID2D1Factory1> fact, HDC dc)
+TrecPointer<Page> Page::Get2DPage(TrecComPointer<ID2D1Factory1> fact, HDC dc, TrecPointer<EventHandler> eh)
 {
 	if (!fact.Get())
 		throw L"Error! Factory Object MUST be initialized!";
+
+	if (!eh.Get())
+		throw L"Error! Event Handler MUST be instantiated!";
 
 	HWND windowHandle = WindowFromDC(dc);
 	if (!windowHandle)
@@ -63,15 +66,17 @@ TrecPointer<Page> Page::Get2DPage(TrecComPointer<ID2D1Factory1> fact, HDC dc)
 	ret->rt_type = render_target_dc;
 
 	GetClientRect(ret->windowHandle, &ret->area);
-
+	ret->handler = eh;
 	reinterpret_cast<ID2D1DCRenderTarget*>(ret->regRenderTarget.Get())->BindDC(ret->deviceH, &ret->area);
 	return ret;
 }
 
-TrecPointer<Page> Page::GetWindowPage(TrecComPointer<ID2D1Factory1> fact,HWND window)
+TrecPointer<Page> Page::GetWindowPage(TrecComPointer<ID2D1Factory1> fact,HWND window, TrecPointer<EventHandler> eh)
 {
 	if (!fact.Get())
 		throw L"Error! Factory Object MUST be initialized!";
+	if (!eh.Get())
+		throw L"Error! Event Handler MUST be instantiated!";
 
 	HDC dc = GetWindowDC(window);
 
@@ -114,17 +119,20 @@ TrecPointer<Page> Page::GetWindowPage(TrecComPointer<ID2D1Factory1> fact,HWND wi
 	ret->rt_type = render_target_hwnd;
 
 	ret->area = area;
-
+	ret->handler = eh;
 	return ret;
 
 }
 
-TrecPointer<Page> Page::Get3DPage(TrecComPointer<ID2D1Factory1> fact, TrecPointer<ArenaEngine> engine)
+TrecPointer<Page> Page::Get3DPage(TrecComPointer<ID2D1Factory1> fact, TrecPointer<ArenaEngine> engine, TrecPointer<EventHandler> eh)
 {
 	if (!fact.Get())
 		throw L"Error! Factory Object MUST be initialized!";
 	if (!engine.Get())
 		throw L"Error! ArenaEngine Object MUST be initialized for a 3D enabled Page";
+	if (!eh.Get())
+		throw L"Error! Event Handler MUST be instantiated!";
+
 
 	TrecComPointer<IDXGISurface> surf = engine->GetSurface();
 	if (!surf.Get())
@@ -159,24 +167,147 @@ TrecPointer<Page> Page::Get3DPage(TrecComPointer<ID2D1Factory1> fact, TrecPointe
 	ret->rt_type = render_target_dxgi;
 
 	GetClientRect(ret->windowHandle, &ret->area);
-
+	ret->handler = eh;
 	return ret;
 }
-int Page::SetAnaface(TrecPointer<TFile> file)
+int Page::SetAnaface(TrecPointer<TFile> file, TrecPointer<EventHandler> eh)
 {
 	if (!file.Get())
 		return -1;
 	if (!file->IsOpen())
 		return -2;
 	AnafaceParser parser(regRenderTarget, windowHandle, file->GetFileDirectory());
+
+	if (eh.Get())
+		parser.setEventSystem(eh->GetEventNameList());
+
 	TML_Reader_ reader(file.Get(), &parser);
 	int result = 0;
-	reader.read(&result);
+	if (!reader.read(&result))
+		throw result;
+
+
+
 
 
 	rootControl = parser.getRootControl();
+	if (rootControl.Get())
+		rootControl->onCreate(area);
+
+	handler->Initialize(this);
 	return 0;
 }
+
+TrecPointer<TControl> Page::GetRootControl()
+{
+	return rootControl;
+}
+
+HWND Page::GetWindowHandle()
+{
+	return windowHandle;
+}
+
+void Page::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
+{
+	TDataArray<EventID_Cred> eventAr;
+	if(rootControl.Get())
+		rootControl->OnRButtonUp(nFlags, point, mOut, eventAr);
+
+	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
+		Draw();
+	
+	if(handler.Get())
+		handler->HandleEvents(eventAr);
+}
+
+void Page::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
+{
+	TDataArray<EventID_Cred> eventAr;
+	if(rootControl.Get())
+		rootControl->OnLButtonDown(nFlags, point, mOut, eventAr);
+
+	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
+		Draw();
+	
+	if(handler.Get())
+		handler->HandleEvents(eventAr);
+}
+
+void Page::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
+{
+	TDataArray<EventID_Cred> eventAr;
+	if(rootControl.Get())
+		rootControl->OnRButtonDown(nFlags, point, mOut, eventAr);
+
+	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
+		Draw();
+	
+	if(handler.Get())
+		handler->HandleEvents(eventAr);
+}
+
+void Page::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut)
+{
+	TDataArray<EventID_Cred> eventAr;
+	if(rootControl.Get())
+		rootControl->OnMouseMove(nFlags, point, mOut, eventAr);
+
+	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
+		Draw();
+	
+	if(handler.Get())
+		handler->HandleEvents(eventAr);
+}
+
+void Page::OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut)
+{
+	TDataArray<EventID_Cred> eventAr;
+	if(rootControl.Get())
+		rootControl->OnLButtonDblClk(nFlags, point, mOut, eventAr);
+
+	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
+		Draw();
+	
+	if(handler.Get())
+		handler->HandleEvents(eventAr);
+}
+
+void Page::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
+{
+	TDataArray<EventID_Cred> eventAr;
+	if(rootControl.Get())
+		rootControl->OnLButtonUp(nFlags, point, mOut, eventAr);
+
+	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
+		Draw();
+	
+	if(handler.Get())
+		handler->HandleEvents(eventAr);
+}
+
+bool Page::OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlags, messageOutput *mOut)
+{
+	TDataArray<EventID_Cred> eventAr;
+	bool returnable = false;
+	if(rootControl.Get())
+		returnable = rootControl->OnChar(fromChar, nChar, nRepCnt, nFlags, mOut, eventAr);
+
+	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
+		Draw();
+	
+	if(handler.Get())
+		handler->HandleEvents(eventAr);
+	return returnable;
+}
+
+bool Page::OnDestroy()
+{
+	if(handler.Get())
+		return handler->OnDestroy();
+	return true;
+}
+
 /*
 int Page::Initialize2D(CDC * cdc)
 {
@@ -392,11 +523,23 @@ void Page::OnSize(UINT nType, int cx, int cy)
 	//rootControl->
 }
 
+TrecComPointer<ID2D1RenderTarget> Page::GetRenderTarget()
+{
+	return regRenderTarget;
+}
+
+void Page::CreateLayout()
+{
+	if (rootControl.Get())
+		rootControl->onCreate(area);
+}
+
 void Page::Draw()
 {
 	if (!rootControl.Get() || !regRenderTarget.Get()) return;
 
 	regRenderTarget->BeginDraw();
+	regRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::White));
 	regRenderTarget->SetTransform(adjustMatrix);
 	rootControl->onDraw();
 	regRenderTarget->EndDraw();

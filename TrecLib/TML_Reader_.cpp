@@ -113,7 +113,7 @@ bool TML_Reader_::read(int *l)
 		if (strLoc != -1 && line.Find(L":") > strLoc)
 		{
 			TString mainEnterable = line.SubString(line.Find(L"-|") + 1); // Should be +2 but TControls expect the '|'
-			TString enterable = mainEnterable.SubString(mainEnterable.Find(L":") + 1);
+			TString enterable = mainEnterable.SubString(0, mainEnterable.Find(L":"));
 
 			mainEnterable.Set(mainEnterable.SubString(mainEnterable.Find(L":") + 1, mainEnterable.Find(L"#"))); // 1 added to avoid the ':' in it
 

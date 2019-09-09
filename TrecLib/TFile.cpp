@@ -62,6 +62,7 @@ bool TFile::Open(TString& lpszFileName, UINT nOpenFlags)
 	if (fileHandle == INVALID_HANDLE_VALUE)
 	{
 		fileHandle = 0;
+		int err = GetLastError();
 		return false;
 	}
 

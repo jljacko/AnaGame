@@ -2,6 +2,7 @@
 #include "Tap_dll.h"
 #include <AnafaceUI.h>
 #include <TObject.h>
+#include "EventHandler.h"
 
 typedef enum RenderTargetType
 {
@@ -18,19 +19,37 @@ typedef enum RenderTargetType
 */
 class _TAP_DLL Page : public TObject
 {
+	friend class TrecPointerKey;
 public:
 	~Page();
 
-	static TrecPointer<Page> Get2DPage(TrecComPointer<ID2D1Factory1>, HDC);
-	static TrecPointer<Page> GetWindowPage(TrecComPointer<ID2D1Factory1>, HWND);
-	static TrecPointer<Page> Get3DPage(TrecComPointer<ID2D1Factory1>, TrecPointer<ArenaEngine>);
+	static TrecPointer<Page> Get2DPage(TrecComPointer<ID2D1Factory1>, HDC, TrecPointer<EventHandler>);
+	static TrecPointer<Page> GetWindowPage(TrecComPointer<ID2D1Factory1>, HWND,  TrecPointer<EventHandler>);
+	static TrecPointer<Page> Get3DPage(TrecComPointer<ID2D1Factory1>, TrecPointer<ArenaEngine>, TrecPointer<EventHandler>);
 
-	int SetAnaface(TrecPointer<TFile> file);
+	int SetAnaface(TrecPointer<TFile> file, TrecPointer<EventHandler> eh);
+
+	TrecPointer<TControl> GetRootControl();
+
+	HWND GetWindowHandle();
 
 	virtual UCHAR* GetAnaGameType()override;
 	afx_msg void OnSize(UINT nType, int cx,	int cy);
 
+	TrecComPointer<ID2D1RenderTarget> GetRenderTarget();
+
+	void CreateLayout();
+
 	void Draw();
+
+	afx_msg void OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut);
+	afx_msg void OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut);
+	afx_msg void OnRButtonDown(UINT nFlags, TPoint, messageOutput* mOut);
+	afx_msg void OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut);
+	afx_msg void OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut);
+	afx_msg void OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut);
+	afx_msg bool OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlags, messageOutput *mOut);
+	afx_msg bool OnDestroy();
 protected:
 	Page();
 
@@ -54,7 +73,7 @@ protected:
 	// Anagame Specific Resources
 	TrecPointer<ArenaEngine> engine;	// Incase we are using 3D Resources
 	TrecPointer<TControl> rootControl;	// The Control to Draw when
-
+	 TrecPointer<EventHandler> handler; // The class that manages specific actions
 	D2D1_MATRIX_3X2_F adjustMatrix;
 };
 

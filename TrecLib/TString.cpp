@@ -50,6 +50,7 @@ TString::TString(const TString * orig)
 
 	string = new WCHAR[capacity];
 	memcpy(string, (orig->string), capacity * sizeof(WCHAR));
+	string[size] = L'\0';
 }
 
 /*
@@ -355,6 +356,11 @@ TrecPointer<TDataArray<TString>> TString::split(TString str, bool checkBackSlash
 				tok.Set(this->Tokenize(str, pos));
 				tok.Set(this->SubString(begPos, pos));
 			}
+		}
+
+		for (UINT Rust = 0; Rust < str.size; Rust++)
+		{
+			tok.Remove(str[Rust]);
 		}
 
 		(ret).Get()->push_back(tok);
@@ -1407,9 +1413,9 @@ int TString::Compare(const WCHAR* other) const
 	for (int c = 0; c < min; c++)
 	{
 		if (string[c] < other[c])
-			return -c;
+			return -(c + 1);
 		if (string[c] > other[c])
-			return c;
+			return c + 1;
 	}
 
 	if (size == lstrlenW(other)) return 0;

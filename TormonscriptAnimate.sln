@@ -46,6 +46,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Tap", "Tap\Tap.vcxproj", "{
 		{D51F30ED-A597-4CB8-9BEB-7EC42AECE350} = {D51F30ED-A597-4CB8-9BEB-7EC42AECE350}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Anagame_Central", "Anagame_Central\Anagame_Central.vcxproj", "{E59B0FB5-7859-4B78-87AC-D83C60B3CE21}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -150,6 +152,14 @@ Global
 		{926F63B8-3572-4BB4-8FD2-34D229CB3818}.Release|x64.Build.0 = Release|x64
 		{926F63B8-3572-4BB4-8FD2-34D229CB3818}.Release|x86.ActiveCfg = Release|Win32
 		{926F63B8-3572-4BB4-8FD2-34D229CB3818}.Release|x86.Build.0 = Release|Win32
+		{E59B0FB5-7859-4B78-87AC-D83C60B3CE21}.Debug|x64.ActiveCfg = Debug|x64
+		{E59B0FB5-7859-4B78-87AC-D83C60B3CE21}.Debug|x64.Build.0 = Debug|x64
+		{E59B0FB5-7859-4B78-87AC-D83C60B3CE21}.Debug|x86.ActiveCfg = Debug|Win32
+		{E59B0FB5-7859-4B78-87AC-D83C60B3CE21}.Debug|x86.Build.0 = Debug|Win32
+		{E59B0FB5-7859-4B78-87AC-D83C60B3CE21}.Release|x64.ActiveCfg = Release|x64
+		{E59B0FB5-7859-4B78-87AC-D83C60B3CE21}.Release|x64.Build.0 = Release|x64
+		{E59B0FB5-7859-4B78-87AC-D83C60B3CE21}.Release|x86.ActiveCfg = Release|Win32
+		{E59B0FB5-7859-4B78-87AC-D83C60B3CE21}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

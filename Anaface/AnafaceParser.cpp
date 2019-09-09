@@ -73,7 +73,7 @@ bool AnafaceParser::Obj(TString* va)
 
 	TrecPointer<TDataArray<TString>> strings;
 
-	if (v.Find(L"("))                  // first check if there is additional information on location
+	if (v.Find(L"(") != -1)                  // first check if there is additional information on location
 	{
 		strings = v.split(L"(");
 
@@ -245,7 +245,7 @@ bool AnafaceParser::Obj(TString* va)
 		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TSpreadSheet>(renderer, classList, windowHandle);// TrecPointer<TControl>(new TSpreadSheet(renderer, classList, windowHandle));
 		addToTree(currentObj);
 	}
-	else if (!v.Compare(L"Image") || !!v.Compare(L"TImage"))
+	else if (!v.Compare(L"Image") || !v.Compare(L"TImage"))
 	{
 		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TImage>(renderer, classList);// TrecPointer<TControl>(new TImage(renderer, classList));
 		addToTree(currentObj);

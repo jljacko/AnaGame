@@ -638,7 +638,7 @@ TrecPointer<styleTable> classy;
 
 				for (int c = 0; c < styles->Count(); c++)
 				{
-					if (styles->ElementAt(c)->style == className)
+					if (styles->ElementAt(c)->style == classes->at(c))
 					{
 						classy = styles->ElementAt(c);
 						if (classy.Get())
