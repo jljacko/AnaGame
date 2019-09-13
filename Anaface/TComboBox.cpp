@@ -149,7 +149,7 @@ bool TComboBox::onCreate(RECT r)
 	RECT entrybox = RECT{ 0,0,0,0 };
 	for (int c = 0; c < elements.Count(); c++)
 	{
-		tc = TrecPointerKey::GetNewTrecPointer<TControl>(renderTarget, styles);
+		tc = TrecPointerKey::GetNewSelfTrecPointer<TControl>(renderTarget, styles);
 		//cont = new TContainer();
 		//cont->setTControl(tc);
 
@@ -367,7 +367,7 @@ bool TComboBox::GetExtensionStatus()
 */
 void TComboBox::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr)
 {
-
+	resetArgs();
 
 	// first check to see if it covers the whole area. Update show extended to false if
 	// necessary
@@ -445,7 +445,7 @@ void TComboBox::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, T
 				args.isLeftClick = false;
 				args.control = this;
 				if (text1.Get() && text1->getCaption().GetSize())
-					args.text = text1->getCaption();
+					args.text.Set(text1->getCaption());
 
 				eventAr.push_back({On_sel_change,this});
 

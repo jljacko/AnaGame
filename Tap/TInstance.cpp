@@ -25,7 +25,8 @@ TInstance::TInstance(TString& name, TString& winClass, UINT style, HWND parent, 
 LRESULT TInstance::Proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	TWindow* win = nullptr;
-
+	if (message == WM_LBUTTONDOWN)
+		int e = 4;
 	int windowIndex = -1;
 
 	if (mainWindow.Get() && mainWindow->GetWindowHandle() == hWnd)
@@ -74,13 +75,13 @@ LRESULT TInstance::Proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_RBUTTONDOWN:
 		win->OnRButtonDown(wParam, TPoint(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
 		break;
-	case WM_MBUTTONDOWN:
+	case WM_LBUTTONDOWN:
 		win->OnLButtonDown(wParam, TPoint(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
 		break;
-	case WM_MBUTTONDBLCLK:
+	case WM_LBUTTONDBLCLK:
 		win->OnLButtonDblClk(wParam, TPoint(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
 		break;
-	case WM_MBUTTONUP:
+	case WM_LBUTTONUP:
 		win->OnLButtonUp(wParam, TPoint(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
 		break;
 	case WM_RBUTTONUP:
@@ -157,4 +158,10 @@ bool TInstance::LaunchDialog(TString& file, TrecPointer<EventHandler> eh, HWND c
 		return false;
 	windowList.push_back(newDialog);
 	return true;
+}
+
+
+TrecPointer<TWindow> TInstance::GetMainWindow()
+{
+	return mainWindow;
 }

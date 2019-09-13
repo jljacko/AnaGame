@@ -213,12 +213,12 @@ void Page::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
 	TDataArray<EventID_Cred> eventAr;
 	if(rootControl.Get())
 		rootControl->OnRButtonUp(nFlags, point, mOut, eventAr);
-
-	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
-		Draw();
 	
 	if(handler.Get())
 		handler->HandleEvents(eventAr);
+	
+	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
+		Draw();
 }
 
 void Page::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
@@ -226,12 +226,12 @@ void Page::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
 	TDataArray<EventID_Cred> eventAr;
 	if(rootControl.Get())
 		rootControl->OnLButtonDown(nFlags, point, mOut, eventAr);
-
-	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
-		Draw();
 	
 	if(handler.Get())
 		handler->HandleEvents(eventAr);
+
+	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
+		Draw();
 }
 
 void Page::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
@@ -239,12 +239,12 @@ void Page::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
 	TDataArray<EventID_Cred> eventAr;
 	if(rootControl.Get())
 		rootControl->OnRButtonDown(nFlags, point, mOut, eventAr);
-
-	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
-		Draw();
 	
 	if(handler.Get())
 		handler->HandleEvents(eventAr);
+
+	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
+		Draw();
 }
 
 void Page::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut)
@@ -252,12 +252,12 @@ void Page::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut)
 	TDataArray<EventID_Cred> eventAr;
 	if(rootControl.Get())
 		rootControl->OnMouseMove(nFlags, point, mOut, eventAr);
-
-	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
-		Draw();
 	
 	if(handler.Get())
 		handler->HandleEvents(eventAr);
+
+	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
+		Draw();
 }
 
 void Page::OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut)
@@ -265,12 +265,12 @@ void Page::OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut)
 	TDataArray<EventID_Cred> eventAr;
 	if(rootControl.Get())
 		rootControl->OnLButtonDblClk(nFlags, point, mOut, eventAr);
-
-	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
-		Draw();
 	
 	if(handler.Get())
 		handler->HandleEvents(eventAr);
+
+	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
+		Draw();
 }
 
 void Page::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
@@ -278,12 +278,12 @@ void Page::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
 	TDataArray<EventID_Cred> eventAr;
 	if(rootControl.Get())
 		rootControl->OnLButtonUp(nFlags, point, mOut, eventAr);
-
-	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
-		Draw();
 	
 	if(handler.Get())
 		handler->HandleEvents(eventAr);
+
+	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
+		Draw();
 }
 
 bool Page::OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlags, messageOutput *mOut)
@@ -292,12 +292,12 @@ bool Page::OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlags, messageOu
 	bool returnable = false;
 	if(rootControl.Get())
 		returnable = rootControl->OnChar(fromChar, nChar, nRepCnt, nFlags, mOut, eventAr);
-
-	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
-		Draw();
 	
 	if(handler.Get())
 		handler->HandleEvents(eventAr);
+
+	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
+		Draw();
 	return returnable;
 }
 

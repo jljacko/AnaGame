@@ -566,7 +566,7 @@ bool AnafaceParser::handleEventAttribute(TrecPointer<TString>& v, TString& e)
 	
 	for (int c = 0; c < events->Size();c++)
 	{
-		if (events->at(c).name.GetSize() && !v->Compare(events->at(c).name.GetSize()))
+		if (events->at(c).name.GetSize() && !v->Compare(events->at(c).name))
 		{
 			returnable = true;
 			eventID = events->at(c).eventID;

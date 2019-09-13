@@ -41,6 +41,7 @@ int TWindow::CompileView(TString& file, TrecComPointer<ID2D1Factory1> fact, Trec
 		return 2;
 
 	mainPage->SetAnaface(aFile, eh);
+	mainPage->Draw();
 
 	return 0;
 }

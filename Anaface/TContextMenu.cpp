@@ -68,7 +68,7 @@ bool TContextMenu::onCreate(RECT l)
 bool TContextMenu::addOption(TrecPointer<TString> c)
 {
 	//TControlPointer* tcp = getNewTControl();
-	TrecPointer<TControl> tc = TrecPointerKey::GetNewTrecPointer<TControl>(renderTarget, styles);
+	TrecPointer<TControl> tc = TrecPointerKey::GetNewSelfTrecPointer<TControl>(renderTarget, styles);
 
 	tc->addAttribute(TString(L"|BorderColor"), TrecPointerKey::GetNewTrecPointer<TString>(L"1.0,1.0,1.0,1.0"));
 	tc->addAttribute(TString(L"|ContentColor"), TrecPointerKey::GetNewTrecPointer<TString>(L"0.0,0.4,1.0,0.7"));

@@ -815,7 +815,14 @@ TrecPointer<styleTable> classy;
 				// return error code;
 			}
 
-			contt->onCreate(convertStringToRECT(valpoint.Get()));
+			RECT chLoc = convertStringToRECT(valpoint.Get());
+
+			
+			chLoc.left += location.left;
+			chLoc.top += location.top;
+			chLoc.bottom += location.top;
+			chLoc.right += location.left;
+			contt->onCreate(chLoc);
 		}
 		else
 		{
@@ -3089,8 +3096,9 @@ void TControl::resetArgs()
 	args.control = this;
 	args.isClick = false;
 	args.isLeftClick = false;
-	args.methodID = 0;
-	args.point = { 0, 0 };
+	args.methodID = -1;
+	args.point.x = 0.0f;
+	args.point.y = 0.0f;
 	args.positive = false;
 	args.text.Empty();
 	args.type = L'\0';
@@ -6386,9 +6394,10 @@ void ZeroMemory_(EventArgs & ea)
 	ea.isClick = false;
 	ea.isLeftClick = false;
 	ea.methodID = -1;
-	ea.point = TPoint(0, 0);
+	ea.point.x = 0.0f;
+	ea.point.y = 0.0f;
 	ea.positive = false;
-	ea.text = L"";
+	ea.text.Empty();
 }
 
 

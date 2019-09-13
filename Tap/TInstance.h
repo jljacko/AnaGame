@@ -17,6 +17,8 @@ public:
 
 	bool LaunchDialog(TString& file, TrecPointer<EventHandler> eh, HWND callingWindow);
 
+	TrecPointer<TWindow> GetMainWindow();
+
 protected:
 	HINSTANCE instance;
 	TString mainWindowName, mainWindowClass;

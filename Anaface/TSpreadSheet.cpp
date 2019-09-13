@@ -101,7 +101,7 @@ bool TSpreadSheet::onCreate(RECT l)
 		cc->x2 = h_x - 1;
 		cc->y2 = h_y - 1;
 
-		TrecPointer<TControl> ttf = TrecPointerKey::GetNewTrecPointerAlt<TControl, TTextField>(renderTarget, styles, window);
+		TrecPointer<TControl> ttf = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TTextField>(renderTarget, styles, window);
 		TTextField* ttf_c = dynamic_cast<TTextField*>(ttf.Get());
 		ttf_c->SetText(title);
 		cc->contain = ttf;
@@ -145,7 +145,7 @@ bool TSpreadSheet::onCreate(RECT l)
 			if (!tc_cc.Get() || !tc_ts.GetSize())
 				continue;
 
-			tc_cc->contain = TrecPointerKey::GetNewTrecPointerAlt<TControl, TTextField>(renderTarget, styles, window);
+			tc_cc->contain = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TTextField>(renderTarget, styles, window);
 			TTextField* ttf = dynamic_cast<TTextField*>(tc_cc->contain.Get());
 			ttf->SetText(tc_ts);
 			TrecPointer<TString> attr;
@@ -263,7 +263,7 @@ void TSpreadSheet::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut
 		lChildren.Add(cc_tc);
 		
 		//ttf->SetText(title);
-		cc->contain = TrecPointerKey::GetNewTrecPointerAlt<TControl, TTextField>(renderTarget, styles, window);
+		cc->contain = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TTextField>(renderTarget, styles, window);
 		TTextField* ttf = dynamic_cast<TTextField*>(cc->contain.Get());
 		TrecPointer<TString> attr;
 		attr = TrecPointerKey::GetNewTrecPointer<TString>(L"1,1,1,1");

@@ -96,6 +96,7 @@ bool TCheckBox::IsClicked()
 */
 void TCheckBox::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr)
 {	
+	resetArgs();
 	if (isContained(&point, &location))
 	{
 		//onClick = true;
@@ -109,7 +110,7 @@ void TCheckBox::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, T
 			args.eventType = On_check;
 			args.positive = isClicked;
 			if (text1.Get())
-				args.text = text1->text;
+				args.text.Set(text1->text);
 			args.methodID = getEventID(On_check);
 		}
 
@@ -128,6 +129,7 @@ void TCheckBox::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, T
 */
 void TCheckBox::OnLButtonUp(UINT nFlags, TPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr)
 {
+	resetArgs();
 	TControl::OnLButtonUp(nFlags, point, mOut,eventAr);
 }
 

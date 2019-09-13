@@ -13,6 +13,8 @@ AnafaceUI::AnafaceUI(TrecComPointer<ID2D1RenderTarget>rt, TrecPointer <TArray<st
 {
 	winHandle = win;
 	tabHeight = unknownTab = 0;
+	tabs = nullptr;
+	proceed = true;
 }
 
 /*
@@ -100,6 +102,10 @@ int AnafaceUI::loadFromTML(CArchive * ar)
 }*/
 
 
+void AnafaceUI::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+{
+}
+
 /*
 * Method: AnafaceUI - OnLButtonDown
 * Purpose: Allows the AnafaceUI to catch when a tab is 
@@ -111,7 +117,7 @@ int AnafaceUI::loadFromTML(CArchive * ar)
 */
 void AnafaceUI::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr)
 {
-	if (tabs.Get())
+	if (tabs)
 	{
 		for (UINT c = 0; c < tabs->lChildren.Count(); c++)
 		{
@@ -135,8 +141,158 @@ void AnafaceUI::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, T
 		}
 	}
 
-	if (currentControl.Get())
+	if (currentControl.Get() && proceed)
 		currentControl->OnLButtonDown(nFlags, point, mOut, eventAr);
+}
+
+void AnafaceUI::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+{
+	if (tabs)
+	{
+		for (UINT c = 0; c < tabs->lChildren.Count(); c++)
+		{
+			if (!tabs->lChildren.ElementAt(c).Get())
+				continue;
+			TrecPointer<TControl> tcon = tabs->lChildren.ElementAt(c)->contain;
+			if (!tcon.Get())
+				continue;
+
+			messageOutput tempOut = negative;
+			tcon->OnRButtonDown(nFlags, point, &tempOut, eventAr);
+			if (tempOut != negative && tempOut != negativeUpdate)
+			{
+				if (children.Count() > c && children.ElementAt(c).Get())
+				{
+					currentControl = children.ElementAt(c);
+					*mOut = messageOutput::positiveOverride;
+					return;
+				}
+			}
+		}
+	}
+
+	if (currentControl.Get() && proceed)
+		currentControl->OnRButtonDown(nFlags, point, mOut, eventAr);
+}
+
+void AnafaceUI::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+{
+	if (tabs)
+	{
+		for (UINT c = 0; c < tabs->lChildren.Count(); c++)
+		{
+			if (!tabs->lChildren.ElementAt(c).Get())
+				continue;
+			TrecPointer<TControl> tcon = tabs->lChildren.ElementAt(c)->contain;
+			if (!tcon.Get())
+				continue;
+
+			messageOutput tempOut = negative;
+			tcon->OnMouseMove(nFlags, point, &tempOut, eventAr);
+			if (tempOut != negative && tempOut != negativeUpdate)
+			{
+				if (children.Count() > c && children.ElementAt(c).Get())
+				{
+					currentControl = children.ElementAt(c);
+					*mOut = messageOutput::positiveOverride;
+					return;
+				}
+			}
+		}
+	}
+
+	if (currentControl.Get() && proceed)
+		currentControl->OnMouseMove(nFlags, point, mOut, eventAr);
+}
+
+void AnafaceUI::OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+{
+	if (tabs)
+	{
+		for (UINT c = 0; c < tabs->lChildren.Count(); c++)
+		{
+			if (!tabs->lChildren.ElementAt(c).Get())
+				continue;
+			TrecPointer<TControl> tcon = tabs->lChildren.ElementAt(c)->contain;
+			if (!tcon.Get())
+				continue;
+
+			messageOutput tempOut = negative;
+			tcon->OnLButtonDblClk(nFlags, point, &tempOut, eventAr);
+			if (tempOut != negative && tempOut != negativeUpdate)
+			{
+				if (children.Count() > c && children.ElementAt(c).Get())
+				{
+					currentControl = children.ElementAt(c);
+					*mOut = messageOutput::positiveOverride;
+					return;
+				}
+			}
+		}
+	}
+
+	if (currentControl.Get() && proceed)
+		currentControl->OnLButtonDblClk(nFlags, point, mOut, eventAr);
+}
+
+void AnafaceUI::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+{
+	if (tabs)
+	{
+		for (UINT c = 0; c < tabs->lChildren.Count(); c++)
+		{
+			if (!tabs->lChildren.ElementAt(c).Get())
+				continue;
+			TrecPointer<TControl> tcon = tabs->lChildren.ElementAt(c)->contain;
+			if (!tcon.Get())
+				continue;
+
+			messageOutput tempOut = negative;
+			tcon->OnLButtonUp(nFlags, point, &tempOut, eventAr);
+			if (tempOut != negative && tempOut != negativeUpdate)
+			{
+				if (children.Count() > c && children.ElementAt(c).Get())
+				{
+					currentControl = children.ElementAt(c);
+					*mOut = messageOutput::positiveOverride;
+					return;
+				}
+			}
+		}
+	}
+
+	if (currentControl.Get() && proceed)
+		currentControl->OnLButtonUp(nFlags, point, mOut, eventAr);
+}
+
+bool AnafaceUI::OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+{
+	if (tabs)
+	{
+		for (UINT c = 0; c < tabs->lChildren.Count(); c++)
+		{
+			if (!tabs->lChildren.ElementAt(c).Get())
+				continue;
+			TrecPointer<TControl> tcon = tabs->lChildren.ElementAt(c)->contain;
+			if (!tcon.Get())
+				continue;
+
+			messageOutput tempOut = negative;
+			tcon->OnChar(fromChar, nChar, nRepCnt, nFlags, mOut, eventAr);
+			if (tempOut != negative && tempOut != negativeUpdate)
+			{
+				if (children.Count() > c && children.ElementAt(c).Get())
+				{
+					currentControl = children.ElementAt(c);
+					*mOut = messageOutput::positiveOverride;
+					return;
+				}
+			}
+		}
+	}
+
+	if (currentControl.Get() && proceed)
+		currentControl->OnChar(fromChar, nChar, nRepCnt, nFlags, mOut, eventAr);
 }
 
 
@@ -153,7 +309,8 @@ bool AnafaceUI::onCreate(RECT container)
 	TrecPointer<TString> valpoint = attributes.retrieveEntry(TString(L"|TabHeight"));
 	if (valpoint.Get())
 	{
-		tabs = TrecPointerKey::GetNewTrecPointer<TLayoutEx>(renderTarget, styles);
+		tabs_base = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TLayoutEx>(renderTarget, styles);
+		tabs = dynamic_cast<TLayoutEx*>(tabs_base.Get());
 		tabs->setLayout(HStack);
 		if (valpoint->ConvertToInt(&tabHeight))
 			tabHeight = 30;
@@ -168,7 +325,7 @@ bool AnafaceUI::onCreate(RECT container)
 			if (!tcon)
 				continue;
 			tabs->addColunm(60, true);
-			TrecPointer<TControl> newTab = TrecPointerKey::GetNewTrecPointer<TControl>(renderTarget, styles);
+			TrecPointer<TControl> newTab = TrecPointerKey::GetNewSelfTrecPointer<TControl>(renderTarget, styles);
 			tabs->addChild(newTab, tabs->getColumnNumber() - 1, 0);
 		}
 
@@ -217,7 +374,7 @@ bool AnafaceUI::onCreate(RECT container)
 			tc->onCreate(container);
 	}
 
-	if (tabs.Get())
+	if (tabs)
 	{
 		tabs->onCreate(r);
 
@@ -247,6 +404,13 @@ bool AnafaceUI::onCreate(RECT container)
 		if (ind > -1 && ind < children.Count())
 			currentControl = children.ElementAt(ind);
 	}
+
+	valpoint = attributes.retrieveEntry(TString(L"|ExternalApp"));
+	if (valpoint.Get() && valpoint->CompareNoCase(TString(L"true")))
+	{
+		proceed = false;
+	}
+
 
 	return false;
 }
@@ -374,9 +538,9 @@ void AnafaceUI::onDraw(TObject* obj)
 	if (hScroll)
 		hScroll->updateDraw();
 
-	if (tabs.Get())
+	if (tabs)
 		tabs->onDraw(obj);
-	if (currentControl.Get())
+	if (currentControl.Get() && proceed)
 		currentControl->onDraw(obj);
 }
 
@@ -417,10 +581,10 @@ UCHAR * AnafaceUI::GetAnaGameType()
 
 void AnafaceUI::AddNewTab(TString t)
 {
-	if (tabs.Get())
+	if (tabs)
 	{
 		TrecPointer<TString> valpoint = attributes.retrieveEntry(TString(L"|TabStyle"));
-		TrecPointer<TControl> tc(TrecPointerKey::GetNewTrecPointer<TControl>(renderTarget, styles));
+		TrecPointer<TControl> tc(TrecPointerKey::GetNewSelfTrecPointer<TControl>(renderTarget, styles));
 		if (valpoint.Get())
 		{
 			styleTable* st;
@@ -487,7 +651,7 @@ void AnafaceUI::Resize(RECT r)
 			children.ElementAt(Rust)->Resize(r);
 	}
 
-	if (tabs.Get())
+	if (tabs)
 	{
 		RECT tabLoc = location;
 		tabLoc.bottom = tabLoc.top + tabHeight;

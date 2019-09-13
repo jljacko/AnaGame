@@ -51,7 +51,7 @@ bool HTMLParser::Obj(TString * v)
 	
 	if (!v->Compare(L"body")) // This should be the Root Control
 	{
-		rootObj = TrecPointerKey::GetNewTrecPointerAlt<TControl, TLayout>(renderer, classList);
+		rootObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TLayout>(renderer, classList);
 		rootObj->AddClass(TString(L"body"));
 		dynamic_cast<TLayout*>(rootObj.Get())->setLayout(VStack);
 		tableMode = tableMode | 0b00001000;
@@ -67,7 +67,7 @@ bool HTMLParser::Obj(TString * v)
 	}
 	else if (!v->Compare(L"p"))
 	{
-		currentObj = TrecPointerKey::GetNewTrecPointerAlt<TControl, TTextField>(renderer, classList, windowHandle);
+		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TTextField>(renderer, classList, windowHandle);
 		AppendAppropriateClasses();
 		currentObj->AddClass(TString(L"p"));
 		mode = mode | 0b00000100;
@@ -106,7 +106,7 @@ bool HTMLParser::Obj(TString * v)
 	else if (!v->Compare(L"li"))
 	{
 		//tl->setLayout(VStack);
-		currentObj = TrecPointerKey::GetNewTrecPointerAlt<TControl, TTextField>(renderer, classList,windowHandle);
+		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TTextField>(renderer, classList,windowHandle);
 
 		AppendAppropriateClasses();
 		currentObj->AddClass(TString(L"li"));
@@ -145,7 +145,7 @@ bool HTMLParser::Obj(TString * v)
 	}
 	else if (!v->Compare(L"img"))
 	{
-		currentObj = TrecPointerKey::GetNewTrecPointer<TControl>(renderer, classList);
+		currentObj = TrecPointerKey::GetNewSelfTrecPointer<TControl>(renderer, classList);
 		AddToTree();
 	}
 	else if (!v->Compare(L"a") || !v->Compare(L"<a>")|| !v->Compare(L"<a"))
@@ -158,7 +158,7 @@ bool HTMLParser::Obj(TString * v)
 	}
 	else if (!v->Compare(L"table") || !v->Compare(L"<table>") || !v->Compare(L"<table"))
 	{
-		currentObj = TrecPointerKey::GetNewTrecPointerAlt<TControl, TLayout>(renderer, classList);
+		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TLayout>(renderer, classList);
 		TLayout* tl = dynamic_cast<TLayout*>(currentObj.Get());
 		tl->setLayout(grid);
 		tl->AddClass(TString(L"table"));
@@ -323,7 +323,7 @@ bool HTMLParser::Attribute(TrecPointer<TString> v, TString& e)
 
 		if (tableMode & 0b00010000)
 		{
-			currentObj = TrecPointerKey::GetNewTrecPointerAlt<TControl, TTextField>(renderer, classList, windowHandle);
+			currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TTextField>(renderer, classList, windowHandle);
 			AppendAppropriateClasses();
 			if (tableMode & 0b00100000)
 			{
@@ -377,7 +377,7 @@ bool HTMLParser::Attribute(TrecPointer<TString> v, TString& e)
 					if (!layout)
 						return true;
 
-					currentObj = TrecPointerKey::GetNewTrecPointerAlt<TControl, TTextField>(renderer, classList, windowHandle);
+					currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TTextField>(renderer, classList, windowHandle);
 					AddToTree();
 				}
 			}

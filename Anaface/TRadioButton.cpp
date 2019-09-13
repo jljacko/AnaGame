@@ -135,6 +135,7 @@ void TRadioButton::onDraw(TObject* obj)
 */
 void TRadioButton::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr)
 {
+	resetArgs();
 	TControl::OnLButtonDown(nFlags, point, mOut, eventAr);
 
 	if (isContained(&point, &location))
@@ -153,7 +154,7 @@ void TRadioButton::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut
 			args.eventType = On_radio_change;
 			args.positive = isClicked;
 			if (text1.Get())
-				args.text = text1->text;
+				args.text.Set(text1->text);
 			args.methodID = getEventID(On_radio_change);
 		}
 	}

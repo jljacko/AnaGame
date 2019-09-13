@@ -141,7 +141,7 @@ bool TLayout::addColunm(int x, bool markDetected)
 			tempContC = TrecPointerKey::GetNewTrecPointer<containerControl>();
 			tempContC->x = colunms;
 			tempContC->y = c;
-			tempContC->contain = TrecPointerKey::GetNewTrecPointer<TControl>(renderTarget, styles);
+			tempContC->contain = TrecPointerKey::GetNewSelfTrecPointer<TControl>(renderTarget, styles);
 			
 			tempContC->contain->setLocation(tempRect);
 
@@ -166,7 +166,7 @@ bool TLayout::addColunm(int x, bool markDetected)
 		tempContC = TrecPointerKey::GetNewTrecPointer<containerControl>();
 		tempContC->x = colunms++;
 		tempContC->y = 0;
-		tempContC->contain = TrecPointerKey::GetNewTrecPointer<TControl>(renderTarget, styles);
+		tempContC->contain = TrecPointerKey::GetNewSelfTrecPointer<TControl>(renderTarget, styles);
 
 		tempContC->contain->setLocation(tempRect);
 
@@ -228,7 +228,7 @@ bool TLayout::addRow(int y, bool markDetected)
 			tempContC = TrecPointerKey::GetNewTrecPointer<containerControl>();
 			tempContC->x = c;
 			tempContC->y = rows;
-			tempContC->contain = TrecPointerKey::GetNewTrecPointer<TControl>(renderTarget, styles);
+			tempContC->contain = TrecPointerKey::GetNewSelfTrecPointer<TControl>(renderTarget, styles);
 
 			tempContC->contain->setLocation(tempRect);
 
@@ -253,7 +253,7 @@ bool TLayout::addRow(int y, bool markDetected)
 		tempContC = TrecPointerKey::GetNewTrecPointer<containerControl>();
 		tempContC->x = 0;
 		tempContC->y = rows++;
-		tempContC->contain = TrecPointerKey::GetNewTrecPointer<TControl>(renderTarget, styles);
+		tempContC->contain = TrecPointerKey::GetNewSelfTrecPointer<TControl>(renderTarget, styles);
 
 		tempContC->contain->setLocation(tempRect);
 
@@ -364,7 +364,7 @@ bool TLayout::setGrid(TDataArray<int>& col, TDataArray<int>& row)
 	tempContC = TrecPointerKey::GetNewTrecPointer<containerControl>();
 	tempContC->x = 0;
 	tempContC->y = 0;
-	tempContC->contain = TrecPointerKey::GetNewTrecPointer<TControl>(renderTarget, styles);
+	tempContC->contain = TrecPointerKey::GetNewSelfTrecPointer<TControl>(renderTarget, styles);
 
 	tempContC->contain->setLocation(tempRect);
 
@@ -603,6 +603,8 @@ bool TLayout::onCreate(RECT margin)
 	}
 	else
 		location.right = snip.right;
+
+	children.Clear();
 
 	for (int c = 0; c < lChildren.Count();c++)
 	{

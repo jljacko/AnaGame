@@ -100,6 +100,7 @@ void SwitchHandler::HandleEvents(TDataArray<EventID_Cred>& eventAr)
 		if (!cont) continue;
 
 		EventArgs ea = cont->getEventArgs();
+		
 
 		int ea_id = ea.methodID;
 
@@ -108,6 +109,7 @@ void SwitchHandler::HandleEvents(TDataArray<EventID_Cred>& eventAr)
 			if (handlers[ea_id])
 				(this->*handlers[ea_id])(cont, ea);
 		}
+		cont->resetArgs();
 	}
 }
 
@@ -115,7 +117,7 @@ void SwitchHandler::OnSelect1(TControl* tc, EventArgs ea)
 {
 	TrecComPointer<ID2D1RenderTarget> rtb = page->GetRenderTarget();
 
-	changeControl.Delete();
+	// changeControl.Delete();
 
 	changeControl = TrecPointerKey::GetNewSelfTrecPointer<TControl>(rtb, TrecPointer<TArray<styleTable>>());
 	//TControl* tcchangeControl = changeControl.Get();
@@ -173,7 +175,7 @@ void SwitchHandler::OnSelect1(TControl* tc, EventArgs ea)
 void SwitchHandler::OnSelect2(TControl* tc, EventArgs ea)
 {
 	TrecComPointer<ID2D1RenderTarget> rtb = page->GetRenderTarget();
-	changeControl.Delete();
+	// changeControl.Delete();
 	changeControl = TrecPointerKey::GetNewSelfTrecPointer<TControl>(rtb,TrecPointer<TArray<styleTable>>());
 	//TControl* tcchangeControl = changeControl.Get();
 
@@ -210,13 +212,14 @@ void SwitchHandler::OnSelect2(TControl* tc, EventArgs ea)
 	changeControl->addAttribute(TString(L"|HoverCaption"), value10);
 	TrecPointer<TString> value11 = TrecPointerKey::GetNewTrecPointer<TString>("0.1,0.1,0.9,0.8");
 	changeControl->addAttribute(TString(L"|HoverFontColor"), value11);
+	rootLayout->addChild(changeControl, 1, 0);
 	page->CreateLayout();
 }
 
 void SwitchHandler::OnSelect3(TControl* tc, EventArgs ea)
 {
 	TrecComPointer<ID2D1RenderTarget> rtb = page->GetRenderTarget();
-	changeControl.Delete();
+	// changeControl.Delete();
 	changeControl = TrecPointerKey::GetNewSelfTrecPointer<TControl>(rtb,TrecPointer<TArray<styleTable>>());
 	//TControl *tcchangeControl = changeControl.Get();
 
@@ -270,13 +273,14 @@ void SwitchHandler::OnSelect3(TControl* tc, EventArgs ea)
 
 	//contain->setTControl();
 	changeControl->addChild(childControl);
+	rootLayout->addChild(changeControl, 1, 0);
 	page->CreateLayout();
 }
 
 void SwitchHandler::OnSelectRows(TControl* tc, EventArgs ea)
 {
 	TrecComPointer<ID2D1RenderTarget> rtb = page->GetRenderTarget();
-	changeControl.Delete();
+	// changeControl.Delete();
 	changeControl = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TLayout>(rtb, TrecPointer<TArray<styleTable>>());
 	TLayout* rootLayout = dynamic_cast<TLayout*>(changeControl.Get());
 	RECT tLoc = this->rootLayout->getRawSectionLocation(0,1);
@@ -332,7 +336,7 @@ void SwitchHandler::OnSelectRows(TControl* tc, EventArgs ea)
 	//changeControl->addAttribute(TString(L"|Font"), value7);
 	TrecPointer<TString> value18 = TrecPointerKey::GetNewTrecPointer<TString>("48.0");
 	childControl->addAttribute(TString(L"|FontSize"), value18);
-	rootLayout->addChild(childControl, 1, 0);
+	this->rootLayout->addChild(changeControl, 1, 0);
 
 	page->CreateLayout();
 }
@@ -340,7 +344,7 @@ void SwitchHandler::OnSelectRows(TControl* tc, EventArgs ea)
 void SwitchHandler::OnSelectColumns(TControl* tc, EventArgs ea)
 {
 	TrecComPointer<ID2D1RenderTarget> rtb = page->GetRenderTarget();
-	changeControl.Delete();
+	// changeControl.Delete();
 	changeControl = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TLayout>(rtb, TrecPointer<TArray<styleTable>>());
 	TLayout* rootLayout = dynamic_cast<TLayout*>(changeControl.Get());
 
@@ -393,14 +397,14 @@ void SwitchHandler::OnSelectColumns(TControl* tc, EventArgs ea)
 	TrecPointer<TString> value18 = TrecPointerKey::GetNewTrecPointer<TString>("48.0");
 	childControl->addAttribute(TString(L"|FontSize"), value18);
 	rootLayout->addChild(childControl, 0, 1);
-
+	this->rootLayout->addChild(changeControl, 1, 0);
 	page->CreateLayout();
 }
 
 void SwitchHandler::OnSelectGrid(TControl* tc, EventArgs ea)
 {
 	TrecComPointer<ID2D1RenderTarget> rtb = page->GetRenderTarget();
-	changeControl.Delete();
+	// changeControl.Delete();
 	changeControl = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TLayout>(rtb, TrecPointer<TArray<styleTable>>());
 	TLayout* rootLayout = dynamic_cast<TLayout*>(changeControl.Get());
 	rootLayout->setLayout(grid);
@@ -488,14 +492,14 @@ void SwitchHandler::OnSelectGrid(TControl* tc, EventArgs ea)
 	childControl->addAttribute(TString(L"|Margin"), value39);
 
 	rootLayout->addChild(childControl, 1, 1);
-
+	this->rootLayout->addChild(changeControl, 1, 0);
 	page->CreateLayout();
 }
 
 void SwitchHandler::OnSelectLayers(TControl* tc, EventArgs ea)
 {
 	TrecComPointer<ID2D1RenderTarget> rtb = page->GetRenderTarget();
-	changeControl.Delete();
+	// changeControl.Delete();
 	changeControl = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TLayout>(rtb, TrecPointer<TArray<styleTable>>());
 	TLayout* rootLayout = dynamic_cast<TLayout*>(changeControl.Get());
 
@@ -619,7 +623,7 @@ void SwitchHandler::OnSelectLayers(TControl* tc, EventArgs ea)
 
 	childLayout->addChild(childControl, 1, 1);
 	rootLayout->addChild(childControl2, 0, 1);
-
+	this->rootLayout->addChild(changeControl, 1, 0);
 	page->CreateLayout();
 }
 
@@ -627,7 +631,7 @@ void SwitchHandler::OnSelectGadget(TControl* tc, EventArgs ea)
 {
 	TrecComPointer<ID2D1RenderTarget> rtb = page->GetRenderTarget();
 
-	changeControl.Delete();
+	// changeControl.Delete();
 
 	// TODO: Add your command handler code here
 	changeControl = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TLayout>(rtb, TrecPointer<TArray<styleTable>>());
@@ -725,13 +729,14 @@ void SwitchHandler::OnSelectGadget(TControl* tc, EventArgs ea)
 	tcb->addAttribute(TString(L"|Caption"), TStrCap6);
 
 	rootLayout->addChild(tcb, 1, 2);
+	this->rootLayout->addChild(changeControl, 1, 0);
 	page->CreateLayout();
 }
 
 void SwitchHandler::OnSelectText(TControl* tc, EventArgs ea)
 {
 	TrecComPointer<ID2D1RenderTarget> rtb = page->GetRenderTarget();
-	changeControl.Delete();
+	// changeControl.Delete();
 	HWND windowHandle = page->GetWindowHandle();
 	changeControl = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TLayout>(rtb, TrecPointer<TArray<styleTable>>());
 	TLayout* rootLayout = dynamic_cast<TLayout*>(changeControl.Get());
@@ -803,14 +808,14 @@ void SwitchHandler::OnSelectText(TControl* tc, EventArgs ea)
 
 	rootLayout->addChild(TrecPointer<TControl>(field), 1, 2);
 	field = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TTextField>(rtb, TrecPointer<TArray<styleTable>>(), windowHandle);
-
+	this->rootLayout->addChild(changeControl, 1, 0);
 	page->CreateLayout();
 }
 
 void SwitchHandler::OnSelectCombo(TControl* tc, EventArgs ea)
 {
 	TrecComPointer<ID2D1RenderTarget> rtb = page->GetRenderTarget();
-	changeControl.Delete();
+	// changeControl.Delete();
 	// TODO: Add your command handler code here
 	changeControl = TrecPointerKey::GetNewSelfTrecPointer<TControl>(rtb,TrecPointer<TArray<styleTable>>());
 	//TControl* tcchangeControl = changeControl.Get();
@@ -843,13 +848,14 @@ void SwitchHandler::OnSelectCombo(TControl* tc, EventArgs ea)
 
 	//contain->setTControl();
 	changeControl->addChild(TrecPointer<TControl>(combo));
+	this->rootLayout->addChild(changeControl, 1, 0);
 	page->CreateLayout();
 }
 
 void SwitchHandler::OnSelectScroll(TControl* tc, EventArgs ea)
 {
 	TrecComPointer<ID2D1RenderTarget> rtb = page->GetRenderTarget();
-	changeControl.Delete();
+	// changeControl.Delete();
 	changeControl = TrecPointerKey::GetNewSelfTrecPointer<TControl>(rtb,TrecPointer<TArray<styleTable>>());
 	//TControl *tcchangeControl = changeControl.Get();
 
@@ -906,5 +912,6 @@ void SwitchHandler::OnSelectScroll(TControl* tc, EventArgs ea)
 
 	//contain->setTControl();
 	changeControl->addChild(TrecPointer<TControl>(childControl));
+	this->rootLayout->addChild(changeControl, 1, 0);
 	page->CreateLayout();
 }

@@ -96,7 +96,7 @@ bool TML_Reader_::read(int *l)
 			TString enterable(line.SubString(line.Find(L"->") + 2));
 			if (enterable.Find(L"#") != -1)
 			{
-				enterable.Set(enterable.SubString(enterable.Find(L"#")));
+				enterable.Set(enterable.SubString(0, enterable.Find(L"#")));
 			}
 			TString* tEnterable = new TString(&enterable);
 			//TrecPointer<TString> holdString = tEnterable;

@@ -511,6 +511,7 @@ void TTextField::SetNewLocation(const RECT & r)
 */
 afx_msg void TTextField::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
+	resetArgs();
 	BOOL trailing = false, isInside = false;
 	DWRITE_HIT_TEST_METRICS metrics;
 	if (!isEditable)
@@ -616,7 +617,7 @@ parentCall:
 
 	if (onFocus)
 	{
-		args.text = text1->getCaption();
+		args.text.Set(text1->getCaption());
 	}
 }
 
@@ -634,7 +635,7 @@ parentCall:
 bool TTextField::OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
 	// To-Do: sort out anomalies with characters
-
+	resetArgs();
 
 	if (onFocus)
 	{
@@ -699,7 +700,7 @@ bool TTextField::OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags, me
 
 		if (text1.Get() && text1->text.GetSize())
 		{
-			args.text = text1->text;
+			args.text.Set(text1->text);
 			text1->reCreateLayout();
 		}
 	}
