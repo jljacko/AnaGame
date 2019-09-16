@@ -93,6 +93,49 @@ MainLayoutHandler::~MainLayoutHandler()
 {
 }
 
+void MainLayoutHandler::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
+{
+	if (currentDocument.Get())
+		currentDocument->OnRButtonUp(nFlags, point, mOut);
+}
+
+void MainLayoutHandler::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
+{
+	if (currentDocument.Get())
+		currentDocument->OnLButtonDown(nFlags, point, mOut);
+}
+
+void MainLayoutHandler::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
+{
+	if (currentDocument.Get())
+		currentDocument->OnRButtonDown(nFlags, point, mOut);
+}
+
+void MainLayoutHandler::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut)
+{
+	if (currentDocument.Get())
+		currentDocument->OnMouseMove(nFlags, point, mOut);
+}
+
+void MainLayoutHandler::OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut)
+{
+	if (currentDocument.Get())
+		currentDocument->OnLButtonDblClk(nFlags, point, mOut);
+}
+
+void MainLayoutHandler::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
+{
+	if (currentDocument.Get())
+		currentDocument->OnLButtonUp(nFlags, point, mOut);
+}
+
+bool MainLayoutHandler::OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags, messageOutput* mOut)
+{
+	if (currentDocument.Get())
+		return currentDocument->OnChar(fromChar, nChar, nRepCnt, nFlags, mOut);
+	return false;
+}
+
 void MainLayoutHandler::Initialize(Page* page)
 {
 	if (!page)
@@ -172,16 +215,29 @@ void MainLayoutHandler::HandleEvents(TDataArray<EventID_Cred>& eventAr)
 	}
 }
 
+void MainLayoutHandler::Draw()
+{
+	if (currentDocument.Get())
+		currentDocument->Draw();
+}
+
 void MainLayoutHandler::OnLoadNewSolution(TControl* tc, EventArgs ea)
 {
 }
 
 void MainLayoutHandler::OnSaveFile(TControl* tc, EventArgs ea)
 {
+	if (currentDocument.Get())
+		currentDocument->OnSave();
 }
 
 void MainLayoutHandler::OnSaveAllFiles(TControl* tc, EventArgs ea)
 {
+	for (UINT Rust = 0; Rust < ActiveDocuments.Size(); Rust++)
+	{
+		if (ActiveDocuments[Rust].Get())
+			ActiveDocuments[Rust]->OnSave();
+	}
 }
 
 void MainLayoutHandler::OnNewFile(TControl* tc, EventArgs ea)

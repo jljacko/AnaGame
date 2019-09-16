@@ -15,7 +15,17 @@ public:
     virtual void HandleEvents(TDataArray<EventID_Cred>& eventAr) = 0;
     virtual bool OnDestroy();
 
+	afx_msg virtual void OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut);
+	afx_msg virtual void OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut);
+	afx_msg virtual void OnRButtonDown(UINT nFlags, TPoint, messageOutput* mOut);
+	afx_msg virtual void OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut);
+	afx_msg virtual void OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut);
+	afx_msg virtual void OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut);
+	afx_msg virtual bool OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags, messageOutput* mOut);
+
 	TDataArray<eventNameID>& GetEventNameList();
+
+	virtual void Draw();
 
 protected:
 	TrecPointer<TInstance> app;

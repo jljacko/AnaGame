@@ -219,6 +219,9 @@ void Page::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
 	
 	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
 		Draw();
+
+	if (handler.Get())
+		handler->OnRButtonUp(nFlags, point, mOut);
 }
 
 void Page::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
@@ -232,6 +235,9 @@ void Page::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
 
 	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
 		Draw();
+
+	if (handler.Get())
+		handler->OnLButtonDown(nFlags, point, mOut);
 }
 
 void Page::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
@@ -245,6 +251,9 @@ void Page::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
 
 	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
 		Draw();
+
+	if (handler.Get())
+		handler->OnRButtonDown(nFlags, point, mOut);
 }
 
 void Page::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut)
@@ -258,6 +267,9 @@ void Page::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut)
 
 	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
 		Draw();
+
+	if (handler.Get())
+		handler->OnMouseMove(nFlags, point, mOut);
 }
 
 void Page::OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut)
@@ -271,6 +283,9 @@ void Page::OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut)
 
 	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
 		Draw();
+
+	if (handler.Get())
+		handler->OnLButtonDblClk(nFlags, point, mOut);
 }
 
 void Page::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
@@ -284,6 +299,9 @@ void Page::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
 
 	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
 		Draw();
+
+	if (handler.Get())
+		handler->OnLButtonUp(nFlags, point, mOut);
 }
 
 bool Page::OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlags, messageOutput *mOut)
@@ -299,6 +317,9 @@ bool Page::OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlags, messageOu
 	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
 		Draw();
 	return returnable;
+
+	if (handler.Get())
+		handler->OnChar(fromChar, nChar, nRepCnt, nFlags, mOut);
 }
 
 bool Page::OnDestroy()

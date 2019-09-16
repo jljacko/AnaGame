@@ -12,8 +12,18 @@ public:
 	MainLayoutHandler(TrecPointer<TInstance> ins);
 	~MainLayoutHandler();
 
+	afx_msg void OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut) override;
+	afx_msg void OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut) override;
+	afx_msg void OnRButtonDown(UINT nFlags, TPoint, messageOutput* mOut) override;
+	afx_msg void OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut) override;
+	afx_msg void OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut) override;
+	afx_msg void OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut) override;
+	afx_msg bool OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags, messageOutput* mOut) override;
+
 	void Initialize(Page* page);
 	void HandleEvents(TDataArray<EventID_Cred>& eventAr);
+
+	void Draw();
 protected:
 	Page* page;
 	TDataArray<LayoutCall> calls;
@@ -43,7 +53,7 @@ protected:
 	TrecPointer<TControl> ribbon5;					// TLayout
 	TrecPointer<TControl> docStack2;					// TLayout
 
-	TDataArray<TrecPointer<BuilderApp>> ActiveDocuments;
+	
 	//TrecPointer<BuilderApp> currentDocument;
 
 	// Found on the Home Tab
@@ -63,5 +73,10 @@ protected:
 	void OnNewCodeFile(TControl* tc, EventArgs ea);
 	void OnImportCode(TControl* tc, EventArgs ea);
 	void OnProcessCode(TControl* tc, EventArgs ea);
+
+
+	/// Now to host the various mini apps that the user g=could launch on the builder
+	TDataArray<TrecPointer<BuilderApp>> ActiveDocuments;
+	TrecPointer<BuilderApp> currentDocument;
 };
 

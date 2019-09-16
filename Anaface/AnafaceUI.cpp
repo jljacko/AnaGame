@@ -285,7 +285,7 @@ bool AnafaceUI::OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags, mes
 				{
 					currentControl = children.ElementAt(c);
 					*mOut = messageOutput::positiveOverride;
-					return;
+					return true;
 				}
 			}
 		}
