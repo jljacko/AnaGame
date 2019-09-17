@@ -1,5 +1,6 @@
 #include "MainLayoutHandler.h"
 #include <Page.h>
+#include "ArenaApp.h"
 
 
 // Found on the Home Tab
@@ -254,10 +255,31 @@ void MainLayoutHandler::OnPrint(TControl* tc, EventArgs ea)
 
 void MainLayoutHandler::OnNewArena(TControl* tc, EventArgs ea)
 {
+	currentDocument = TrecPointerKey::GetNewTrecPointerAlt<BuilderApp, ArenaApp>(body, outputPanel, classUI, app, TString(L"Arena"));
+	ActiveDocuments.push_back(currentDocument);
 }
 
 void MainLayoutHandler::OnUpdateClearColor(TControl* tc, EventArgs ea)
 {
+	ArenaApp* arApp = nullptr;
+	if (currentDocument.Get())
+		arApp = dynamic_cast<ArenaApp*>(currentDocument.Get());
+
+	if (!arApp) return;
+
+	CHOOSECOLORW colorPicker;
+	ZeroMemory(&colorPicker, sizeof(colorPicker));
+
+	if (!ChooseColorW(&colorPicker)) return;
+
+	COLORREF co = colorPicker.rgbResult;
+	D2D1_COLOR_F color;
+
+	color.b = static_cast<float>(GetBValue(co)) / 255.0f;
+	color.r = static_cast<float>(GetRValue(co)) / 255.0f;
+	color.g = static_cast<float>(GetGValue(co)) / 255.0f;
+	color.a = 1.0f;
+	arApp->SetColor(color);
 }
 
 void MainLayoutHandler::OnNewModel(TControl* tc, EventArgs ea)

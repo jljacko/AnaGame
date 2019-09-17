@@ -155,16 +155,20 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Anagame_Builder.h" />
+    <ClInclude Include="ArenaApp.h" />
     <ClInclude Include="BuilderApp.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="MainLayoutHandler.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="SourceCodeApp.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Anagame_Builder.cpp" />
+    <ClCompile Include="ArenaApp.cpp" />
     <ClCompile Include="BuilderApp.cpp" />
     <ClCompile Include="MainLayoutHandler.cpp" />
+    <ClCompile Include="SourceCodeApp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Anagame_Builder.rc" />

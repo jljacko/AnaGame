@@ -32,8 +32,8 @@ TrecPointer<Page> Page::Get2DPage(TrecComPointer<ID2D1Factory1> fact, HDC dc, Tr
 	if (!fact.Get())
 		throw L"Error! Factory Object MUST be initialized!";
 
-	if (!eh.Get())
-		throw L"Error! Event Handler MUST be instantiated!";
+	//if (!eh.Get())
+	//	throw L"Error! Event Handler MUST be instantiated!";
 
 	HWND windowHandle = WindowFromDC(dc);
 	if (!windowHandle)
@@ -73,16 +73,6 @@ TrecPointer<Page> Page::Get2DPage(TrecComPointer<ID2D1Factory1> fact, HDC dc, Tr
 
 TrecPointer<Page> Page::GetWindowPage(TrecComPointer<ID2D1Factory1> fact,HWND window, TrecPointer<EventHandler> eh)
 {
-	if (!fact.Get())
-		throw L"Error! Factory Object MUST be initialized!";
-	if (!eh.Get())
-		throw L"Error! Event Handler MUST be instantiated!";
-
-	HDC dc = GetWindowDC(window);
-
-	if (!dc)
-		throw L"Error! Got NULL DC from provided Window handle!";
-
 	D2D1_RENDER_TARGET_PROPERTIES props;
 	ZeroMemory(&props, sizeof(props));
 
@@ -108,12 +98,32 @@ TrecPointer<Page> Page::GetWindowPage(TrecComPointer<ID2D1Factory1> fact,HWND wi
 
 	if (FAILED(res))
 		throw L"Error! Failed to Create Window Render Target!";
+	TrecPointer<Page> ret = GetWindowPage(TrecPointerKey::GetComPointer<ID2D1RenderTarget, ID2D1HwndRenderTarget>(renderHw), window, eh);
+	return ret;
+
+}
+
+TrecPointer<Page> Page::GetWindowPage(TrecComPointer<ID2D1RenderTarget> render, HWND window, TrecPointer<EventHandler> eh)
+{
+	if (!render.Get())
+		throw L"Error! RenderTarget Object MUST be initialized!";
+	//if (!eh.Get())
+	//	throw L"Error! Event Handler MUST be instantiated!";
+
+	HDC dc = GetWindowDC(window);
+
+	if (!dc)
+		throw L"Error! Got NULL DC from provided Window handle!";
+
+	RECT area;
+
+	GetClientRect(window, &area);
 
 	TrecPointer<Page> ret = TrecPointerKey::GetNewTrecPointer<Page>();
-	ret->fact = fact;
+	// ret->fact = fact;
 	ret->windowHandle = window;
 	ret->deviceH = GetWindowDC(window);
-	ret->regRenderTarget = TrecPointerKey::GetComPointer<ID2D1RenderTarget, ID2D1HwndRenderTarget>(renderHw);
+	ret->regRenderTarget = render;
 	ret->instance = GetModuleHandle(nullptr);
 
 	ret->rt_type = render_target_hwnd;
@@ -121,7 +131,6 @@ TrecPointer<Page> Page::GetWindowPage(TrecComPointer<ID2D1Factory1> fact,HWND wi
 	ret->area = area;
 	ret->handler = eh;
 	return ret;
-
 }
 
 TrecPointer<Page> Page::Get3DPage(TrecComPointer<ID2D1Factory1> fact, TrecPointer<ArenaEngine> engine, TrecPointer<EventHandler> eh)
@@ -130,8 +139,8 @@ TrecPointer<Page> Page::Get3DPage(TrecComPointer<ID2D1Factory1> fact, TrecPointe
 		throw L"Error! Factory Object MUST be initialized!";
 	if (!engine.Get())
 		throw L"Error! ArenaEngine Object MUST be initialized for a 3D enabled Page";
-	if (!eh.Get())
-		throw L"Error! Event Handler MUST be instantiated!";
+	//if (!eh.Get())
+	//	throw L"Error! Event Handler MUST be instantiated!";
 
 
 	TrecComPointer<IDXGISurface> surf = engine->GetSurface();
@@ -193,8 +202,31 @@ int Page::SetAnaface(TrecPointer<TFile> file, TrecPointer<EventHandler> eh)
 	rootControl = parser.getRootControl();
 	if (rootControl.Get())
 		rootControl->onCreate(area);
+	if(handler.Get())
+		handler->Initialize(this);
+	return 0;
+}
 
-	handler->Initialize(this);
+int Page::SetAnaface(TrecPointer<TFile> file, TDataArray<eventNameID>& id)
+{
+	if (!file.Get())
+		return -1;
+	if (!file->IsOpen())
+		return -2;
+	AnafaceParser parser(regRenderTarget, windowHandle, file->GetFileDirectory());
+
+	parser.setEventSystem(id);
+
+	TML_Reader_ reader(file.Get(), &parser);
+	int result = 0;
+	if (!reader.read(&result))
+		throw result;
+
+	rootControl = parser.getRootControl();
+	if (rootControl.Get())
+		rootControl->onCreate(area);
+	if(handler.Get())
+		handler->Initialize(this);
 	return 0;
 }
 
@@ -211,8 +243,7 @@ HWND Page::GetWindowHandle()
 void Page::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
 {
 	TDataArray<EventID_Cred> eventAr;
-	if(rootControl.Get())
-		rootControl->OnRButtonUp(nFlags, point, mOut, eventAr);
+	OnRButtonUp(nFlags, point, mOut, eventAr);
 	
 	if(handler.Get())
 		handler->HandleEvents(eventAr);
@@ -227,8 +258,7 @@ void Page::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
 void Page::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
 {
 	TDataArray<EventID_Cred> eventAr;
-	if(rootControl.Get())
-		rootControl->OnLButtonDown(nFlags, point, mOut, eventAr);
+	OnLButtonDown(nFlags, point, mOut, eventAr);
 	
 	if(handler.Get())
 		handler->HandleEvents(eventAr);
@@ -243,8 +273,7 @@ void Page::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
 void Page::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
 {
 	TDataArray<EventID_Cred> eventAr;
-	if(rootControl.Get())
-		rootControl->OnRButtonDown(nFlags, point, mOut, eventAr);
+	OnRButtonDown(nFlags, point, mOut, eventAr);
 	
 	if(handler.Get())
 		handler->HandleEvents(eventAr);
@@ -259,8 +288,7 @@ void Page::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
 void Page::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut)
 {
 	TDataArray<EventID_Cred> eventAr;
-	if(rootControl.Get())
-		rootControl->OnMouseMove(nFlags, point, mOut, eventAr);
+	OnMouseMove(nFlags, point, mOut, eventAr);
 	
 	if(handler.Get())
 		handler->HandleEvents(eventAr);
@@ -275,8 +303,7 @@ void Page::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut)
 void Page::OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut)
 {
 	TDataArray<EventID_Cred> eventAr;
-	if(rootControl.Get())
-		rootControl->OnLButtonDblClk(nFlags, point, mOut, eventAr);
+	OnLButtonDblClk(nFlags, point, mOut, eventAr);
 	
 	if(handler.Get())
 		handler->HandleEvents(eventAr);
@@ -291,13 +318,12 @@ void Page::OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut)
 void Page::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
 {
 	TDataArray<EventID_Cred> eventAr;
-	if(rootControl.Get())
-		rootControl->OnLButtonUp(nFlags, point, mOut, eventAr);
-	
-	if(handler.Get())
+	OnLButtonUp(nFlags, point, mOut, eventAr);
+
+	if (handler.Get())
 		handler->HandleEvents(eventAr);
 
-	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
+	if (*mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
 		Draw();
 
 	if (handler.Get())
@@ -307,19 +333,62 @@ void Page::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
 bool Page::OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlags, messageOutput *mOut)
 {
 	TDataArray<EventID_Cred> eventAr;
-	bool returnable = false;
-	if(rootControl.Get())
-		returnable = rootControl->OnChar(fromChar, nChar, nRepCnt, nFlags, mOut, eventAr);
-	
-	if(handler.Get())
+	bool returnable = OnChar(fromChar, nChar, nRepCnt, nFlags, mOut, eventAr);
+
+	if (handler.Get())
 		handler->HandleEvents(eventAr);
 
-	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
+	if (*mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
 		Draw();
-	return returnable;
+
 
 	if (handler.Get())
 		handler->OnChar(fromChar, nChar, nRepCnt, nFlags, mOut);
+	return returnable;
+}
+
+void Page::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+{
+	if (rootControl.Get())
+		rootControl->OnRButtonUp(nFlags, point, mOut, eventAr);
+}
+
+void Page::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+{
+	if (rootControl.Get())
+		rootControl->OnLButtonDown(nFlags, point, mOut, eventAr);
+}
+
+void Page::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+{
+	if (rootControl.Get())
+		rootControl->OnRButtonDown(nFlags, point, mOut, eventAr);
+}
+
+void Page::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+{
+	if (rootControl.Get())
+		rootControl->OnMouseMove(nFlags, point, mOut, eventAr);
+}
+
+void Page::OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+{
+	if (rootControl.Get())
+		rootControl->OnLButtonDblClk(nFlags, point, mOut, eventAr);
+}
+
+void Page::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+{
+	if (rootControl.Get())
+		rootControl->OnLButtonUp(nFlags, point, mOut, eventAr);
+}
+
+bool Page::OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+{
+	if (rootControl.Get())
+		return rootControl->OnChar(fromChar, nChar, nRepCnt, nFlags, mOut, eventAr);
+
+	return false;
 }
 
 bool Page::OnDestroy()
@@ -549,6 +618,11 @@ TrecComPointer<ID2D1RenderTarget> Page::GetRenderTarget()
 	return regRenderTarget;
 }
 
+TrecPointer<ArenaEngine> Page::GetArenaEngine()
+{
+	return engine;
+}
+
 void Page::CreateLayout()
 {
 	if (rootControl.Get())
@@ -565,6 +639,11 @@ void Page::Draw()
 	rootControl->onDraw();
 	regRenderTarget->EndDraw();
 
+}
+
+void Page::SetArea(RECT& loc)
+{
+	area = loc;
 }
 
 

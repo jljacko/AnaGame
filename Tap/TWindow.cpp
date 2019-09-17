@@ -200,6 +200,78 @@ bool TWindow::OnDestroy()
 	return true;
 }
 
+TrecPointer<Page> TWindow::GetHandlePage(bool singleton)
+{
+	if (singleton && handlePage.Get())
+		return handlePage;
+
+	TrecPointer<Page> ret = Page::GetWindowPage(directFactory, currentWindow, TrecPointer<EventHandler>());
+
+	if (!ret.Get())
+		return ret;
+
+	pages.push_back(ret);
+
+	if (singleton)
+		handlePage = ret;
+
+	return ret;
+}
+
+TrecPointer<Page> TWindow::GetHandlePage(const TString& name)
+{
+	TrecPointer<Page> ret = keyPages.retrieveEntry(name);
+	if (ret.Get())
+		return ret;
+
+	ret = GetHandlePage(false);
+
+	if (ret.Get())
+		keyPages.addEntry(name, ret);
+
+	return ret;
+}
+
+TrecPointer<Page> TWindow::Get3DPage(bool singleton, TString& engineId)
+{
+	if(!engineId.GetSize() && singleton)
+		return _3DPage;
+
+
+
+	if (!engineId.GetSize())
+		return TrecPointer<Page>();
+
+	TrecPointer<ArenaEngine> engine = ArenaEngine::GetArenaEngine(engineId, currentWindow, windowInstance);
+
+	return Get3DPage(singleton, engine);
+}
+
+TrecPointer<Page> TWindow::Get3DPage(bool singleton, TrecPointer<ArenaEngine> engine)
+{
+	if (singleton)
+	{
+		if (!engine.Get())
+			return _3DPage;
+		if (_3DPage.Get()) {
+			if(_3DPage->GetArenaEngine().Get() == engine.Get())
+				return _3DPage;
+			return TrecPointer<Page>();
+		}
+	}
+
+	TrecPointer<Page> ret = Page::Get3DPage(directFactory, engine, TrecPointer<EventHandler>());
+
+	pages.push_back(ret);
+
+	if (singleton)
+	{
+		_3DPage = ret;
+	}
+
+	return ret;
+}
+
 HWND TWindow::GetWindowHandle()
 {
 	return currentWindow;

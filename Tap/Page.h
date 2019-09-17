@@ -25,9 +25,11 @@ public:
 
 	static TrecPointer<Page> Get2DPage(TrecComPointer<ID2D1Factory1>, HDC, TrecPointer<EventHandler>);
 	static TrecPointer<Page> GetWindowPage(TrecComPointer<ID2D1Factory1>, HWND,  TrecPointer<EventHandler>);
+	static TrecPointer<Page> GetWindowPage(TrecComPointer<ID2D1RenderTarget>, HWND, TrecPointer<EventHandler>);
 	static TrecPointer<Page> Get3DPage(TrecComPointer<ID2D1Factory1>, TrecPointer<ArenaEngine>, TrecPointer<EventHandler>);
 
 	int SetAnaface(TrecPointer<TFile> file, TrecPointer<EventHandler> eh);
+	int SetAnaface(TrecPointer<TFile> file, TDataArray<eventNameID>& id);
 
 	TrecPointer<TControl> GetRootControl();
 
@@ -37,10 +39,13 @@ public:
 	afx_msg void OnSize(UINT nType, int cx,	int cy);
 
 	TrecComPointer<ID2D1RenderTarget> GetRenderTarget();
+	TrecPointer<ArenaEngine> GetArenaEngine();
 
 	void CreateLayout();
 
 	void Draw();
+
+	void SetArea(RECT& loc);
 
 	afx_msg void OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut);
 	afx_msg void OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut);
@@ -49,6 +54,14 @@ public:
 	afx_msg void OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut);
 	afx_msg void OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut);
 	afx_msg bool OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlags, messageOutput *mOut);
+
+	afx_msg void OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
+	afx_msg void OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
+	afx_msg void OnRButtonDown(UINT nFlags, TPoint, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
+	afx_msg void OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
+	afx_msg void OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
+	afx_msg void OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
+	afx_msg bool OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
 	afx_msg bool OnDestroy();
 protected:
 	Page();

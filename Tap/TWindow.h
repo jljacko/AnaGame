@@ -27,6 +27,11 @@ public:
 	afx_msg bool OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlags);
 	afx_msg bool OnDestroy();
 
+	TrecPointer<Page> GetHandlePage(bool singleton);
+	TrecPointer<Page> GetHandlePage(const TString& name);
+	TrecPointer<Page> Get3DPage(bool singleton, TString& engineId);
+	TrecPointer<Page> Get3DPage(bool singleton, TrecPointer<ArenaEngine> engine);
+
 protected:
 	HWND parent, currentWindow;
 	HINSTANCE windowInstance;
@@ -35,5 +40,10 @@ protected:
 	TDataArray<TrecPointer<Page>> pages;
 	TString name, winClass;
 	TrecComPointer<ID2D1Factory1> directFactory;
+
+	TMap<Page> keyPages; // Used when multiple objects might want to access the same page by ID
+
+	// Singleton Pages
+	TrecPointer<Page> _3DPage, handlePage;
 };
 

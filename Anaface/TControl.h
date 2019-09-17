@@ -328,9 +328,9 @@ public:
 	void ShiftHorizontal(int degrees);
 	void ShiftVertical(int degrees);
 	void onDraw(RECT& loc, RECT& snip);
-	D2D1::ColorF getColor();
+	D2D1_COLOR_F getColor();
 	bool setOpaquency(float f);
-	void setColor(D2D1::ColorF);
+	void setColor(D2D1_COLOR_F);
 	RECT getLocation();
 
 	void SetRadialImage(TDataArray<D2D1_COLOR_F>& colors);
@@ -352,7 +352,7 @@ private:
 
 	float thickness = 1.0f;
 	TString style;
-	D2D1::ColorF color = D2D1::ColorF(D2D1::ColorF::Black, 1.0);
+	D2D1_COLOR_F color;
 	D2D1_RECT_F location, snip;
 	TrecComPointer<ID2D1Bitmap> image;
 	TrecComPointer<ID2D1Bitmap> cropImage;
@@ -606,7 +606,7 @@ void _ANAFACE_DLL resetAttributeString(TString* st, int cou);
 * Parameters: D2D1::ColorF - the color to convert
 * Returns: CString - the Color in string form
 */
-TString _ANAFACE_DLL convertD2DColorToString(D2D1::ColorF);
+TString _ANAFACE_DLL convertD2DColorToString(D2D1_COLOR_F);
 
 /*
 * Function: convertRectToString

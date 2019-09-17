@@ -4773,7 +4773,7 @@ void TText::reCreateLayout()
 void TText::reCreateLayout(TString & str)
 {
 	fontLayout.Nullify();
-	if (text.GetSize() && format.Get())
+	if (format.Get())
 	{
 		TrecComPointer<IDWriteTextLayout>::TrecComHolder wfl;
 		writeFact->CreateTextLayout(str.GetConstantBuffer(), str.GetSize(), format.Get(), bounds.right - bounds.left, bounds.bottom - bounds.top, wfl.GetPointerAddress());
@@ -5645,7 +5645,7 @@ void TContent::onDraw(RECT& loc, RECT& snip)
 * Parameters: void
 * Returns: D2D1::ColorF - the current color
 */
-D2D1::ColorF TContent::getColor()
+D2D1_COLOR_F TContent::getColor()
 {
 	return color;
 }
@@ -5670,7 +5670,7 @@ bool TContent::setOpaquency(float f)
 * Parameters: D2D1::ColorF cf - the new color
 * Returns: void 
 */
-void TContent::setColor(D2D1::ColorF cf)
+void TContent::setColor(D2D1_COLOR_F cf)
 {
 	color = cf;
 	if (brush.Get())
@@ -6168,7 +6168,7 @@ void resetAttributeString(TString* st, int cou)
 * Parameters: D2D1::ColorF - the color to convert
 * Returns: CString - the Color in string form
 */
-TString convertD2DColorToString(D2D1::ColorF color) 
+TString convertD2DColorToString(D2D1_COLOR_F color) 
 {
 	TString val;
 	val.Format(L"%f", color.r);

@@ -19,7 +19,7 @@ TrecPointer<ArenaEngine> BuilderApp::GetArenaEngine()
 	return TrecPointer<ArenaEngine>();
 }
 
-TrecPointer<TControl> BuilderApp::GetMainPage()
+TrecPointer<Page> BuilderApp::GetMainPage()
 {
 	return mainPage;
 }
@@ -48,16 +48,12 @@ TString BuilderApp::GetFilePath()
 
 void BuilderApp::Draw()
 {
-	if (!drawer.Get() || drawer->GetRenderTarget().Get())
-		return;
-	drawer->GetRenderTarget()->BeginDraw();
 	if (mainPage.Get())
-		mainPage->onDraw();
+		mainPage->Draw();
 	if (outputPane.Get())
-		outputPane->onDraw();
+		outputPane->Draw();
 	if (explorerPane.Get())
-		explorerPane->onDraw();
-	drawer->GetRenderTarget()->EndDraw();
+		explorerPane->Draw();
 }
 
 void BuilderApp::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)

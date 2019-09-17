@@ -33,6 +33,12 @@
     <ClInclude Include="BuilderApp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ArenaApp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCodeApp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Anagame_Builder.cpp">
@@ -42,6 +48,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="BuilderApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ArenaApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCodeApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

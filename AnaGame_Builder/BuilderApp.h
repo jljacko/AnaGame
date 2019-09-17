@@ -12,7 +12,7 @@ public:
 
 	virtual TrecPointer<ArenaEngine> GetArenaEngine();
 
-	TrecPointer<TControl> GetMainPage();
+	TrecPointer<Page> GetMainPage();
 
 	virtual RECT Get3DArea();
 	virtual void OnSave();
@@ -33,7 +33,8 @@ public:
 
 protected:
 	TrecPointer<TControl> mainUI, outputUI, explorerUI;
-	TrecPointer<TControl> mainPage, outputPane, explorerPane;
+	TrecPointer<Page> mainPage, outputPane, explorerPane;
+	TrecPointer<TControl> mainControl, outputControl, explorerControl;
 	virtual void MessageHandler();
 	virtual bool InitializeControls();
 	TDataArray<eventNameID> handleList;
@@ -42,7 +43,7 @@ protected:
 	TrecPointer<TInstance> instance;
 
 	TrecPointer<TWindow> window;
-	TrecPointer<Page> drawer;
+	//TrecPointer<Page> drawer;
 
 };
 
