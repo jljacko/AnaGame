@@ -41,7 +41,7 @@ typedef enum messageState
 	mouseRClick
 } messageState;
 
-/* Allows individual Controls to communicate with the message engine that called it*/
+/* Allows individual Controls to communicate with the message engine that called it
 typedef enum messageOutput
 {
 	negative,
@@ -50,7 +50,7 @@ typedef enum messageOutput
 	positiveContinue,
 	positiveOverrideUpdate,
 	positiveContinueUpdate
-}messageOutput;
+}messageOutput;*/
 
 // Determines the message type for UI Responsiveness
 typedef enum R_Message_Type
@@ -153,7 +153,7 @@ public:
 	bool onCreate(D2D1_ROUNDED_RECT);
 
 	// Drawing Method
-	void onDraw(RECT& loc, RECT& snip);
+	void onDraw(RECT& loc);
 
 	// Handling Colors
 	// NOTE: For Compatibility between AnaGame for Windows and an eventual AnaGame for Unix,
@@ -200,8 +200,6 @@ private:
 	D2D1_ELLIPSE circle;
 	D2D1_ROUNDED_RECT roundedRect;
 	void BreakShared();
-
-	D2D1_RECT_F snip; // The Portion of the Control to actually draw
 };
 
 /*
@@ -232,7 +230,7 @@ public:
 	void reCreateLayout(TString& str);
 
 	// Draw the Text
-	bool onDraw(RECT& loc, RECT& snip, TObject* obj = nullptr);
+	bool onDraw(RECT& loc, TObject* obj = nullptr);
 
 	// Handling Colors
 	// NOTE: For Compatibility between AnaGame for Windows and an eventual AnaGame for Unix,
@@ -322,12 +320,12 @@ public:
 	TContent(TrecPointer<TContent>&, TControl*);
 	~TContent();
 
-	bool onCreate(RECT,RECT);
+	bool onCreate(RECT);
 	bool onCreate(D2D1_ELLIPSE);
 	bool onCreate(D2D1_ROUNDED_RECT);
 	void ShiftHorizontal(int degrees);
 	void ShiftVertical(int degrees);
-	void onDraw(RECT& loc, RECT& snip);
+	void onDraw(RECT& loc);
 	D2D1_COLOR_F getColor();
 	bool setOpaquency(float f);
 	void setColor(D2D1_COLOR_F);
@@ -353,7 +351,7 @@ private:
 	float thickness = 1.0f;
 	TString style;
 	D2D1_COLOR_F color;
-	D2D1_RECT_F location, snip;
+	D2D1_RECT_F location;
 	TrecComPointer<ID2D1Bitmap> image;
 	TrecComPointer<ID2D1Bitmap> cropImage;
 
@@ -464,7 +462,6 @@ public:
 
 	virtual void onDraw(TObject* obj = nullptr);
 	RECT getLocation();
-	RECT getSnip();
 	RECT getMargin();
 	TrecComPointer<ID2D1RenderTarget> getRenderTarget();
 	TrecPointer<TControl> getParent();
@@ -506,7 +503,7 @@ public:
 
 	// Methods to support Scrolling
 	bool onScroll(int x, int y);
-	bool onBeingScrolled(int x, int y, const RECT& p_snip);
+	bool onBeingScrolled(int x, int y);
 	void scroll(RECT& loc);
 	bool SetContextMenu(TrecPointer<TControl> cm);
 	void BreakShared();
@@ -521,7 +518,7 @@ protected:
 	bool boundsPreset;
 	TString className;
 	TString ID;
-	RECT location, snip, margin;
+	RECT location, margin;
 	TScrollBar *vScroll, *hScroll;
 	TrecComPointer<ID2D1Factory> factory;
 	TrecComPointer<ID2D1RenderTarget> renderTarget;
@@ -544,6 +541,7 @@ protected:
 	bool onCreate3(TMap<TString>*, RECT);
 
 	void updateComponentLocation();
+	void CheckScroll();
 
 	int generateImage(TrecPointer<TContent> tcon, TrecPointer<TString> p,RECT loc);
 

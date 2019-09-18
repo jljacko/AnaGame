@@ -519,11 +519,11 @@ bool TLayout::onCreate(RECT margin)
 
 	valpoint = attributes.retrieveEntry(TString(L"|VerticalScroll"));
 	if (valpoint.Get() && !valpoint->Compare(L"True") && !vScroll) // don't make a new one if one already exists
-		vScroll = new TScrollBar(*this, SCROLL_VERTICAL);
+		vScroll = new TScrollBar(*this, so_vertical);
 
 	valpoint = attributes.retrieveEntry(TString(L"|HorizontalScroll"));
 	if (valpoint.Get() && !valpoint->Compare(L"True") && !hScroll)
-		hScroll = new TScrollBar(*this, SCROLL_HORIZONTAL);
+		hScroll = new TScrollBar(*this, so_horizontal);
 	
 	
 	int marginWidth = (margin.right - marge.right) - (margin.left + marge.left);
@@ -536,7 +536,7 @@ bool TLayout::onCreate(RECT margin)
 	int newValue = 0;
 	if (!hScroll && flexMarginWidth < 0)
 	{
-		hScroll = new TScrollBar(*this, SCROLL_HORIZONTAL);
+		hScroll = new TScrollBar(*this, so_horizontal);
 	}
 	else if (!hScroll || (organization != orgLayout::HStack)) // If Layout has a horizontal scroll bar, then no need to resize the columns
 	{
@@ -554,7 +554,7 @@ bool TLayout::onCreate(RECT margin)
 	 
 	if (!vScroll && flexMarginHeight < 0)
 	{
-		vScroll = new TScrollBar(*this, SCROLL_VERTICAL);
+		vScroll = new TScrollBar(*this, so_vertical);
 	}
 	if (!vScroll || (organization != orgLayout::VStack)) // Ditto with a vertical Scroll bar and rows
 	{
@@ -569,13 +569,11 @@ bool TLayout::onCreate(RECT margin)
 	}
 
 	// To-Do, adjust TLayout's handling of location in respect to scroll Bars
-	snip.bottom = margin.bottom - marge.bottom;
-	snip.left = margin.left + marge.left;
-	snip.right = margin.right - marge.right;
-	snip.top = margin.top + marge.top;
+	location.bottom = margin.bottom - marge.bottom;
+	location.left = margin.left + marge.left;
+	location.right = margin.right - marge.right;
+	location.top = margin.top + marge.top;
 
-	location.left = snip.left;
-	location.top = snip.top;
 	if (vScroll)
 	{
 		if (rowLines.Size())
@@ -584,11 +582,7 @@ bool TLayout::onCreate(RECT margin)
 			for (int c = 0;c < rowLines.Size();c++)
 				location.bottom += rowLines[c];
 		}
-		else
-			location.bottom = snip.bottom;
 	}
-	else
-		location.bottom = snip.bottom;
 
 	if (hScroll)
 	{
@@ -598,11 +592,7 @@ bool TLayout::onCreate(RECT margin)
 			for (int c = 0; c < columnLines.Size();c++)
 				location.right += columnLines[c];
 		}
-		else
-			location.right = snip.right;
 	}
-	else
-		location.right = snip.right;
 
 	children.Clear();
 
@@ -615,10 +605,10 @@ bool TLayout::onCreate(RECT margin)
 		int x = lChildren.ElementAt(c)->x, y = lChildren.ElementAt(c)->y;
 		tempCont->setLocation(getRawSectionLocation(y, x));
 
-		if (isSnipZero(tempCont->getLocation()))
-		{
-			tempCont->setLocation(location);
-		}
+		//if (isSnipZero(tempCont->getLocation()))
+		//{
+		//	tempCont->setLocation(location);
+		//}
 		
 		lChildren.ElementAt(c)->contain->setLocation( tempCont->getLocation());
 

@@ -71,7 +71,7 @@ bool TGadgetControl::onCreate(RECT r)
 	{
 		content1 = TrecPointerKey::GetNewTrecPointer<TContent>(renderTarget, this);
 		content1->color = D2D1::ColorF(D2D1::ColorF::White);
-		content1->onCreate(location,snip);                         // this this isn't covered by the TControl
+		content1->onCreate(location);                         // this this isn't covered by the TControl
 															// as it didn't exist yet
 	}
 

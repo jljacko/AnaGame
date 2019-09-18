@@ -138,9 +138,9 @@ ArenaApp::ArenaApp(TrecPointer<TControl> m, TrecPointer<TControl> o, TrecPointer
 
 	if (!o.Get() || dynamic_cast<AnafaceUI*>(o.Get()))
 		return;
-	RECT rect = dynamic_cast<AnafaceUI*>(o.Get())->GetControlArea();
+	rect = dynamic_cast<AnafaceUI*>(o.Get())->GetControlArea();
 	outputPane->SetArea(rect);
-	bool fileOpened = file->Open(fileBody, TFile::t_file_read | TFile::t_file_share_read | TFile::t_file_open_always);
+	fileOpened = file->Open(fileBody, TFile::t_file_read | TFile::t_file_share_read | TFile::t_file_open_always);
 	if (!fileOpened)
 		return;
 	outputPane->SetAnaface(file, handleList);
@@ -159,9 +159,9 @@ ArenaApp::ArenaApp(TrecPointer<TControl> m, TrecPointer<TControl> o, TrecPointer
 
 	if (!e.Get() || dynamic_cast<AnafaceUI*>(e.Get()))
 		return;
-	RECT rect = dynamic_cast<AnafaceUI*>(e.Get())->GetControlArea();
+	rect = dynamic_cast<AnafaceUI*>(e.Get())->GetControlArea();
 	explorerPane->SetArea(rect);
-	bool fileOpened = file->Open(fileBody, TFile::t_file_read | TFile::t_file_share_read | TFile::t_file_open_always);
+	fileOpened = file->Open(fileBody, TFile::t_file_read | TFile::t_file_share_read | TFile::t_file_open_always);
 	if (!fileOpened)
 		return;
 	explorerPane->SetAnaface(file, handleList);

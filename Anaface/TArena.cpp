@@ -240,7 +240,7 @@ void TArena::onDraw(TObject* obj)
 {
 	//TControl::onDraw();
 	if (content1.Get())
-		content1->onDraw(TControl::location, snip);
+		content1->onDraw(TControl::location);
 	
 	/*if (renderTarget)
 	{
@@ -261,9 +261,9 @@ void TArena::onDraw(TObject* obj)
 	}
 
 	if (text1.Get())
-		text1->onDraw(TControl::location, snip, obj);
+		text1->onDraw(TControl::location, obj);
 	if (border1.Get())
-		border1->onDraw(TControl::location, snip);
+		border1->onDraw(TControl::location);
 	for (int c = 0; c < children.Count(); c++)
 	{
 		children.ElementAt(c)->onDraw(obj);

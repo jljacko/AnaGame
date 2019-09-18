@@ -496,48 +496,48 @@ void AnafaceUI::onDraw(TObject* obj)
 	if (mState == mouseLClick)
 	{
 		if (content3.Get())
-			content3->onDraw(location, snip);
+			content3->onDraw(location);
 		else if (content1.Get())
-			content1->onDraw(location, snip);
+			content1->onDraw(location);
 		if (border3.Get())
-			border3->onDraw(location, snip);
+			border3->onDraw(location);
 		else if (border1.Get())
-			border1->onDraw(location, snip);
+			border1->onDraw(location);
 		if (text3.Get())
-			text3->onDraw(location, snip, obj);
+			text3->onDraw(location, obj);
 		else if (text1.Get())
-			text1->onDraw(location, snip, obj);
+			text1->onDraw(location, obj);
 	}
 	else if (mState == mouseHover)
 	{
 		if (content2.Get())
-			content2->onDraw(location, snip);
+			content2->onDraw(location);
 		else if (content1.Get())
-			content1->onDraw(location, snip);
+			content1->onDraw(location);
 		if (border2.Get())
-			border2->onDraw(location, snip);
+			border2->onDraw(location);
 		else if (border1.Get())
-			border1->onDraw(location, snip);
+			border1->onDraw(location);
 		if (text2.Get())
-			text2->onDraw(location, snip, obj);
+			text2->onDraw(location, obj);
 		else if (text1.Get())
-			text1->onDraw(location, snip, obj);
+			text1->onDraw(location, obj);
 	}
 	else
 	{
 		if (content1.Get())
-			content1->onDraw(location, snip);
+			content1->onDraw(location);
 		if (border1.Get())
-			border1->onDraw(location, snip);
+			border1->onDraw(location);
 		if (text1.Get())
-			text1->onDraw(location, snip, obj);
+			text1->onDraw(location, obj);
 	}
-
+	/*
 	if (vScroll)
 		vScroll->updateDraw();
 	if (hScroll)
 		hScroll->updateDraw();
-
+	*/
 	if (tabs)
 		tabs->onDraw(obj);
 	if (currentControl.Get() && proceed)

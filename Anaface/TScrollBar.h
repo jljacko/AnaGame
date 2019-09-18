@@ -1,88 +1,54 @@
 #pragma once
-#include <TrecReference.h>
+#include <d2d1.h>
+#include <TObject.h>
 #include "Anaface.h"
 #include <TPoint.h>
 
-#define afx_msg
-
-#define SCROLL_ORIENTATION bool
-#define SCROLL_VERTICAL    true
-#define SCROLL_HORIZONTAL  false
-
 class TControl;
 
-enum messageOutput; // Defined in TControl.h, which will be included in the .cpp file
-
-/*
-* class TScrollBar
-* Implements Anaface's scroll-bar so that controls can be scrolled to fit within a constrained space
-*/
-class TScrollBar
+typedef enum ScrollOrient
 {
-	friend class TScrollBar;
+	so_vertical,
+	so_horizontal
+}ScrollOrient;
+
+/* Allows individual Controls to communicate with the message engine that called it*/
+typedef enum messageOutput
+{
+	negative,
+	negativeUpdate,
+	positiveOverride,
+	positiveContinue,
+	positiveOverrideUpdate,
+	positiveContinueUpdate,
+	positiveScroll
+}messageOutput;
+
+class _ANAFACE_DLL TScrollBar : public TObject
+{
 public:
-	// expected to be called by the owning TControl
-	TScrollBar(TControl&, SCROLL_ORIENTATION);
+	TScrollBar(TControl& control, ScrollOrient so);
 	~TScrollBar();
 
-	void updateDraw();
-	int moveUpLeft(int l);
-	int moveDownRight(int l);
+	void onDraw(ID2D1RenderTarget* target);
 
-	// Align the proper sizes of the components
-	void Refresh();
+	virtual void OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut);
+	virtual void OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut);
+	virtual void OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut);
 
+	float MovedContent(float degree);
 
-	// Messages that the Scroll Bar might respond to
-	afx_msg virtual void OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut);
-	afx_msg virtual void OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut);
-	afx_msg virtual void OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut);
+	void Refresh(RECT& location, RECT& area);
 
+private: // Static attributes, styles that should be shared across all Scroll Bars
 
+	static void EstablishScrollColors();
 
-private:
-	void setUndrawable();
+	D2D1_RECT_F body_rect, scroll_rect;
 
-
-	TControl* parent;           // the TControl owning the Scroll Bar
-	TrecComPointer<ID2D1RenderTarget> renderer; // Direct 2D screen to draw on
-	SCROLL_ORIENTATION orient;  // Horizontal or Vertical
-	bool fadeOnInactivity;      // Should it be shown all the time
-	D2D1_RECT_F wholeBar,       // whole scroll bar
-		tipBar1,                // Bar one, moves scroll in direction one when clicked
-		tipBar2,                // Bar 2, moves scroll in other direction
-		BodyBar,                // Bar in the middle
-		wholeSnip;              // Because part of the scroll bar might be covered
-
-	TScrollBar* childBar;       // Support for multilayered Scrolling
-	bool onFocus;               // Only move the TControl if true
-	int arrayLoc;
-
-
-	// Data for calculations
-	float ratio;
-	int wholeBlank;
-	int bodySize;
-	
-	// Maintaining messages
-	TPoint mouseTracker;
-	bool BodyClicked;
-	bool backClicked;
-
-	// Colors
-	D2D1_COLOR_F outline,
-		default_tip, hover_tip,
-		default_back, hover_back,
-		default_scroller, hover_scroller;
-
-	TrecComPointer<ID2D1SolidColorBrush> scrollBrush;
+	TControl* parent;
+	TPoint prevPoint;
+	bool onFocus, drawable;
+	float diff1, diff2, widthFactor;
+	ScrollOrient scrollAlignment;
 };
-
-void ZeroRect(RECT&);
-void ZeroRect(D2D1_RECT_F&);
-bool isZeroRect(RECT&);
-bool isZeroRect(D2D1_RECT_F&);
-
-_ANAFACE_DLL void ScrollLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut);
-_ANAFACE_DLL void ScrollLButtonUp(UINT nFlags, TPoint point, messageOutput * mOut);
-_ANAFACE_DLL void ScrollMouseMove(UINT nFlags, TPoint point, messageOutput * mOut);

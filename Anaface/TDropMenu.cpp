@@ -49,7 +49,7 @@ void TDropMenu::onDraw(TObject* obj)
 	if (!currentNode.Get())
 		return;
 	
-	DrawNode(snip.top, currentNode);
+	DrawNode(location.top, currentNode);
 }
 
 /*
@@ -93,7 +93,7 @@ void TDropMenu::DrawNode(long & top, TrecPointer<DropMenuNode> node)
 {
 	if (!node.Get() || !text1.Get() || !dotBrush)
 		return;
-	RECT curLoc = snip;
+	RECT curLoc = location;
 	curLoc.top = top;
 	curLoc.bottom = top + nodeHeight;
 	curLoc.left + 10;
@@ -101,7 +101,7 @@ void TDropMenu::DrawNode(long & top, TrecPointer<DropMenuNode> node)
 
 	text1->setCaption(node->caption);
 	//text1->setNewLocation(curLoc);
-	text1->onDraw(location, snip);
+	text1->onDraw(location);
 
 	if (node->hasChildren)
 	{

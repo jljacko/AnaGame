@@ -38,7 +38,7 @@ TControl::TControl(TrecComPointer<ID2D1RenderTarget> rt,TrecPointer<TArray<style
 	overrideParent = true;
 	marginPriority = true;
 	dimensions = NULL;
-	margin = snip = RECT{ 0,0,0,0 };
+	margin = RECT{ 0,0,0,0 };
 	marginSet = false;
 	//PointerCase = TrecPointer<TControl>(this);
 	
@@ -82,7 +82,6 @@ TControl::TControl(TControl & rCont)
 	className = rCont.className;
 	ID = rCont.ID;
 	location = rCont.location;
-	snip = rCont.snip;
 	margin = rCont.margin;
 	vScroll = rCont.vScroll;
 	hScroll = rCont.hScroll;
@@ -200,7 +199,7 @@ TControl::TControl()
 	overrideParent = true;
 	marginPriority = true;
 	dimensions = NULL;
-	margin = snip = RECT{ 0,0,0,0 };
+	margin = RECT{ 0,0,0,0 };
 	marginSet = false;
 	
 	isLayout = false;
@@ -472,11 +471,11 @@ bool TControl::onCreate(RECT contain)
 	 * be as large as the developer desires. The Snip will serve as the location to draw */
 	TrecPointer<TString> valpoint = attributes.retrieveEntry(TString(L"|VerticalScroll"));
 	if (valpoint.Get() && !valpoint->Compare(L"True") && !vScroll) // don't make a new one if one already exists
-		vScroll = new TScrollBar(*this, SCROLL_VERTICAL);
+		vScroll = new TScrollBar(*this, so_vertical);
 
 	valpoint = attributes.retrieveEntry(TString(L"|HorizontalScroll"));
 	if(valpoint.Get() && !valpoint->Compare(L"True") && !hScroll)
-		hScroll = new TScrollBar(*this,SCROLL_HORIZONTAL);
+		hScroll = new TScrollBar(*this, so_horizontal);
 
 	checkMargin(contain);
 	checkHeightWidth(contain);
@@ -498,19 +497,18 @@ bool TControl::onCreate(RECT contain)
 		location.bottom = contain.bottom - heightOffset;
 		location.left = contain.left + widthOffset;
 		location.right = contain.right - widthOffset;
-		snip = location;
 	}
 	else
 	{
 		if (!dimensions || !dimensions->height) // Use Margin regardless, nothing to override it
 		{
-			snip.bottom = contain.bottom - margin.bottom;
-			snip.top = contain.top + margin.top;
+			location.bottom = contain.bottom - margin.bottom;
+			location.top = contain.top + margin.top;
 		}
 		if (!dimensions || !dimensions->width)
 		{
-			snip.left = contain.left + margin.left;
-			snip.right = contain.right - margin.right;
+			location.left = contain.left + margin.left;
+			location.right = contain.right - margin.right;
 		}
 	}
 
@@ -518,20 +516,20 @@ bool TControl::onCreate(RECT contain)
 	{
 		if (dimensions && dimensions->height)
 		{
-			location.top = snip.top;
+			location.top = contain.top + margin.top;
 			location.bottom = location.top + dimensions->height;
-			if ((snip.bottom - snip.top) > (location.bottom - location.top))
-				location.bottom = snip.bottom;
+			if ((contain.bottom - contain.top) > (location.bottom - location.top))
+				location.bottom = contain.bottom - margin.bottom;
 		}
 		else
-			location = snip; // if conlfict with hScroll, next code will resolve
+			location = contain; // if conlfict with hScroll, next code will resolve
 
 
 	}
 	else if (marginPriority)
 	{
-		location.top = snip.top;
-		location.bottom = snip.bottom;
+		location.top = contain.top + margin.top;
+		location.bottom = contain.bottom - margin.bottom;
 		if (dimensions && dimensions->height)
 			dimensions->height = location.bottom - location.top;
 	}
@@ -540,23 +538,23 @@ bool TControl::onCreate(RECT contain)
 	{
 		if (dimensions && dimensions->width)
 		{
-			location.left = snip.left;
+			location.left = contain.left + margin.left;
 			location.right = location.left + dimensions->width;
-			if ((snip.right - snip.left) > (location.right - location.left))
-				location.right = snip.right;
+			if ((contain.right - contain.left) > (location.right - location.left))
+				location.right = contain.right - margin.right;
 		}
 		else
 		{
-			location.left = snip.left;
-			location.right = snip.right;
+			location.left = contain.left + margin.left;
+			location.right = contain.right - margin.right;
 		}
 
 
 	}
 	else if (marginPriority)
 	{
-		location.left = snip.left;
-		location.right = snip.right;
+		location.left = contain.left + margin.left;
+		location.right = contain.right - margin.right;
 		if (dimensions && dimensions->width)
 			dimensions->width = location.right - location.left;
 	}
@@ -715,7 +713,7 @@ TrecPointer<styleTable> classy;
 		switch (shape)
 		{
 		case T_Rect:
-			content1->onCreate(location,snip);
+			content1->onCreate(location);
 			break;
 		case T_Rounded_Rect:
 			content1->onCreate(roundedRect);
@@ -751,7 +749,7 @@ TrecPointer<styleTable> classy;
 		switch (shape)
 		{
 		case T_Rect:
-			content2->onCreate(location,snip);
+			content2->onCreate(location);
 			break;
 		case T_Rounded_Rect:
 			content2->onCreate(roundedRect);
@@ -788,7 +786,7 @@ TrecPointer<styleTable> classy;
 		switch (shape)
 		{
 		case T_Rect:
-			content3->onCreate(location,snip);
+			content3->onCreate(location);
 			break;
 		case T_Rounded_Rect:
 			content3->onCreate(roundedRect);
@@ -832,12 +830,6 @@ TrecPointer<styleTable> classy;
 
 	}
 
-/*	for (int c = 0; c < children.Count();c++)
-	{
-		if(children.ElementAt(c))
-		children.ElementAt(c)->onCreate(location);
-	}*/
-
 	valpoint = attributes.retrieveEntry(TString(L"|FlyoutLocation"));
 	if (valpoint.Get() && flyout)
 		flyout->onCreate(convertStringToRECT(valpoint.Get()));
@@ -847,6 +839,9 @@ TrecPointer<styleTable> classy;
 
 
 	updateComponentLocation();
+
+	// Now see if any child element extends beyond 
+	CheckScroll();
 
 	return true;
 }
@@ -890,6 +885,7 @@ void TControl::Resize(RECT r)
 	}
 	location = r;
 	updateComponentLocation();
+	CheckScroll();
 }
 
 /*
@@ -942,11 +938,11 @@ bool TControl::onScroll(int x, int y)
 		TControl* cont = children.ElementAt(c).Get();
 		if (!cont)    // don't work with a null pointer
 			continue;
-		cont->onBeingScrolled(x, y, snip);
+		cont->onBeingScrolled(x, y);
 	}
 
 	updateComponentLocation();
-
+	CheckScroll();
 	return false;
 }
 
@@ -958,7 +954,7 @@ bool TControl::onScroll(int x, int y)
 *				const RECT& p_snip - the area of the parent control
 * Returns: bool - success
 */
-bool TControl::onBeingScrolled(int x, int y, const RECT & p_snip)
+bool TControl::onBeingScrolled(int x, int y)
 {
 	// Update real location of TControl
 	location.left += x;
@@ -966,52 +962,17 @@ bool TControl::onBeingScrolled(int x, int y, const RECT & p_snip)
 	location.bottom += y;
 	location.top += y;
 
-	// To-Do: check to see if zero'd snips need to be restored
-
-
-
-	// if p_snip is zero, just zero snip, else update snip as usual
-	if (isSnipZero(p_snip))
-		zeroSnip(snip);
-	else
-	{
-		snip.left += x;
-		snip.right += x;
-		snip.bottom += y;
-		snip.top += y;
-	}
-
-	// Make the appropriate adjustments to the snip based off of provided snip
-	if (snip.bottom < p_snip.top)
-		zeroSnip(snip);
-	else if (snip.top < p_snip.top)
-		snip.top = p_snip.top;
-
-	if (snip.top > p_snip.bottom)
-		zeroSnip(snip);
-	else if (snip.bottom > p_snip.bottom)
-		snip.bottom = p_snip.bottom;
-
-	if (snip.left > p_snip.right)
-		zeroSnip(snip);
-	else if (snip.right > p_snip.right)
-		snip.right = p_snip.right;
-
-	if (snip.right < p_snip.left)
-		zeroSnip(snip);
-	else if (snip.left < p_snip.left)
-		snip.left = p_snip.left;
 
 	for (int c = 0; c < children.Count(); c++)
 	{
 		TControl* cont = children.ElementAt(c).Get();
 		if (!cont)    // don't work with a null pointer
 			continue;
-		cont->onBeingScrolled(x, y, snip);
+		cont->onBeingScrolled(x, y);
 	}
 
 	updateComponentLocation();
-
+	CheckScroll();
 	return false;
 }
 
@@ -1027,11 +988,8 @@ void TControl::scroll(RECT& loc)
 
 	TControl* sh_parent = parent.Get();
 
-	if (isSnipZero(snip) && sh_parent)
-		sh_parent->scroll(loc);
-
 	// Test for need to Vertically Scroll
-	if (loc.bottom < snip.top)
+	if (loc.bottom < location.top)
 	{
 		if (!vScroll && sh_parent)
 		{
@@ -1040,7 +998,7 @@ void TControl::scroll(RECT& loc)
 		}
 
 	}
-	else if (loc.top > snip.bottom)
+	else if (loc.top > location.bottom)
 	{
 		if (!vScroll && sh_parent)
 		{
@@ -1049,7 +1007,7 @@ void TControl::scroll(RECT& loc)
 		}
 	}
 
-	if (loc.left > snip.right)
+	if (loc.left > location.right)
 	{
 		if (!hScroll && sh_parent)
 		{
@@ -1057,7 +1015,7 @@ void TControl::scroll(RECT& loc)
 			return;
 		}
 	}
-	else if (loc.right < snip.left)
+	else if (loc.right < location.left)
 	{
 		if (!hScroll && sh_parent)
 		{
@@ -1168,55 +1126,72 @@ void TControl::onDraw(TObject* obj)
 {
 	if (!isActive)
 		return;
+
+	ID2D1Layer* layer = nullptr;
+
+	if (vScroll || hScroll)
+	{
+		renderTarget->CreateLayer(&layer);
+		D2D1_RECT_F f_loc;
+		convertCRectToD2DRect(&location, &f_loc);
+		renderTarget->PushLayer(D2D1::LayerParameters(f_loc), layer);
+	}
+
 	if (mState == mouseLClick)
 	{
 		if (content3.Get())
-			content3->onDraw(location, snip);
+			content3->onDraw(location);
 		else if (content1.Get())
-			content1->onDraw(location, snip);
+			content1->onDraw(location);
 		if (border3.Get())
-			border3->onDraw(location, snip);
+			border3->onDraw(location);
 		else if (border1.Get())
-			border1->onDraw(location, snip);
+			border1->onDraw(location);
 		if (text3.Get())
-			text3->onDraw(location, snip, obj);
+			text3->onDraw(location, obj);
 		else if (text1.Get())
-			text1->onDraw(location, snip, obj);
+			text1->onDraw(location, obj);
 	}
 	else if (mState == mouseHover)
 	{
 		if (content2.Get())
-			content2->onDraw(location, snip);
+			content2->onDraw(location);
 		else if (content1.Get())
-			content1->onDraw(location, snip);
+			content1->onDraw(location);
 		if (border2.Get())
-			border2->onDraw(location, snip);
+			border2->onDraw(location);
 		else if (border1.Get())
-			border1->onDraw(location, snip);
+			border1->onDraw(location);
 		if (text2.Get())
-			text2->onDraw(location, snip, obj);
+			text2->onDraw(location, obj);
 		else if (text1.Get())
-			text1->onDraw(location, snip, obj);
+			text1->onDraw(location, obj);
 	}
 	else
 	{
 		if (content1.Get())
-			content1->onDraw(location, snip);
+			content1->onDraw(location);
 		if (border1.Get())
-			border1->onDraw(location, snip);
+			border1->onDraw(location);
 		if (text1.Get())
-			text1->onDraw(location, snip, obj);
+			text1->onDraw(location, obj);
 	}
 
 	if (vScroll)
-		vScroll->updateDraw();
+		vScroll->onDraw(renderTarget.Get());
 	if (hScroll)
-		hScroll->updateDraw();
+		hScroll->onDraw(renderTarget.Get());
 
 	for (int c = 0; c < children.Count(); c++)
 	{
 		children.ElementAt(c)->onDraw(obj);
 	}
+	if (layer)
+	{
+		renderTarget->PopLayer();
+		layer->Release();
+	}
+		layer = nullptr;
 }
 
 /*
@@ -1228,17 +1203,6 @@ void TControl::onDraw(TObject* obj)
 RECT TControl::getLocation()
 {
 	return location;
-}
-
-/*
-* Method: TControl - getSnip
-* Purpose: Retrieves the area of the screen the control can currently draw to
-* Parameters: void
-* Returns: RECT - the snip that can be drawn
-*/
-RECT TControl::getSnip()
-{
-	return snip;
 }
 
 /*
@@ -1314,8 +1278,6 @@ void TControl::offsetLocation(TPoint cp)
 	location.bottom = location.top + height;
 	location.right = location.left + width;
 
-	snip = location;
-
 	updateComponentLocation();
 }
 
@@ -1329,11 +1291,6 @@ void TControl::ShiftHorizontal(int degrees)
 {
 	location.left += degrees;
 	location.right += degrees;
-	if (!isSnipZero(convertRECTToD2DRectF(snip)))
-	{
-		snip.left += degrees;
-		snip.right += degrees;
-	}
 
 	if (text1.Get())
 		text1->ShiftHorizontal(degrees);
@@ -1367,11 +1324,6 @@ void TControl::ShiftVertical(int degrees)
 {
 	location.top += degrees;
 	location.bottom += degrees;
-	if (!isSnipZero(convertRECTToD2DRectF(snip)))
-	{
-		snip.top += degrees;
-		snip.bottom += degrees;
-	}
 
 	if (text1.Get())
 		text1->ShiftVertical(degrees);
@@ -1586,8 +1538,6 @@ UINT TControl::determineMinHeightNeeded()
 void TControl::SetNewLocation(const RECT & r)
 {
 	location = r;
-	if (!isSnipZero(convertRECTToD2DRectF(snip)))
-		snip = r;
 
 	if (text1.Get())
 	{
@@ -1607,32 +1557,26 @@ void TControl::SetNewLocation(const RECT & r)
 	if (border1.Get())
 	{
 		border1->loci = convertRECTToD2DRectF(r);
-		border1->snip = convertRECTToD2DRectF(snip);
 	}
 	if (border2.Get())
 	{
 		border2->loci = convertRECTToD2DRectF(r);
-		border2->snip = convertRECTToD2DRectF(snip);
 	}
 	if (border3.Get())
 	{
 		border3->loci = convertRECTToD2DRectF(r);
-		border3->snip = convertRECTToD2DRectF(snip);
 	}
 	if (content1.Get())
 	{
 		content1->location = convertRECTToD2DRectF(r);
-		content1->snip = convertRECTToD2DRectF(snip);
 	}
 	if (content2.Get())
 	{
 		content2->location = convertRECTToD2DRectF(r);
-		content2->snip = convertRECTToD2DRectF(snip);
 	}
 	if (content3.Get())
 	{
 		content3->location = convertRECTToD2DRectF(r);
-		content3->snip = convertRECTToD2DRectF(snip);
 	}
 }
 
@@ -2769,17 +2713,14 @@ void TControl::updateComponentLocation()
 	// Borders
 	if (border1.Get())
 	{
-		convertCRectToD2DRect(&snip, &(border1->snip));
 		convertCRectToD2DRect(&location, &(border1->loci));
 	}
 	if (border2.Get())
 	{
-		convertCRectToD2DRect(&snip, &(border2->snip));
 		convertCRectToD2DRect(&location, &(border2->loci));
 	}
 	if (border3.Get())
 	{
-		convertCRectToD2DRect(&snip, &(border3->snip));
 		convertCRectToD2DRect(&location, &(border3->loci));
 	}
 
@@ -2800,20 +2741,77 @@ void TControl::updateComponentLocation()
 	// Content
 	if (content1.Get())
 	{
-		convertCRectToD2DRect(&snip, &(content1->snip));
 		convertCRectToD2DRect(&location, &(content1->location));
 	}
 	if (content2.Get())
 	{
-		convertCRectToD2DRect(&snip, &(content2->snip));
 		convertCRectToD2DRect(&location, &(content2->location));
 	}
 	if (content3.Get())
 	{
-		convertCRectToD2DRect(&snip, &(content3->snip));
 		convertCRectToD2DRect(&location, &(content3->location));
 	}
 
+}
+
+void TControl::CheckScroll()
+{
+	RECT area = location;
+
+	bool needV = false, needH = false;
+
+	for (UINT c = 0; c < children.Count(); c++)
+	{
+		auto con = children.ElementAt(c).Get();
+		if (!con) continue;
+
+		RECT cLoc = con->getLocation();
+
+		if (cLoc.bottom > area.bottom)
+		{
+			area.bottom = cLoc.bottom;
+			needV = true;
+		}
+		if (cLoc.top < area.top)
+		{
+			needV = true;
+			area.top = cLoc.top;
+		}
+		if (cLoc.right > area.right)
+		{
+			area.right = cLoc.right;
+			needH = true;
+		}
+		if (cLoc.left < area.left)
+		{
+			area.left = cLoc.left;
+			needH = true;
+		}
+	}
+
+	if (needV)
+	{
+		if (!vScroll)
+			vScroll = new TScrollBar(*this, so_vertical);
+		vScroll->Refresh(location, area);
+	}
+	else if (vScroll)
+	{
+		delete vScroll;
+		vScroll = nullptr;
+	}
+
+	if (needH)
+	{
+		if (hScroll)
+			hScroll = new TScrollBar(*this, so_horizontal);
+		hScroll->Refresh(location, area);
+	}
+	else if (hScroll)
+	{
+		delete hScroll;
+		hScroll = nullptr;
+	}
 }
 
 
@@ -2951,29 +2949,19 @@ void TControl::checkMargin(RECT contain)
 		marginSet = true;
 	}
 	
-	if (snip.bottom == 0 && snip.right == 0)
+	if (location.bottom == 0 && location.right == 0)
 	{
-		snip.bottom = contain.bottom - margin.bottom;
-		snip.left = contain.left + margin.left;
-		snip.top = contain.top + margin.top;
-		snip.right = contain.right - margin.right;
+		location.bottom = contain.bottom - margin.bottom;
+		location.left = contain.left + margin.left;
+		location.top = contain.top + margin.top;
+		location.right = contain.right - margin.right;
 	}
 	else
 	{
-		snip.bottom = snip.bottom - margin.bottom;
-		snip.left = snip.left + margin.left;
-		snip.right = snip.right - margin.right;
-		snip.top = snip.top + margin.top;
-	}
-	if (!hScroll)
-	{
-		location.left = snip.left;
-		location.right = snip.right;
-	}
-	if (!vScroll)
-	{
-		location.top = snip.top;
-		location.bottom = snip.bottom;
+		location.bottom = location.bottom - margin.bottom;
+		location.left = location.left + margin.left;
+		location.right = location.right - margin.right;
+		location.top = location.top + margin.top;
 	}
 }
 
@@ -3627,7 +3615,7 @@ afx_msg void TControl::Builder_OnLButtonDown(UINT flags, TPoint point, TControl*
 		}
 	}
 	
-	if (isContained(&point, &snip))
+	if (isContained(&point, &location))
 	{
 		*o = positiveOverrideUpdate;
 		onClickFocus = true;
@@ -3639,7 +3627,7 @@ afx_msg void TControl::Builder_OnLButtonDown(UINT flags, TPoint point, TControl*
 		onClickFocus = onFocus = leftBorder = rightBorder = topBorder = bottomBorder = false;
 		*o = negativeUpdate;
 	}
-	if (abs((double)point.x - (double)snip.left) < 5)
+	if (abs((double)point.x - (double)location.left) < 5)
 	{
 		*o = positiveOverrideUpdate;
 		onClickFocus = true;
@@ -3650,7 +3638,7 @@ afx_msg void TControl::Builder_OnLButtonDown(UINT flags, TPoint point, TControl*
 		bottomBorder = false;
 		return;
 	}
-	if (abs((double)point.x - (double)snip.right) < 5)
+	if (abs((double)point.x - (double)location.right) < 5)
 	{
 		*o = positiveOverrideUpdate;
 		onClickFocus = true;
@@ -3661,7 +3649,7 @@ afx_msg void TControl::Builder_OnLButtonDown(UINT flags, TPoint point, TControl*
 		bottomBorder = false;
 		return;
 	}
-	if (abs((double)point.y - (double)snip.top) < 5)
+	if (abs((double)point.y - (double)location.top) < 5)
 	{
 		*o = positiveOverrideUpdate;
 		onClickFocus = true;
@@ -3672,7 +3660,7 @@ afx_msg void TControl::Builder_OnLButtonDown(UINT flags, TPoint point, TControl*
 		bottomBorder = false;
 		return;
 	}
-	if (abs((double)point.y - (double)snip.bottom) < 5)
+	if (abs((double)point.y - (double)location.bottom) < 5)
 	{
 		*o = positiveOverrideUpdate;
 		onClickFocus = true;
@@ -3722,30 +3710,23 @@ afx_msg void TControl::Builder_OnMouseMove(UINT flags, TPoint cp, TControl** mOu
 			margin.left = abs(bounds.left - cp.x);
 
 
-			snip.left = cp.x;
-			if (snip.left > snip.right)
-				switchLongs(snip.left, snip.right);
+			location.left = cp.x;
+			if (location.left > location.right)
+				switchLongs(location.left, location.right);
 			*o = positiveOverrideUpdate;
-			if (!hScroll)
-			{
-				location.left = snip.left;
-				location.right = snip.right;
-			}
+
 
 			if (content1.Get())
 			{
 				content1->location.left = location.left;
-				content1->snip.left = snip.left;
 			}
 			if (content2.Get())
 			{
 				content2->location.left = location.left;
-				content2->snip.left = snip.left;
 			}
 			if (content3.Get())
 			{
 				content3->location.left = location.left;
-				content3->snip.left = snip.left;
 			}
 			if (border1.Get())
 			{
@@ -3768,30 +3749,22 @@ afx_msg void TControl::Builder_OnMouseMove(UINT flags, TPoint cp, TControl** mOu
 
 			margin.right = abs(bounds.right - cp.x);
 
-			snip.right = cp.x;
-			if (snip.left > snip.right)
-				switchLongs(snip.left, snip.right);
+			location.right = cp.x;
+			if (location.left > location.right)
+				switchLongs(location.left, location.right);
 			*o = positiveOverrideUpdate;
-			if (!hScroll)
-			{
-				location.left = snip.left;
-				location.right = snip.right;
-			}
 
 			if (content1.Get())
 			{
 				content1->location.right = location.right;
-				content1->snip.right = snip.right;
 			}
 			if (content2.Get())
 			{
 				content2->location.right = location.right;
-				content2->snip.right = snip.right;
 			}
 			if (content3.Get())
 			{
 				content3->location.right = location.right;
-				content3->snip.right = snip.right;
 			}
 			if (border1.Get())
 			{
@@ -3814,30 +3787,23 @@ afx_msg void TControl::Builder_OnMouseMove(UINT flags, TPoint cp, TControl** mOu
 			margin.top = abs(bounds.top - cp.y);
 
 
-			snip.top = cp.y;
-			if (snip.top > snip.bottom)
-				switchLongs(snip.top, snip.bottom);
-			if (!vScroll)
-			{
-				location.bottom = snip.bottom;
-				location.top = snip.top;
-			}
+			location.top = cp.y;
+			if (location.top > location.bottom)
+				switchLongs(location.top, location.bottom);
+
 			*o = positiveOverrideUpdate;
 
 			if (content1.Get())
 			{
 				content1->location.top = location.top;
-				content1->snip.top = snip.top;
 			}
 			if (content2.Get())
 			{
 				content2->location.top = location.top;
-				content2->snip.top = snip.top;
 			}
 			if (content3.Get())
 			{
 				content3->location.top = location.top;
-				content3->snip.top = snip.top;
 			}
 			if (border1.Get())
 			{
@@ -3858,31 +3824,24 @@ afx_msg void TControl::Builder_OnMouseMove(UINT flags, TPoint cp, TControl** mOu
 		{
 			margin.bottom = abs(bounds.bottom - cp.y);
 
-			snip.bottom = cp.y;
-			if (snip.top > snip.bottom)
-				switchLongs(snip.top, snip.bottom);
-			if (!vScroll)
-			{
-				location.bottom = snip.bottom;
-				location.top = snip.top;
-			}
+			location.bottom = cp.y;
+			if (location.top > location.bottom)
+				switchLongs(location.top, location.bottom);
+
 			*o = positiveOverrideUpdate;
 
 
 			if (content1.Get())
 			{
 				content1->location.bottom = location.bottom;
-				content1->snip.bottom = snip.bottom;
 			}
 			if (content2.Get())
 			{
 				content2->location.bottom = location.bottom;
-				content2->snip.bottom = snip.bottom;
 			}
 			if (content3.Get())
 			{
 				content3->location.bottom = location.bottom;
-				content3->snip.bottom = snip.bottom;
 			}
 			if (border1.Get())
 			{
@@ -4240,55 +4199,36 @@ bool TBorder::onCreate(D2D1_ROUNDED_RECT rr)
 * Parameters: void
 * Returns: void
 */
-void TBorder::onDraw(RECT& loc, RECT& snip)
+void TBorder::onDraw(RECT& loc)
 {
 	
 	//TrecPointer<TControl> cap = TrecPointer<TControl>(cap);
 	if (rt.Get() && brush.Get() && cap)
 	{
-		D2D1_RECT_F f_loc, f_snip;
-		convertCRectToD2DRect(&snip, &f_snip);
+		D2D1_RECT_F f_loc;
 		convertCRectToD2DRect(&loc, &f_loc);
 		bool drawRect = true;
 		//if (snip.left > loci.left || snip.top > loci.top ||
 			//snip.right < loci.right || snip.bottom < loci.bottom)
 		//	drawRect = false;
 
-
-		if (loc == snip)
+		switch(shape)
 		{
-			switch (shape)
-			{
-			case T_Rect:
-				rt->DrawRectangle(&loci, brush.Get(), thickness);
-				break;
-			case T_Rounded_Rect:
-
-				roundedRect.rect = f_snip;
-				rt->DrawRoundedRectangle(&roundedRect, brush.Get(), thickness);
-				break;
-			case T_Ellipse:
-
-				circle.point.x = (f_snip.right + f_snip.left) / 2;
-				circle.point.y = (f_snip.bottom + f_snip.top) / 2;
-				circle.radiusX = f_snip.right - f_snip.left;
-				circle.radiusY = f_snip.bottom - f_snip.top;
-				rt->DrawEllipse(&circle, brush.Get(), thickness);
-				break;
-			case T_Custom_shape:
-				break;
-			}
-		}
-		else
-		{
-			if (snip.left >= loci.left)
-				rt->DrawLine(D2D1::Point2F(snip.left, snip.top), D2D1::Point2F(snip.left, snip.bottom), brush.Get(), thickness);
-			if (snip.top >= loci.top)
-				rt->DrawLine(D2D1::Point2F(snip.left, snip.top), D2D1::Point2F(snip.right, snip.top), brush.Get(), thickness);
-			if (snip.right <= loci.right)
-				rt->DrawLine(D2D1::Point2F(snip.right, snip.top), D2D1::Point2F(snip.right, snip.bottom), brush.Get(), thickness);
-			if (snip.bottom >= loci.bottom)
-				rt->DrawLine(D2D1::Point2F(snip.left, snip.bottom), D2D1::Point2F(snip.right, snip.bottom), brush.Get(), thickness);
+		case T_Rect:
+			rt->DrawRectangle(&loci, brush.Get(), thickness);
+			break;
+		case T_Rounded_Rect:
+			rt->DrawRoundedRectangle(&roundedRect, brush.Get(), thickness);
+			break;
+		case T_Ellipse:
+			circle.point.x = (f_loc.right + f_loc.left) / 2;
+			circle.point.y = (f_loc.bottom + f_loc.top) / 2;
+			circle.radiusX = f_loc.right - f_loc.left;
+			circle.radiusY = f_loc.bottom - f_loc.top;
+			rt->DrawEllipse(&circle, brush.Get(), thickness);
+			break;
+		case T_Custom_shape:
+			break;
 		}
 		
 		/*if (drawRect)
@@ -4422,11 +4362,6 @@ void TBorder::ShiftHorizontal(int degrees)
 {
 	loci.left += degrees;
 	loci.right += degrees;
-	if (!isSnipZero(snip))
-	{
-		snip.left += degrees;
-		snip.right += degrees;
-	}
 }
 
 /*
@@ -4439,11 +4374,6 @@ void TBorder::ShiftVertical(int degrees)
 {
 	loci.top += degrees;
 	loci.bottom += degrees;
-	if (!isSnipZero(snip))
-	{
-		snip.top += degrees;
-		snip.bottom += degrees;
-	}
 }
 
 /*
@@ -4787,7 +4717,7 @@ void TText::reCreateLayout(TString & str)
 * Parameters: RECT r - the area to draw
 * Returns: bool success
 */
-bool TText::onDraw(RECT& loc, RECT& snip, TObject* obj)
+bool TText::onDraw(RECT& loc, TObject* obj)
 {
 	if (!penBrush.Get() || !rt.Get())
 		return false;
@@ -4802,7 +4732,7 @@ bool TText::onDraw(RECT& loc, RECT& snip, TObject* obj)
 		reCreateLayout(print);
 	}
 	
-	if (convertCRectToD2DRect(&snip, &snipF))
+	if (convertCRectToD2DRect(&loc, &snipF))
 	{
 		bounds = snipF;
 		if (fontLayout.Get())
@@ -5269,7 +5199,7 @@ TContent::TContent(TrecComPointer<ID2D1RenderTarget>rtp, TControl* tc)
 	
 	thickness = 1.0;
 	color = D2D1::ColorF(D2D1::ColorF::Black, 1.0);
-	snip = location = D2D1_RECT_F{ 0,0,0,0 };
+	location = D2D1_RECT_F{ 0,0,0,0 };
 	color2 = D2D1::ColorF(D2D1::ColorF::Black, 1.0);
 	secondColor = false;
 	gradients[0].position = 0.0;
@@ -5291,7 +5221,7 @@ TContent::TContent()
 {
 	thickness = 1.0;
 	color = D2D1::ColorF(D2D1::ColorF::Black, 1.0);
-	snip = location = D2D1_RECT_F{ 0,0,0,0 };
+	location = D2D1_RECT_F{ 0,0,0,0 };
 	color2 = D2D1::ColorF(D2D1::ColorF::Black, 1.0);
 	secondColor = false;
 	gradients[0].position = 0.0;
@@ -5320,7 +5250,6 @@ TContent::TContent(TrecPointer<TContent> &rCont, TControl* tc_holder)
 	style = rCont->style;
 	color = rCont->color;
 	location = rCont->location;
-	snip = rCont->snip;
 	
 	cap = tc_holder;
 	shape = rCont->shape;
@@ -5372,15 +5301,13 @@ TContent::~TContent()
 *				RECT s - the snip, where the control can appear
 * Returns: bool - success (whether the resources are prepared)
 */
-bool TContent::onCreate(RECT l, RECT s)
+bool TContent::onCreate(RECT l)
 {
 
 	location.top = l.top;
 	location.left = l.left;
 	location.right = l.right;
 	location.bottom = l.bottom;
-
-	convertCRectToD2DRect(&s, &snip);
 
 	if (!rt.Get())
 		return false;
@@ -5552,11 +5479,6 @@ void TContent::ShiftHorizontal(int degrees)
 {
 	location.left += degrees;
 	location.right += degrees;
-	if (!isSnipZero(snip))
-	{
-		snip.left += degrees;
-		snip.right += degrees;
-	}
 }
 
 /*
@@ -5569,11 +5491,6 @@ void TContent::ShiftVertical(int degrees)
 {
 	location.top += degrees;
 	location.bottom += degrees;
-	if (!isSnipZero(snip))
-	{
-		snip.top += degrees;
-		snip.bottom += degrees;
-	}
 }
 
 /*
@@ -5582,13 +5499,13 @@ void TContent::ShiftVertical(int degrees)
 * Parameters: void
 * Returns: void
 */
-void TContent::onDraw(RECT& loc, RECT& snip)
+void TContent::onDraw(RECT& loc)
 {
 	if (!rt.Get())
 		return;
 
 	D2D1_RECT_F f_snip;
-	convertCRectToD2DRect(&snip, &f_snip);
+	convertCRectToD2DRect(&loc, &f_snip);
 
 	if (brush.Get())
 	{
@@ -5617,24 +5534,12 @@ void TContent::onDraw(RECT& loc, RECT& snip)
 	{
 		D2D1_RECT_F f_loc;
 		convertCRectToD2DRect(&loc, &f_loc);
-		if(loc == snip)
+
 			rt->DrawBitmap(image.Get(), f_snip);
-		else
-		{
-			D2D1_POINT_2U point{ 0,0 };
-			D2D1_RECT_U cropSnip;
-			cropSnip.bottom = abs(f_loc.bottom - f_snip.bottom);
-			cropSnip.left = abs(f_snip.left - f_loc.left);
-			cropSnip.right = abs(f_loc.right - f_snip.right);
-			cropSnip.top = abs(f_snip.top - f_loc.top);
-			if (cropSnip.bottom < cropSnip.top || cropSnip.right < cropSnip.left)
-				return;
-			cropImage->CopyFromBitmap(&point, image.Get(), &cropSnip);
-			rt->DrawBitmap(cropImage.Get(), f_snip);
-		}
+	
 		//cropImage->CopyFromBitmap(NULL)
 		
-		//rt->DrawBitmap(image, snip, thickness, D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR, location);
+		//rt->DrawBitmap(image, thickness, D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR, location);
 		
 	}
 }
