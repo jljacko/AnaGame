@@ -207,7 +207,7 @@ void TFlyout::Hide()
 *				TDataArray<EventID_Cred>& eventAr - the List of Events in a User's actions
 * Returns: void
 */
-void TFlyout::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr)
+void TFlyout::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr, TDataArray<TControl*>& clickedControl)
 {
 	if (!isShown)
 	{
@@ -220,7 +220,7 @@ void TFlyout::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, TDa
 		*mOut = negativeUpdate;return;
 	}
 
-	TControl::OnLButtonDown(nFlags, point, mOut, eventAr);
+	TControl::OnLButtonDown(nFlags, point, mOut, eventAr, clickedControl);
 }
 
 /*

@@ -88,5 +88,8 @@ protected:
 	TrecPointer<TControl> rootControl;	// The Control to Draw when
 	 TrecPointer<EventHandler> handler; // The class that manages specific actions
 	D2D1_MATRIX_3X2_F adjustMatrix;
+
+	// Anaface Resources
+	TDataArray<TControl*> clickedControl;
 };
 

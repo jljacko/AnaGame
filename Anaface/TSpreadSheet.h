@@ -27,7 +27,7 @@ public:
 	TString GetData();
 	TString GetDataSplitTokens();
 
-	afx_msg void OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr) override;
+	afx_msg void OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr, TDataArray<TControl*>& clickedControl) override;
 
 protected:
 	TString title, splitTokens;

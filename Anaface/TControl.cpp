@@ -1116,6 +1116,11 @@ UCHAR * TControl::GetAnaGameType()
 	return nullptr;
 }
 
+void TControl::SetNormalMouseState()
+{
+	mState = normal;
+}
+
 /*
 * Method: TControl - onDraw
 * Purpose: Draws the control
@@ -3215,7 +3220,7 @@ afx_msg void TControl::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOu
 *				TDataArray<EventID_Cred>& eventAr - allows Controls to add whatever Event Handler they have been assigned
 * Returns: void
 */
-afx_msg void TControl::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+afx_msg void TControl::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr, TDataArray<TControl*>& clickedControls)
 {
 	if (!isActive)
 		return;
@@ -3235,7 +3240,7 @@ afx_msg void TControl::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* m
 	for (int c = 0; c < children.Count();c++)
 	{
 		if (children.ElementAt(c).Get())
-			children.ElementAt(c)->OnLButtonDown(nFlags, point, mOut,eventAr);
+			children.ElementAt(c)->OnLButtonDown(nFlags, point, mOut,eventAr, clickedControls);
 	}
 
 	if (*mOut == positiveOverride || *mOut == positiveOverrideUpdate)
@@ -3259,6 +3264,7 @@ afx_msg void TControl::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* m
 			*mOut = positiveContinue;
 	}
 	mState = mouseLClick;
+	clickedControls.push_back(this);
 	
 	if (hasEvent(On_Click))
 	{
@@ -3334,7 +3340,7 @@ afx_msg void TControl::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* m
 	}
 	for (int c = 0; c < children.Count();c++)
 	{
-		children.ElementAt(c)->OnLButtonDown(nFlags, point, mOut,eventAr);
+		children.ElementAt(c)->OnRButtonDown(nFlags, point, mOut,eventAr);
 		if (*mOut == negative)
 			continue;
 		if (*mOut == positiveOverride || *mOut == positiveOverrideUpdate)
@@ -3386,7 +3392,6 @@ afx_msg void TControl::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOu
 	{
 		if (mState != normal)
 		{
-			mState = normal;
 			*mOut = negativeUpdate;
 		}
 		else
@@ -3404,7 +3409,6 @@ afx_msg void TControl::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOu
 
 	if (*mOut == positiveOverride || *mOut == positiveOverrideUpdate)
 	{
-		mState = normal;
 		return;
 	}
 
@@ -3422,7 +3426,8 @@ afx_msg void TControl::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOu
 		else
 			*mOut = positiveContinue;
 	}
-	mState = mouseHover;
+	if(mState != mouseLClick)
+		mState = mouseHover;
 
 	if (hasEvent(On_Hover))
 	{

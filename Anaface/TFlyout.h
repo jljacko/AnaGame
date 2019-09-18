@@ -24,7 +24,7 @@ public:
 	void onDraw(TObject* obj = nullptr) override;
 	bool Show(appearCondition);
 	void Hide();
-	afx_msg void OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
+	afx_msg void OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr, TDataArray<TControl*>& clickedControl);
 	static TFlyout* DoDraw();
 	virtual UCHAR* GetAnaGameType()override;
 protected:

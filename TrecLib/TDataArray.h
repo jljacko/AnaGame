@@ -407,7 +407,7 @@ public:
 	{
 		if (array)
 			delete[] array;
-		array = new (T*)[capacity = 5];
+		array = new T*[capacity = 5];
 		size = 0;
 	}
 

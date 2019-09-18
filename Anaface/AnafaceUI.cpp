@@ -115,7 +115,7 @@ void AnafaceUI::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDat
 *			TDataArray<EventID_Cred>& eventAr - events and their handlers documented by the control
 * Returns: void
 */
-void AnafaceUI::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr)
+void AnafaceUI::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr, TDataArray<TControl*>& clickedControl)
 {
 	if (tabs)
 	{
@@ -128,7 +128,7 @@ void AnafaceUI::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, T
 				continue;
 			
 			messageOutput tempOut = negative;
-			tcon->OnLButtonDown(nFlags, point, &tempOut, eventAr);
+			tcon->OnLButtonDown(nFlags, point, &tempOut, eventAr, clickedControl);
 			if (tempOut != negative && tempOut != negativeUpdate)
 			{
 				if (children.Count() > c && children.ElementAt(c).Get())
@@ -142,7 +142,7 @@ void AnafaceUI::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, T
 	}
 
 	if (currentControl.Get() && proceed)
-		currentControl->OnLButtonDown(nFlags, point, mOut, eventAr);
+		currentControl->OnLButtonDown(nFlags, point, mOut, eventAr, clickedControl);
 }
 
 void AnafaceUI::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)

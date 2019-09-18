@@ -365,7 +365,7 @@ bool TComboBox::GetExtensionStatus()
 *				TDataArray<EventID_Cred>& eventAr - allows Controls to add whatever Event Handler they have been assigned
 * Returns: void
 */
-void TComboBox::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr)
+void TComboBox::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr, TDataArray<TControl*>& clickedControl)
 {
 	resetArgs();
 
@@ -379,7 +379,7 @@ void TComboBox::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, T
 	if (!isContained(&point, &location) && !isContained(&point, &MFC_extended_Space))
 	{
 		showExtended =prepShowExtended = false;
-		TControl::OnLButtonDown(nFlags, point, mOut, eventAr);
+		TControl::OnLButtonDown(nFlags, point, mOut, eventAr, clickedControl);
 		return;
 	}
 //	*mOut = positiveOverrideUpdate;
@@ -405,7 +405,7 @@ void TComboBox::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, T
 
 		if(extensionClear)
 			prepShowExtended = !prepShowExtended;
-		TControl::OnLButtonDown(nFlags, point, mOut,eventAr);
+		TControl::OnLButtonDown(nFlags, point, mOut,eventAr, clickedControl);
 		
 	}
 
@@ -419,7 +419,7 @@ void TComboBox::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, T
 				tc = children.ElementAt(c);
 			if (tc.Get())
 			{
-				tc->OnLButtonDown(nFlags, point, mOut,eventAr);
+				tc->OnLButtonDown(nFlags, point, mOut,eventAr, clickedControl);
 				if (*mOut == negative || *mOut == negativeUpdate)
 					continue;
 

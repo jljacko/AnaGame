@@ -225,7 +225,7 @@ TString TSpreadSheet::GetDataSplitTokens()
 	return splitTokens;
 }
 
-void TSpreadSheet::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr)
+void TSpreadSheet::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr, TDataArray<TControl*>& clickedControl)
 {
 	if (!isContained(&point, &location))
 		return;
@@ -283,5 +283,5 @@ void TSpreadSheet::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut
 		tc = cc->contain;
 	}
 
-	tc->OnLButtonDown(nFlags, point, mOut, eventAr);
+	tc->OnLButtonDown(nFlags, point, mOut, eventAr, clickedControl);
 }

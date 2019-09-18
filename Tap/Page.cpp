@@ -356,7 +356,7 @@ void Page::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArra
 void Page::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
 	if (rootControl.Get())
-		rootControl->OnLButtonDown(nFlags, point, mOut, eventAr);
+		rootControl->OnLButtonDown(nFlags, point, mOut, eventAr, clickedControl);
 }
 
 void Page::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
@@ -379,8 +379,31 @@ void Page::OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut, TData
 
 void Page::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
+	UINT curSize = clickedControl.Size();
+	for (UINT c = 0; c < clickedControl.Size(); c++)
+	{
+		if (clickedControl[c])
+			clickedControl[c]->SetNormalMouseState();
+	}
+	clickedControl.RemoveAll();
+
 	if (rootControl.Get())
 		rootControl->OnLButtonUp(nFlags, point, mOut, eventAr);
+
+	if (curSize)
+	{
+		switch (*mOut)
+		{
+		case negative:
+			*mOut = negativeUpdate;
+			break;
+		case positiveContinue:
+			*mOut = positiveContinueUpdate;
+			break;
+		case positiveOverride:
+			*mOut = positiveOverrideUpdate;
+		}
+	}
 }
 
 bool Page::OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)

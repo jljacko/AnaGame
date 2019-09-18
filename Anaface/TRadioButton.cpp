@@ -133,10 +133,10 @@ void TRadioButton::onDraw(TObject* obj)
 *				TDataArray<EventID_Cred>& eventAr - list of events to respond to
 * Returns: void
 */
-void TRadioButton::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr)
+void TRadioButton::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr, TDataArray<TControl*>& clickedControl)
 {
 	resetArgs();
-	TControl::OnLButtonDown(nFlags, point, mOut, eventAr);
+	TControl::OnLButtonDown(nFlags, point, mOut, eventAr, clickedControl);
 
 	if (isContained(&point, &location))
 	{

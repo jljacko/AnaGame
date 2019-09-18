@@ -509,7 +509,7 @@ void TTextField::SetNewLocation(const RECT & r)
 *				TDataArray<EventID_Cred>& eventAr - allows Controls to add whatever Event Handler they have been assigned
 * Returns: void
 */
-afx_msg void TTextField::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+afx_msg void TTextField::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr, TDataArray<TControl*>& clickedControl)
 {
 	resetArgs();
 	BOOL trailing = false, isInside = false;
@@ -613,7 +613,7 @@ parentCall:
 
 		*mOut = positiveContinueUpdate;
 	}
-	TControl::OnLButtonDown(nFlags, point, mOut,eventAr);
+	TControl::OnLButtonDown(nFlags, point, mOut,eventAr, clickedControl);
 
 	if (onFocus)
 	{

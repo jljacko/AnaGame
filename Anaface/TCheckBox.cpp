@@ -94,7 +94,7 @@ bool TCheckBox::IsClicked()
 *				TDataArray<EventID_Cred>& eventAr - the List of Events in a User's actions
 * Returns: void
 */
-void TCheckBox::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr)
+void TCheckBox::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr, TDataArray<TControl*>& clickedControl)
 {	
 	resetArgs();
 	if (isContained(&point, &location))
@@ -115,7 +115,7 @@ void TCheckBox::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, T
 		}
 
 	}
-	TControl::OnLButtonDown(nFlags, point, mOut,eventAr);
+	TControl::OnLButtonDown(nFlags, point, mOut,eventAr, clickedControl);
 }
 
 /*
