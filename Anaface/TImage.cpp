@@ -162,6 +162,13 @@ void TImage::onDraw(TObject* obj)
 	renderTarget->SetTransform(identityMatrix);
 }
 
+void TImage::SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget>rt)
+{
+	TControl::SetNewRenderTarget(rt);
+
+	// To Do:: Enable switch
+}
+
 void MarkPixels(TPoint& startPoint, UINT idealPixel, float tolerance, TDataArray<TDataArray<PixelMark>>& pixels)
 {
 }

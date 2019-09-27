@@ -18,6 +18,8 @@ public:
 	bool onCreate(RECT);
 	virtual UCHAR* GetAnaGameType()override;
 
+	virtual void SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget>);
+
 	void Resize(RECT r) override;
 protected:
 	int bSize;

@@ -356,6 +356,15 @@ bool TComboBox::GetExtensionStatus()
 	return showExtended;
 }
 
+void TComboBox::SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget>rt)
+{
+	TControl::SetNewRenderTarget(rt);
+
+	TrecComPointer<ID2D1SolidColorBrush>::TrecComHolder extendedBrushRaw;
+	HRESULT brushRes = renderTarget->CreateSolidColorBrush(whiteColor, extendedBrushRaw.GetPointerAddress());
+	extendedBrush = extendedBrushRaw.Extract();
+}
+
 /*
 * Method: TComboBox - OnLButtonDown
 * Purpose: Determins if the Combo-Box was clicked and if so, which element

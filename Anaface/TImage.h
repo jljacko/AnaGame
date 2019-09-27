@@ -29,6 +29,8 @@ public:
 	UINT rotate(TPoint& point);
 	virtual void onDraw(TObject* obj) override;
 
+	virtual void SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget>);
+
 protected:
 	D2D1_MATRIX_3X2_F rotation;
 	TrecPointer<TContent> cover;

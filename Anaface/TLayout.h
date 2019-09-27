@@ -87,6 +87,8 @@ public:
 
 	virtual UCHAR* GetAnaGameType()override;
 
+	virtual void SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget> rt);
+
 protected:
 	TArray<containerControl> lChildren;   // used to organize children more easily than regular TControl
 	//RECT expand; // if combobox

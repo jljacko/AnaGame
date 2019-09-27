@@ -175,6 +175,9 @@ private:
 
 	TrecComPointer<ID2D1Brush> brush;												// The Brush to Paint with
 
+	void SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget>);
+	void ResetBrush();
+
 	TrecComPointer <ID2D1SolidColorBrush> BuilderFocusBrush;						// Used by the Builder to Highlight Controls under editing
 	float thickness = 1.0f;											// Thickness
 	TString style;													// Holds a special style, NOTE: Feature not Implemented
@@ -271,7 +274,10 @@ public:
 private:
 	//CMap<CString, CString, CString, CString> styles;
 	TrecComPointer<ID2D1RenderTarget> rt;								// Render Target to focus on
-	TrecComPointer<IDWriteFactory> writeFact;							// Direct Write Factory
+	TrecComPointer<IDWriteFactory> writeFact;// Direct Write Factory
+	
+	void SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget>);
+	void ResetBrush();
 	
 	D2D1_RECT_F bounds;									// Location of the text
 	TString text;										// Text stored
@@ -339,7 +345,8 @@ public:
 
 private:
 	TrecComPointer<ID2D1GradientStopCollection> getStopCollection(TDataArray<D2D1_COLOR_F>& colors);
-
+	void SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget>);
+	void ResetBrush();
 
 	//CMap<CString, CString, CString, CString> styles;
 	TrecComPointer<ID2D1RenderTarget> rt;
@@ -375,44 +382,6 @@ private:
 	void BreakShared();
 };
 
-/*
-class _ANAFACE_DLL TContainer
-{
-	friend class TControl;
-	friend class TLayout;
-	friend class TComboBox;
-	friend class TContextMenu;
-public:
-	TContainer();
-	virtual ~TContainer();
-	bool setTControl(TrecPointer<TControl>);
-	bool onCreate(RECT, RECT);
-	bool onCreate(RECT);
-	bool onCreate();
-	void onDraw();
-	RECT getLocation();
-	void ShiftHorizontal(int degrees);
-	void ShiftVertical(int degrees);
-
-	void OnLButtonUp(UINT, TPoint, messageOutput*, TDataArray<EventID_Cred>& eventAr);
-	void OnLButtonDown(UINT, TPoint, messageOutput*, TDataArray<EventID_Cred>& eventAr);
-	void OnMouseMove(UINT, TPoint, messageOutput*, TDataArray<EventID_Cred>& eventAr);
-
-	TrecPointer<TControl> getChildControl();
-	int storeInTML(CArchive * ar, int childLevel);
-	void storeInHTML(CArchive * ar);
-	void setParent(TrecPointer<TControl>);
-	void setLocation(RECT& r);
-
-private:
-	RECT location, snip;
-	TrecPointer<TControl> child;
-//	int storeInTML(CArchive* ar, int childLevel);
-	bool beenCreated;
-	bool ChildCreate(RECT);
-	void ChildDraw();
-	//void BreakShared();
-};*/
 
 
 class _ANAFACE_DLL TControl : public TObject
@@ -430,6 +399,8 @@ public:
 	virtual ~TControl();
 
 	void SetSelf(TrecPointer<TControl> self);
+
+	virtual void SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget>);
 
 	//virtual int loadFromTML(CArchive* ar);
 	virtual int loadFromHTML(TFile* ar);

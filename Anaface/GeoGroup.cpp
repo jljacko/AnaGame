@@ -25,6 +25,7 @@ GeoGroup::~GeoGroup()
 
 bool GeoGroup::onCreate(RECT r)
 {
+	loc = r;
 	TrecPointer<TString> valpoint = attributes.retrieveEntry(TString(L"|FillBrush"));
 	if(valpoint.Get())
 	{
@@ -79,42 +80,7 @@ bool GeoGroup::onCreate(RECT r)
 	if (valpoint.Get() && !valpoint->Compare(L"False"))
 		crunch = false;
 
-
-	if(!brush.Get())
-		return false;
-
-	if (!secondColor)
-	{
-		TrecComPointer<ID2D1SolidColorBrush>::TrecComHolder solBrush;
-		renderTarget->CreateSolidColorBrush(color1, solBrush.GetPointerAddress());
-		brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1SolidColorBrush>(solBrush);
-	}
-	else
-	{
-		TrecComPointer<ID2D1GradientStopCollection>::TrecComHolder gsc;
-		renderTarget->CreateGradientStopCollection(gradients, 2, gsc.GetPointerAddress());
-		stopColl = gsc.Extract();
-		if (useRadial)
-		{
-			TrecComPointer<ID2D1RadialGradientBrush>::TrecComHolder radBrush;
-			renderTarget->CreateRadialGradientBrush(D2D1::RadialGradientBrushProperties(
-				D2D1::Point2F(r.left, r.top),
-				D2D1::Point2F(r.right, r.bottom),
-				r.right - r.left, r.bottom - r.top),
-				stopColl.Get(), radBrush.GetPointerAddress());
-			brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1RadialGradientBrush>(radBrush);
-		}
-		else
-		{
-			TrecComPointer<ID2D1LinearGradientBrush>::TrecComHolder linBrush;
-			renderTarget->CreateLinearGradientBrush(D2D1::LinearGradientBrushProperties(
-				D2D1::Point2F(r.left, r.top),
-				D2D1::Point2F(r.right, r.bottom)),
-				stopColl.Get(), linBrush.GetPointerAddress());
-			brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1LinearGradientBrush>(linBrush);
-		}
-
-	}
+	ResetBrush();
 
 
 	for (int c = 0; c < children.Count();c++)
@@ -144,11 +110,57 @@ bool GeoGroup::addAttribute(WCHAR * attr, TrecPointer<TString> value)
 	return true;
 }
 
+void GeoGroup::SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget> rt)
+{
+	if (!rt.Get())
+		throw L"Error! Expected Render Target to be initialized!";
+
+	renderTarget = rt;
+
+	ResetBrush();
+}
+
 void GeoGroup::addGeometry(TrecPointer<TGeometry> tg)
 {
 	if (tg.Get())
 	{
 		children.Add(tg);
+	}
+}
+
+void GeoGroup::ResetBrush()
+{
+	if (!secondColor)
+	{
+		TrecComPointer<ID2D1SolidColorBrush>::TrecComHolder solBrush;
+		renderTarget->CreateSolidColorBrush(color1, solBrush.GetPointerAddress());
+		brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1SolidColorBrush>(solBrush);
+	}
+	else
+	{
+		TrecComPointer<ID2D1GradientStopCollection>::TrecComHolder gsc;
+		renderTarget->CreateGradientStopCollection(gradients, 2, gsc.GetPointerAddress());
+		stopColl = gsc.Extract();
+		if (useRadial)
+		{
+			TrecComPointer<ID2D1RadialGradientBrush>::TrecComHolder radBrush;
+			renderTarget->CreateRadialGradientBrush(D2D1::RadialGradientBrushProperties(
+				D2D1::Point2F(loc.left, loc.top),
+				D2D1::Point2F(loc.right, loc.bottom),
+				loc.right - loc.left, loc.bottom - loc.top),
+				stopColl.Get(), radBrush.GetPointerAddress());
+			brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1RadialGradientBrush>(radBrush);
+		}
+		else
+		{
+			TrecComPointer<ID2D1LinearGradientBrush>::TrecComHolder linBrush;
+			renderTarget->CreateLinearGradientBrush(D2D1::LinearGradientBrushProperties(
+				D2D1::Point2F(loc.left, loc.top),
+				D2D1::Point2F(loc.right, loc.bottom)),
+				stopColl.Get(), linBrush.GetPointerAddress());
+			brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1LinearGradientBrush>(linBrush);
+		}
+
 	}
 }
 

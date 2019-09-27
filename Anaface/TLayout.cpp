@@ -1378,3 +1378,15 @@ UCHAR * TLayout::GetAnaGameType()
 {
 	return nullptr;
 }
+
+void TLayout::SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget> rt)
+{
+	TControl::SetNewRenderTarget(rt);
+
+	if (internalInit && renderTarget.Get())
+	{
+		TrecComPointer<ID2D1SolidColorBrush>::TrecComHolder solBrush;
+		renderTarget->CreateSolidColorBrush(internalColor, solBrush.GetPointerAddress());
+		internalBrush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1SolidColorBrush>(solBrush);
+	}
+}

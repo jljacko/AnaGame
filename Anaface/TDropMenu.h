@@ -27,6 +27,8 @@ public:
 	bool onCreate(RECT l) override;
 	void onDraw(TObject* obj = nullptr) override;
 
+	virtual void SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget>) override;
+
 	bool SetFolderAsRoot(TString& folder);
 	virtual UCHAR* GetAnaGameType()override;
 protected:

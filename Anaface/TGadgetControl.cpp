@@ -120,6 +120,15 @@ UCHAR * TGadgetControl::GetAnaGameType()
 	return nullptr;
 }
 
+void TGadgetControl::SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget> rt)
+{
+	TControl::SetNewRenderTarget(rt);
+
+	TrecComPointer<ID2D1SolidColorBrush>::TrecComHolder brushRaw;
+	renderTarget->CreateSolidColorBrush(color, brushRaw.GetPointerAddress());
+	brush = brushRaw.Extract();
+}
+
 void TGadgetControl::Resize(RECT r)
 {
 	TControl::Resize(r);

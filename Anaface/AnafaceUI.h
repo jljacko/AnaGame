@@ -50,6 +50,7 @@ public:
 
 	bool switchView(UINT x);
 
+	virtual void SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget> rt);
 
 	// afx_msg virtual void OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
 //	int loadFromTML(CArchive* ar);

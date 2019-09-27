@@ -257,6 +257,44 @@ void TControl::SetSelf(TrecPointer<TControl> self)
 	tThis = TrecPointerKey::GetSoftPointerFromTrec<TControl>(self);
 }
 
+void TControl::SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget> rt)
+{
+	if (!rt.Get())
+		throw L"Error! Expected Render Target to be initialized!";
+
+	renderTarget = rt;
+
+	if (content1.Get())
+		content1->SetNewRenderTarget(rt);
+	if (content2.Get())
+		content2->SetNewRenderTarget(rt);
+	if (content3.Get())
+		content3->SetNewRenderTarget(rt);
+
+	if (border1.Get())
+		border1->SetNewRenderTarget(rt);
+	if (border2.Get())
+		border2->SetNewRenderTarget(rt);
+	if (border3.Get())
+		border3->SetNewRenderTarget(rt);
+
+	if (text1.Get())
+		text1->SetNewRenderTarget(rt);
+	if (text2.Get())
+		text2->SetNewRenderTarget(rt);
+	if (text3.Get())
+		text3->SetNewRenderTarget(rt);
+
+	for (UINT Rust = 0; Rust < children.Count(); Rust++)
+	{
+		auto cont = children.ElementAt(Rust);
+		if (cont.Get())
+			cont->SetNewRenderTarget(rt);
+	}
+}
+
+
+
 extern TDataArray<TTextField*> TextList;
 
 /*
@@ -4038,41 +4076,7 @@ bool TBorder::onCreate(RECT location)
 	loci.right = location.right;
 	loci.top = location.top;
 
-	if (secondColor)
-	{
-
-		gradients[0].color = color;
-		gradients[1].color = color2;
-		rt->CreateGradientStopCollection(gradients, 2, stopCollRaw.GetPointerAddress());
-		stopColl = stopCollRaw.Extract();
-		if (useRadial)
-		{
-			TrecComPointer<ID2D1RadialGradientBrush>::TrecComHolder radBrush;
-			rt->CreateRadialGradientBrush(D2D1::RadialGradientBrushProperties(
-				D2D1::Point2F(location.left, location.top),
-				D2D1::Point2F(location.right, location.bottom),
-				location.right-location.left,location.bottom-location.top),
-				stopColl.Get(), radBrush.GetPointerAddress());
-			
-			brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1RadialGradientBrush>(radBrush);
-		}
-		else
-		{
-			TrecComPointer<ID2D1LinearGradientBrush>::TrecComHolder linBrush;
-			rt->CreateLinearGradientBrush(D2D1::LinearGradientBrushProperties(
-				D2D1::Point2F(location.left, location.top),
-				D2D1::Point2F(location.right, location.bottom)),
-				stopColl.Get(), linBrush.GetPointerAddress());
-			brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1LinearGradientBrush>(linBrush);
-		}
-		
-	}
-	else
-	{
-		TrecComPointer<ID2D1SolidColorBrush>::TrecComHolder solBrush;
-		rt->CreateSolidColorBrush(color, solBrush.GetPointerAddress());
-		brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1SolidColorBrush>(solBrush);
-	}
+	ResetBrush();
 
 
 	return true;
@@ -4096,45 +4100,7 @@ bool TBorder::onCreate(D2D1_ELLIPSE e)
 	loci.top = e.point.y - e.radiusY;
 	loci.bottom = e.point.y + e.radiusY;
 
-	brush.Nullify();
-
-	stopColl.Nullify();
-	TrecComPointer<ID2D1GradientStopCollection>::TrecComHolder stopCollRaw;
-	if (secondColor)
-	{
-
-		gradients[0].color = color;
-		gradients[1].color = color2;
-		rt->CreateGradientStopCollection(gradients, 2, stopCollRaw.GetPointerAddress());
-		stopColl = stopCollRaw.Extract();
-		if (useRadial)
-		{
-			TrecComPointer<ID2D1RadialGradientBrush>::TrecComHolder radBrush;
-			rt->CreateRadialGradientBrush(D2D1::RadialGradientBrushProperties(
-				D2D1::Point2F(loci.left, loci.top),
-				D2D1::Point2F(loci.right, loci.bottom),
-				loci.right - loci.left, loci.bottom - loci.top),
-				stopColl.Get(), radBrush.GetPointerAddress());
-
-			brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1RadialGradientBrush>(radBrush);
-		}
-		else
-		{
-			TrecComPointer<ID2D1LinearGradientBrush>::TrecComHolder linBrush;
-			rt->CreateLinearGradientBrush(D2D1::LinearGradientBrushProperties(
-				D2D1::Point2F(loci.left, loci.top),
-				D2D1::Point2F(loci.right, loci.bottom)),
-				stopColl.Get(), linBrush.GetPointerAddress());
-			brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1LinearGradientBrush>(linBrush);
-		}
-
-	}
-	else
-	{
-		TrecComPointer<ID2D1SolidColorBrush>::TrecComHolder solBrush;
-		rt->CreateSolidColorBrush(color, solBrush.GetPointerAddress());
-		brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1SolidColorBrush>(solBrush);
-	}
+	ResetBrush();
 	circle = e;
 	return true;
 }
@@ -4158,42 +4124,7 @@ bool TBorder::onCreate(D2D1_ROUNDED_RECT rr)
 	loci.top = rr.rect.top;
 	loci.bottom = rr.rect.bottom;
 
-	TrecComPointer<ID2D1GradientStopCollection>::TrecComHolder stopCollRaw;
-	if (secondColor)
-	{
-
-		gradients[0].color = color;
-		gradients[1].color = color2;
-		rt->CreateGradientStopCollection(gradients, 2, stopCollRaw.GetPointerAddress());
-		stopColl = stopCollRaw.Extract();
-		if (useRadial)
-		{
-			TrecComPointer<ID2D1RadialGradientBrush>::TrecComHolder radBrush;
-			rt->CreateRadialGradientBrush(D2D1::RadialGradientBrushProperties(
-				D2D1::Point2F(loci.left, loci.top),
-				D2D1::Point2F(loci.right, loci.bottom),
-				loci.right - loci.left, loci.bottom - loci.top),
-				stopColl.Get(), radBrush.GetPointerAddress());
-
-			brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1RadialGradientBrush>(radBrush);
-		}
-		else
-		{
-			TrecComPointer<ID2D1LinearGradientBrush>::TrecComHolder linBrush;
-			rt->CreateLinearGradientBrush(D2D1::LinearGradientBrushProperties(
-				D2D1::Point2F(loci.left, loci.top),
-				D2D1::Point2F(loci.right, loci.bottom)),
-				stopColl.Get(), linBrush.GetPointerAddress());
-			brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1LinearGradientBrush>(linBrush);
-		}
-
-	}
-	else
-	{
-		TrecComPointer<ID2D1SolidColorBrush>::TrecComHolder solBrush;
-		rt->CreateSolidColorBrush(color, solBrush.GetPointerAddress());
-		brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1SolidColorBrush>(solBrush);
-	}
+	ResetBrush();
 	return true;
 }
 
@@ -4379,6 +4310,54 @@ void TBorder::ShiftVertical(int degrees)
 {
 	loci.top += degrees;
 	loci.bottom += degrees;
+}
+
+void TBorder::SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget> rt)
+{
+	if (!rt.Get())
+		throw L"Error! Expected render target to be initialized!";
+	this->rt = rt;
+	ResetBrush();
+}
+
+void TBorder::ResetBrush()
+{
+	TrecComPointer<ID2D1GradientStopCollection>::TrecComHolder stopCollRaw;
+	if (secondColor)
+	{
+
+		gradients[0].color = color;
+		gradients[1].color = color2;
+		rt->CreateGradientStopCollection(gradients, 2, stopCollRaw.GetPointerAddress());
+		stopColl = stopCollRaw.Extract();
+		if (useRadial)
+		{
+			TrecComPointer<ID2D1RadialGradientBrush>::TrecComHolder radBrush;
+			rt->CreateRadialGradientBrush(D2D1::RadialGradientBrushProperties(
+				D2D1::Point2F(loci.left, loci.top),
+				D2D1::Point2F(loci.right, loci.bottom),
+				loci.right - loci.left, loci.bottom - loci.top),
+				stopColl.Get(), radBrush.GetPointerAddress());
+
+			brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1RadialGradientBrush>(radBrush);
+		}
+		else
+		{
+			TrecComPointer<ID2D1LinearGradientBrush>::TrecComHolder linBrush;
+			rt->CreateLinearGradientBrush(D2D1::LinearGradientBrushProperties(
+				D2D1::Point2F(loci.left, loci.top),
+				D2D1::Point2F(loci.right, loci.bottom)),
+				stopColl.Get(), linBrush.GetPointerAddress());
+			brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1LinearGradientBrush>(linBrush);
+		}
+
+	}
+	else
+	{
+		TrecComPointer<ID2D1SolidColorBrush>::TrecComHolder solBrush;
+		rt->CreateSolidColorBrush(color, solBrush.GetPointerAddress());
+		brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1SolidColorBrush>(solBrush);
+	}
 }
 
 /*
@@ -4642,43 +4621,7 @@ int TText::onCreate(RECT loc)
 	bounds.top = loc.top;
 
 
-	penBrush.Nullify();
-	gradStop.Nullify();
-	TrecComPointer<ID2D1GradientStopCollection>::TrecComHolder gradStopRaw;
-	if (secondColor)
-	{
-		gradients[0].color = color;
-		gradients[1].color = color2;
-		rt->CreateGradientStopCollection(gradients, 2, gradStopRaw.GetPointerAddress());
-		gradStop = gradStopRaw.Extract();
-		
-		if (useRadial)
-		{
-			TrecComPointer<ID2D1RadialGradientBrush>::TrecComHolder radBrush;
-			rt->CreateRadialGradientBrush(D2D1::RadialGradientBrushProperties(
-				D2D1::Point2F(bounds.left, bounds.top),
-				D2D1::Point2F(bounds.right, bounds.bottom),
-				bounds.right - bounds.left, bounds.bottom - bounds.top),
-				gradStop.Get(), radBrush.GetPointerAddress());
-			penBrush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1RadialGradientBrush>(radBrush);
-		}
-		else
-		{
-			TrecComPointer<ID2D1LinearGradientBrush>::TrecComHolder linBrush;
-			rt->CreateLinearGradientBrush(D2D1::LinearGradientBrushProperties(
-				D2D1::Point2F(bounds.left, bounds.top),
-				D2D1::Point2F(bounds.right, bounds.bottom)),
-				gradStop.Get(), linBrush.GetPointerAddress());
-			penBrush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1LinearGradientBrush>(linBrush);
-		}
-		
-	}
-	else
-	{
-		TrecComPointer<ID2D1SolidColorBrush>::TrecComHolder solBrush;
-		rt->CreateSolidColorBrush(color, solBrush.GetPointerAddress());
-		penBrush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1SolidColorBrush>(solBrush);
-	}
+
 	if (!SUCCEEDED(results))
 		return 5;
 
@@ -5029,6 +4972,56 @@ void TText::ShiftVertical(int degrees)
 	bounds.bottom += degrees;
 }
 
+void TText::SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget> rt)
+{
+	if (!rt.Get())
+		throw L"Error! Expected Render Target to be initialized!";
+
+	this->rt = rt;
+	ResetBrush();
+}
+
+void TText::ResetBrush()
+{
+	penBrush.Nullify();
+	gradStop.Nullify();
+	TrecComPointer<ID2D1GradientStopCollection>::TrecComHolder gradStopRaw;
+	if (secondColor)
+	{
+		gradients[0].color = color;
+		gradients[1].color = color2;
+		rt->CreateGradientStopCollection(gradients, 2, gradStopRaw.GetPointerAddress());
+		gradStop = gradStopRaw.Extract();
+
+		if (useRadial)
+		{
+			TrecComPointer<ID2D1RadialGradientBrush>::TrecComHolder radBrush;
+			rt->CreateRadialGradientBrush(D2D1::RadialGradientBrushProperties(
+				D2D1::Point2F(bounds.left, bounds.top),
+				D2D1::Point2F(bounds.right, bounds.bottom),
+				bounds.right - bounds.left, bounds.bottom - bounds.top),
+				gradStop.Get(), radBrush.GetPointerAddress());
+			penBrush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1RadialGradientBrush>(radBrush);
+		}
+		else
+		{
+			TrecComPointer<ID2D1LinearGradientBrush>::TrecComHolder linBrush;
+			rt->CreateLinearGradientBrush(D2D1::LinearGradientBrushProperties(
+				D2D1::Point2F(bounds.left, bounds.top),
+				D2D1::Point2F(bounds.right, bounds.bottom)),
+				gradStop.Get(), linBrush.GetPointerAddress());
+			penBrush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1LinearGradientBrush>(linBrush);
+		}
+
+	}
+	else
+	{
+		TrecComPointer<ID2D1SolidColorBrush>::TrecComHolder solBrush;
+		rt->CreateSolidColorBrush(color, solBrush.GetPointerAddress());
+		penBrush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1SolidColorBrush>(solBrush);
+	}
+}
+
 
 
 /*
@@ -5319,40 +5312,7 @@ bool TContent::onCreate(RECT l)
 
 	brush.Nullify();
 
-	TrecComPointer<ID2D1GradientStopCollection>::TrecComHolder gradStopRaw ;
-	if (secondColor)
-	{
-		gradients[0].color = color;
-		gradients[1].color = color2;
-		rt->CreateGradientStopCollection(gradients, 2, gradStopRaw.GetPointerAddress());
-		gradStop = gradStopRaw.Extract();
-		if (useRadial)
-		{
-			TrecComPointer<ID2D1RadialGradientBrush>::TrecComHolder radBrush;
-			rt->CreateRadialGradientBrush(D2D1::RadialGradientBrushProperties(
-				D2D1::Point2F(location.left, location.top),
-				D2D1::Point2F(location.right, location.bottom),
-				location.right - location.left, location.bottom - location.top),
-				gradStop.Get(), radBrush.GetPointerAddress());
-			brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1RadialGradientBrush>(radBrush);
-		}
-		else
-		{
-			TrecComPointer<ID2D1LinearGradientBrush>::TrecComHolder linBrush;
-			rt->CreateLinearGradientBrush(D2D1::LinearGradientBrushProperties(
-				D2D1::Point2F(location.left, location.top),
-				D2D1::Point2F(location.right, location.bottom)),
-				gradStop.Get(), linBrush.GetPointerAddress());
-			brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1LinearGradientBrush>(linBrush);
-		}
-		
-	}
-	else
-	{
-		TrecComPointer<ID2D1SolidColorBrush>::TrecComHolder solBrush;
-		rt->CreateSolidColorBrush(color, solBrush.GetPointerAddress());
-		brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1SolidColorBrush>(solBrush);
-	}
+	ResetBrush();
 
 	if (image.Get())
 	{
@@ -5382,40 +5342,7 @@ bool TContent::onCreate(D2D1_ELLIPSE e)
 	location.right = e.point.x + e.radiusX;
 	location.top = e.point.y - e.radiusY;
 	location.bottom = e.point.y + e.radiusY;
-	TrecComPointer<ID2D1GradientStopCollection>::TrecComHolder gradStopRaw ;
-	if (secondColor)
-	{
-		gradients[0].color = color;
-		gradients[1].color = color2;
-		rt->CreateGradientStopCollection(gradients, 2, gradStopRaw.GetPointerAddress());
-		gradStop = gradStopRaw.Extract();
-		if (useRadial)
-		{
-			TrecComPointer<ID2D1RadialGradientBrush>::TrecComHolder radBrush;
-			rt->CreateRadialGradientBrush(D2D1::RadialGradientBrushProperties(
-				D2D1::Point2F(location.left, location.top),
-				D2D1::Point2F(location.right, location.bottom),
-				location.right - location.left, location.bottom - location.top),
-				gradStop.Get(), radBrush.GetPointerAddress());
-			brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1RadialGradientBrush>(radBrush);
-		}
-		else
-		{
-			TrecComPointer<ID2D1LinearGradientBrush>::TrecComHolder linBrush;
-			rt->CreateLinearGradientBrush(D2D1::LinearGradientBrushProperties(
-				D2D1::Point2F(location.left, location.top),
-				D2D1::Point2F(location.right, location.bottom)),
-				gradStop.Get(), linBrush.GetPointerAddress());
-			brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1LinearGradientBrush>(linBrush);
-		}
-		
-	}
-	else
-	{
-		TrecComPointer<ID2D1SolidColorBrush>::TrecComHolder solBrush;
-		rt->CreateSolidColorBrush(color, solBrush.GetPointerAddress());
-		brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1SolidColorBrush>(solBrush);
-	}
+	ResetBrush();
 	return true;
 }
 
@@ -5437,40 +5364,7 @@ bool TContent::onCreate(D2D1_ROUNDED_RECT rr)
 	location.top = rr.rect.top;
 	location.bottom = rr.rect.bottom;
 
-	TrecComPointer<ID2D1GradientStopCollection>::TrecComHolder gradStopRaw;
-	if (secondColor)
-	{
-		gradients[0].color = color;
-		gradients[1].color = color2;
-		rt->CreateGradientStopCollection(gradients, 2, gradStopRaw.GetPointerAddress());
-		gradStop = gradStopRaw.Extract();
-		if (useRadial)
-		{
-			TrecComPointer<ID2D1RadialGradientBrush>::TrecComHolder radBrush;
-			rt->CreateRadialGradientBrush(D2D1::RadialGradientBrushProperties(
-				D2D1::Point2F(location.left, location.top),
-				D2D1::Point2F(location.right, location.bottom),
-				location.right - location.left, location.bottom - location.top),
-				gradStop.Get(), radBrush.GetPointerAddress());
-			brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1RadialGradientBrush>(radBrush);
-		}
-		else
-		{
-			TrecComPointer<ID2D1LinearGradientBrush>::TrecComHolder linBrush;
-			rt->CreateLinearGradientBrush(D2D1::LinearGradientBrushProperties(
-				D2D1::Point2F(location.left, location.top),
-				D2D1::Point2F(location.right, location.bottom)),
-				gradStop.Get(), linBrush.GetPointerAddress());
-			brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1LinearGradientBrush>(linBrush);
-		}
-
-	}
-	else
-	{
-		TrecComPointer<ID2D1SolidColorBrush>::TrecComHolder solBrush;
-		rt->CreateSolidColorBrush(color, solBrush.GetPointerAddress());
-		brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1SolidColorBrush>(solBrush);
-	}
+	ResetBrush();
 	return true;
 }
 
@@ -5686,6 +5580,61 @@ TrecComPointer<ID2D1GradientStopCollection> TContent::getStopCollection(TDataArr
 
 	rt->CreateGradientStopCollection(gradients.data(), gradients.Size(), stop.GetPointerAddress());
 	return stop.Extract();
+}
+
+void TContent::SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget> rt)
+{
+	if (!rt.Get())
+		throw L"Error! Expected Render Target to be initialized!";
+
+	this->rt = rt;
+
+	ResetBrush();
+
+	if (image.Get())
+	{
+		TrecComPointer<ID2D1BitmapBrush>::TrecComHolder bit;
+		rt->CreateBitmapBrush(image.Get(), bit.GetPointerAddress());
+		bitmap = bit.Extract();
+	}
+}
+
+void TContent::ResetBrush()
+{
+	TrecComPointer<ID2D1GradientStopCollection>::TrecComHolder gradStopRaw;
+	if (secondColor)
+	{
+		gradients[0].color = color;
+		gradients[1].color = color2;
+		rt->CreateGradientStopCollection(gradients, 2, gradStopRaw.GetPointerAddress());
+		gradStop = gradStopRaw.Extract();
+		if (useRadial)
+		{
+			TrecComPointer<ID2D1RadialGradientBrush>::TrecComHolder radBrush;
+			rt->CreateRadialGradientBrush(D2D1::RadialGradientBrushProperties(
+				D2D1::Point2F(location.left, location.top),
+				D2D1::Point2F(location.right, location.bottom),
+				location.right - location.left, location.bottom - location.top),
+				gradStop.Get(), radBrush.GetPointerAddress());
+			brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1RadialGradientBrush>(radBrush);
+		}
+		else
+		{
+			TrecComPointer<ID2D1LinearGradientBrush>::TrecComHolder linBrush;
+			rt->CreateLinearGradientBrush(D2D1::LinearGradientBrushProperties(
+				D2D1::Point2F(location.left, location.top),
+				D2D1::Point2F(location.right, location.bottom)),
+				gradStop.Get(), linBrush.GetPointerAddress());
+			brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1LinearGradientBrush>(linBrush);
+		}
+
+	}
+	else
+	{
+		TrecComPointer<ID2D1SolidColorBrush>::TrecComHolder solBrush;
+		rt->CreateSolidColorBrush(color, solBrush.GetPointerAddress());
+		brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1SolidColorBrush>(solBrush);
+	}
 }
 
 /*

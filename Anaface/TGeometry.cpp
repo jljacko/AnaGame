@@ -59,7 +59,7 @@ bool TGeometry::getClosure()
 	return false;
 }
 
-void TGeometry::onDraw(ID2D1Brush*, ID2D1DCRenderTarget*)
+void TGeometry::onDraw(ID2D1Brush*, ID2D1RenderTarget*)
 {
 }
 

@@ -22,11 +22,15 @@ public:
 	void onDraw();
 	bool addAttribute(WCHAR* attr, TrecPointer<TString> value);
 
+	void SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget> rt);
+
 	void addGeometry(TrecPointer<TGeometry>);
 
 private:
-	TrecComPointer<ID2D1DCRenderTarget> renderTarget;
+	TrecComPointer<ID2D1RenderTarget> renderTarget;
 	D2D1_COLOR_F color1, color2;
+
+	void ResetBrush();
 
 	TMap<TString> attributes;
 	TArray<TGeometry> children;
@@ -36,5 +40,6 @@ private:
 	bool useRadial;
 	TrecComPointer<ID2D1GradientStopCollection> stopColl;
 	bool crunch;
+	RECT loc;
 };
 

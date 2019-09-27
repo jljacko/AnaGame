@@ -58,6 +58,14 @@ bool AnafaceUI::switchView(UINT x)
 	return false;
 }
 
+void AnafaceUI::SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget> rt)
+{
+	TControl::SetNewRenderTarget(rt);
+	if (tabs)
+		tabs->SetNewRenderTarget(rt);
+	
+}
+
 /*
 int AnafaceUI::loadFromTML(CArchive * ar)
 {

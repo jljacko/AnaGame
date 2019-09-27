@@ -52,6 +52,15 @@ void TDropMenu::onDraw(TObject* obj)
 	DrawNode(location.top, currentNode);
 }
 
+void TDropMenu::SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget>rt)
+{
+	TControl::SetNewRenderTarget(rt);
+
+	if (dotBrush)
+		dotBrush->Release();
+	renderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &dotBrush);
+}
+
 /*
 * Method: TDropMenu - SetFolderAsRoot
 * Purpose: Enables a menu to be set using a directory as a root

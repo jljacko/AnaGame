@@ -22,6 +22,7 @@ public:
 	virtual void storeInTML(TFile* ar, int childLevel,bool ov = true)override;
 
 	bool GetExtensionStatus();
+	virtual void SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget>);
 
 	afx_msg virtual void OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr, TDataArray<TControl*>& clickedControl);
 	void decrimentLocation();
