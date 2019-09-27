@@ -1,6 +1,8 @@
 #include "MainLayoutHandler.h"
 #include <Page.h>
 #include "ArenaApp.h"
+#include <TDialog.h>
+#include "SourceCodeApp.h"
 
 
 // Found on the Home Tab
@@ -23,8 +25,6 @@ TString on_ProcessCode(L"OnProcessCode");
 
 MainLayoutHandler::MainLayoutHandler(TrecPointer<TInstance> ins) : EventHandler(ins)
 {
-	page = nullptr;
-
 	eventNameID enid;
 
 	enid.eventID = 0;
@@ -137,13 +137,14 @@ bool MainLayoutHandler::OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFl
 	return false;
 }
 
-void MainLayoutHandler::Initialize(Page* page)
+void MainLayoutHandler::Initialize(TrecPointer<Page> page)
 {
-	if (!page)
+	if (!page.Get())
 		throw L"Error! Expected an actual Page Pointer to be provided!";
 
 	this->page = page;
 
+	instance = page->GetInstance();
 
 	rootControl = page->GetRootControl();
 
@@ -255,7 +256,13 @@ void MainLayoutHandler::OnPrint(TControl* tc, EventArgs ea)
 
 void MainLayoutHandler::OnNewArena(TControl* tc, EventArgs ea)
 {
-	currentDocument = TrecPointerKey::GetNewTrecPointerAlt<BuilderApp, ArenaApp>(body, outputPanel, classUI, app, TString(L"Arena"));
+	TString dialog(L"Enter a name for your Arena!");
+	TString arenaName(ActivateNameDialog(instance, page->GetWindowHandle(), dialog));
+
+	if (!arenaName.GetSize())
+		return;
+
+	currentDocument = TrecPointerKey::GetNewTrecPointerAlt<BuilderApp, ArenaApp>(body, outputPanel, classUI, app, arenaName);
 	ActiveDocuments.push_back(currentDocument);
 }
 
@@ -284,10 +291,13 @@ void MainLayoutHandler::OnUpdateClearColor(TControl* tc, EventArgs ea)
 
 void MainLayoutHandler::OnNewModel(TControl* tc, EventArgs ea)
 {
+
 }
 
 void MainLayoutHandler::OnNewCodeFile(TControl* tc, EventArgs ea)
 {
+	currentDocument = TrecPointerKey::GetNewTrecPointerAlt<BuilderApp, SourceCodeApp>(body, outputPanel, classUI, app);
+	ActiveDocuments.push_back(currentDocument);
 }
 
 void MainLayoutHandler::OnImportCode(TControl* tc, EventArgs ea)

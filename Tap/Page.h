@@ -23,13 +23,15 @@ class _TAP_DLL Page : public TObject
 public:
 	~Page();
 
-	static TrecPointer<Page> Get2DPage(TrecComPointer<ID2D1Factory1>, HDC, TrecPointer<EventHandler>);
-	static TrecPointer<Page> GetWindowPage(TrecComPointer<ID2D1Factory1>, HWND,  TrecPointer<EventHandler>);
-	static TrecPointer<Page> GetWindowPage(TrecComPointer<ID2D1RenderTarget>, HWND, TrecPointer<EventHandler>);
-	static TrecPointer<Page> Get3DPage(TrecComPointer<ID2D1Factory1>, TrecPointer<ArenaEngine>, TrecPointer<EventHandler>);
+	static TrecPointer<Page> Get2DPage(TrecPointer<TInstance>, HDC, TrecPointer<EventHandler>);
+	static TrecPointer<Page> GetWindowPage(TrecPointer<TInstance>, HWND,  TrecPointer<EventHandler>);
+	static TrecPointer<Page> GetWindowPage(TrecPointer<TInstance>, TrecComPointer<ID2D1RenderTarget>, HWND, TrecPointer<EventHandler>);
+	static TrecPointer<Page> Get3DPage(TrecPointer<TInstance>, TrecPointer<ArenaEngine>, TrecPointer<EventHandler>);
 
 	int SetAnaface(TrecPointer<TFile> file, TrecPointer<EventHandler> eh);
 	int SetAnaface(TrecPointer<TFile> file, TDataArray<eventNameID>& id);
+
+	void SetAnaface(TrecPointer<TControl> newRoot);
 
 	TrecPointer<TControl> GetRootControl();
 
@@ -63,6 +65,10 @@ public:
 	afx_msg void OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
 	afx_msg bool OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
 	afx_msg bool OnDestroy();
+
+	void SetSelf(TrecPointer<Page>);
+	TrecPointer<TInstance> GetInstance();
+
 protected:
 	Page();
 
@@ -76,10 +82,12 @@ protected:
 	TrecComPointer<ID2D1Device> device;
 	TrecComPointer<ID2D1GdiInteropRenderTarget> gdiRender;
 	TrecComPointer<ID2D1Bitmap1> bit;
+	D2D1_RECT_F dRect;
+	TrecComPointer<ID2D1SolidColorBrush> clearBursh;
 
 	// Regular Resources
 	HWND windowHandle;		// the Window attached to the page
-	HINSTANCE instance;		// the Inatance that was used during page construction
+	//HINSTANCE instance;		// the Inatance that was used during page construction
 	HDC deviceH;			// Handle to the Context Device used by the Window
 	RECT area;				// Area Within the Window to draw
 
@@ -87,7 +95,10 @@ protected:
 	TrecPointer<ArenaEngine> engine;	// Incase we are using 3D Resources
 	TrecPointer<TControl> rootControl;	// The Control to Draw when
 	 TrecPointer<EventHandler> handler; // The class that manages specific actions
+	 TrecPointer<TInstance> instance;
 	D2D1_MATRIX_3X2_F adjustMatrix;
+
+	TrecPointerSoft<Page> self;
 
 	// Anaface Resources
 	TDataArray<TControl*> clickedControl;

@@ -24,7 +24,7 @@ SourceCodeApp::SourceCodeApp(TrecPointer<TControl> m, TrecPointer<TControl> o, T
 	window = r->GetMainWindow();
 
 	mainPage = window->GetHandlePage(TString(L"Body"));
-	if (!m.Get() || dynamic_cast<AnafaceUI*>(m.Get()))
+	if (!m.Get() || !dynamic_cast<AnafaceUI*>(m.Get()))
 		return;
 	RECT rect = dynamic_cast<AnafaceUI*>(m.Get())->GetControlArea();
 	mainPage->SetArea(rect);
@@ -38,6 +38,15 @@ SourceCodeApp::SourceCodeApp(TrecPointer<TControl> m, TrecPointer<TControl> o, T
 
 	if (!mainControl.Get())
 		return;
+
+	//Adjust the Rectangle
+	RECT contRect = mainControl->getLocation();
+	contRect.left -= rect.left;
+	contRect.right -= rect.left;
+	contRect.bottom -= rect.top;
+	contRect.top -= rect.top;
+
+	mainControl->onCreate(contRect);
 }
 
 SourceCodeApp::~SourceCodeApp()

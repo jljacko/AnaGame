@@ -638,7 +638,7 @@ D2D1::ColorF _ANAFACE_DLL convertStringToD2DColor(TString*);
 * Parameters: RECT - the Rectangle to Convert
 * Returns: D2D1_RECT_F - the D2D Rectangle sought
 */
-D2D1_RECT_F convertRECTToD2DRectF(RECT);
+D2D1_RECT_F _ANAFACE_DLL convertRECTToD2DRectF(RECT);
 
 /*
 * Function: convertD2DRectToRECT
@@ -646,7 +646,7 @@ D2D1_RECT_F convertRECTToD2DRectF(RECT);
 * Parameters: D2D1_RECT_F f - the D2D Rectangle to convert
 * Returns: RECT - the MFC rectangle created
 */
-RECT convertD2DRectToRECT(D2D1_RECT_F f);
+RECT _ANAFACE_DLL convertD2DRectToRECT(D2D1_RECT_F f);
 
 /*
 * Function: convertCRectToD2DRect
@@ -655,7 +655,7 @@ RECT convertD2DRectToRECT(D2D1_RECT_F f);
 *				D2D1_RECT_F* - the destination rectangle
 * Returns: false if either parameter is null
 */
-bool convertCRectToD2DRect(RECT*, D2D1_RECT_F*);
+bool _ANAFACE_DLL convertCRectToD2DRect(RECT*, D2D1_RECT_F*);
 
 /*
 * Function: isContained
@@ -664,7 +664,7 @@ bool convertCRectToD2DRect(RECT*, D2D1_RECT_F*);
 *				const RECT* - the rectangle to check
 * Returns: bool - whether the point is withing the bounds
 */
-bool isContained(const TPoint*, const RECT*);
+bool _ANAFACE_DLL isContained(const TPoint*, const RECT*);
 
 /*
 * Function: isContained
@@ -673,7 +673,7 @@ bool isContained(const TPoint*, const RECT*);
 *				const D2D1_RECT_F* - the rectangle to check
 * Returns: bool - whether the point is withing the bounds
 */
-bool isContained(const TPoint*, const D2D1_RECT_F*);
+bool _ANAFACE_DLL isContained(const TPoint*, const D2D1_RECT_F*);
 
 /*
 * Function: isContained

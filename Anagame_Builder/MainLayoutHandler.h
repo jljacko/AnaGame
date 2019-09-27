@@ -20,12 +20,11 @@ public:
 	afx_msg void OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut) override;
 	afx_msg bool OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags, messageOutput* mOut) override;
 
-	void Initialize(Page* page);
+	void Initialize(TrecPointer<Page> page)override;
 	void HandleEvents(TDataArray<EventID_Cred>& eventAr);
 
 	void Draw();
 protected:
-	Page* page;
 	TDataArray<LayoutCall> calls;
 
 	// Pointers to frequently access controls in the main layout

@@ -92,6 +92,9 @@ public:
 
 	bool onClick(TPoint);
 
+	void LockText();
+	void UnlockText();
+
 	//virtual int loadFromTML(CArchive* ar) override;
 	virtual int loadFromHTML(TFile* ar) override;
 	virtual void storeInTML(TFile* ar, int childLevel, bool ov = false) override;

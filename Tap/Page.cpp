@@ -2,6 +2,7 @@
 #include "Page.h"
 #include <AnafaceParser.h>
 #include <TML_Reader_.h>
+#include "TInstance.h"
 
 Page::Page()
 {
@@ -10,7 +11,7 @@ Page::Page()
 	deviceH = nullptr;
 	adjustMatrix = D2D1::Matrix3x2F::Identity();
 	area = RECT{ 0,0,0,0 };
-	instance = nullptr;
+	convertCRectToD2DRect(&area, &dRect);
 	scale = 1.0f;
 }
 
@@ -27,8 +28,13 @@ Page::~Page()
 	
 }
 
-TrecPointer<Page> Page::Get2DPage(TrecComPointer<ID2D1Factory1> fact, HDC dc, TrecPointer<EventHandler> eh)
+TrecPointer<Page> Page::Get2DPage(TrecPointer<TInstance> in, HDC dc, TrecPointer<EventHandler> eh)
 {
+	if (!in.Get())
+		throw L"Error! Instance Object MUST ne initialized";
+
+	TrecComPointer<ID2D1Factory1> fact = in->GetFactory();
+
 	if (!fact.Get())
 		throw L"Error! Factory Object MUST be initialized!";
 
@@ -44,6 +50,8 @@ TrecPointer<Page> Page::Get2DPage(TrecComPointer<ID2D1Factory1> fact, HDC dc, Tr
 
 	props.type = D2D1_RENDER_TARGET_TYPE_DEFAULT;
 	props.pixelFormat = D2D1::PixelFormat();
+	props.pixelFormat.alphaMode = D2D1_ALPHA_MODE_PREMULTIPLIED;
+	props.pixelFormat.format = DXGI_FORMAT_B8G8R8A8_UNORM;
 	props.dpiX = props.dpiY = 0.0f;
 	props.usage = D2D1_RENDER_TARGET_USAGE_NONE;
 	props.minLevel = D2D1_FEATURE_LEVEL_DEFAULT;
@@ -56,28 +64,46 @@ TrecPointer<Page> Page::Get2DPage(TrecComPointer<ID2D1Factory1> fact, HDC dc, Tr
 		throw L"Error! Failed to Generate DC Render Target for Page to use!";
 	}
 
-	TrecPointer<Page> ret = TrecPointerKey::GetNewTrecPointer<Page>();
+	TrecPointer<Page> ret = TrecPointerKey::GetNewSelfTrecPointer<Page>();
 	ret->deviceH = dc;
 	ret->windowHandle = windowHandle;
-	ret->instance = GetModuleHandle(nullptr);
+	ret->instance = in;
 
 	ret->regRenderTarget = TrecPointerKey::GetComPointer<ID2D1RenderTarget, ID2D1DCRenderTarget>(renderDc);
 
 	ret->rt_type = render_target_dc;
 
 	GetClientRect(ret->windowHandle, &ret->area);
+	convertCRectToD2DRect(&ret->area, &ret->dRect);
 	ret->handler = eh;
 	reinterpret_cast<ID2D1DCRenderTarget*>(ret->regRenderTarget.Get())->BindDC(ret->deviceH, &ret->area);
+
+	TrecComPointer<ID2D1SolidColorBrush>::TrecComHolder paintHolder;
+	ret->regRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White), paintHolder.GetPointerAddress());
+	ret->clearBursh = paintHolder.Extract();
+
+
 	return ret;
 }
 
-TrecPointer<Page> Page::GetWindowPage(TrecComPointer<ID2D1Factory1> fact,HWND window, TrecPointer<EventHandler> eh)
+TrecPointer<Page> Page::GetWindowPage(TrecPointer<TInstance> in ,HWND window, TrecPointer<EventHandler> eh)
 {
+	if (!in.Get())
+		throw L"Error! Instance Object MUST ne initialized";
+
+
+
+	TrecComPointer<ID2D1Factory1> fact = in->GetFactory();
+	if (!fact.Get())
+		throw L"Error! Factory Object MUST be initialized!";
+	
 	D2D1_RENDER_TARGET_PROPERTIES props;
 	ZeroMemory(&props, sizeof(props));
 
 	props.type = D2D1_RENDER_TARGET_TYPE_DEFAULT;
 	props.pixelFormat = D2D1::PixelFormat();
+
+	props.pixelFormat.alphaMode = D2D1_ALPHA_MODE_PREMULTIPLIED;
 	props.dpiX = props.dpiY = 0.0f;
 	props.usage = D2D1_RENDER_TARGET_USAGE_NONE;
 	props.minLevel = D2D1_FEATURE_LEVEL_DEFAULT;
@@ -92,23 +118,32 @@ TrecPointer<Page> Page::GetWindowPage(TrecComPointer<ID2D1Factory1> fact,HWND wi
 	hProps.hwnd = window;
 	hProps.pixelSize = D2D1::SizeU(area.right - area.left,
 		area.bottom - area.top);
+	
+	
 
 	TrecComPointer<ID2D1HwndRenderTarget>::TrecComHolder renderHw;
 	HRESULT res = fact->CreateHwndRenderTarget(props, hProps, renderHw.GetPointerAddress());
 
 	if (FAILED(res))
 		throw L"Error! Failed to Create Window Render Target!";
-	TrecPointer<Page> ret = GetWindowPage(TrecPointerKey::GetComPointer<ID2D1RenderTarget, ID2D1HwndRenderTarget>(renderHw), window, eh);
+	TrecPointer<Page> ret = GetWindowPage(in, TrecPointerKey::GetComPointer<ID2D1RenderTarget, ID2D1HwndRenderTarget>(renderHw), window, eh);
+
+	convertCRectToD2DRect(&area, &ret->dRect);
+
 	return ret;
 
 }
 
-TrecPointer<Page> Page::GetWindowPage(TrecComPointer<ID2D1RenderTarget> render, HWND window, TrecPointer<EventHandler> eh)
+TrecPointer<Page> Page::GetWindowPage(TrecPointer<TInstance> in, TrecComPointer<ID2D1RenderTarget> render, HWND window, TrecPointer<EventHandler> eh)
 {
-	if (!render.Get())
-		throw L"Error! RenderTarget Object MUST be initialized!";
-	//if (!eh.Get())
-	//	throw L"Error! Event Handler MUST be instantiated!";
+	if (!in.Get())
+		throw L"Error! Instance Object MUST ne initialized";
+
+
+
+	TrecComPointer<ID2D1Factory1> fact = in->GetFactory();
+	if (!fact.Get())
+		throw L"Error! Factory Object MUST be initialized!";
 
 	HDC dc = GetWindowDC(window);
 
@@ -119,24 +154,37 @@ TrecPointer<Page> Page::GetWindowPage(TrecComPointer<ID2D1RenderTarget> render, 
 
 	GetClientRect(window, &area);
 
-	TrecPointer<Page> ret = TrecPointerKey::GetNewTrecPointer<Page>();
+	TrecPointer<Page> ret = TrecPointerKey::GetNewSelfTrecPointer<Page>();
 	// ret->fact = fact;
 	ret->windowHandle = window;
 	ret->deviceH = GetWindowDC(window);
 	ret->regRenderTarget = render;
-	ret->instance = GetModuleHandle(nullptr);
+	ret->instance = in;
 
 	ret->rt_type = render_target_hwnd;
 
 	ret->area = area;
+	convertCRectToD2DRect(&area, &ret->dRect);
 	ret->handler = eh;
+
+	TrecComPointer<ID2D1SolidColorBrush>::TrecComHolder paintHolder;
+	ret->regRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White), paintHolder.GetPointerAddress());
+	ret->clearBursh = paintHolder.Extract();
+
 	return ret;
 }
 
-TrecPointer<Page> Page::Get3DPage(TrecComPointer<ID2D1Factory1> fact, TrecPointer<ArenaEngine> engine, TrecPointer<EventHandler> eh)
+TrecPointer<Page> Page::Get3DPage(TrecPointer<TInstance> in, TrecPointer<ArenaEngine> engine, TrecPointer<EventHandler> eh)
 {
+	if (!in.Get())
+		throw L"Error! Instance Object MUST ne initialized";
+
+
+
+	TrecComPointer<ID2D1Factory1> fact = in->GetFactory();
 	if (!fact.Get())
 		throw L"Error! Factory Object MUST be initialized!";
+
 	if (!engine.Get())
 		throw L"Error! ArenaEngine Object MUST be initialized for a 3D enabled Page";
 	//if (!eh.Get())
@@ -156,6 +204,7 @@ TrecPointer<Page> Page::Get3DPage(TrecComPointer<ID2D1Factory1> fact, TrecPointe
 
 	props.type = D2D1_RENDER_TARGET_TYPE_DEFAULT;
 	props.pixelFormat = D2D1::PixelFormat();
+	props.pixelFormat.alphaMode = D2D1_ALPHA_MODE_PREMULTIPLIED;
 	props.dpiX = props.dpiY = 0.0f;
 	props.usage = D2D1_RENDER_TARGET_USAGE_NONE;
 	props.minLevel = D2D1_FEATURE_LEVEL_DEFAULT;
@@ -166,17 +215,24 @@ TrecPointer<Page> Page::Get3DPage(TrecComPointer<ID2D1Factory1> fact, TrecPointe
 	if (FAILED(res))
 		throw L"ERROR! Failed to Generate 3D Compatiblie Render Target!";
 
-	TrecPointer<Page> ret = TrecPointerKey::GetNewTrecPointer<Page>();
+	TrecPointer<Page> ret = TrecPointerKey::GetNewSelfTrecPointer<Page>();
 	ret->fact = fact;
 	ret->windowHandle = window;
 	ret->deviceH = GetWindowDC(window);
 	ret->regRenderTarget = dxgiRender.Extract();
-	ret->instance = GetModuleHandle(nullptr);
+	ret->instance = in;
 
 	ret->rt_type = render_target_dxgi;
 
 	GetClientRect(ret->windowHandle, &ret->area);
+	convertCRectToD2DRect(&ret->area, &ret->dRect);
 	ret->handler = eh;
+
+
+	TrecComPointer<ID2D1SolidColorBrush>::TrecComHolder paintHolder;
+	ret->regRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White), paintHolder.GetPointerAddress());
+	ret->clearBursh = paintHolder.Extract();
+
 	return ret;
 }
 int Page::SetAnaface(TrecPointer<TFile> file, TrecPointer<EventHandler> eh)
@@ -203,7 +259,7 @@ int Page::SetAnaface(TrecPointer<TFile> file, TrecPointer<EventHandler> eh)
 	if (rootControl.Get())
 		rootControl->onCreate(area);
 	if(handler.Get())
-		handler->Initialize(this);
+		handler->Initialize(TrecPointerKey::GetTrecPointerFromSoft<Page>(self));
 	return 0;
 }
 
@@ -226,8 +282,16 @@ int Page::SetAnaface(TrecPointer<TFile> file, TDataArray<eventNameID>& id)
 	if (rootControl.Get())
 		rootControl->onCreate(area);
 	if(handler.Get())
-		handler->Initialize(this);
+		handler->Initialize(TrecPointerKey::GetTrecPointerFromSoft<Page>(self));
 	return 0;
+}
+
+void Page::SetAnaface(TrecPointer<TControl> newRoot)
+{
+	if (!newRoot.Get())
+		throw L"Error! Root Control Already expected to be initialized!";
+
+	rootControl = newRoot;
 }
 
 TrecPointer<TControl> Page::GetRootControl()
@@ -349,36 +413,68 @@ bool Page::OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlags, messageOu
 
 void Page::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
+	if (!isContained(&point, &area))
+		return;
+
+	point.x -= area.left;
+	point.y -= area.top;
 	if (rootControl.Get())
 		rootControl->OnRButtonUp(nFlags, point, mOut, eventAr);
 }
 
 void Page::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
+	if (!isContained(&point, &area))
+		return;
+
+	point.x -= area.left;
+	point.y -= area.top;
 	if (rootControl.Get())
 		rootControl->OnLButtonDown(nFlags, point, mOut, eventAr, clickedControl);
 }
 
 void Page::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
+	if (!isContained(&point, &area))
+		return;
+
+	point.x -= area.left;
+	point.y -= area.top;
 	if (rootControl.Get())
 		rootControl->OnRButtonDown(nFlags, point, mOut, eventAr);
 }
 
 void Page::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
+	if (!isContained(&point, &area))
+		return;
+
+	point.x -= area.left;
+	point.y -= area.top;
 	if (rootControl.Get())
 		rootControl->OnMouseMove(nFlags, point, mOut, eventAr);
 }
 
 void Page::OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
+	if (!isContained(&point, &area))
+		return;
+
+	point.x -= area.left;
+	point.y -= area.top;
+
 	if (rootControl.Get())
 		rootControl->OnLButtonDblClk(nFlags, point, mOut, eventAr);
 }
 
 void Page::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
+	if (!isContained(&point, &area))
+		return;
+
+	point.x -= area.left;
+	point.y -= area.top;
+
 	UINT curSize = clickedControl.Size();
 	for (UINT c = 0; c < clickedControl.Size(); c++)
 	{
@@ -419,6 +515,18 @@ bool Page::OnDestroy()
 	if(handler.Get())
 		return handler->OnDestroy();
 	return true;
+}
+
+void Page::SetSelf(TrecPointer<Page> s)
+{
+	if (!s.Get() || s.Get() != this)
+		throw L"Error! Must Set sef with a valid pointer!";
+	self = TrecPointerKey::GetSoftPointerFromTrec<Page>(s);
+}
+
+TrecPointer<TInstance> Page::GetInstance()
+{
+	return instance;
 }
 
 /*
@@ -573,6 +681,9 @@ void Page::OnSize(UINT nType, int cx, int cy)
 	HDC deviceHandle = GetWindowDC(windowHandle);
 	GetBoundsRect(deviceH, &area, 0);
 	GetClientRect(windowHandle, &area);
+
+	convertCRectToD2DRect(&area, &dRect);
+
 //	width = area.right - area.left;
 //	height = area.bottom - area.top;
 	if (rt_type == render_target_dc)
@@ -621,7 +732,7 @@ void Page::OnSize(UINT nType, int cx, int cy)
 		bmp1.dpiX = bmp1.dpiY = 0;
 		bmp1.pixelFormat = D2D1::PixelFormat(
 			DXGI_FORMAT_B8G8R8A8_UNORM,
-			D2D1_ALPHA_MODE_IGNORE
+			D2D1_ALPHA_MODE_PREMULTIPLIED
 		);
 		bmp1.bitmapOptions = D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_GDI_COMPATIBLE
 			| D2D1_BITMAP_OPTIONS_CANNOT_DRAW;
@@ -654,19 +765,30 @@ void Page::CreateLayout()
 
 void Page::Draw()
 {
-	if (!rootControl.Get() || !regRenderTarget.Get()) return;
+	if (!rootControl.Get() || !regRenderTarget.Get() || !clearBursh.Get()) return;
 
 	regRenderTarget->BeginDraw();
-	regRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::White));
+	regRenderTarget->Clear(D2D1::ColorF(1.0f,1.0f,1.0f,0.0f));
+	regRenderTarget->FillRectangle(dRect, clearBursh.Get());
+	
 	regRenderTarget->SetTransform(adjustMatrix);
 	rootControl->onDraw();
 	regRenderTarget->EndDraw();
 
+	if (handler.Get())
+		handler->Draw();
 }
 
 void Page::SetArea(RECT& loc)
 {
 	area = loc;
+	convertCRectToD2DRect(&area, &dRect);
+
+
+	if (rt_type == render_target_dc)
+	{
+		reinterpret_cast<ID2D1DCRenderTarget*>(regRenderTarget.Get())->BindDC(this->deviceH, &area);
+	}
 }
 
 

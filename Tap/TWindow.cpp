@@ -1,32 +1,52 @@
 #include "TWindow.h"
+#include "TInstance.h"
 
-TWindow::TWindow(TString& name, TString& winClass, UINT style, HWND parent, int commandShow, HINSTANCE ins)
+TWindow::TWindow(TString& name, TString& winClass, UINT style, HWND parent, int commandShow, TrecPointer<TInstance> ins)
 {
 	currentWindow = CreateWindowW(winClass.GetConstantBuffer(),
-		name.GetConstantBuffer(), style, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, parent, nullptr, ins, nullptr);
+		name.GetConstantBuffer(), style, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, parent, nullptr, ins->GetInstanceHandle(), nullptr);
 
 	if (!currentWindow)
+	{
+		int lastError = GetLastError();
 		throw L"Window ERROR! Failed to generate Window";
-
+	}
 	this->name.Set(name);
 	this->parent = parent;
 	this->winClass.Set(winClass);
 	this->windowInstance = ins;
 	this->command = commandShow;
+
+	HDC dc = GetWindowDC(currentWindow);
+	SetMapMode(dc, MM_LOENGLISH);
+
+	locked = false;
+}
+
+TWindow::~TWindow()
+{
 }
 
 int TWindow::PrepareWindow()
 {
 	if (!currentWindow)
 		return 1;
+
+	assert(windowInstance.Get());
+
+	windowInstance->RegisterDialog(TrecPointerKey::GetTrecPointerFromSoft<TWindow>(self));
+
 	ShowWindow(currentWindow, command);
 	UpdateWindow(currentWindow);
+
+
+
 	return 0;
 }
 
-int TWindow::CompileView(TString& file, TrecComPointer<ID2D1Factory1> fact, TrecPointer<EventHandler> eh)
+int TWindow::CompileView(TString& file, TrecPointer<EventHandler> eh)
 {
-	if (!fact.Get())
+	if (!windowInstance.Get())
 		return -1;
 	if (!currentWindow)
 		return -2;
@@ -35,7 +55,9 @@ int TWindow::CompileView(TString& file, TrecComPointer<ID2D1Factory1> fact, Trec
 	if (!aFile.Get() || !aFile->IsOpen())
 		return 1;
 
-	mainPage = Page::GetWindowPage(fact, currentWindow, eh);
+	directFactory = windowInstance->GetFactory();
+
+	mainPage = Page::GetWindowPage(windowInstance, currentWindow, eh);
 
 	if (!mainPage.Get())
 		return 2;
@@ -100,6 +122,7 @@ void TWindow::Draw(Page& draw)
 
 void TWindow::OnRButtonUp(UINT nFlags, TPoint point)
 {
+	if (locked) return;
 	messageOutput mOut = negative;
 	for(UINT c = 0; c < pages.Size() && (mOut == negative || mOut == negativeUpdate); c++)
 	{
@@ -113,6 +136,7 @@ void TWindow::OnRButtonUp(UINT nFlags, TPoint point)
 
 void TWindow::OnLButtonDown(UINT nFlags, TPoint point)
 {
+	if (locked) return;
 	messageOutput mOut = negative;
 	for(UINT c = 0; c < pages.Size() && (mOut == negative || mOut == negativeUpdate); c++)
 	{
@@ -126,6 +150,7 @@ void TWindow::OnLButtonDown(UINT nFlags, TPoint point)
 
 void TWindow::OnRButtonDown(UINT nFlags, TPoint point)
 {
+	if (locked) return;
 	messageOutput mOut = negative;
 	for(UINT c = 0; c < pages.Size() && (mOut == negative || mOut == negativeUpdate); c++)
 	{
@@ -138,6 +163,7 @@ void TWindow::OnRButtonDown(UINT nFlags, TPoint point)
 }
 void TWindow::OnMouseMove(UINT nFlags, TPoint point)
 {
+	if (locked) return;
 	messageOutput mOut = negative;
 	for(UINT c = 0; c < pages.Size() && (mOut == negative || mOut == negativeUpdate); c++)
 	{
@@ -151,6 +177,7 @@ void TWindow::OnMouseMove(UINT nFlags, TPoint point)
 
 void TWindow::OnLButtonDblClk(UINT nFlags, TPoint point)
 {
+	if (locked) return;
 	messageOutput mOut = negative;
 	for(UINT c = 0; c < pages.Size() && (mOut == negative || mOut == negativeUpdate); c++)
 	{
@@ -164,6 +191,7 @@ void TWindow::OnLButtonDblClk(UINT nFlags, TPoint point)
 
 void TWindow::OnLButtonUp(UINT nFlags, TPoint point)
 {
+	if (locked) return;
 	messageOutput mOut = negative;
 	for(UINT c = 0; c < pages.Size() && (mOut == negative || mOut == negativeUpdate); c++)
 	{
@@ -177,6 +205,7 @@ void TWindow::OnLButtonUp(UINT nFlags, TPoint point)
 
 bool TWindow::OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlags)
 {
+	if (locked) return false;
 	messageOutput mOut = negative;
 
 	bool returnable = false;
@@ -205,7 +234,7 @@ TrecPointer<Page> TWindow::GetHandlePage(bool singleton)
 	if (singleton && handlePage.Get())
 		return handlePage;
 
-	TrecPointer<Page> ret = Page::GetWindowPage(directFactory, currentWindow, TrecPointer<EventHandler>());
+	TrecPointer<Page> ret = Page::Get2DPage(windowInstance, GetWindowDC(currentWindow), TrecPointer<EventHandler>());
 
 	if (!ret.Get())
 		return ret;
@@ -242,7 +271,7 @@ TrecPointer<Page> TWindow::Get3DPage(bool singleton, TString& engineId)
 	if (!engineId.GetSize())
 		return TrecPointer<Page>();
 
-	TrecPointer<ArenaEngine> engine = ArenaEngine::GetArenaEngine(engineId, currentWindow, windowInstance);
+	TrecPointer<ArenaEngine> engine = ArenaEngine::GetArenaEngine(engineId, currentWindow, windowInstance->GetInstanceHandle());
 
 	return Get3DPage(singleton, engine);
 }
@@ -260,7 +289,7 @@ TrecPointer<Page> TWindow::Get3DPage(bool singleton, TrecPointer<ArenaEngine> en
 		}
 	}
 
-	TrecPointer<Page> ret = Page::Get3DPage(directFactory, engine, TrecPointer<EventHandler>());
+	TrecPointer<Page> ret = Page::Get3DPage(windowInstance, engine, TrecPointer<EventHandler>());
 
 	pages.push_back(ret);
 
@@ -270,6 +299,23 @@ TrecPointer<Page> TWindow::Get3DPage(bool singleton, TrecPointer<ArenaEngine> en
 	}
 
 	return ret;
+}
+
+void TWindow::LockWindow()
+{
+	locked = true;
+}
+
+void TWindow::UnlockWindow()
+{
+	locked = false;
+}
+
+void TWindow::SetSelf(TrecPointer<TWindow> win)
+{
+	if (this != win.Get())
+		throw L"Error! Function expected to recieve a protected reference to 'this' Object!";
+	this->self = TrecPointerKey::GetSoftPointerFromTrec<TWindow>(win);
 }
 
 HWND TWindow::GetWindowHandle()

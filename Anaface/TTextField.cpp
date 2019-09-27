@@ -135,6 +135,16 @@ bool TTextField::onClick(TPoint cp)
 	return false;
 }
 
+void TTextField::LockText()
+{
+	isEditable = false;
+}
+
+void TTextField::UnlockText()
+{
+	isEditable = true;
+}
+
 /*
 * Method: TTextField - loadFromHTML
 * Purpose: Loads the Text Element from HTML

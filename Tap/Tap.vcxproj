@@ -158,8 +158,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AlertDialog.h" />
     <ClInclude Include="AnagameAsm.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="NameDialog.h" />
+    <ClInclude Include="OkayHandler.h" />
     <ClInclude Include="Page.h" />
     <ClInclude Include="ParseReader.h" />
     <ClInclude Include="pch.h" />
@@ -168,11 +171,14 @@
     <ClInclude Include="TDialog.h" />
     <ClInclude Include="TInstance.h" />
     <ClInclude Include="TWindow.h" />
-    <ClInclude Include="EventHandler.h"/>
+    <ClInclude Include="EventHandler.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AlertDialog.cpp" />
     <ClCompile Include="AnagameAsm.cpp" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="NameDialog.cpp" />
+    <ClCompile Include="OkayHandler.cpp" />
     <ClCompile Include="Page.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

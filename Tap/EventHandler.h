@@ -11,7 +11,7 @@ public:
     EventHandler(TrecPointer<TInstance> instance);
     virtual ~EventHandler();
 
-    virtual void Initialize(Page* page) = 0;
+    virtual void Initialize(TrecPointer<Page> page) = 0;
     virtual void HandleEvents(TDataArray<EventID_Cred>& eventAr) = 0;
     virtual bool OnDestroy();
 
@@ -30,4 +30,6 @@ public:
 protected:
 	TrecPointer<TInstance> app;
 	TDataArray<eventNameID> events;
+	TrecPointer<TInstance> instance;
+	TrecPointer<Page> page;
 };

@@ -7,6 +7,7 @@ static TString dialogClassName(L"TDialog");
 
 TInstance::TInstance(TString& name, TString& winClass, UINT style, HWND parent, int commandShow, HINSTANCE ins, WNDPROC wp)
 {
+
 	if (!wp)
 		throw L"ERROR! Window Proc Function must be a valid pointer!";
 	proctor = wp;
@@ -106,10 +107,11 @@ int TInstance::SetMainWindow(WNDCLASSEXW& wcex, TString& file, TrecPointer<Event
 		int err = GetLastError();
 		return 1;
 	}
-	mainWindow = TrecPointerKey::GetNewTrecPointer<TWindow>(mainWindowName, mainWindowClass, mainStyle, mainWindowHandle, command, instance);
+	mainWindow = TrecPointerKey::GetNewSelfTrecPointer<TWindow>(mainWindowName, mainWindowClass, mainStyle, mainWindowHandle, command, 
+		TrecPointerKey::GetTrecPointerFromSoft(self));
 
 	mainWindow->PrepareWindow();
-	return mainWindow->CompileView(file, factory, eh);
+	return mainWindow->CompileView(file, eh);
 }
 
 TrecPointer<TWindow> TInstance::GetWindowByName(TString& name)
@@ -124,7 +126,37 @@ TrecPointer<TWindow> TInstance::GetWindowByName(TString& name)
 	return TrecPointer<TWindow>();
 }
 
-bool TInstance::LaunchDialog(TString& file, TrecPointer<EventHandler> eh, HWND callingWindow)
+void TInstance::AssertDialogRegistered()
+{
+	if (dialogAtom)
+		return;
+	WNDCLASSEXW windowClassStructure;
+	ZeroMemory(&windowClassStructure, sizeof(windowClassStructure));
+
+	TString winClass(L"Dialog");
+
+	windowClassStructure.cbSize = sizeof(windowClassStructure);
+	windowClassStructure.style = CS_HREDRAW | CS_VREDRAW;
+	windowClassStructure.lpfnWndProc = proctor;
+	windowClassStructure.cbClsExtra = 0;
+	windowClassStructure.cbWndExtra = 0;
+	windowClassStructure.hInstance = instance;
+	windowClassStructure.hIcon = nullptr;
+	windowClassStructure.hCursor = nullptr;
+	windowClassStructure.hbrBackground = nullptr;
+	windowClassStructure.lpszMenuName = nullptr;
+	windowClassStructure.lpszClassName = winClass.GetConstantBuffer();
+	windowClassStructure.hIconSm = nullptr;
+
+	dialogAtom = RegisterClassExW(&windowClassStructure);
+	if (!dialogAtom)
+	{
+		int err = GetLastError();
+		throw err;
+	}
+}
+
+/*bool TInstance::LaunchDialog(TString& file, TrecPointer<EventHandler> eh, HWND callingWindow)
 {
 	WNDCLASSEXW windowClassStructure;
 	ZeroMemory(&windowClassStructure, sizeof(windowClassStructure));
@@ -158,10 +190,75 @@ bool TInstance::LaunchDialog(TString& file, TrecPointer<EventHandler> eh, HWND c
 		return false;
 	windowList.push_back(newDialog);
 	return true;
+}*/
+
+WNDPROC TInstance::GetProc()
+{
+	return proctor;
 }
 
 
 TrecPointer<TWindow> TInstance::GetMainWindow()
 {
 	return mainWindow;
+}
+
+void TInstance::LockWindow(HWND win)
+{
+	if (mainWindow.Get() && mainWindow->GetWindowHandle() == win)
+	{
+		mainWindow->LockWindow();
+		return;
+	}
+
+	for (UINT Rust = 0; Rust < windowList.Size(); Rust++)
+	{
+		if (windowList[Rust].Get() && windowList[Rust]->GetWindowHandle() == win)
+		{
+			windowList[Rust]->LockWindow();
+			return;
+		}
+	}
+}
+
+void TInstance::UnlockWindow(HWND win)
+{
+	if (mainWindow.Get() && mainWindow->GetWindowHandle() == win)
+	{
+		mainWindow->UnlockWindow();
+		return;
+	}
+
+	for (UINT Rust = 0; Rust < windowList.Size(); Rust++)
+	{
+		if (windowList[Rust].Get() && windowList[Rust]->GetWindowHandle() == win)
+		{
+			windowList[Rust]->UnlockWindow();
+			return;
+		}
+	}
+}
+
+HINSTANCE TInstance::GetInstanceHandle()
+{
+	return instance;
+}
+
+TrecComPointer<ID2D1Factory1> TInstance::GetFactory()
+{
+	return factory;
+}
+
+void TInstance::SetSelf(TrecPointer<TInstance> i)
+{
+	if (this != i.Get() || i.Get() != this)
+		throw L"Error! Function expected to recieve a protected reference to 'this' Object!";
+	this->self = TrecPointerKey::GetSoftPointerFromTrec<TInstance>(i);
+
+	AssertDialogRegistered();
+}
+ 
+void TInstance::RegisterDialog(TrecPointer<TWindow> win)
+{
+	windowList.push_back(win);
 }

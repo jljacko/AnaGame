@@ -40,7 +40,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	TString title(L"Anagame Builder");
 	TString winClass(L"BuilderWindow");
 
-	mainInstance = TrecPointerKey::GetNewTrecPointer<TInstance>(title, winClass, WS_OVERLAPPEDWINDOW, nullptr, nCmdShow, hInstance, WndProc);
+	mainInstance = TrecPointerKey::GetNewSelfTrecPointer<TInstance>(title, winClass, WS_OVERLAPPEDWINDOW | WS_MAXIMIZE, nullptr, nCmdShow, hInstance, WndProc);
 
 	WNDCLASSEXW wcex;
 
@@ -102,6 +102,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	if (message == WM_GETMINMAXINFO)
+	{
+		PMINMAXINFO info = reinterpret_cast<LPMINMAXINFO>(lParam);
+
+		info->ptMinTrackSize.x = 600;
+		info->ptMinTrackSize.y = 450;
+		return 0;
+	}
+
 	if (mainInstance.Get())
 		return mainInstance->Proc(hWnd, message, wParam, lParam);
 

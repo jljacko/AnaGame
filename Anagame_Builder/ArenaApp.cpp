@@ -112,7 +112,7 @@ ArenaApp::ArenaApp(TrecPointer<TControl> m, TrecPointer<TControl> o, TrecPointer
 	TString fileBody = fileBase;
 	fileBody += L"\\Resources\\ArenaView.tml";
 
-	if (!m.Get() || dynamic_cast<AnafaceUI*>(m.Get()))
+	if (!m.Get() || !dynamic_cast<AnafaceUI*>(m.Get()))
 		return;
 	RECT rect = dynamic_cast<AnafaceUI*>(m.Get())->GetControlArea();
 	mainPage->SetArea(rect);
@@ -136,7 +136,7 @@ ArenaApp::ArenaApp(TrecPointer<TControl> m, TrecPointer<TControl> o, TrecPointer
 	fileBody.Set(fileBase);
 	fileBody.Append(L"\\Resources\\ArenaViewPanel.txt");
 
-	if (!o.Get() || dynamic_cast<AnafaceUI*>(o.Get()))
+	if (!o.Get() || !dynamic_cast<AnafaceUI*>(o.Get()))
 		return;
 	rect = dynamic_cast<AnafaceUI*>(o.Get())->GetControlArea();
 	outputPane->SetArea(rect);
@@ -157,7 +157,7 @@ ArenaApp::ArenaApp(TrecPointer<TControl> m, TrecPointer<TControl> o, TrecPointer
 	fileBody.Set(fileBase);
 	fileBody.Append(L"\\Resources\\ArenaViewBar.txt");
 
-	if (!e.Get() || dynamic_cast<AnafaceUI*>(e.Get()))
+	if (!e.Get() || !dynamic_cast<AnafaceUI*>(e.Get()))
 		return;
 	rect = dynamic_cast<AnafaceUI*>(e.Get())->GetControlArea();
 	explorerPane->SetArea(rect);

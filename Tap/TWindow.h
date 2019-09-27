@@ -4,11 +4,12 @@
 class _TAP_DLL TWindow :	public TObject
 {
 public:
-	TWindow(TString& name, TString& winClass, UINT style, HWND parent, int commandShow, HINSTANCE ins);
+	TWindow(TString& name, TString& winClass, UINT style, HWND parent, int commandShow, TrecPointer<TInstance> ins);
+	virtual ~TWindow();
 
-	int PrepareWindow();
+	virtual int PrepareWindow();
 
-	int CompileView(TString& file, TrecComPointer<ID2D1Factory1> fact, TrecPointer<EventHandler> eh);
+	int CompileView(TString& file, TrecPointer<EventHandler> eh);
 
 	bool MovePageToTop(TrecPointer<Page> p);
 	TString GetWinClass();
@@ -25,16 +26,22 @@ public:
 	afx_msg void OnLButtonDblClk(UINT nFlags, TPoint point);
 	afx_msg void OnLButtonUp(UINT nFlags, TPoint point);
 	afx_msg bool OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlags);
-	afx_msg bool OnDestroy();
+	afx_msg virtual bool OnDestroy();
 
 	TrecPointer<Page> GetHandlePage(bool singleton);
 	TrecPointer<Page> GetHandlePage(const TString& name);
 	TrecPointer<Page> Get3DPage(bool singleton, TString& engineId);
 	TrecPointer<Page> Get3DPage(bool singleton, TrecPointer<ArenaEngine> engine);
 
+	void LockWindow();
+	void UnlockWindow();
+
+	void SetSelf(TrecPointer<TWindow> win);
+
+
 protected:
 	HWND parent, currentWindow;
-	HINSTANCE windowInstance;
+	TrecPointer<TInstance> windowInstance;
 	int command;
 	TrecPointer<Page> mainPage;
 	TDataArray<TrecPointer<Page>> pages;
@@ -45,5 +52,11 @@ protected:
 
 	// Singleton Pages
 	TrecPointer<Page> _3DPage, handlePage;
+
+	// Whether the Window should ignore user interactivity. Effectivley disables Windows at the AnaGame level without disabling them at the Windows level
+	bool locked;
+
+	//
+	TrecPointerSoft<TWindow> self;
 };
 
