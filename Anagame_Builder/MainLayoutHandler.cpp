@@ -257,7 +257,7 @@ void MainLayoutHandler::OnPrint(TControl* tc, EventArgs ea)
 void MainLayoutHandler::OnNewArena(TControl* tc, EventArgs ea)
 {
 	TString dialog(L"Enter a name for your Arena!");
-	TString arenaName(ActivateNameDialog(instance, page->GetWindowHandle(), dialog));
+	TString arenaName(ActivateNameDialog(instance, page->GetWindowHandle()->GetWindowHandle(), dialog));
 
 	if (!arenaName.GetSize())
 		return;

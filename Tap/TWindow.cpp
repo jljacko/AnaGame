@@ -57,13 +57,13 @@ int TWindow::CompileView(TString& file, TrecPointer<EventHandler> eh)
 
 	directFactory = windowInstance->GetFactory();
 
-	mainPage = Page::GetWindowPage(windowInstance, currentWindow, eh);
+	mainPage = Page::GetWindowPage(windowInstance, TrecPointerKey::GetTrecPointerFromSoft<TWindow>(self), eh);
 
 	if (!mainPage.Get())
 		return 2;
 
 	mainPage->SetAnaface(aFile, eh);
-	mainPage->Draw();
+	Draw();
 
 	return 0;
 }
@@ -112,7 +112,15 @@ TString TWindow::GetWinName()
 void TWindow::Draw()
 {
 	if (mainPage.Get())
-		mainPage->Draw();
+	{
+		TrecComPointer<ID2D1RenderTarget> rt = mainPage->GetRenderTarget();
+		if (!rt.Get()) return;
+		{
+			rt->BeginDraw();
+			mainPage->Draw();
+			rt->EndDraw();
+		}
+	}
 }
 
 void TWindow::Draw(Page& draw)
@@ -234,7 +242,7 @@ TrecPointer<Page> TWindow::GetHandlePage(bool singleton)
 	if (singleton && handlePage.Get())
 		return handlePage;
 
-	TrecPointer<Page> ret = Page::Get2DPage(windowInstance, GetWindowDC(currentWindow), TrecPointer<EventHandler>());
+	TrecPointer<Page> ret = Page::Get2DPage(windowInstance, TrecPointerKey::GetTrecPointerFromSoft<TWindow>(self), TrecPointer<EventHandler>());
 
 	if (!ret.Get())
 		return ret;
@@ -316,6 +324,18 @@ void TWindow::SetSelf(TrecPointer<TWindow> win)
 	if (this != win.Get())
 		throw L"Error! Function expected to recieve a protected reference to 'this' Object!";
 	this->self = TrecPointerKey::GetSoftPointerFromTrec<TWindow>(win);
+}
+
+TrecPointer<Page> TWindow::GetPageByArea(RECT r)
+{
+	for (UINT Rust = 0; Rust < pages.Size(); Rust++)
+	{
+		if (pages[Rust].Get() && pages[Rust]->GetArea() == r)
+			return pages[Rust];
+	}
+	TrecPointer<Page> ret = Page::GetSmallPage(mainPage, r);
+	pages.push_back(ret);
+	return ret;
 }
 
 HWND TWindow::GetWindowHandle()

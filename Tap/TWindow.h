@@ -38,6 +38,8 @@ public:
 
 	void SetSelf(TrecPointer<TWindow> win);
 
+	TrecPointer<Page> GetPageByArea(RECT r);
+
 
 protected:
 	HWND parent, currentWindow;

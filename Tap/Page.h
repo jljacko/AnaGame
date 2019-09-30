@@ -4,6 +4,8 @@
 #include <TObject.h>
 #include "EventHandler.h"
 
+class TWindow;
+
 typedef enum RenderTargetType
 {
 	render_target_unknown,
@@ -23,10 +25,11 @@ class _TAP_DLL Page : public TObject
 public:
 	~Page();
 
-	static TrecPointer<Page> Get2DPage(TrecPointer<TInstance>, HDC, TrecPointer<EventHandler>);
-	static TrecPointer<Page> GetWindowPage(TrecPointer<TInstance>, HWND,  TrecPointer<EventHandler>);
-	static TrecPointer<Page> GetWindowPage(TrecPointer<TInstance>, TrecComPointer<ID2D1RenderTarget>, HWND, TrecPointer<EventHandler>);
+	static TrecPointer<Page> Get2DPage(TrecPointer<TInstance>, TrecPointer<TWindow>, TrecPointer<EventHandler>);
+	static TrecPointer<Page> GetWindowPage(TrecPointer<TInstance>, TrecPointer<TWindow>,  TrecPointer<EventHandler>);
+	static TrecPointer<Page> GetWindowPage(TrecPointer<TInstance>, TrecComPointer<ID2D1RenderTarget>, TrecPointer<TWindow>, TrecPointer<EventHandler>);
 	static TrecPointer<Page> Get3DPage(TrecPointer<TInstance>, TrecPointer<ArenaEngine>, TrecPointer<EventHandler>);
+	static TrecPointer<Page> GetSmallPage(TrecPointer<Page>, RECT area);
 
 	int SetAnaface(TrecPointer<TFile> file, TrecPointer<EventHandler> eh);
 	int SetAnaface(TrecPointer<TFile> file, TDataArray<eventNameID>& id);
@@ -35,7 +38,7 @@ public:
 
 	TrecPointer<TControl> GetRootControl();
 
-	HWND GetWindowHandle();
+	TrecPointer<TWindow> GetWindowHandle();
 
 	virtual UCHAR* GetAnaGameType()override;
 	afx_msg void OnSize(UINT nType, int cx,	int cy);
@@ -47,6 +50,7 @@ public:
 
 	void Draw();
 
+	RECT GetArea();
 	void SetArea(RECT& loc);
 
 	afx_msg void OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut);
@@ -86,7 +90,7 @@ protected:
 	TrecComPointer<ID2D1SolidColorBrush> clearBursh;
 
 	// Regular Resources
-	HWND windowHandle;		// the Window attached to the page
+	
 	//HINSTANCE instance;		// the Inatance that was used during page construction
 	HDC deviceH;			// Handle to the Context Device used by the Window
 	RECT area;				// Area Within the Window to draw
@@ -97,6 +101,7 @@ protected:
 	 TrecPointer<EventHandler> handler; // The class that manages specific actions
 	 TrecPointer<TInstance> instance;
 	D2D1_MATRIX_3X2_F adjustMatrix;
+	TrecPointer<TWindow> windowHandle;		// the Window attached to the page
 
 	TrecPointerSoft<Page> self;
 

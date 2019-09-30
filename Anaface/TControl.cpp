@@ -4620,7 +4620,7 @@ int TText::onCreate(RECT loc)
 	bounds.right = loc.right;
 	bounds.top = loc.top;
 
-
+	ResetBrush();
 
 	if (!SUCCEEDED(results))
 		return 5;

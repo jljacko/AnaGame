@@ -1,5 +1,6 @@
 #include "OkayHandler.h"
 #include "Page.h"
+#include "TWindow.h"
 
 OkayHandler::OkayHandler(TrecPointer<TInstance> instance): EventHandler(instance)
 {
@@ -46,9 +47,9 @@ void OkayHandler::OnOkay(TControl* control, EventArgs ea)
 {
 	if (!page.Get())
 		throw L"Error! Handler expected pointer to a page!";
-	HWND windHandle = page->GetWindowHandle();
-	if (!windHandle)
+	TrecPointer<TWindow> windHandle = page->GetWindowHandle();
+	if (!windHandle.Get())
 		throw L"Error! Handler's Page Object returned a NULL window handle";
 
-	DestroyWindow(windHandle);
+	DestroyWindow(windHandle->GetWindowHandle());
 }

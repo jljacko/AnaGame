@@ -23,6 +23,8 @@ public:
 
 	TrecPointer<TWindow> GetMainWindow();
 
+	TrecPointer<TWindow> GetWindow(HWND);
+
 	void LockWindow(HWND win);
 	void UnlockWindow(HWND win);
 

@@ -359,7 +359,7 @@ bool TComboBox::GetExtensionStatus()
 void TComboBox::SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget>rt)
 {
 	TControl::SetNewRenderTarget(rt);
-
+	D2D1_COLOR_F whiteColor = D2D1::ColorF(D2D1::ColorF::White, 0.9f);
 	TrecComPointer<ID2D1SolidColorBrush>::TrecComHolder extendedBrushRaw;
 	HRESULT brushRes = renderTarget->CreateSolidColorBrush(whiteColor, extendedBrushRaw.GetPointerAddress());
 	extendedBrush = extendedBrushRaw.Extract();

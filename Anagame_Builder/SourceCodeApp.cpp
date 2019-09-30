@@ -23,11 +23,12 @@ SourceCodeApp::SourceCodeApp(TrecPointer<TControl> m, TrecPointer<TControl> o, T
 	fileBody.Append( L"\\Resources\\LineTextEditor.txt");
 	window = r->GetMainWindow();
 
-	mainPage = window->GetHandlePage(TString(L"Body"));
+	
 	if (!m.Get() || !dynamic_cast<AnafaceUI*>(m.Get()))
 		return;
 	RECT rect = dynamic_cast<AnafaceUI*>(m.Get())->GetControlArea();
-	mainPage->SetArea(rect);
+	mainPage = window->GetPageByArea(rect);
+
 	TrecPointer<TFile> file = TrecPointerKey::GetNewTrecPointer<TFile>();
 	bool fileOpened = file->Open(fileBody, TFile::t_file_read | TFile::t_file_share_read | TFile::t_file_open_always);
 	if (!fileOpened)
@@ -39,14 +40,6 @@ SourceCodeApp::SourceCodeApp(TrecPointer<TControl> m, TrecPointer<TControl> o, T
 	if (!mainControl.Get())
 		return;
 
-	//Adjust the Rectangle
-	RECT contRect = mainControl->getLocation();
-	contRect.left -= rect.left;
-	contRect.right -= rect.left;
-	contRect.bottom -= rect.top;
-	contRect.top -= rect.top;
-
-	mainControl->onCreate(contRect);
 }
 
 SourceCodeApp::~SourceCodeApp()

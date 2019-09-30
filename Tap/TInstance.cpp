@@ -203,6 +203,19 @@ TrecPointer<TWindow> TInstance::GetMainWindow()
 	return mainWindow;
 }
 
+TrecPointer<TWindow> TInstance::GetWindow(HWND h)
+{
+	if (h == mainWindow->GetWindowHandle())
+		return mainWindow;
+
+	for (UINT Rust = 0; Rust < windowList.Size(); Rust++)
+	{
+		if (windowList[Rust].Get() && windowList[Rust]->GetWindowHandle() == h)
+			return windowList[Rust];
+	}
+	return TrecPointer<TWindow>();
+}
+
 void TInstance::LockWindow(HWND win)
 {
 	if (mainWindow.Get() && mainWindow->GetWindowHandle() == win)
