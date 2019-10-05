@@ -13,7 +13,7 @@ public:
 	TRadioButton(TrecComPointer<ID2D1RenderTarget> rt, TrecPointer<TArray<styleTable>> ta);
 	~TRadioButton();
 
-	bool onCreate(RECT);
+	bool onCreate(RECT, TrecPointer<TWindowEngine> d3d)override;
 	void onDraw(TObject* obj = nullptr) override;
 	void onCreateClass();
 

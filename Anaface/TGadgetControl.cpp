@@ -52,11 +52,11 @@ void TGadgetControl::storeInTML(TFile* ar, int childLevel, bool ov)
 * Parameters: RECT r - the location control will be
 * Return: bool - false, ignore for now
 */
-bool TGadgetControl::onCreate(RECT r)
+bool TGadgetControl::onCreate(RECT r, TrecPointer<TWindowEngine> d3d)
 {
 	marginPriority = false;
 
-	TControl::onCreate(r);
+	TControl::onCreate(r,d3d);
 
 	bSize = location.bottom-location.top;
 	int height = bSize;

@@ -100,7 +100,7 @@ public:
 	virtual void storeInTML(TFile* ar, int childLevel, bool ov = false) override;
 	virtual void storeInHTML(TFile* ar) override;
 
-	virtual bool onCreate(RECT) override;
+	virtual bool onCreate(RECT, TrecPointer<TWindowEngine> d3d) override;
 
 	virtual void onDraw(TObject* obj = nullptr) override;
 	UINT determineMinHeightNeeded()override;

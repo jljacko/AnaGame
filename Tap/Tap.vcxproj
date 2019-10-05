@@ -172,6 +172,7 @@
     <ClInclude Include="TInstance.h" />
     <ClInclude Include="TWindow.h" />
     <ClInclude Include="EventHandler.h" />
+	<ClInclude Include="MiniHandler.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AlertDialog.cpp" />
@@ -190,6 +191,7 @@
     <ClCompile Include="TInstance.cpp" />
     <ClCompile Include="TWindow.cpp" />
     <ClCompile Include="EventHandler.cpp" />
+	<ClCompile Include="MiniHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Machine.asm" />

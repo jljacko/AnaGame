@@ -28,7 +28,7 @@ TDropMenu::~TDropMenu()
 * Parameters: RECT l - the location on the menu
 * Returns: bool - true if renderTarget is set
 */
-bool TDropMenu::onCreate(RECT l)
+bool TDropMenu::onCreate(RECT l, TrecPointer<TWindowEngine> d3d)
 {
 	if (!renderTarget.Get())
 		return false;

@@ -156,7 +156,6 @@
   <ItemGroup>
     <ClInclude Include="Anagame_Builder.h" />
     <ClInclude Include="ArenaApp.h" />
-    <ClInclude Include="BuilderApp.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="MainLayoutHandler.h" />
     <ClInclude Include="Resource.h" />
@@ -166,7 +165,6 @@
   <ItemGroup>
     <ClCompile Include="Anagame_Builder.cpp" />
     <ClCompile Include="ArenaApp.cpp" />
-    <ClCompile Include="BuilderApp.cpp" />
     <ClCompile Include="MainLayoutHandler.cpp" />
     <ClCompile Include="SourceCodeApp.cpp" />
   </ItemGroup>

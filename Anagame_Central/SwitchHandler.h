@@ -15,10 +15,10 @@ public:
 	SwitchHandler(TrecPointer<TInstance> ins);
 	~SwitchHandler();
 
-	void Initialize(Page* page);
+	void Initialize(TrecPointer<Page> page);
 	void HandleEvents(TDataArray<EventID_Cred>& eventAr);
 protected:
-	Page* page;
+	TrecPointer<Page> page;
 	methodArray handlers[SWITCH_HANDLER_METHOD_COUNT];
 	TLayout* rootLayout;
 

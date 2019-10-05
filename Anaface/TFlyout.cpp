@@ -39,7 +39,7 @@ TFlyout::~TFlyout()
 * Parameters: RECT r - the location of the Control
 * Returns: bool - false
 */
-bool TFlyout::onCreate(RECT r)
+bool TFlyout::onCreate(RECT r, TrecPointer<TWindowEngine> d3d)
 {
 	TrecPointer<TString> valpoint = attributes.retrieveEntry(TString(L"|Type"));
 
@@ -104,9 +104,9 @@ bool TFlyout::onCreate(RECT r)
 	r.top = exitRect.bottom;
 
 	if (organization == tCanvas)
-		TControl::onCreate(r);
+		TControl::onCreate(r,d3d);
 	else
-		TLayout::onCreate(r);
+		TLayout::onCreate(r,d3d);
 
 	return false;
 }

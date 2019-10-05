@@ -10,7 +10,7 @@ public:
 	virtual UCHAR* GetAnaGameType()override;
 	void setData(TDataArrayBase* data);
 	void setData(TArrayBase* data);
-	bool onCreate(RECT r) override;
+	bool onCreate(RECT r, TrecPointer<TWindowEngine> d3d) override;
 
 protected:
 	TDataArrayBase* dataRaw;

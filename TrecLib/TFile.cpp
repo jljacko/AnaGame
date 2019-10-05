@@ -56,6 +56,10 @@ bool TFile::Open(TString& lpszFileName, UINT nOpenFlags)
 	WCHAR* fName = lpszFileName.GetBufferCopy();
 	UINT readWrite = 0, sharing = 0, atts = 0;
 	ConvertFlags(nOpenFlags, readWrite, sharing, atts);
+
+	// If no attribute for opening is specified, use the value most likely to succeed
+	if (!atts)
+		atts = OPEN_ALWAYS;
 	fileHandle = CreateFileW(fName, readWrite, sharing, nullptr, atts, FILE_ATTRIBUTE_NORMAL, nullptr);
 
 	

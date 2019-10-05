@@ -503,7 +503,7 @@ void TLayout::storeInHTML(TFile * ar)
 * Parameters: RECT margin - the location the layout has to work with
 * Returns: bool - success
 */
-bool TLayout::onCreate(RECT margin)
+bool TLayout::onCreate(RECT margin, TrecPointer<TWindowEngine> d3d)
 {
 	//TContainer* tempCont = NULL;
 
@@ -622,7 +622,7 @@ bool TLayout::onCreate(RECT margin)
 		
 			//tempCont->onCreate(tempCont->getLocation());
 		
-		lChildren.ElementAt(c)->contain->onCreate(tempCont->getLocation());
+		lChildren.ElementAt(c)->contain->onCreate(tempCont->getLocation(), d3d);
 
 	}
 
@@ -659,7 +659,7 @@ bool TLayout::onCreate(RECT margin)
 		internalBrush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1SolidColorBrush>(solBrush);
 	}
 
-	return TControl::onCreate(margin);
+	return TControl::onCreate(margin, d3d);
 }
 
 /*

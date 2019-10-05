@@ -30,9 +30,9 @@ TCheckBox::~TCheckBox()
 * Parameters: RECT r - the location for the check-box
 * Returns: bool - ignore
 */
-bool TCheckBox::onCreate(RECT r)
+bool TCheckBox::onCreate(RECT r, TrecPointer<TWindowEngine> d3d)
 {
-	TGadgetControl::onCreate(r);
+	TGadgetControl::onCreate(r,d3d);
 	if (text1.Get())
 	{
 		text1->bounds.left = text1->bounds.left + bSize;

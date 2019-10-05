@@ -99,7 +99,7 @@ TComboBox::~TComboBox()
 * Parameters: RECT r - the Location the Basic Box would be in
 * Returns: bool
 */
-bool TComboBox::onCreate(RECT r)
+bool TComboBox::onCreate(RECT r, TrecPointer<TWindowEngine> d3d)
 {
 	TrecPointer<TString> valpoint = attributes.retrieveEntry(TString(L"|SubHeight"));
 	if (valpoint.Get() && !valpoint->ConvertToInt(&childHeight))
@@ -136,7 +136,7 @@ bool TComboBox::onCreate(RECT r)
 	//TrecPointer<TContainer> cont;
 	TrecPointer<TControl> tc;
 
-	TGadgetControl::onCreate(r);
+	TGadgetControl::onCreate(r,d3d);
 
 	leftpoint = D2D1::Point2F(DxLocation.left, DxLocation.top);
 	rightPoint = D2D1::Point2F(DxLocation.right, DxLocation.top);
@@ -166,7 +166,7 @@ bool TComboBox::onCreate(RECT r)
 		entrybox.bottom = location.bottom + (c + 1)*childHeight;
 		children.Add(tc);
 		//cont->setLocation(entrybox);
-		tc->onCreate(entrybox);
+		tc->onCreate(entrybox,d3d);
 	}
 
 

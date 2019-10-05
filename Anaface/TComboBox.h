@@ -14,7 +14,7 @@ public:
 	TComboBox(TrecComPointer<ID2D1RenderTarget> rt, TrecPointer<TArray<styleTable>> ta);
 	~TComboBox();
 
-	bool onCreate(RECT);
+	bool onCreate(RECT, TrecPointer<TWindowEngine> d3d)override;
 	void onDraw(TObject* obj = nullptr) override;
 	void onDraw(ID2D1RenderTarget* rt);
 	void addElement(TString);

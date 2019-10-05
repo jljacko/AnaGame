@@ -54,7 +54,7 @@ public:
 
 	// afx_msg virtual void OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
 //	int loadFromTML(CArchive* ar);
-	bool onCreate(RECT)override;
+	bool onCreate(RECT, TrecPointer<TWindowEngine> d3d)override;
 	int addControl(TrecPointer<TControl> control, TString tabName);
 	int addControl(TFile* arch);
 	void setDontAddControl(TrecPointer<TControl> control);
@@ -74,6 +74,9 @@ public:
 private:
 	TrecPointer<TControl> currentControl;
 	TrecPointer<TControl> tabs_base;
+
+	TrecPointer<TWindowEngine> windowEngine;
+
 	TLayoutEx* tabs;
 	int tabHeight;
 	HWND winHandle;

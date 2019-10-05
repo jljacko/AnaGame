@@ -7,7 +7,7 @@ static TString dialogClassName(L"TDialog");
 
 TInstance::TInstance(TString& name, TString& winClass, UINT style, HWND parent, int commandShow, HINSTANCE ins, WNDPROC wp)
 {
-
+	messageStack = 0;
 	if (!wp)
 		throw L"ERROR! Window Proc Function must be a valid pointer!";
 	proctor = wp;
@@ -18,7 +18,10 @@ TInstance::TInstance(TString& name, TString& winClass, UINT style, HWND parent, 
 	mainStyle = style;
 
 	TrecComPointer<ID2D1Factory1>::TrecComHolder factoryHolder;
-	D2D1CreateFactory(D2D1_FACTORY_TYPE_MULTI_THREADED, factoryHolder.GetPointerAddress());
+
+	D2D1_FACTORY_OPTIONS d2dDebugLevel = { D2D1_DEBUG_LEVEL_ERROR };
+
+	D2D1CreateFactory(D2D1_FACTORY_TYPE_MULTI_THREADED, d2dDebugLevel, factoryHolder.GetPointerAddress());
 	factory = factoryHolder.Extract();
 	dialogAtom = 0;
 }
@@ -36,10 +39,11 @@ LRESULT TInstance::Proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		for (UINT c = 0; c < windowList.Size(); c++)
 		{
-			if (windowList[c].Get() && windowList[c]->GetWindowHandle() == hWnd)
+			if (windowList[c].Get() && windowList[c]->window.Get()->GetWindowHandle() == hWnd)
 			{
-				win = windowList[c].Get();
+				win = windowList[c]->window.Get();
 				windowIndex = c;
+				windowList[c]->messageStack++;
 				break;
 			}
 		}
@@ -68,8 +72,12 @@ LRESULT TInstance::Proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			}
 			else
 			{
-				windowList[windowIndex].Delete();
-				windowList.RemoveAt(windowIndex);
+				if (windowList[windowIndex].Get())
+				{
+					windowList[windowIndex]->destroy = true;
+					windowList[windowIndex]->messageStack--;
+				}
+				return DefWindowProc(hWnd, message, wParam, lParam);
 			}
 		}
 		break;
@@ -96,6 +104,12 @@ LRESULT TInstance::Proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	}
 
+	if (windowIndex != -1 && windowIndex < windowList.Size() && windowList[windowIndex].Get())
+	{
+		windowList[windowIndex]->messageStack--;
+	}
+	CleanWindows();
+
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
@@ -120,8 +134,8 @@ TrecPointer<TWindow> TInstance::GetWindowByName(TString& name)
 		return mainWindow;
 	for(UINT Rust = 0; Rust < windowList.Size(); Rust++)
 	{
-		if(windowList[Rust].Get() && !windowList[Rust]->GetWinName().Compare(name))
-			return windowList[Rust];
+		if(windowList[Rust].Get() && windowList[Rust]->window.Get() && !windowList[Rust]->window->GetWinName().Compare(name))
+			return windowList[Rust]->window;
 	}
 	return TrecPointer<TWindow>();
 }
@@ -210,8 +224,8 @@ TrecPointer<TWindow> TInstance::GetWindow(HWND h)
 
 	for (UINT Rust = 0; Rust < windowList.Size(); Rust++)
 	{
-		if (windowList[Rust].Get() && windowList[Rust]->GetWindowHandle() == h)
-			return windowList[Rust];
+		if (windowList[Rust].Get() && windowList[Rust]->window.Get() && windowList[Rust]->window->GetWindowHandle() == h)
+			return windowList[Rust]->window;
 	}
 	return TrecPointer<TWindow>();
 }
@@ -226,9 +240,9 @@ void TInstance::LockWindow(HWND win)
 
 	for (UINT Rust = 0; Rust < windowList.Size(); Rust++)
 	{
-		if (windowList[Rust].Get() && windowList[Rust]->GetWindowHandle() == win)
+		if (windowList[Rust].Get() && windowList[Rust]->window.Get() && windowList[Rust]->window->GetWindowHandle() == win)
 		{
-			windowList[Rust]->LockWindow();
+			windowList[Rust]->window->LockWindow();
 			return;
 		}
 	}
@@ -244,9 +258,9 @@ void TInstance::UnlockWindow(HWND win)
 
 	for (UINT Rust = 0; Rust < windowList.Size(); Rust++)
 	{
-		if (windowList[Rust].Get() && windowList[Rust]->GetWindowHandle() == win)
+		if (windowList[Rust].Get() && windowList[Rust]->window.Get() && windowList[Rust]->window->GetWindowHandle() == win)
 		{
-			windowList[Rust]->UnlockWindow();
+			windowList[Rust]->window->UnlockWindow();
 			return;
 		}
 	}
@@ -273,5 +287,25 @@ void TInstance::SetSelf(TrecPointer<TInstance> i)
  
 void TInstance::RegisterDialog(TrecPointer<TWindow> win)
 {
-	windowList.push_back(win);
+	TrecPointer<WindowContainer> contain = TrecPointerKey::GetNewTrecPointer<WindowContainer>();
+	contain->window = win;
+	windowList.push_back(contain);
+}
+
+void TInstance::CleanWindows()
+{
+	for (UINT Rust = 0; Rust < windowList.Size(); Rust++)
+	{
+		if (windowList[Rust].Get() && windowList[Rust]->destroy && !windowList[Rust]->messageStack)
+		{
+			windowList[Rust]->window.Delete();
+			windowList.RemoveAt(Rust);
+		}
+	}
+}
+
+WindowContainer::WindowContainer()
+{
+	destroy = false;
+	messageStack = 0;
 }

@@ -11,7 +11,7 @@ TCanvas::~TCanvas()
 {
 }
 
-bool TCanvas::onCreate(RECT r)
+bool TCanvas::onCreate(RECT r, TrecPointer<TWindowEngine> d3d)
 {
 	for (int c = 0; c < geometry.Count();c++)
 		geometry.ElementAt(c)->onCreate(r);

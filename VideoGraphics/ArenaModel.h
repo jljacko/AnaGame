@@ -1,5 +1,5 @@
 #pragma once
-#include "ArenaEngine.h"
+#include "TArenaEngine.h"
 #include <d3d11.h>
 #include <DirectXMath.h>
 #include "InlineMatrixOperators.h"
@@ -30,8 +30,8 @@ public:
 class _VIDEO_GRAPHICS ArenaModel : public TObject
 {
 public:
-	ArenaModel(ArenaEngine&);
-	ArenaModel();
+	ArenaModel(TrecPointer<TArenaEngine> engine);
+	ArenaModel(ArenaModel& am);
 	~ArenaModel();
 
 	TString toString() override;
@@ -40,7 +40,7 @@ public:
 	void setName(TString& newName);
 	TString getName();
 
-	void SetNewEngine(ArenaEngine& e);
+	void SetNewEngine(TrecPointer<TArenaEngine> e);
 
 	bool ValidateConstruction();
 
@@ -52,7 +52,7 @@ public:
 	void ProjectionGPU(bool gpu);
 
 
-	void Render(DirectX::XMMATRIX& proj, DirectX::XMMATRIX& cam, ArenaEngine* e);  // Use if Shader expects CPU to perform Calculation
+	void Render(DirectX::XMMATRIX& proj, DirectX::XMMATRIX& cam);  // Use if Shader expects CPU to perform Calculation
 
 
 
@@ -87,7 +87,7 @@ private:
 	TDataArray<UINT> sqIndex;
 	DirectX::XMFLOAT3 location, direction;
 	float size;
-	ArenaEngine* engine;
+	TrecPointer<TArenaEngine> engine;
 	ShaderKey shader;
 
 	// Color resources

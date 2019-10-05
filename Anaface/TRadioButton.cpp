@@ -64,9 +64,9 @@ TRadioButton::~TRadioButton()
 * Parameters: RECT r - the loaction of the button
 * Returns: bool - false (ignore)
 */
-bool TRadioButton::onCreate(RECT r)
+bool TRadioButton::onCreate(RECT r, TrecPointer<TWindowEngine> d3d)
 {
-	TGadgetControl::onCreate(r);
+	TGadgetControl::onCreate(r,d3d);
 
 	runLoop();
 

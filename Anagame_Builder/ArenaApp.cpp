@@ -22,9 +22,9 @@ TString on_SetCameraTranslate(L"OnSetCameraTranslate");
 static UINT arenaCount = 0;
 
 
-ArenaApp::ArenaApp(TrecPointer<TControl> m, TrecPointer<TControl> o, TrecPointer<TControl> e, TrecPointer<TInstance> i, TString& arenaName) : BuilderApp(m, o, e, i)
+ArenaApp::ArenaApp(TrecPointer<TControl> m, TrecPointer<TControl> o, TrecPointer<TControl> e, TrecPointer<TInstance> i, TString& arenaName) : MiniHandler(m, o, e, i)
 {
-	this->arenaName = arenaName;
+	this->arenaName.Set(arenaName);
 
 	arenaHandlers.push_back(&ArenaApp::TextDirectionX);
 	arenaHandlers.push_back(&ArenaApp::TextDirectionY);
@@ -47,75 +47,78 @@ ArenaApp::ArenaApp(TrecPointer<TControl> m, TrecPointer<TControl> o, TrecPointer
 	eventNameID enid;
 
 	enid.eventID = 0;
-	enid.name = on_TextDirectionX;
+	enid.name.Set(on_TextDirectionX);
 	handleList.push_back(enid);
 
 	enid.eventID = 1;
-	enid.name = on_TextDirectionY;
+	enid.name.Set(on_TextDirectionY);
 	handleList.push_back(enid);
 
 	enid.eventID = 2;
-	enid.name = on_TextDirectionZ;
+	enid.name.Set(on_TextDirectionZ);
 	handleList.push_back(enid);
 
 	enid.eventID = 3;
-	enid.name = on_TextLocationX;
+	enid.name.Set(on_TextLocationX);
 	handleList.push_back(enid);
 
 	enid.eventID = 4;
-	enid.name = on_TextLocationY;
+	enid.name.Set(on_TextLocationY);
 	handleList.push_back(enid);
 
 	enid.eventID = 5;
-	enid.name = on_TextLocationZ;
+	enid.name.Set(on_TextLocationZ);
 	handleList.push_back(enid);
 
 	enid.eventID = 6;
-	enid.name = on_Up;
+	enid.name.Set(on_Up);
 	handleList.push_back(enid);
 
 	enid.eventID = 7;
-	enid.name = on_Down;
+	enid.name.Set(on_Down);
 	handleList.push_back(enid);
 
 	enid.eventID = 8;
-	enid.name = on_Left;
+	enid.name.Set(on_Left);
 	handleList.push_back(enid);
 
 	enid.eventID = 9;
-	enid.name = on_Right;
+	enid.name.Set(on_Right);
 	handleList.push_back(enid);
 
 	enid.eventID = 10;
-	enid.name = on_Far;
+	enid.name.Set(on_Far);
 	handleList.push_back(enid);
 
 	enid.eventID = 11;
-	enid.name = on_Near;
+	enid.name.Set(on_Near);
 	handleList.push_back(enid);
 
 	enid.eventID = 12;
-	enid.name = on_SetCameraRotate;
+	enid.name.Set(on_SetCameraRotate);
 	handleList.push_back(enid);
 
 	enid.eventID = 13;
-	enid.name = on_SetCameraTranslate;
+	enid.name.Set(on_SetCameraTranslate);
 	handleList.push_back(enid);
 
 	window = i->GetMainWindow();
 
+	// Before attempting to Finish creating the app, we need to make sure that the Window is set for 3D Drawing
+	if (!window->SetUp3D())
+		throw L"ERROR! Unable to Prepare a 3D Engine for usage!";
 
 	// Set up the Main Page
-	mainPage = window->Get3DPage(false, arenaName);
+	
 	TString fileBase;
-	fileBase = GetDirectory(cd_Executable);
+	fileBase.Set(GetDirectory(cd_Executable));
 	TString fileBody = fileBase;
-	fileBody += L"\\Resources\\ArenaView.tml";
+	fileBody.Append(L"\\Resources\\ArenaView.tml");
 
 	if (!m.Get() || !dynamic_cast<AnafaceUI*>(m.Get()))
 		return;
 	RECT rect = dynamic_cast<AnafaceUI*>(m.Get())->GetControlArea();
-	mainPage->SetArea(rect);
+	mainPage = window->GetPageByArea(rect);
 	TrecPointer<TFile> file = TrecPointerKey::GetNewTrecPointer<TFile>();
 	bool fileOpened = file->Open(fileBody, TFile::t_file_read | TFile::t_file_share_read | TFile::t_file_open_always);
 	if (!fileOpened)
@@ -132,14 +135,14 @@ ArenaApp::ArenaApp(TrecPointer<TControl> m, TrecPointer<TControl> o, TrecPointer
 	dynamic_cast<AnafaceUI*>(m.Get())->addControl(mainControl, name);
 
 	// Now Set up the View Panel
-	outputPane = window->GetHandlePage(TString(L"View"));
+	
 	fileBody.Set(fileBase);
 	fileBody.Append(L"\\Resources\\ArenaViewPanel.txt");
 
 	if (!o.Get() || !dynamic_cast<AnafaceUI*>(o.Get()))
 		return;
 	rect = dynamic_cast<AnafaceUI*>(o.Get())->GetControlArea();
-	outputPane->SetArea(rect);
+	outputPane = window->GetPageByArea(rect);
 	fileOpened = file->Open(fileBody, TFile::t_file_read | TFile::t_file_share_read | TFile::t_file_open_always);
 	if (!fileOpened)
 		return;
@@ -153,14 +156,14 @@ ArenaApp::ArenaApp(TrecPointer<TControl> m, TrecPointer<TControl> o, TrecPointer
 	dynamic_cast<AnafaceUI*>(o.Get())->addControl(outputControl, TString());
 
 	//Now Do the View Bar
-	explorerPane = window->GetHandlePage(TString(L"Explorer"));
+	
 	fileBody.Set(fileBase);
 	fileBody.Append(L"\\Resources\\ArenaViewBar.txt");
 
 	if (!e.Get() || !dynamic_cast<AnafaceUI*>(e.Get()))
 		return;
 	rect = dynamic_cast<AnafaceUI*>(e.Get())->GetControlArea();
-	explorerPane->SetArea(rect);
+	explorerPane = window->GetPageByArea(rect);
 	fileOpened = file->Open(fileBody, TFile::t_file_read | TFile::t_file_share_read | TFile::t_file_open_always);
 	if (!fileOpened)
 		return;
@@ -185,7 +188,8 @@ bool ArenaApp::InitializeControls()
 {
 	if (!mainControl.Get() || !outputUI.Get() ||
 		!mainUI.Get() || !outputControl.Get() ||
-		!explorerControl.Get() || !explorerUI.Get())
+		!explorerControl.Get() || !explorerUI.Get() ||
+		!window.Get())
 		return false;
 
 	try
@@ -207,9 +211,12 @@ bool ArenaApp::InitializeControls()
 		strName = TrecPointerKey::GetNewTrecPointer<TString>(arenaName);
 		arena->addAttribute(TString(L"|EngineID"), strName);
 
-		modelCollection = arena->getEngine();
+		modelCollection = TrecPointerKey::GetNewTrecPointer<TArenaEngine>(window->GetWindowEngine(), arenaName);
 		if (modelCollection.Get())
-			dynamic_cast<TDataBind*>(explorerControl.Get())->setData(modelCollection->getModelList());
+			dynamic_cast<TDataBind*>(explorerControl.Get())->setData(modelCollection->GetModelList());
+
+		arena->setEngine(modelCollection);
+
 		TDataArray<DirectX::XMFLOAT3> scaleVertices;
 		scaleVertices.push_back(DirectX::XMFLOAT3(100.0, 0.0, 0.0));   // 0
 		scaleVertices.push_back(DirectX::XMFLOAT3(-100.0, 0.0, 0.0));  // 2
@@ -234,7 +241,7 @@ bool ArenaApp::InitializeControls()
 		for (UINT c = 0; c < scaleVertices.Size(); c++)
 			uints.push_back(c);
 
-		scale = TrecPointerKey::GetNewTrecPointer<ArenaModel>(*modelCollection.Get());
+		scale = TrecPointerKey::GetNewTrecPointer<ArenaModel>(modelCollection);
 		scale->SetVertexData(floats, default_shader_Single_Color, D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 		scale->SetIndices(uints);
 		scale->setColorBuffer(0.0f, 0.0f, 1.0f, 1.0f);
@@ -271,7 +278,7 @@ void ArenaApp::SetColor(D2D1_COLOR_F c)
 		arena->getContent(1)->setColor(c);
 }
 
-void ArenaApp::MessageHandler()
+void ArenaApp::HandleEvents(TDataArray<EventID_Cred>& cred)
 {
 	if (!arena)
 		return;

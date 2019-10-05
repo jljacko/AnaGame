@@ -21,9 +21,9 @@ using namespace DirectX;
 * Parameters: ArenaEngine& ae - the engine to bound the model to
 * Return: void
 */
-ArenaModel::ArenaModel(ArenaEngine& ae)
+ArenaModel::ArenaModel(TrecPointer<TArenaEngine> ae)
 {
-	engine = &ae;
+	engine = ae;
 	size = 1.0f;
 	ZeroMemory(&location, sizeof(location));
 	ZeroMemory(&direction, sizeof(direction));
@@ -49,32 +49,38 @@ ArenaModel::ArenaModel(ArenaEngine& ae)
 	Log(lt_memory, logMessage);
 }
 
-ArenaModel::ArenaModel()
+ArenaModel::ArenaModel(ArenaModel& am)
 {
-	size = 1.0f;
-	ZeroMemory(&location, sizeof(location));
-	ZeroMemory(&direction, sizeof(direction));
-	context = engine->getDevice();
-	device = engine->getDeviceD();
-	renderTarget = engine->getRederTarget();
-	swapChain = engine->getSwapChain();
-	constructionWorked = context.Get() && device.Get() && renderTarget.Get() && swapChain.Get();
-
-
-	//engine->AddModel(*this);
-
-	location.x = 0.0f;
-	location.z = 0.0f;
-	location.y = 0.0f;
-
-	direction.x = direction.y = direction.z = 1.0f;
-
-	hasPipeColor = false;
-	TString logMessage;
-	logMessage.Format(L"CREATE %p ArenaModel()", this);
-
-	Log(lt_memory, logMessage);
+	name.Set(am.name);
+	primitive = am.primitive;
+	vertexData = am.vertexData;
+	DataDescriptor = am.DataDescriptor;
+	index = am.index;
+	sqIndex = am.sqIndex;
+	location = am.location;
+	direction = am.direction;
+	size = am.size;
+	engine = am.engine;
+	shader = am.shader;
+	textures = am.textures;
+	singleColor = am.singleColor;
+	pipeColor = am.pipeColor;
+	context = am.context;
+	swapChain = am.swapChain;
+	renderTarget = am.renderTarget;
+	device = am.device;
+	indexBuffer = am.indexBuffer;
+	vertexBuffer = am.vertexBuffer;
+	projectionBuffer = am.projectionBuffer;
+	singleColorBuffer = am.singleColorBuffer;
+	singlePipeColorBuffer = am.singlePipeColorBuffer;
+	constantBuffer = am.constantBuffer;
+	shaderMatrix = am.shaderMatrix;
+	bufferSize = am.bufferSize;
+	constructionWorked = am.constructionWorked;
+	hasPipeColor = am.hasPipeColor;
 }
+
 
 /*
 * Method: (ArenaModel) (Destructor)
@@ -130,12 +136,12 @@ TString ArenaModel::getName()
 * Parameters: ArenaEngine& e - the new engine to bound the model to
 * Return: void
 */
-void ArenaModel::SetNewEngine(ArenaEngine & e)
+void ArenaModel::SetNewEngine(TrecPointer<TArenaEngine> e)
 {
-	if (engine)
+	if (engine.Get())
 		engine->RemoveModel(this);
 
-	engine = &e;
+	engine = e;
 	engine->AddModel(*this);
 }
 
@@ -172,7 +178,7 @@ HRESULT ArenaModel::LoadModel(TFile & ar)
 int ArenaModel::SetVertexData(TDataArray<float>& data, int shaderID, D3D11_PRIMITIVE_TOPOLOGY prim)
 {
 	//GUARD_CODE -1;
-	int bSize = engine->getBufferSize(shaderID);
+	int bSize = engine->TShaderHost::getBufferSize(shaderID);
 	if (!bSize)
 		return 1;
 	bufferSize = bSize;
@@ -303,13 +309,9 @@ void ArenaModel::ProjectionGPU(bool gpu)
 *				DirectX::XMMATRIX& camera - the camera matrix to use
 * Return: void
 */
-void ArenaModel::Render(DirectX::XMMATRIX & proj, DirectX::XMMATRIX& camera, ArenaEngine* e)
+void ArenaModel::Render(DirectX::XMMATRIX & proj, DirectX::XMMATRIX& camera)
 {	//GUARD_CODE;
 
-	if (!e)
-		return;
-
-	e->SetResources(context, swapChain, renderTarget, device);
 	if (!context.Get() || !swapChain.Get() ||
 		!renderTarget.Get() || !device.Get())
 		return;
@@ -334,20 +336,20 @@ void ArenaModel::Render(DirectX::XMMATRIX & proj, DirectX::XMMATRIX& camera, Are
 	signed char viewLocation = -1;
 	if (shader._default)
 	{
-		engine->setShader(shader.card.dID);
+		engine->SetShader(shader.card.dID);
 		modelLocation = engine->GetModelLocation(shader.card.dID);
 		viewLocation = engine->GetViewLocation(shader.card.dID);
 	}
 	else
 	{
-		engine->setShader(shader.card.id);
+		engine->SetShader(shader.card.id);
 		modelLocation = engine->GetModelLocation(shader.card.id);
 		viewLocation = engine->GetViewLocation(shader.card.id);
 	}
 	if (modelLocation < 0)
 		return;  // That's it! Back to the Chicken Farm
 
-	bool soft_mvp = engine->DoMVP();
+	bool soft_mvp = engine->DoMvp();
 
 
 	unsigned int offset = 0, buffSize = static_cast<unsigned int>(bufferSize);
@@ -545,7 +547,7 @@ bool ArenaModel::setColorBuffer(float r, float g, float b, float a)
 		return false;
 
 
-	int result = engine->GetConstantBuffer(16, singleColorBuffer);
+	int result = engine->GetConstantBuffer(16, singleColorBuffer, device);
 
 	if(result) // failed
 	{
@@ -601,7 +603,7 @@ bool ArenaModel::setPipeColorBuffer(float r, float g, float b, float a)
 		return false;
 
 
-	int result = engine->GetConstantBuffer(16, singlePipeColorBuffer);
+	int result = engine->GetConstantBuffer(16, singlePipeColorBuffer,device);
 
 	if (result) // failed
 	{

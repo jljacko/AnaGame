@@ -21,13 +21,19 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ArenaEngine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ArenaModel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ShaderParser.h">
+    <ClInclude Include="TWindowEngine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TShaderHost.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TShaderParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TArenaEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -38,13 +44,19 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ArenaEngine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ArenaModel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ShaderParser.cpp">
+    <ClCompile Include="TWindowEngine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TShaderHost.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TShaderParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TArenaEngine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

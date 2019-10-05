@@ -4,6 +4,7 @@
 #include <TML_Reader_.h>
 #include "TInstance.h"
 #include "TWindow.h"
+#include "MiniHandler.h"
 
 Page::Page()
 {
@@ -173,7 +174,7 @@ TrecPointer<Page> Page::GetWindowPage(TrecPointer<TInstance> in, TrecComPointer<
 	return ret;
 }
 
-TrecPointer<Page> Page::Get3DPage(TrecPointer<TInstance> in, TrecPointer<ArenaEngine> engine, TrecPointer<EventHandler> eh)
+TrecPointer<Page> Page::Get3DPage(TrecPointer<TInstance> in, TrecPointer<TWindowEngine> engine, TrecPointer<EventHandler> eh, TrecPointer<TWindow> window)
 {
 	if (!in.Get())
 		throw L"Error! Instance Object MUST ne initialized";
@@ -194,10 +195,6 @@ TrecPointer<Page> Page::Get3DPage(TrecPointer<TInstance> in, TrecPointer<ArenaEn
 	if (!surf.Get())
 		throw L"Error! Provided 3D Engine does not have a Surface to create a 2D Render Target with!";
 	
-	HWND window = engine->GetWindow();
-	if(!window)
-		throw L"Error! Window Handle from provided 3D Engine is NULL!";
-	
 	D2D1_RENDER_TARGET_PROPERTIES props;
 	ZeroMemory(&props, sizeof(props));
 
@@ -216,14 +213,14 @@ TrecPointer<Page> Page::Get3DPage(TrecPointer<TInstance> in, TrecPointer<ArenaEn
 
 	TrecPointer<Page> ret = TrecPointerKey::GetNewSelfTrecPointer<Page>();
 	ret->fact = fact;
-	ret->windowHandle = in->GetWindow(window);
-	ret->deviceH = GetWindowDC(window);
+	ret->windowHandle = window;
+	ret->deviceH = GetWindowDC(window->GetWindowHandle());
 	ret->regRenderTarget = dxgiRender.Extract();
 	ret->instance = in;
 
 	ret->rt_type = render_target_dxgi;
 
-	GetClientRect(window, &ret->area);
+	GetClientRect(window->GetWindowHandle(), &ret->area);
 	convertCRectToD2DRect(&ret->area, &ret->dRect);
 	ret->handler = eh;
 
@@ -278,7 +275,7 @@ int Page::SetAnaface(TrecPointer<TFile> file, TrecPointer<EventHandler> eh)
 
 	rootControl = parser.getRootControl();
 	if (rootControl.Get())
-		rootControl->onCreate(area);
+		rootControl->onCreate(area, windowHandle->GetWindowEngine());
 	if(handler.Get())
 		handler->Initialize(TrecPointerKey::GetTrecPointerFromSoft<Page>(self));
 	return 0;
@@ -301,7 +298,7 @@ int Page::SetAnaface(TrecPointer<TFile> file, TDataArray<eventNameID>& id)
 
 	rootControl = parser.getRootControl();
 	if (rootControl.Get())
-		rootControl->onCreate(area);
+		rootControl->onCreate(area, windowHandle->GetWindowEngine());
 	if(handler.Get())
 		handler->Initialize(TrecPointerKey::GetTrecPointerFromSoft<Page>(self));
 	return 0;
@@ -322,6 +319,13 @@ TrecPointer<TControl> Page::GetRootControl()
 	return rootControl;
 }
 
+TrecPointer<TControl> Page::ExtractRootControl()
+{
+	TrecPointer<TControl> ret(rootControl);
+	rootControl.Nullify();
+	return ret;
+}
+
 TrecPointer<TWindow> Page::GetWindowHandle()
 {
 	return windowHandle;
@@ -334,12 +338,12 @@ void Page::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
 	
 	if(handler.Get())
 		handler->HandleEvents(eventAr);
-	
-	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
-		windowHandle->Draw();
 
-	if (handler.Get())
-		handler->OnRButtonUp(nFlags, point, mOut);
+	if (miniHandler.Get())
+		miniHandler->OnRButtonUp(nFlags, point, mOut);
+
+	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
+		if (windowHandle.Get())windowHandle->Draw(); else return;
 }
 
 void Page::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
@@ -350,11 +354,11 @@ void Page::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
 	if(handler.Get())
 		handler->HandleEvents(eventAr);
 
-	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
-		windowHandle->Draw();
+	if (miniHandler.Get())
+		miniHandler->OnLButtonDown(nFlags, point, mOut);
 
-	if (handler.Get())
-		handler->OnLButtonDown(nFlags, point, mOut);
+	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
+		if (windowHandle.Get())windowHandle->Draw(); else return;
 }
 
 void Page::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
@@ -365,11 +369,10 @@ void Page::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
 	if(handler.Get())
 		handler->HandleEvents(eventAr);
 
-	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
-		windowHandle->Draw();
-
-	if (handler.Get())
-		handler->OnRButtonDown(nFlags, point, mOut);
+	if (miniHandler.Get())
+		miniHandler->OnRButtonDown(nFlags, point, mOut);
+	if (*mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
+		if (windowHandle.Get())windowHandle->Draw(); else return;
 }
 
 void Page::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut)
@@ -380,11 +383,10 @@ void Page::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut)
 	if(handler.Get())
 		handler->HandleEvents(eventAr);
 
-	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
-		windowHandle->Draw();
-
-	if (handler.Get())
-		handler->OnMouseMove(nFlags, point, mOut);
+	if (miniHandler.Get())
+		miniHandler->OnMouseMove(nFlags, point, mOut);
+	if (*mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
+		if (windowHandle.Get())windowHandle->Draw(); else return;
 }
 
 void Page::OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut)
@@ -395,11 +397,11 @@ void Page::OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut)
 	if(handler.Get())
 		handler->HandleEvents(eventAr);
 
-	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
-		windowHandle->Draw();
+	if (miniHandler.Get())
+		miniHandler->OnLButtonDblClk(nFlags, point, mOut);
 
-	if (handler.Get())
-		handler->OnLButtonDblClk(nFlags, point, mOut);
+	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
+		if (windowHandle.Get())windowHandle->Draw(); else return;
 }
 
 void Page::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
@@ -410,11 +412,11 @@ void Page::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
 	if (handler.Get())
 		handler->HandleEvents(eventAr);
 
-	if (*mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
-		windowHandle->Draw();
+	if (miniHandler.Get())
+		miniHandler->OnLButtonUp(nFlags, point, mOut);
 
-	if (handler.Get())
-		handler->OnLButtonUp(nFlags, point, mOut);
+	if (*mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
+		if (windowHandle.Get())windowHandle->Draw(); else return;
 }
 
 bool Page::OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlags, messageOutput *mOut)
@@ -425,12 +427,11 @@ bool Page::OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlags, messageOu
 	if (handler.Get())
 		handler->HandleEvents(eventAr);
 
+	if (miniHandler.Get())
+		miniHandler->OnChar(fromChar, nChar, nRepCnt, nFlags, mOut);
+
 	if (*mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
-		windowHandle->Draw();
-
-
-	if (handler.Get())
-		handler->OnChar(fromChar, nChar, nRepCnt, nFlags, mOut);
+		if (windowHandle.Get())windowHandle->Draw(); else return false;
 	return returnable;
 }
 
@@ -539,6 +540,11 @@ TrecPointer<TInstance> Page::GetInstance()
 	return instance;
 }
 
+void Page::SetMiniHandler(TrecPointer<MiniHandler> mh)
+{
+	miniHandler = mh;
+}
+
 
 
 UCHAR * Page::GetAnaGameType()
@@ -568,7 +574,7 @@ void Page::OnSize(UINT nType, int cx, int cy)
 	
 		if (!engine.Get())
 			return;
-		engine->OnWindowResize();
+		//engine->OnWindowResize();
 
 		IDXGISwapChain* swapper = engine->getSwapChain().Get();
 		if (!swapper)
@@ -625,15 +631,15 @@ TrecComPointer<ID2D1RenderTarget> Page::GetRenderTarget()
 	return regRenderTarget;
 }
 
-TrecPointer<ArenaEngine> Page::GetArenaEngine()
+TrecPointer<TArenaEngine> Page::GetArenaEngine()
 {
 	return engine;
 }
 
 void Page::CreateLayout()
 {
-	if (rootControl.Get())
-		rootControl->onCreate(area);
+	if (rootControl.Get() && windowHandle.Get())
+		rootControl->onCreate(area, windowHandle->GetWindowEngine());
 }
 
 void Page::Draw()

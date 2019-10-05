@@ -2,7 +2,14 @@
 #include <TObject.h>
 #include "TWindow.h"
 
-
+class WindowContainer
+{
+public:
+	WindowContainer();
+	TrecPointer<TWindow> window;
+	bool destroy;
+	int messageStack;
+};
 
 class _TAP_DLL TInstance : public TObject
 {
@@ -45,8 +52,14 @@ protected:
 	HWND mainWindowHandle;
 	TrecPointer<TWindow> mainWindow;
 	TrecComPointer<ID2D1Factory1> factory;
-	TDataArray<TrecPointer<TWindow>> windowList;
+	
+	TDataArray<TrecPointer<WindowContainer>> windowList;
+
+	void CleanWindows();
+
 	WNDPROC proctor;
 	TrecPointerSoft<TInstance> self;
+
+	UINT messageStack;
 };
 

@@ -1,85 +1,58 @@
+#include "TShaderParser.h"
 
-#include "ShaderParser.h"
-/*
-* Method: ShaderParser
-* Purpose:
-* Parameters:
-* Return:
-*/
-
-
-/*
-* Method: (ShaderParser) (Constructor)
-* Purpose: Sets up the shader parser
-* Parameters: ArenaEngine& ae - the Arena Engine to work with
-*			TString directory - The directory of resources to look at
-* Return: void
-*/
-ShaderParser::ShaderParser(ArenaEngine& ae, TString directory)
+TShaderParser::TShaderParser(TShaderHost* ae, TString directory, TrecComPointer<ID3D11Device> dev)
 {
-	isDefaultShader = false;
-	engine = &ae;
+	if (!ae)
+		throw L"Error! Expected an initialized Shader Host!";
+	if (!dev.Get())
+		throw L"Error! Expected Graphics Device to be initialized!";
+	shaderHost = ae;
+	this->directory.Set(directory);
+
+	shaderIndex = shaderHost->InitializeShader();
+	device = dev;
 	bsd.vertexFileSet = bsd.pixelFileSet = bsd.vertexFunctionSet = bsd.pixelFunctionSet = false;
 
-	
 	cbd.bufferSlot = 0;
 	cbd.ModelBuffer = false;
 	cbd.purpose = 0;
 	cbd.size = 0;
 	cbd.sp = static_cast<ShaderPhase>(0);
-	fileLocation.Set(directory);
+
+	desc = 0;
+
+	shaderIDd = false;
 }
 
-/*
-* Method: ShaderParser) (Destructor)
-* Purpose: Serves as the destructor for the object
-* Parameters: void
-* Return: void
-*/
-ShaderParser::~ShaderParser()
+TShaderParser::~TShaderParser()
 {
 }
 
-/*
-* Method: ShaderParser - Obj
-* Purpose: Rounds up the currently set attributes into either a vertex component or constant buffer and clears the attributes
-* Parameters: TString * v - the Object type to set
-* Return: bool - success result
-*/
-bool ShaderParser::Obj(TString * v)
+bool TShaderParser::Obj(TString* v)
 {
-	if(! v)
-	return false;
+	if (!v)
+		return false;
 	if (!v->Compare(L"Buff"))
 	{
-		bufferDesc.push_back(desc);	
+		bufferDesc.push_back(desc);
 		desc = 0;
 		return true;
 	}
 	else if (!v->Compare(L"Const"))
 	{
 		TrecComPointer<ID3D11Buffer> buff;
-		if (engine->GetConstantBuffer(cbd.size, buff))
+		if (shaderHost->GetConstantBuffer(cbd.size, buff, device))
 			return false;
-		bool newConst = false;
-		if (shaderID._default)
-			newConst = engine->SetNewConstantBuffer(buff, cbd.bufferSlot, cbd.ModelBuffer, cbd.sp, shaderID.card.dID, cbd.purpose);
-		else
-			newConst = engine->SetNewConstantBuffer(buff, cbd.bufferSlot, cbd.ModelBuffer, cbd.sp, shaderID.card.id, cbd.purpose);
+		
+		bool newConst = shaderHost->SetNewConstantBuffer(buff, cbd.bufferSlot, cbd.ModelBuffer, cbd.sp, shaderIndex, cbd.purpose);
+
 		return newConst;
 	}
 
 	return false;
 }
 
-/*
-* Method: ShaderParser - Attribute
-* Purpose: Documents potential attributes of either vertex input or constant buffers to be declared
-* Parameters: TrecPointer<TString> v - value of the shader attribute
-*				TString& e - the attribute title
-* Return: bool - whether the value submission was successful
-*/
-bool ShaderParser::Attribute(TrecPointer<TString> v, TString& e)
+bool TShaderParser::Attribute(TrecPointer<TString> v, TString& e)
 {
 	// Quick Null check so we don't have to worry about it later down the line
 	if (!v.Get())
@@ -106,7 +79,7 @@ bool ShaderParser::Attribute(TrecPointer<TString> v, TString& e)
 	else if (!TString::Compare(e, L"|BufferSize"))
 	{
 		if (!v.Get())
-		return false;
+			return false;
 		return SetDataCount(*v.Get());
 	}
 	else if (!TString::Compare(e, L"|InputBufferCount"))
@@ -115,17 +88,17 @@ bool ShaderParser::Attribute(TrecPointer<TString> v, TString& e)
 	}
 	else if (!TString::Compare(e, L"|PixelFile"))
 	{
-		TrecPointer<TString> sh_str = TrecPointerKey::GetNewTrecPointer<TString>(fileLocation);
+		TrecPointer<TString> sh_str = TrecPointerKey::GetNewTrecPointer<TString>(directory);
 		sh_str->Append(L"\\");
-		*sh_str.Get() + *v.Get();
+		sh_str->Append(v.Get());
 		bsd.pixelFile = sh_str;
 		bsd.pixelFileSet = true;
 	}
 	else if (!TString::Compare(e, L"|VertexFile"))
 	{
-		TrecPointer<TString> sh_str = TrecPointerKey::GetNewTrecPointer<TString>(fileLocation);
+		TrecPointer<TString> sh_str = TrecPointerKey::GetNewTrecPointer<TString>(directory);
 		sh_str->Append(L"\\");
-		*sh_str.Get() + *v.Get();
+		sh_str->Append(v.Get());
 		bsd.vertexFile = sh_str;
 		bsd.vertexFileSet = true;
 	}
@@ -144,9 +117,9 @@ bool ShaderParser::Attribute(TrecPointer<TString> v, TString& e)
 	{
 		if (!TString::Compare(e, L"|DomainFile"))
 		{
-			TrecPointer<TString> sh_str = TrecPointerKey::GetNewTrecPointer<TString>(fileLocation);
+			TrecPointer<TString> sh_str = TrecPointerKey::GetNewTrecPointer<TString>(directory);
 			sh_str->Append(L"\\");
-			*sh_str.Get() + *v.Get();
+			sh_str->Append(v.Get());
 			shaderFile = sh_str;
 			phase = sp_Domain;
 		}
@@ -157,9 +130,9 @@ bool ShaderParser::Attribute(TrecPointer<TString> v, TString& e)
 		}
 		else if (!TString::Compare(e, L"|ComputeFile"))
 		{
-			TrecPointer<TString> sh_str = TrecPointerKey::GetNewTrecPointer<TString>(fileLocation);
+			TrecPointer<TString> sh_str = TrecPointerKey::GetNewTrecPointer<TString>(directory);
 			sh_str->Append(L"\\");
-			*sh_str.Get() + *v.Get();
+			sh_str->Append(v.Get());
 			shaderFile = sh_str;
 			phase = sp_Compute;
 		}
@@ -170,9 +143,9 @@ bool ShaderParser::Attribute(TrecPointer<TString> v, TString& e)
 		}
 		if (!TString::Compare(e, L"|HullFile"))
 		{
-			TrecPointer<TString> sh_str = TrecPointerKey::GetNewTrecPointer<TString>(fileLocation);
+			TrecPointer<TString> sh_str = TrecPointerKey::GetNewTrecPointer<TString>(directory);
 			sh_str->Append(L"\\");
-			*sh_str.Get() + *v.Get();
+			sh_str->Append(v.Get());
 			shaderFile = sh_str;
 			phase = sp_Hull;
 		}
@@ -183,9 +156,9 @@ bool ShaderParser::Attribute(TrecPointer<TString> v, TString& e)
 		}
 		if (!TString::Compare(e, L"|GeometryFile"))
 		{
-			TrecPointer<TString> sh_str = TrecPointerKey::GetNewTrecPointer<TString>(fileLocation);
+			TrecPointer<TString> sh_str = TrecPointerKey::GetNewTrecPointer<TString>(directory);
 			sh_str->Append(L"\\");
-			*sh_str.Get() + *v.Get();
+			sh_str->Append(v.Get());
 			shaderFile = sh_str;
 			phase = sp_Geometry;
 		}
@@ -197,14 +170,14 @@ bool ShaderParser::Attribute(TrecPointer<TString> v, TString& e)
 		else if (!TString::Compare(e, L"|TextureCount"))
 		{
 			return SetTextureCount(*v.Get());
-		
+
 		}
 		else if (!TString::Compare(e, L"|ModelBuffer"))
 		{
 			if (!v->Compare(L"True"))
 				cbd.ModelBuffer = true;
 		}
-		else if (!TString::Compare(e,L"|ConstantSize"))
+		else if (!TString::Compare(e, L"|ConstantSize"))
 		{
 			int value = 0;
 			if (!v->ConvertToInt(&value))
@@ -273,69 +246,30 @@ bool ShaderParser::Attribute(TrecPointer<TString> v, TString& e)
 				cbd.purpose = 5;
 		}
 	}
-	
-		return SetBasicShader();
 
-
-	
+	return SetBasicShader();
 }
 
-/*
-* Method: ShaderParser - submitType
-* Purpose: Type of parser expected
-* Parameters: TString v - type of parser the file was given
-* Return: bool
-*/
-bool ShaderParser::submitType(TString v)
+bool TShaderParser::submitType(TString v)
 {
 	return false;
 }
 
-/*
-* Method: ShaderParser
-* Purpose: Reports whether this parser may be compatible with the file provided version wise
-* Parameters: TString v - the edition string
-* Return: bool - false (see note)
-* Note: Not applicable to this particular TML format
-*/
-bool ShaderParser::submitEdition(TString v)
+bool TShaderParser::submitEdition(TString v)
 {
 	return false;
 }
 
-/*
-* Method: ShaderParser - goChild
-* Purpose: Whether to go child
-* Parameters: void
-* Return: bool - false (see note)
-* Note: Not applicable to this particular TML format
-*/
-bool ShaderParser::goChild()
+bool TShaderParser::goChild()
 {
 	return false;
 }
 
-/*
-* Method: ShaderParser - goParent
-* Purpose: Whether to go parent
-* Parameters: void
-* Return: void
-* Note: Not applicable to this particular TML format
-*/
-void ShaderParser::goParent()
+void TShaderParser::goParent()
 {
 }
 
-
-UCHAR ShaderParserType[] = { 3, 0b10000000, 4, 2 };
-
-/*
-* Method: ShaderParser
-* Purpose:
-* Parameters:
-* Return:
-*/
-UCHAR * ShaderParser::GetAnaGameType()
+UCHAR* TShaderParser::GetAnaGameType()
 {
 	return nullptr;
 }
@@ -346,47 +280,28 @@ UCHAR * ShaderParser::GetAnaGameType()
 * Parameters:
 * Return:
 */
-bool ShaderParser::AddShaderToProgram(TString & str)
+bool TShaderParser::AddShaderToProgram(TString& str)
 {
 	std::string cStr = str.GetRegString();
 
 	int err = 0;
-	if (shaderID._default)
+
+	switch (phase)
 	{
-		switch (phase)
-		{
-		case sp_Domain:
-			err = engine->AddDomainShader(shaderID.card.dID, *shaderFile.Get(), cStr.c_str());
-			break;
-		case sp_Compute:
-			err = engine->AddComputeShader(shaderID.card.dID, *shaderFile.Get(), cStr.c_str());
-			break;
-		case sp_Hull:
-			err = engine->AddHullShader(shaderID.card.dID, *shaderFile.Get(), cStr.c_str());
-			break;
-		case sp_Geometry:
-			err = engine->AddGeometryShader(shaderID.card.dID, *shaderFile.Get(), cStr.c_str());
-			break;
-		}
+	case sp_Domain:
+		err = shaderHost->AddDomainShader(device, shaderIndex, *shaderFile.Get(), cStr.c_str());
+		break;
+	case sp_Compute:
+		err = shaderHost->AddComputeShader(device, shaderIndex, *shaderFile.Get(), cStr.c_str());
+		break;
+	case sp_Hull:
+		err = shaderHost->AddHullShader(device, shaderIndex, *shaderFile.Get(), cStr.c_str());
+		break;
+	case sp_Geometry:
+		err = shaderHost->AddGeometryShader(device, shaderIndex, *shaderFile.Get(), cStr.c_str());
+		break;
 	}
-	else
-	{
-		switch (phase)
-		{
-		case sp_Domain:
-			err = engine->AddDomainShader(shaderID.card.id, *shaderFile.Get(), cStr.c_str());
-				break;
-		case sp_Compute:
-			err = engine->AddComputeShader(shaderID.card.id, *shaderFile.Get(), cStr.c_str());
-			break;
-		case sp_Hull:
-			err = engine->AddHullShader(shaderID.card.id, *shaderFile.Get(), cStr.c_str());
-			break;
-		case sp_Geometry:
-			err = engine->AddGeometryShader(shaderID.card.id, *shaderFile.Get(), cStr.c_str());
-			break;
-		}
-	}
+
 	return !err;
 }
 
@@ -396,30 +311,18 @@ bool ShaderParser::AddShaderToProgram(TString & str)
 * Parameters:
 * Return:
 */
-bool ShaderParser::SetBasicShader()
+bool TShaderParser::SetBasicShader()
 {
 	if (bsd.vertexFileSet && bsd.pixelFileSet && bsd.vertexFunctionSet && bsd.pixelFunctionSet && !shaderIDd)
 	{
 		std::string cStr2 = bsd.vertexFunction->GetRegString();
 		std::string cStr = bsd.pixelFunction->GetRegString();
-		int err = 0;
-		if (isDefaultShader)
-		{
-			if(!engine->SetNewBasicShader(*bsd.vertexFile.Get(), *bsd.pixelFile.Get(), cStr2.c_str(), cStr.c_str(), bufferDesc, defaultShader))
-				return false;
-		}
-		else
-			err = engine->SetNewBasicShader(*bsd.vertexFile.Get(), *bsd.pixelFile.Get(), cStr2.c_str(), cStr.c_str(), bufferDesc);
+		
+		
+		int err = shaderHost->SetNewBasicShader(device, shaderIndex, *bsd.vertexFile.Get(), *bsd.pixelFile.Get(), cStr2.c_str(), cStr.c_str(), bufferDesc);
 
-		if (err <= 0) // Succeeded
-		{
-			shaderIDd = true;
-			if (!isDefaultShader)
-			{
-				shaderID._default = false;
-				shaderID.card.id = err;
-			}
-		}
+		shaderIDd = err == 0;
+		return shaderIDd;
 	}
 	return true;
 }
@@ -430,7 +333,7 @@ bool ShaderParser::SetBasicShader()
 * Parameters: TString & v - semantic buffer purpose in string form
 * Return: bool - whether the string was a valid purpose
 */
-bool ShaderParser::SetBufferPurpose(TString & t)
+bool TShaderParser::SetBufferPurpose(TString& t)
 {
 	if (!t.Compare(L"Position"))
 	{
@@ -444,7 +347,7 @@ bool ShaderParser::SetBufferPurpose(TString & t)
 	{
 		desc = desc | 0b00000001;
 	}
-	else if(!t.Compare(L"Color"))
+	else if (!t.Compare(L"Color"))
 	{
 		desc = desc | 0b00000000;
 	}
@@ -488,7 +391,7 @@ bool ShaderParser::SetBufferPurpose(TString & t)
 * Parameters: TString & v - number in string form
 * Return: bool - success, whether the string was a number
 */
-bool ShaderParser::SetInputSlot(TString & v)
+bool TShaderParser::SetInputSlot(TString& v)
 {
 	int value = 0;
 	if (!v.ConvertToInt(&value))
@@ -509,7 +412,7 @@ bool ShaderParser::SetInputSlot(TString & v)
 * Parameters: TString & v - number in string form
 * Return: bool - success, whether the string was a number
 */
-bool ShaderParser::SetDataWidth(TString & v)
+bool TShaderParser::SetDataWidth(TString& v)
 {
 	int value = 0;
 	if (!v.ConvertToInt(&value))
@@ -518,7 +421,7 @@ bool ShaderParser::SetDataWidth(TString & v)
 			return false;
 
 		unsigned char cValue = 0;
-		if(value != 4)  // If it is 4, leave it 0 and let it be corrected later
+		if (value != 4)  // If it is 4, leave it 0 and let it be corrected later
 			cValue = static_cast<unsigned char>(value);// Avoids conflict with Input Slot bits
 		desc = desc + (cValue << 4);
 		return true;
@@ -532,7 +435,7 @@ bool ShaderParser::SetDataWidth(TString & v)
 * Parameters: TString & v - number in string form
 * Return: bool - success, whether the string was a number
 */
-bool ShaderParser::SetDataCount(TString & v)
+bool TShaderParser::SetDataCount(TString& v)
 {
 	int value = 0;
 	if (!v.ConvertToInt(&value))
@@ -554,31 +457,13 @@ bool ShaderParser::SetDataCount(TString & v)
 * Parameters: TString & v - number in string form
 * Return: bool - success, whether the string was a number
 */
-bool ShaderParser::SetTextureCount(TString & v)
+bool TShaderParser::SetTextureCount(TString& v)
 {
 	int value = 0;
 	if (!v.ConvertToInt(&value))
 	{
-		if (shaderID._default)
-			engine->SetTextureCount(shaderID.card.dID, static_cast<unsigned char>(value));
-		else
-			engine->SetTextureCount(shaderID.card.id, static_cast<unsigned char>(value));
+		shaderHost->SetTextureCount(shaderIndex, value);
 		return true;
 	}
-	return false;
-}
-
-/*
-* Method: ShaderParser - SetDefaultShader
-* Purpose: Lets the parser know it is dealing with an AnaGame shader
-* Parameters: DefaultShader ds - the AnaGame shader being created
-* Return: bool - false, ignore this
-*/
-bool ShaderParser::SetDefaultShader(DefaultShader ds)
-{
-	isDefaultShader = true;
-	defaultShader = ds;
-	shaderID._default = true;
-	shaderID.card.dID = ds;
 	return false;
 }

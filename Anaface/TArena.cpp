@@ -50,9 +50,9 @@ TArena::~TArena()
 * Parameters: RECT r - the location on screen where arena is to show
 * Returns: bool - ignore
 */
-bool TArena::onCreate(RECT r )
+bool TArena::onCreate(RECT r, TrecPointer<TWindowEngine> d3d)
 {
-	TControl::onCreate(r);
+	TControl::onCreate(r,d3d);
 
 	TrecPointer<TString> valpoint = attributes.retrieveEntry(TString(L"|EngineID"));
 
@@ -60,26 +60,19 @@ bool TArena::onCreate(RECT r )
 
 	projector = DirectX::XMMatrixPerspectiveFovLH(0.25f*DirectX::XM_PI, aspect,1.0f, 1000.0f);
 	
+	viewport = new D3D11_VIEWPORT;
+	viewport->TopLeftX = r.left;
+	viewport->TopLeftY = r.top;
+	viewport->Height = r.bottom - r.top;
+	viewport->Width = r.right - r.left;
+	viewport->MinDepth = 0.0f;
+	viewport->MaxDepth = 1.0f;
 
-	if (valpoint.Get())
+	if (valpoint.Get() && d3d.Get())
 	{
-		arenaEngine = ArenaEngine::GetArenaEngine(*(valpoint.Get()),windowHandle, GetModuleHandle(nullptr));
+		arenaEngine = TrecPointerKey::GetNewTrecPointer<TArenaEngine>(d3d, *valpoint.Get());//   ArenaEngine::GetArenaEngine(*(valpoint.Get()), windowHandle, GetModuleHandle(nullptr));
 		if (!arenaEngine.Get())
 			return false;
-
-		arenaEngine->initialize(windowHandle,instanceHandle);
-
-		//viewport = (D3DEngine::getViewPort(valpoint->GetBuffer(), r));
-		viewport = new D3D11_VIEWPORT;
-		viewport->TopLeftX = r.left;
-		viewport->TopLeftY = r.top;
-		viewport->Height = r.bottom - r.top;
-		viewport->Width = r.right - r.left;
-		viewport->MinDepth = 0.0f;
-		viewport->MaxDepth = 1.0f;
-		//valpoint->ReleaseBuffer();
-
-		
 	}
 
 	valpoint = attributes.retrieveEntry(TString(L"|CameraType"));
@@ -199,7 +192,7 @@ bool TArena::onCreate(RECT r )
 * Parameters: void
 * Returns: TrecPointer<ArenaEngine> - the engine arena control is attached to
 */
-TrecPointer<ArenaEngine> TArena::getEngine()
+TrecPointer<TArenaEngine> TArena::getEngine()
 {
 	return arenaEngine;
 }
@@ -210,10 +203,9 @@ TrecPointer<ArenaEngine> TArena::getEngine()
 * Parameters: TrecPointer<ArenaEngine> e - the engine to set
 * Returns: bool - success of function
 */
-bool TArena::setEngine(TrecPointer<ArenaEngine> e)
+bool TArena::setEngine(TrecPointer<TArenaEngine> e)
 {
-	if(e.Get() || !arenaEngine.Get())
-	return false;
+	
 	arenaEngine = e;
 	return true;
 }
@@ -226,7 +218,6 @@ bool TArena::setEngine(TrecPointer<ArenaEngine> e)
 */
 void TArena::removeEngine()
 {
-	arenaEngine->Release();
 	arenaEngine.Nullify();
 }
 

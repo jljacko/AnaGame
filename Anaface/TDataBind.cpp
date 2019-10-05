@@ -134,7 +134,7 @@ void TDataBind::setData(TArrayBase* data)
 	dataWrap = data;
 }
 
-bool TDataBind::onCreate(RECT r)
+bool TDataBind::onCreate(RECT r, TrecPointer<TWindowEngine> d3d)
 {
 	byRow = false;
 	TrecPointer<TString> valpoint = attributes.retrieveEntry(TString(L"|DataDirection"));
@@ -143,5 +143,5 @@ bool TDataBind::onCreate(RECT r)
 		if (!valpoint->Compare(L"Row") || !valpoint->Compare(L"Horizontal"))
 			byRow = true;
 	}
-	return TLayoutEx::onCreate(r);
+	return TLayoutEx::onCreate(r, d3d);
 }

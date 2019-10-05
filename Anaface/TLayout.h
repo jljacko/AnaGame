@@ -63,7 +63,7 @@ public:
 	void storeInTML(TFile* ar, int childLevel,bool ov = false)override;
 	void storeInHTML(TFile* ar)override;
 
-	virtual bool onCreate(RECT)override;
+	virtual bool onCreate(RECT, TrecPointer<TWindowEngine> d3d)override;
 	virtual void onDraw(TObject* obj = nullptr) override;
 
 	int returnColumnsWidth(int x);

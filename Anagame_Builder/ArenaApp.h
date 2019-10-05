@@ -1,12 +1,12 @@
 #pragma once
-#include "BuilderApp.h"
+#include <MiniHandler.h>
 
 class ArenaApp;
 typedef void (ArenaApp::* ArenaBuilderEvents)(TControl* tc, EventArgs ea);
 
 
 class ArenaApp :
-	public BuilderApp
+	public MiniHandler
 {
 public:
 	ArenaApp(TrecPointer<TControl> m, TrecPointer<TControl> o, TrecPointer<TControl> e, TrecPointer<TInstance>, TString& arenaName);
@@ -19,15 +19,14 @@ public:
 
 	void SetColor(D2D1_COLOR_F c);
 
-	void MessageHandler() override;
+	void HandleEvents(TDataArray<EventID_Cred>& cred) override;
 	TDataArray<ArenaBuilderEvents> arenaHandlers;
 	void SetArenaName(TString& name);
 
 	void UpdateCameraText();
 protected:
 	TArena* arena;
-	TrecPointer<ArenaEngine> modelCollection;
-	TrecPointer<TArray<TObject>> models;
+	TrecPointer<TArenaEngine> modelCollection;
 	TrecPointer<ArenaModel> scale;
 	TTextField *d_x, *d_y, *d_z, *l_x, *l_y, *l_z;
 	bool rotateMode;

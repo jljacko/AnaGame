@@ -500,7 +500,7 @@ void TControl::storeInHTML(TFile * ar)
 * Returns: bool - success
 * Note: You Must call this on the Root Control before any control can be drawn on sreen
 */
-bool TControl::onCreate(RECT contain)
+bool TControl::onCreate(RECT contain, TrecPointer<TWindowEngine> d3d)
 {
 	/* Check the status of the scroll bars. By default, they are off.
 	 * If the default holds, then the location of the TControl will have
@@ -858,7 +858,7 @@ TrecPointer<styleTable> classy;
 			chLoc.top += location.top;
 			chLoc.bottom += location.top;
 			chLoc.right += location.left;
-			contt->onCreate(chLoc);
+			contt->onCreate(chLoc, d3d);
 		}
 		else
 		{
@@ -870,10 +870,10 @@ TrecPointer<styleTable> classy;
 
 	valpoint = attributes.retrieveEntry(TString(L"|FlyoutLocation"));
 	if (valpoint.Get() && flyout)
-		flyout->onCreate(convertStringToRECT(valpoint.Get()));
+		flyout->onCreate(convertStringToRECT(valpoint.Get()),d3d);
 
 	if (contextMenu)
-		contextMenu->onCreate(location);
+		contextMenu->onCreate(location,d3d);
 
 
 	updateComponentLocation();

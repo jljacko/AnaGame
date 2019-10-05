@@ -3,8 +3,12 @@
 #include <AnafaceUI.h>
 #include <TObject.h>
 #include "EventHandler.h"
+//#include "MiniHandler.h"
+#include <TWindowEngine.h>
 
 class TWindow;
+
+class MiniHandler;
 
 typedef enum RenderTargetType
 {
@@ -28,7 +32,7 @@ public:
 	static TrecPointer<Page> Get2DPage(TrecPointer<TInstance>, TrecPointer<TWindow>, TrecPointer<EventHandler>);
 	static TrecPointer<Page> GetWindowPage(TrecPointer<TInstance>, TrecPointer<TWindow>,  TrecPointer<EventHandler>);
 	static TrecPointer<Page> GetWindowPage(TrecPointer<TInstance>, TrecComPointer<ID2D1RenderTarget>, TrecPointer<TWindow>, TrecPointer<EventHandler>);
-	static TrecPointer<Page> Get3DPage(TrecPointer<TInstance>, TrecPointer<ArenaEngine>, TrecPointer<EventHandler>);
+	static TrecPointer<Page> Get3DPage(TrecPointer<TInstance>, TrecPointer<TWindowEngine>, TrecPointer<EventHandler>, TrecPointer<TWindow> window);
 	static TrecPointer<Page> GetSmallPage(TrecPointer<Page>, RECT area);
 
 	int SetAnaface(TrecPointer<TFile> file, TrecPointer<EventHandler> eh);
@@ -37,6 +41,7 @@ public:
 	void SetAnaface(TrecPointer<TControl> newRoot);
 
 	TrecPointer<TControl> GetRootControl();
+	TrecPointer<TControl> ExtractRootControl();
 
 	TrecPointer<TWindow> GetWindowHandle();
 
@@ -44,7 +49,7 @@ public:
 	afx_msg void OnSize(UINT nType, int cx,	int cy);
 
 	TrecComPointer<ID2D1RenderTarget> GetRenderTarget();
-	TrecPointer<ArenaEngine> GetArenaEngine();
+	TrecPointer<TArenaEngine> GetArenaEngine();
 
 	void CreateLayout();
 
@@ -73,6 +78,8 @@ public:
 	void SetSelf(TrecPointer<Page>);
 	TrecPointer<TInstance> GetInstance();
 
+	void SetMiniHandler(TrecPointer<MiniHandler> mh);
+
 protected:
 	Page();
 
@@ -96,9 +103,10 @@ protected:
 	RECT area;				// Area Within the Window to draw
 
 	// Anagame Specific Resources
-	TrecPointer<ArenaEngine> engine;	// Incase we are using 3D Resources
+	TrecPointer<TArenaEngine> engine;	// Incase we are using 3D Resources
 	TrecPointer<TControl> rootControl;	// The Control to Draw when
 	 TrecPointer<EventHandler> handler; // The class that manages specific actions
+	TrecPointer<MiniHandler> miniHandler; // Intended for tabs whise contents have specific hanling specs
 	 TrecPointer<TInstance> instance;
 	D2D1_MATRIX_3X2_F adjustMatrix;
 	TrecPointer<TWindow> windowHandle;		// the Window attached to the page

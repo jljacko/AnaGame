@@ -111,7 +111,7 @@ TString::TString(const TString & c)
 	capacity = c.capacity;
 
 	string = new WCHAR[capacity];
-	memcpy(string, c.string, size * sizeof(WCHAR));
+	memcpy(string, c.string, capacity * sizeof(WCHAR));
 	string[capacity - 1] = L'\0';
 }
 /*
@@ -1575,6 +1575,10 @@ int TString::FindLastOneOf(const TString& chars, int start)
 {
 	if (start >= static_cast<int>(size))
 		return -1;
+
+	if (start < 0)
+		start =  size-1;
+
 	for (int c = start; c >= 0; c--)
 	{
 		for (UINT rust = 0; rust < chars.GetSize(); rust++)

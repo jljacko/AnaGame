@@ -1,10 +1,11 @@
 #include "SwitchHandler.h"
 #include <Page.h>
+#include <TWindow.h>
 
 SwitchHandler::SwitchHandler(TrecPointer<TInstance> ins): EventHandler(ins)
 { 
 	//ZeroMemory(&changeControl, sizeof(changeControl));
-	page = nullptr;
+	
 	rootLayout = nullptr;
 
 	eventNameID enid;
@@ -70,9 +71,9 @@ SwitchHandler::~SwitchHandler()
 {
 }
 
-void SwitchHandler::Initialize(Page* page)
+void SwitchHandler::Initialize(TrecPointer<Page> page)
 {
-	if (!page)
+	if (!page.Get())
 		throw L"Error! Expected an actual Page Pointer to be provided!";
 
 	this->page = page;
@@ -737,7 +738,7 @@ void SwitchHandler::OnSelectText(TControl* tc, EventArgs ea)
 {
 	TrecComPointer<ID2D1RenderTarget> rtb = page->GetRenderTarget();
 	// changeControl.Delete();
-	HWND windowHandle = page->GetWindowHandle();
+	HWND windowHandle = page->GetWindowHandle()->GetWindowHandle();
 	changeControl = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TLayout>(rtb, TrecPointer<TArray<styleTable>>());
 	TLayout* rootLayout = dynamic_cast<TLayout*>(changeControl.Get());
 	rootLayout->setLayout(grid);

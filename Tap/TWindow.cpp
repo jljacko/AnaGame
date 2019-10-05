@@ -25,6 +25,13 @@ TWindow::TWindow(TString& name, TString& winClass, UINT style, HWND parent, int 
 
 TWindow::~TWindow()
 {
+	CleanUp();
+	mainPage.Delete();
+
+	for (UINT Rust = 0; Rust < pages.Size(); Rust++)
+		pages[Rust].Delete();
+
+	d3dEngine.Delete();
 }
 
 int TWindow::PrepareWindow()
@@ -116,8 +123,12 @@ void TWindow::Draw()
 		TrecComPointer<ID2D1RenderTarget> rt = mainPage->GetRenderTarget();
 		if (!rt.Get()) return;
 		{
+			TWindowEngine* d3d = d3dEngine.Get();
+
 			rt->BeginDraw();
+			if (d3d) d3d->PrepareScene(D2D1::ColorF(D2D1::ColorF::Wheat));
 			mainPage->Draw();
+			if (d3d) d3d->FinalizeScene();
 			rt->EndDraw();
 		}
 	}
@@ -226,7 +237,6 @@ bool TWindow::OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlags)
 
 	if(mOut == negative || mOut == negativeUpdate)
 		returnable = mainPage->OnChar(fromChar, nChar, nRepCnt, nFlags, &mOut);
-
 	return returnable;
 }
 
@@ -279,12 +289,16 @@ TrecPointer<Page> TWindow::Get3DPage(bool singleton, TString& engineId)
 	if (!engineId.GetSize())
 		return TrecPointer<Page>();
 
-	TrecPointer<ArenaEngine> engine = ArenaEngine::GetArenaEngine(engineId, currentWindow, windowInstance->GetInstanceHandle());
+	if (!d3dEngine.Get())
+	{
+		if (!SetUp3D())return TrecPointer<Page>();
+	}
+	TrecPointer<TArenaEngine> engine = TrecPointerKey::GetNewTrecPointer<TArenaEngine>(d3dEngine, engineId);//  ArenaEngine::GetArenaEngine(engineId, currentWindow, windowInstance->GetInstanceHandle());
 
 	return Get3DPage(singleton, engine);
 }
 
-TrecPointer<Page> TWindow::Get3DPage(bool singleton, TrecPointer<ArenaEngine> engine)
+TrecPointer<Page> TWindow::Get3DPage(bool singleton, TrecPointer<TArenaEngine> engine)
 {
 	if (singleton)
 	{
@@ -297,16 +311,16 @@ TrecPointer<Page> TWindow::Get3DPage(bool singleton, TrecPointer<ArenaEngine> en
 		}
 	}
 
-	TrecPointer<Page> ret = Page::Get3DPage(windowInstance, engine, TrecPointer<EventHandler>());
+	//TrecPointer<Page> ret = Page::Get3DPage(windowInstance, engine, TrecPointer<EventHandler>());
 
-	pages.push_back(ret);
+	//pages.push_back(ret);
 
-	if (singleton)
-	{
-		_3DPage = ret;
-	}
+	//if (singleton)
+	//{
+		//_3DPage = ret;
+	//}
 
-	return ret;
+	return TrecPointer<Page>();//ret;
 }
 
 void TWindow::LockWindow()
@@ -336,6 +350,48 @@ TrecPointer<Page> TWindow::GetPageByArea(RECT r)
 	TrecPointer<Page> ret = Page::GetSmallPage(mainPage, r);
 	pages.push_back(ret);
 	return ret;
+}
+
+TrecPointer<TInstance> TWindow::GetInstance()
+{
+	return windowInstance;
+}
+
+bool TWindow::SetUp3D()
+{
+	if (d3dEngine.Get())
+		return true;
+
+	d3dEngine = TrecPointerKey::GetNewTrecPointer<TWindowEngine>(currentWindow, windowInstance->GetInstanceHandle());
+
+	if (d3dEngine->Initialize())
+	{
+		d3dEngine.Delete();
+		return false;
+	}
+
+	TrecPointer<Page> newPage = Page::Get3DPage(windowInstance, d3dEngine, TrecPointer<EventHandler>(), TrecPointerKey::GetTrecPointerFromSoft<TWindow>(self));
+
+	if (newPage.Get())
+	{
+		newPage->SetAnaface(mainPage->ExtractRootControl());
+		deletePage = mainPage;
+		mainPage = newPage;
+		return true;
+	}
+
+	d3dEngine.Delete();
+	return false;
+}
+
+void TWindow::CleanUp()
+{
+	deletePage.Delete();
+}
+
+TrecPointer<TWindowEngine> TWindow::GetWindowEngine()
+{
+	return d3dEngine;
 }
 
 HWND TWindow::GetWindowHandle()

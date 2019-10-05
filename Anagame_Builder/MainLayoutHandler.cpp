@@ -262,8 +262,14 @@ void MainLayoutHandler::OnNewArena(TControl* tc, EventArgs ea)
 	if (!arenaName.GetSize())
 		return;
 
-	currentDocument = TrecPointerKey::GetNewTrecPointerAlt<BuilderApp, ArenaApp>(body, outputPanel, classUI, app, arenaName);
+	currentDocument = TrecPointerKey::GetNewSelfTrecPointerAlt<MiniHandler, ArenaApp>(body, outputPanel, classUI, app, arenaName);
 	ActiveDocuments.push_back(currentDocument);
+	currentDocument->InitializeControls();
+	currentDocument->OnShow();
+	if (arenaStack1.Get())
+		arenaStack1->setActive(true);
+	if (arenaStack3.Get())
+		arenaStack3->setActive(true);
 }
 
 void MainLayoutHandler::OnUpdateClearColor(TControl* tc, EventArgs ea)
@@ -296,8 +302,10 @@ void MainLayoutHandler::OnNewModel(TControl* tc, EventArgs ea)
 
 void MainLayoutHandler::OnNewCodeFile(TControl* tc, EventArgs ea)
 {
-	currentDocument = TrecPointerKey::GetNewTrecPointerAlt<BuilderApp, SourceCodeApp>(body, outputPanel, classUI, app);
+	currentDocument = TrecPointerKey::GetNewSelfTrecPointerAlt<MiniHandler, SourceCodeApp>(body, outputPanel, classUI, app);
 	ActiveDocuments.push_back(currentDocument);
+	currentDocument->InitializeControls();
+	currentDocument->OnShow();
 }
 
 void MainLayoutHandler::OnImportCode(TControl* tc, EventArgs ea)

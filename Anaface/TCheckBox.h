@@ -7,7 +7,7 @@ public:
 	TCheckBox(TrecComPointer<ID2D1RenderTarget> rt, TrecPointer<TArray<styleTable>> ta);
 	~TCheckBox();
 
-	bool onCreate(RECT);
+	bool onCreate(RECT, TrecPointer<TWindowEngine> d3d)override;
 	void onDraw(TObject* obj = nullptr) override;
 	bool IsClicked();
 	//virtual void storeInTML(CArchive* ar, int childLevel)override;

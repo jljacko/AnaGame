@@ -14,6 +14,8 @@
 #include <TFile.h>
 #include <TPoint.h>
 
+#include <TWindowEngine.h>
+
 //#define _TREC_LIB_DLL __declspec(dllimport)
 #include <TMap.h>
 
@@ -426,7 +428,7 @@ public:
 	void setActive(bool act);
 	EventArgs getEventArgs();
 
-	virtual bool onCreate(RECT);
+	virtual bool onCreate(RECT, TrecPointer<TWindowEngine> d3d);
 	virtual void Resize(RECT);
 	bool setEventHandler(EventTarget& eh);
 	void updateArrayID(int aid);

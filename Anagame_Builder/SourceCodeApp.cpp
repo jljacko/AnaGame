@@ -1,7 +1,7 @@
 #include "SourceCodeApp.h"
 #include <DirectoryInterface.h>
 
-SourceCodeApp::SourceCodeApp(TrecPointer<TControl> m, TrecPointer<TControl> o, TrecPointer<TControl> e, TrecPointer<TInstance> r): BuilderApp(m, o, e, r)
+SourceCodeApp::SourceCodeApp(TrecPointer<TControl> m, TrecPointer<TControl> o, TrecPointer<TControl> e, TrecPointer<TInstance> r): MiniHandler(m, o, e, r)
 {
 	lines = code = nullptr;
 	col_keyword = D2D1::ColorF(D2D1::ColorF::Blue); col_type_id = D2D1::ColorF(D2D1::ColorF::LightBlue);
@@ -53,7 +53,8 @@ bool SourceCodeApp::InitializeControls()
 {
 	try
 	{
-		TLayout* lay = dynamic_cast<TLayout*>(mainPage.Get());
+		if (!mainPage.Get())return false;
+		TLayout* lay = dynamic_cast<TLayout*>(mainPage->GetRootControl().Get());
 		if (!lay)
 			return false;
 		lines = dynamic_cast<TTextField*>(lay->GetLayoutChild(0, 0).Get());
@@ -91,6 +92,7 @@ void SourceCodeApp::SetContents(TFile& content)
 	PrepLanguage(content);
 }
 
+/*
 void SourceCodeApp::OnSave()
 {
 	if (!code)
@@ -119,6 +121,7 @@ void SourceCodeApp::OnSave()
 
 	file.Close();
 }
+*/
 
 void SourceCodeApp::OnShow()
 {
@@ -133,6 +136,16 @@ UINT SourceCodeApp::ProcessIntLanguage()
 	return 0;
 }
 
+void SourceCodeApp::HandleEvents(TDataArray<EventID_Cred>&)
+{
+}
+
 void SourceCodeApp::PrepLanguage(TFile& sourceCode)
 {
+}
+
+void SourceCodeApp::OnSave(TFile& file)
+{
+	if (!file.IsOpen() || !code) return;
+	file.WriteString(code->GetText());
 }

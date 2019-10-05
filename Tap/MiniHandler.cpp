@@ -1,6 +1,7 @@
-#include "BuilderApp.h"
+#include "MiniHandler.h"
+#include <DirectoryInterface.h>
 
-BuilderApp::BuilderApp(TrecPointer<TControl> m, TrecPointer<TControl> o, TrecPointer<TControl> e, TrecPointer<TInstance> i)
+MiniHandler::MiniHandler(TrecPointer<TControl> m, TrecPointer<TControl> o, TrecPointer<TControl> e, TrecPointer<TInstance> i): EventHandler(i)
 {
 	instance = i;
 	mainUI = m;
@@ -10,43 +11,86 @@ BuilderApp::BuilderApp(TrecPointer<TControl> m, TrecPointer<TControl> o, TrecPoi
 	window = instance->GetMainWindow();
 }
 
-BuilderApp::~BuilderApp()
+MiniHandler::~MiniHandler()
 {
 }
 
-TrecPointer<ArenaEngine> BuilderApp::GetArenaEngine()
+TrecPointer<TArenaEngine> MiniHandler::GetArenaEngine()
 {
-	return TrecPointer<ArenaEngine>();
+	return TrecPointer<TArenaEngine>();
 }
 
-TrecPointer<Page> BuilderApp::GetMainPage()
+TrecPointer<Page> MiniHandler::GetMainPage()
 {
 	return mainPage;
 }
 
-RECT BuilderApp::Get3DArea()
+void MiniHandler::Initialize(TrecPointer<Page> p)
+{
+}
+
+RECT MiniHandler::Get3DArea()
 {
 	return RECT();
 }
 
-void BuilderApp::OnSave()
+void MiniHandler::OnSave()
+{
+	TFile saver(filePath, TFile::t_file_write | TFile::t_file_create_always);
+
+	TString initialSearch(GetDirectory(cd_Documents));
+
+	if (!saver.IsOpen())
+	{
+		OPENFILENAMEW fileInfo;
+		ZeroMemory(&fileInfo, sizeof(fileInfo));
+
+		fileInfo.lStructSize = sizeof(OPENFILENAMEW);
+		fileInfo.hwndOwner = this->window->GetWindowHandle();
+		fileInfo.hInstance = this->window->GetInstance()->GetInstanceHandle();
+		fileInfo.lpstrFilter = nullptr;
+		fileInfo.lpstrInitialDir = initialSearch.GetConstantBuffer();
+		fileInfo.lpstrFile = new WCHAR[255];
+		fileInfo.nMaxFile = 230;
+		
+		bool gotName = false;
+		if (gotName = GetSaveFileNameW(&fileInfo))
+		{
+			filePath.Set(fileInfo.lpstrFile);
+		}
+		
+		delete[] fileInfo.lpstrFile;
+		if (!gotName) return;
+
+		saver.Open(filePath, TFile::t_file_write | TFile::t_file_create_always);
+		if (!saver.IsOpen()) return;
+	}
+
+
+	OnSave(saver);
+	saver.Close();
+}
+
+void MiniHandler::OnShow()
+{
+	if (mainPage.Get())
+		mainPage->SetMiniHandler(TrecPointerKey::GetTrecPointerFromSoft<MiniHandler>(self));
+	if (outputPane.Get())
+		outputPane->SetMiniHandler(TrecPointerKey::GetTrecPointerFromSoft<MiniHandler>(self));
+	if (explorerPane.Get())
+		explorerPane->SetMiniHandler(TrecPointerKey::GetTrecPointerFromSoft<MiniHandler>(self));
+}
+
+void MiniHandler::onHide()
 {
 }
 
-void BuilderApp::OnShow()
-{
-}
-
-void BuilderApp::onHide()
-{
-}
-
-TString BuilderApp::GetFilePath()
+TString MiniHandler::GetFilePath()
 {
 	return filePath;
 }
 
-void BuilderApp::Draw()
+void MiniHandler::Draw()
 {
 	if (mainPage.Get())
 		mainPage->Draw();
@@ -56,14 +100,14 @@ void BuilderApp::Draw()
 		explorerPane->Draw();
 }
 
-void BuilderApp::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
+void MiniHandler::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
 {
 	if (mainPage.Get())
 	{
 		mainPage->OnRButtonUp(nFlags, point, mOut, cred);
 		if (*mOut == negative || *mOut == negativeUpdate)
 			goto cont2;
-		MessageHandler();
+		HandleEvents(cred);
 		return;
 	}
 
@@ -73,7 +117,7 @@ cont2:
 		outputPane->OnRButtonUp(nFlags, point, mOut, cred);
 		if (*mOut == negative || *mOut == negativeUpdate)
 			goto cont3;
-		MessageHandler();
+		HandleEvents(cred);
 		return;
 	}
 
@@ -83,19 +127,19 @@ cont3:
 		explorerPane->OnRButtonUp(nFlags, point, mOut, cred);
 		if (*mOut == negative || *mOut == negativeUpdate)
 			return;
-		MessageHandler();
+		HandleEvents(cred);
 		return;
 	}
 }
 
-void BuilderApp::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
+void MiniHandler::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
 {
 	if (mainPage.Get())
 	{
 		mainPage->OnLButtonDown(nFlags, point, mOut, cred);
 		if (*mOut == negative || *mOut == negativeUpdate)
 			goto cont2;
-		MessageHandler();
+		HandleEvents(cred);
 		return;
 	}
 
@@ -105,7 +149,7 @@ cont2:
 		outputPane->OnLButtonDown(nFlags, point, mOut, cred);
 		if (*mOut == negative || *mOut == negativeUpdate)
 			goto cont3;
-		MessageHandler();
+		HandleEvents(cred);
 		return;
 	}
 
@@ -115,19 +159,19 @@ cont3:
 		explorerPane->OnLButtonDown(nFlags, point, mOut, cred);
 		if (*mOut == negative || *mOut == negativeUpdate)
 			return;
-		MessageHandler();
+		HandleEvents(cred);
 		return;
 	}
 }
 
-void BuilderApp::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
+void MiniHandler::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
 {
 	if (mainPage.Get())
 	{
 		mainPage->OnRButtonDown(nFlags, point, mOut, cred);
 		if (*mOut == negative || *mOut == negativeUpdate)
 			goto cont2;
-		MessageHandler();
+		HandleEvents(cred);
 		return;
 	}
 
@@ -137,7 +181,7 @@ cont2:
 		outputPane->OnRButtonDown(nFlags, point, mOut, cred);
 		if (*mOut == negative || *mOut == negativeUpdate)
 			goto cont3;
-		MessageHandler();
+		HandleEvents(cred);
 		return;
 	}
 
@@ -147,19 +191,19 @@ cont3:
 		explorerPane->OnRButtonDown(nFlags, point, mOut, cred);
 		if (*mOut == negative || *mOut == negativeUpdate)
 			return;
-		MessageHandler();
+		HandleEvents(cred);
 		return;
 	}
 }
 
-void BuilderApp::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut)
+void MiniHandler::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut)
 {
 	if (mainPage.Get())
 	{
 		mainPage->OnMouseMove(nFlags, point, mOut, cred);
 		if (*mOut == negative || *mOut == negativeUpdate)
 			goto cont2;
-		MessageHandler();
+		HandleEvents(cred);
 		return;
 	}
 
@@ -169,7 +213,7 @@ cont2:
 		outputPane->OnMouseMove(nFlags, point, mOut, cred);
 		if (*mOut == negative || *mOut == negativeUpdate)
 			goto cont3;
-		MessageHandler();
+		HandleEvents(cred);
 		return;
 	}
 
@@ -179,19 +223,19 @@ cont3:
 		explorerPane->OnMouseMove(nFlags, point, mOut, cred);
 		if (*mOut == negative || *mOut == negativeUpdate)
 			return;
-		MessageHandler();
+		HandleEvents(cred);
 		return;
 	}
 }
 
-void BuilderApp::OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut)
+void MiniHandler::OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut)
 {
 	if (mainPage.Get())
 	{
 		mainPage->OnLButtonDblClk(nFlags, point, mOut, cred);
 		if (*mOut == negative || *mOut == negativeUpdate)
 			goto cont2;
-		MessageHandler();
+		HandleEvents(cred);
 		return;
 	}
 
@@ -201,7 +245,7 @@ cont2:
 		outputPane->OnLButtonDblClk(nFlags, point, mOut, cred);
 		if (*mOut == negative || *mOut == negativeUpdate)
 			goto cont3;
-		MessageHandler();
+		HandleEvents(cred);
 		return;
 	}
 
@@ -211,19 +255,19 @@ cont3:
 		explorerPane->OnLButtonDblClk(nFlags, point, mOut, cred);
 		if (*mOut == negative || *mOut == negativeUpdate)
 			return;
-		MessageHandler();
+		HandleEvents(cred);
 		return;
 	}
 }
 
-void BuilderApp::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
+void MiniHandler::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
 {
 	if (mainPage.Get())
 	{
 		mainPage->OnLButtonUp(nFlags, point, mOut, cred);
 		if (*mOut == negative || *mOut == negativeUpdate)
 			goto cont2;
-		MessageHandler();
+		HandleEvents(cred);
 		return;
 	}
 
@@ -233,7 +277,7 @@ cont2:
 		outputPane->OnLButtonUp(nFlags, point, mOut, cred);
 		if (*mOut == negative || *mOut == negativeUpdate)
 			goto cont3;
-		MessageHandler();
+		HandleEvents(cred);
 		return;
 	}
 
@@ -243,19 +287,19 @@ cont3:
 		explorerPane->OnLButtonUp(nFlags, point, mOut, cred);
 		if (*mOut == negative || *mOut == negativeUpdate)
 			return;
-		MessageHandler();
+		HandleEvents(cred);
 		return;
 	}
 }
 
-bool BuilderApp::OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags, messageOutput* mOut)
+bool MiniHandler::OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags, messageOutput* mOut)
 {
 	if (mainPage.Get())
 	{
 		mainPage->OnChar(fromChar, nChar, nRepCnt, nFlags, mOut, cred);
 		if (*mOut == negative || *mOut == negativeUpdate)
 			goto cont2;
-		MessageHandler();
+		HandleEvents(cred);
 		return true;
 	}
 
@@ -265,7 +309,7 @@ cont2:
 		outputPane->OnChar(fromChar, nChar, nRepCnt, nFlags, mOut, cred);
 		if (*mOut == negative || *mOut == negativeUpdate)
 			goto cont3;
-		MessageHandler();
+		HandleEvents(cred);
 		return true;
 	}
 
@@ -275,17 +319,24 @@ cont3:
 		explorerPane->OnChar(fromChar, nChar, nRepCnt, nFlags, mOut, cred);
 		if (*mOut == negative || *mOut == negativeUpdate)
 			return false;
-		MessageHandler();
+		HandleEvents(cred);
 		return true;
 	}
 	return false;
 }
 
-void BuilderApp::MessageHandler()
+void MiniHandler::SetSelf(TrecPointer<MiniHandler> s)
+{
+	if (!s.Get() || s.Get() != this)
+		throw L"Error! Expected Self pointer to be initialized to 'this'!";
+	self = TrecPointerKey::GetSoftPointerFromTrec<MiniHandler>(s);
+}
+
+void MiniHandler::OnSave(TFile&)
 {
 }
 
-bool BuilderApp::InitializeControls()
+bool MiniHandler::InitializeControls()
 {
 	return false;
 }

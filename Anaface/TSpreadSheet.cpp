@@ -16,14 +16,16 @@ TSpreadSheet::~TSpreadSheet()
 {
 }
 
-bool TSpreadSheet::onCreate(RECT l)
+bool TSpreadSheet::onCreate(RECT l, TrecPointer<TWindowEngine> d3d)
 {
+	winEngine = d3d;
+
 	// Clears all children, as the Spreadsheet is supposed to handle child controls internally
 	children.Clear();
 
 	lChildren.Clear();
 
-	TLayoutEx::onCreate(l);
+	TLayoutEx::onCreate(l,d3d);
 
 	TrecPointer<TString> valpoint = attributes.retrieveEntry(TString(L"|HeaderWidth"));
 	int h_x = 0, h_y = 1;
@@ -113,7 +115,7 @@ bool TSpreadSheet::onCreate(RECT l)
 		ttf->addAttribute(TString(L"|ContentColor"), attr);
 		attr = TrecPointerKey::GetNewTrecPointer<TString>(L"Center");
 		ttf->addAttribute(TString(L"|HorizontalAlignment"), attr);
-		ttf->onCreate(getRawSectionLocation(cc->y, cc->x));
+		ttf->onCreate(getRawSectionLocation(cc->y, cc->x), d3d);
 		hasTitle = true;
 	}
 
@@ -151,7 +153,7 @@ bool TSpreadSheet::onCreate(RECT l)
 			TrecPointer<TString> attr;
 			attr = TrecPointerKey::GetNewTrecPointer<TString>(L"2,2,2,2");
 			ttf->addAttribute(TString(L"|Margin"), attr);
-			ttf->onCreate(getRawSectionLocation(tc_cc->y, tc_cc->x));
+			ttf->onCreate(getRawSectionLocation(tc_cc->y, tc_cc->x), d3d);
 			children.Add(tc_cc->contain);
 		}
 	}
@@ -279,7 +281,7 @@ void TSpreadSheet::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut
 			ttf->addAttribute(TString(L"|DrawNumberBoxes"), attr);
 		}
 
-		ttf->onCreate(getRawSectionLocation(cc->y, cc->x));
+		ttf->onCreate(getRawSectionLocation(cc->y, cc->x), winEngine);
 		tc = cc->contain;
 	}
 

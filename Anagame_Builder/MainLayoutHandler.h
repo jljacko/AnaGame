@@ -1,6 +1,6 @@
 #pragma once
 #include <EventHandler.h>
-#include "BuilderApp.h"
+#include <MiniHandler.h>
 
 class MainLayoutHandler;
 
@@ -75,7 +75,7 @@ protected:
 
 
 	/// Now to host the various mini apps that the user g=could launch on the builder
-	TDataArray<TrecPointer<BuilderApp>> ActiveDocuments;
-	TrecPointer<BuilderApp> currentDocument;
+	TDataArray<TrecPointer<MiniHandler>> ActiveDocuments;
+	TrecPointer<MiniHandler> currentDocument;
 };
 

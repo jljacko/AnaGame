@@ -1,8 +1,19 @@
 #pragma once
 #include <Parser_.h>
+#include "TShaderHost.h"
 
-#include "ArenaEngine.h"
-#include "ArenaModel.h"
+/*
+* struct ConstantBufferDescription
+* Purpose: Provides information regarding a shaders constant buffers
+*/
+typedef struct ConstantBufferDescription
+{
+	ShaderPhase sp;			// Shader phase the Constant buffer belongs to (Vertex, Pixel, etc.)
+	int bufferSlot;			// the slot in the GPU this buffer is located (1 buffer for each slot)
+	bool ModelBuffer;		// Whether this buffer is for Model data
+	int size;				// Size in bytes of the constant buffer
+	unsigned char purpose;	// What this buffer is used for (uased by AnaGame)
+}ConstantBufferDescription;
 
 /*
 * struct BasicShaderDetails
@@ -20,29 +31,12 @@ typedef struct BasicShaderDetails
 	bool pixelFunctionSet;
 }BasicShaderDetails;
 
-/*
-* struct ConstantBufferDescription
-* Purpose: Provides information regarding a shaders constant buffers
-*/
-typedef struct ConstantBufferDescription
+class TShaderParser :
+	public Parser_
 {
-	ShaderPhase sp;			// Shader phase the Constant buffer belongs to (Vertex, Pixel, etc.)
-	int bufferSlot;			// the slot in the GPU this buffer is located (1 buffer for each slot)
-	bool ModelBuffer;		// Whether this buffer is for Model data
-	int size;				// Size in bytes of the constant buffer
-	unsigned char purpose;	// What this buffer is used for (uased by AnaGame)
-}ConstantBufferDescription;
-
-/*
-* class ShaderParser
-* Creates a shader
-*/
-class ShaderParser : public Parser_
-{
-	friend class ArenaEngine;
 public:
-	ShaderParser(ArenaEngine& ae, TString directory);
-	~ShaderParser();
+	TShaderParser(TShaderHost* ae, TString directory, TrecComPointer<ID3D11Device> dev);
+	~TShaderParser();
 
 	// for the initial object type
 	virtual bool Obj(TString* v) override;
@@ -58,33 +52,34 @@ public:
 
 	virtual UCHAR* GetAnaGameType()override;
 
-protected:
 	bool AddShaderToProgram(TString& str);
+
 	bool SetBasicShader();
 
 	bool SetBufferPurpose(TString& t);
+
 	bool SetInputSlot(TString& v);
+
 	bool SetDataWidth(TString& v);
+
 	bool SetDataCount(TString& v);
 
 	bool SetTextureCount(TString& v);
 
-	bool SetDefaultShader(DefaultShader ds);
-	DefaultShader defaultShader;
+protected:
+	TShaderHost* shaderHost;
+	TString directory;
+	UINT shaderIndex;
 
-	ShaderKey shaderID;
-	bool shaderIDd;
-	bool isDefaultShader;
-	ArenaEngine* engine;
+	TrecComPointer<ID3D11Device> device;
 	BasicShaderDetails bsd;
+	ConstantBufferDescription cbd;
 	ShaderPhase phase;
 
-	ConstantBufferDescription cbd;
-
-	TrecPointer<TString> shaderFile;
 	unsigned short desc;
 	TDataArray<unsigned short> bufferDesc;
+	TrecPointer<TString> shaderFile;
 
-	TString fileLocation;
+	bool shaderIDd;
 };
 

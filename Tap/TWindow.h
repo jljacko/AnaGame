@@ -1,6 +1,7 @@
 #pragma once
 #include <TObject.h>
 #include "Page.h"
+#include <TWindowEngine.h>
 class _TAP_DLL TWindow :	public TObject
 {
 public:
@@ -31,7 +32,7 @@ public:
 	TrecPointer<Page> GetHandlePage(bool singleton);
 	TrecPointer<Page> GetHandlePage(const TString& name);
 	TrecPointer<Page> Get3DPage(bool singleton, TString& engineId);
-	TrecPointer<Page> Get3DPage(bool singleton, TrecPointer<ArenaEngine> engine);
+	TrecPointer<Page> Get3DPage(bool singleton, TrecPointer<TArenaEngine> engine);
 
 	void LockWindow();
 	void UnlockWindow();
@@ -39,7 +40,12 @@ public:
 	void SetSelf(TrecPointer<TWindow> win);
 
 	TrecPointer<Page> GetPageByArea(RECT r);
+	TrecPointer<TInstance> GetInstance();
 
+	bool SetUp3D();
+	void CleanUp();
+
+	TrecPointer<TWindowEngine> GetWindowEngine();
 
 protected:
 	HWND parent, currentWindow;
@@ -60,5 +66,10 @@ protected:
 
 	//
 	TrecPointerSoft<TWindow> self;
+	TrecPointer<Page> deletePage;
+
+
+	// 3D Resource
+	TrecPointer<TWindowEngine> d3dEngine;
 };
 

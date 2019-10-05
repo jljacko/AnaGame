@@ -20,7 +20,7 @@ public:
 	TFlyout(TrecComPointer<ID2D1RenderTarget>, TrecPointer<TArray<styleTable>> ta);
 	virtual ~TFlyout();
 
-	bool onCreate(RECT);
+	bool onCreate(RECT, TrecPointer<TWindowEngine> d3d)override;
 	void onDraw(TObject* obj = nullptr) override;
 	bool Show(appearCondition);
 	void Hide();

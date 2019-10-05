@@ -310,9 +310,10 @@ bool AnafaceUI::OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags, mes
 * Parameters: RECT container - the location the control will be stored
 * Returns: bool
 */
-bool AnafaceUI::onCreate(RECT container)
+bool AnafaceUI::onCreate(RECT container, TrecPointer<TWindowEngine> d3d)
 {
-	TControl::onCreate(container);
+	windowEngine = d3d;
+	TControl::onCreate(container,d3d);
 	RECT r;
 	TrecPointer<TString> valpoint = attributes.retrieveEntry(TString(L"|TabHeight"));
 	if (valpoint.Get())
@@ -379,12 +380,12 @@ bool AnafaceUI::onCreate(RECT container)
 	{
 		TControl* tc = children.ElementAt(c).Get();
 		if (tc)
-			tc->onCreate(container);
+			tc->onCreate(container,d3d);
 	}
 
 	if (tabs)
 	{
-		tabs->onCreate(r);
+		tabs->onCreate(r,d3d);
 
 		for (UINT c = 0; c < children.Count(); c++)
 		{
@@ -485,7 +486,7 @@ void AnafaceUI::setDontAddControl(TrecPointer<TControl> control)
 	{
 		//TrecPointer<TContainer> tc(new TContainer());
 		//tc->setTControl(control);
-		control->onCreate(location);
+		control->onCreate(location,windowEngine);
 		currentControl = control;
 	}
 }
@@ -630,7 +631,7 @@ void AnafaceUI::AddNewTab(TString t)
 		{
 			tabs->addChild(tc, indexAdd - 1, 0);
 			RECT tabLoc = tabs->getRawSectionLocation(0, indexAdd - 1);
-			tc->onCreate(tabLoc);
+			tc->onCreate(tabLoc,windowEngine);
 		}
 	}
 }

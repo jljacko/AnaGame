@@ -24,7 +24,7 @@ public:
 	TDropMenu(TrecComPointer<ID2D1RenderTarget>, TrecPointer<TArray<styleTable>> styles);
 	~TDropMenu();
 
-	bool onCreate(RECT l) override;
+	bool onCreate(RECT l, TrecPointer<TWindowEngine> d3d) override;
 	void onDraw(TObject* obj = nullptr) override;
 
 	virtual void SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget>) override;

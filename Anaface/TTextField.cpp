@@ -247,10 +247,10 @@ void TTextField::storeInHTML(TFile * ar)
 * Parameters: RECT r - the location that the control would work in
 * Returns: bool - success (currently arbitrarily)
 */
-bool TTextField::onCreate(RECT r)
+bool TTextField::onCreate(RECT r, TrecPointer<TWindowEngine> d3d)
 {
 
-	TGadgetControl::onCreate(r);
+	TGadgetControl::onCreate(r, d3d);
 
 	TrecPointer<TString> valpoint = attributes.retrieveEntry(TString(L"|IsPassword"));
 	isPassword = false;
