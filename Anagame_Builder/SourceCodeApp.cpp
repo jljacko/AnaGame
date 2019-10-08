@@ -39,7 +39,7 @@ SourceCodeApp::SourceCodeApp(TrecPointer<TControl> m, TrecPointer<TControl> o, T
 
 	if (!mainControl.Get())
 		return;
-
+	dynamic_cast<AnafaceUI*>(m.Get())->addControl(mainControl, TString());
 }
 
 SourceCodeApp::~SourceCodeApp()
@@ -125,6 +125,7 @@ void SourceCodeApp::OnSave()
 
 void SourceCodeApp::OnShow()
 {
+	MiniHandler::OnShow();
 }
 
 void SourceCodeApp::onHide()

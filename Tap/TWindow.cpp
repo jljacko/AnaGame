@@ -375,6 +375,8 @@ bool TWindow::SetUp3D()
 	if (newPage.Get())
 	{
 		newPage->SetAnaface(mainPage->ExtractRootControl());
+		if(mainPage.Get())
+			newPage->SetHandler(mainPage->GetHandler());
 		deletePage = mainPage;
 		mainPage = newPage;
 		return true;

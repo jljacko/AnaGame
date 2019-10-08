@@ -213,6 +213,10 @@ void MainLayoutHandler::HandleEvents(TDataArray<EventID_Cred>& eventAr)
 		{
 			(this->*calls[ea_id])(cont, ea);
 		}
+		else if (ea_id == -1 && ea.control == body.Get() && ea.eventType == On_sel_change)
+		{
+			OnSwitchTab(cont, ea);
+		}
 		cont->resetArgs();
 	}
 }
@@ -221,6 +225,18 @@ void MainLayoutHandler::Draw()
 {
 	if (currentDocument.Get())
 		currentDocument->Draw();
+}
+
+void MainLayoutHandler::OnSwitchTab(TControl* tc, EventArgs ea)
+{
+	if (ea.arrayLabel >= 0 && ea.arrayLabel < ActiveDocuments.Size())
+	{
+		if (currentDocument.Get())
+			currentDocument->onHide();
+		currentDocument = ActiveDocuments[ea.arrayLabel];
+		if (currentDocument.Get())
+			currentDocument->OnShow();
+	}
 }
 
 void MainLayoutHandler::OnLoadNewSolution(TControl* tc, EventArgs ea)

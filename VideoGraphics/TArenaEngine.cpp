@@ -16,6 +16,10 @@ TArenaEngine::TArenaEngine(TrecPointer<TWindowEngine> wEngine, const TString& na
 	rasterizer.CullMode = D3D11_CULL_BACK;
 }
 
+TArenaEngine::~TArenaEngine()
+{
+}
+
 bool TArenaEngine::SetShader(int id)
 {
 	return assignShader(id, camera, mvp, windowEngine->getDeviceD(), windowEngine->getDevice(), doMvp);

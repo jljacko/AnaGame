@@ -143,6 +143,15 @@ void AnafaceUI::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, T
 				{
 					currentControl = children.ElementAt(c);
 					*mOut = messageOutput::positiveOverride;
+					resetArgs();
+					args.eventType = R_Message_Type::On_sel_change;
+					args.point = point;
+					args.methodID = -1;
+					args.isClick = true;
+					args.isLeftClick = true;
+					args.control = this;
+					args.arrayLabel = c;
+					eventAr.push_back(EventID_Cred{ On_Click,this });
 					return;
 				}
 			}

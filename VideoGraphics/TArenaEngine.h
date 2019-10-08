@@ -14,6 +14,7 @@ class _VIDEO_GRAPHICS TArenaEngine :
 public:
 	TArenaEngine(TrecPointer<TWindowEngine> wEngine);
 	TArenaEngine(TrecPointer<TWindowEngine> wEngine, const TString& name);
+	~TArenaEngine();
 	bool SetShader(int id);
 	bool SetShader(DefaultShader ds);
 

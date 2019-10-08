@@ -74,11 +74,20 @@ void MiniHandler::OnSave()
 void MiniHandler::OnShow()
 {
 	if (mainPage.Get())
+	{
 		mainPage->SetMiniHandler(TrecPointerKey::GetTrecPointerFromSoft<MiniHandler>(self));
+		mainPage->SetAnaface(mainControl);
+	}
 	if (outputPane.Get())
+	{
 		outputPane->SetMiniHandler(TrecPointerKey::GetTrecPointerFromSoft<MiniHandler>(self));
+		outputPane->SetAnaface(outputControl);
+	}
 	if (explorerPane.Get())
+	{
 		explorerPane->SetMiniHandler(TrecPointerKey::GetTrecPointerFromSoft<MiniHandler>(self));
+		explorerPane->SetAnaface(explorerControl);
+	}
 }
 
 void MiniHandler::onHide()

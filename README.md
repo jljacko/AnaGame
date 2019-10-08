@@ -137,16 +137,102 @@ When coding the AnaGame project, you will likely create a few objects on the hea
 	maintained and memory returned to the heap once the count reaches 0. You can also manually delete
 	an object and any other TrecPointer referencing it will convert itself to NULL (as opposed to dangling.
 
-TObject* obj = new TObject();
-TrecPointer<TObject> t_obj1(obj);
-TrecPointer<TObject> t_obj2(obj); // If this were a standard C++ shared_ptr, this would lead to 2 counters and eventually a dangling pointer
+Originally, TrecPointers all referred to a table held within the TrecLib library. However, this strategy
+	was scrapped in favor of the approach used by Rust's Rc container, which acts in a way similar to 
+	C++'s std::shared_ptr - ie utilizing a counter for the reference. However, it does contain restrictions
+	absent in C++'s shared pointers and present in Rust.
 
-if(t_obj1.get())
+### Creating an active TrecPointer
+
+There are only two ways a TrecPointer get's initialized:
+1. The TrecPointer is assigned via an already active TrecPointer
+2. The TrecPointer is initialized through a method in the TrecPointerKey class.
+
+_Note:_ You cannot assign a raw pointer to a TrecPointer or use a raw pointer to construct a TrecPointer -
+	Only the TrecPointerKey can do that!
+
+`
+// Easy Way
+TrecPointer<type_name> tc_ptr_1 = tc_ptr_0; // Assume tc_ptr_0 is another "TrecPointer<type_name>"
+`
+
+### Using the _TrecPointerKey_
+
+The _TrecPointerKey_ is the class to use when initializing a TrecPointer with a new object. This class provides
+	multiple methods for Object initialization depending on the circumstances.
+
+1. Basic Case: TrecPointerKey::GetNewTrecPointer<type>(params);
+
+Use this for basic scenarios such as primitive types or objects you don't plan to represent as a different type
+
+2. You need to initialize a subclass but hold a reference to a base class:
+	TrecPointerKey::GetNewTrecPointerAlt<base_class, sub_class>(params);
+
+_Note:_ There is currently no mechanism for assigning a TrecPointer of a base class to one of a subclass or vice versa.
+
+3. Basic Case - but the class has a "SetSelf" method:
+	TrecPointerKey::GetNewSelfTrecPointer<self_type>(param);
+
+Sometimes, you might have a class that holds a reference to itself. It could be that your class might want to return a reference to itself.
+	In that case, it should implement the "SetSelf(TrecPointer<self_type>)" method that the TrecPointerKey calls during initialization.
+
+4. 2, but with the "SetSelf" method:
+	TrecPointerKey::GetNewSelfTrecPointerAlt<base_self, sub_self>(param);
+	
+This basically combines 2 and 3, but it only works when the base class has the _SetSelf_ method
+
+### TrecPointerSoft: useful for self references
+
+In the event that a class needs to return a TrecPointer to itself, it should have a "TrecPointerSoft" as one of it's attributes.
+	_TrecPointerSoft_ is a variation of the TrecPointer that does _not_ increment (or decrement) the counter. It is similar to the "weak_ptr" of
+	C++'s Standard Library. Obviously, you wouldn't want a class that holds a regular TrecPointer to itself - the counter would never hit zero.
+	
+`
+void TControl::SetSelf(TrecPointer<TControl> self)
+{
+	if (this != self.Get())
+		throw L"Error! Function expected to recieve a protected reference to 'this' Object!";
+	tThis = TrecPointerKey::GetSoftPointerFromTrec<TControl>(self);
+}
+`
+
+Here is the SetSelf method for the TControl class. It first checks to make sure that the TrecPointer is indeed pointing to itself before using the 
+	_TrecPointerKey_ to retrieve a _TrecPointerSoft_ reference to itself.
+
+### Null checks
+
+As usual, you should perform a null check before using the underlying pointer.
+
+`
+if(t_obj1.Get())
 	t_obj1->someMethod();
+`
 
-t_obj1.Delete(); // t_obj2 won't become null at this point, but will when it is used again
+### Cleaning up
 
-_Note:_ More Documentation should become available in the coming months
+There are two ways to Clean up a TrecPointer: Nullifying it and Deleting it!
+
+`
+tc_ptr.Nullify();
+`
+
+Nullify() will make the TrecPointer NULL and decrement the count. It will not delete the object unless the
+	counter reaches zero.
+
+`
+tc_ptr.Delete();
+`
+
+Delete() will automatically delete the memory, regardless of how many references still exist. Each TrecPointer that
+	still referenced it when this method was call will simply return NULL when doing null checks.
+
+_Note:_ DO NOT extract a raw pointer from a TrecPointer and call "delete". TrecPointers have no way of knowing this occured and in
+	_release_ builds could cause undefined behavior.
+
+`
+tc_type* r_prt = tc_ptr.Get();
+delete r_ptr; // BAD! Will cause problems
+`
 
 ## Overall Structure
 

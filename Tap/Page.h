@@ -45,6 +45,10 @@ public:
 
 	TrecPointer<TWindow> GetWindowHandle();
 
+	TrecPointer<EventHandler> GetHandler();
+
+	void SetHandler(TrecPointer<EventHandler> eh);
+
 	virtual UCHAR* GetAnaGameType()override;
 	afx_msg void OnSize(UINT nType, int cx,	int cy);
 

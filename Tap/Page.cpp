@@ -331,6 +331,16 @@ TrecPointer<TWindow> Page::GetWindowHandle()
 	return windowHandle;
 }
 
+TrecPointer<EventHandler> Page::GetHandler()
+{
+	return handler;
+}
+
+void Page::SetHandler(TrecPointer <EventHandler> eh)
+{
+	handler = eh;
+}
+
 void Page::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
 {
 	TDataArray<EventID_Cred> eventAr;

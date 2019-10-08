@@ -24,6 +24,7 @@ public:
 	void HandleEvents(TDataArray<EventID_Cred>& eventAr);
 
 	void Draw();
+	void OnSwitchTab(TControl* tc, EventArgs ea);
 protected:
 	TDataArray<LayoutCall> calls;
 
