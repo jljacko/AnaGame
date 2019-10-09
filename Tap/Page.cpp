@@ -352,12 +352,9 @@ int Page::SetAnaface(TrecPointer<TFile> file, TDataArray<eventNameID>& id)
 
 void Page::SetAnaface(TrecPointer<TControl> newRoot)
 {
-	if (!newRoot.Get())
-		throw L"Error! Root Control Already expected to be initialized!";
-
 	rootControl = newRoot;
-
-	rootControl->SetNewRenderTarget(regRenderTarget);
+	if(rootControl.Get())
+		rootControl->SetNewRenderTarget(regRenderTarget);
 }
 
 TrecPointer<TControl> Page::GetRootControl()
@@ -478,13 +475,14 @@ void Page::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
 bool Page::OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlags, messageOutput *mOut)
 {
 	TDataArray<EventID_Cred> eventAr;
-	bool returnable = OnChar(fromChar, nChar, nRepCnt, nFlags, mOut, eventAr);
-
+	bool returnable = false;
+	if (miniHandler.Get())
+		returnable = miniHandler->OnChar(fromChar, nChar, nRepCnt, nFlags, mOut);
 	if (handler.Get())
 		handler->HandleEvents(eventAr);
 
-	if (miniHandler.Get())
-		miniHandler->OnChar(fromChar, nChar, nRepCnt, nFlags, mOut);
+	if(!returnable)
+		returnable = OnChar(fromChar, nChar, nRepCnt, nFlags, mOut, eventAr);
 
 	if (*mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
 		if (windowHandle.Get())windowHandle->Draw(); else return false;

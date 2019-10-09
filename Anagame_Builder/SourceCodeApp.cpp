@@ -40,6 +40,17 @@ SourceCodeApp::SourceCodeApp(TrecPointer<TControl> m, TrecPointer<TControl> o, T
 	if (!mainControl.Get())
 		return;
 	dynamic_cast<AnafaceUI*>(m.Get())->addControl(mainControl, TString());
+
+
+	if (!o.Get() || !dynamic_cast<AnafaceUI*>(o.Get()))
+		return;
+	rect = dynamic_cast<AnafaceUI*>(o.Get())->GetControlArea();
+	outputPane = window->GetPageByArea(rect);
+
+	if (!e.Get() || !dynamic_cast<AnafaceUI*>(e.Get()))
+		return;
+	rect = dynamic_cast<AnafaceUI*>(e.Get())->GetControlArea();
+	explorerPane = window->GetPageByArea(rect);
 }
 
 SourceCodeApp::~SourceCodeApp()
