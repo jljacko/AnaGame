@@ -1420,7 +1420,7 @@ int TString::Compare(const WCHAR* other) const
 
 	if (size == lstrlenW(other)) return 0;
 	if (size > lstrlenW(other)) return lstrlenW(other); 
-	return static_cast<int>(size);
+	return static_cast<int>(-1);
 }
 
 int TString::CompareNoCase(const TString& other)

@@ -194,7 +194,53 @@ TrecPointer<Page> Page::Get3DPage(TrecPointer<TInstance> in, TrecPointer<TWindow
 	TrecComPointer<IDXGISurface> surf = engine->GetSurface();
 	if (!surf.Get())
 		throw L"Error! Provided 3D Engine does not have a Surface to create a 2D Render Target with!";
-	
+
+	TrecComPointer<IDXGIDevice> dev = engine->getDeviceD_U();
+
+	TrecComPointer<ID2D1Device>::TrecComHolder d2dDevHolder;
+
+	HRESULT res = fact->CreateDevice(dev.Get(), d2dDevHolder.GetPointerAddress());
+	if (FAILED(res))
+		throw L"Error! 2D Device Creation failed!";
+
+	TrecComPointer<ID2D1Device> d2dDev = d2dDevHolder.Extract();
+
+	TrecComPointer<ID2D1DeviceContext>::TrecComHolder contextRenderHolder;
+	res = d2dDev->CreateDeviceContext(D2D1_DEVICE_CONTEXT_OPTIONS_NONE, contextRenderHolder.GetPointerAddress());
+
+	if (FAILED(res))
+		throw L"ERROR! Failed to Generate 3D Compatiblie Render Target!";
+
+	D2D1_BITMAP_PROPERTIES1 bmp1;
+	bmp1.colorContext = nullptr;
+	bmp1.dpiX = bmp1.dpiY = 0;
+	bmp1.pixelFormat = D2D1::PixelFormat(
+		DXGI_FORMAT_B8G8R8A8_UNORM,
+		D2D1_ALPHA_MODE_IGNORE
+	);
+	bmp1.bitmapOptions = D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_GDI_COMPATIBLE
+		| D2D1_BITMAP_OPTIONS_CANNOT_DRAW;
+
+	TrecPointer<Page> ret = TrecPointerKey::GetNewSelfTrecPointer<Page>();
+	ret->fact = fact;
+	ret->windowHandle = window;
+	ret->deviceH = GetWindowDC(window->GetWindowHandle());
+	ret->regRenderTarget = TrecPointerKey::GetComPointer<ID2D1RenderTarget, ID2D1DeviceContext>(contextRenderHolder);
+	ret->instance = in;
+
+	TrecComPointer<ID2D1Bitmap1>::TrecComHolder bitHolder;
+	res = reinterpret_cast<ID2D1DeviceContext*>(ret->regRenderTarget.Get())->CreateBitmapFromDxgiSurface(surf.Get(), bmp1, bitHolder.GetPointerAddress());
+
+	if (FAILED(res))
+		throw L"ERROR! Could Not retrieve Bitmap from Device Context!";
+
+	ret->bit = bitHolder.Extract();
+	reinterpret_cast<ID2D1DeviceContext*>(ret->regRenderTarget.Get())->SetTarget(ret->bit.Get());
+	TrecComPointer< ID2D1GdiInteropRenderTarget>::TrecComHolder gdiRenderHolder;
+	res = reinterpret_cast<ID2D1DeviceContext*>(ret->regRenderTarget.Get())->QueryInterface(__uuidof(ID2D1GdiInteropRenderTarget), (void**)gdiRenderHolder.GetPointerAddress());
+	ret->gdiRender = gdiRenderHolder.Extract();
+
+	/*
 	D2D1_RENDER_TARGET_PROPERTIES props;
 	ZeroMemory(&props, sizeof(props));
 
@@ -206,7 +252,7 @@ TrecPointer<Page> Page::Get3DPage(TrecPointer<TInstance> in, TrecPointer<TWindow
 	props.minLevel = D2D1_FEATURE_LEVEL_DEFAULT;
 
 	TrecComPointer<ID2D1RenderTarget>::TrecComHolder dxgiRender;
-	HRESULT res = fact->CreateDxgiSurfaceRenderTarget(surf.Get(), props, dxgiRender.GetPointerAddress());
+	res = fact->CreateDxgiSurfaceRenderTarget(surf.Get(), props, dxgiRender.GetPointerAddress());
 	
 	if (FAILED(res))
 		throw L"ERROR! Failed to Generate 3D Compatiblie Render Target!";
@@ -217,8 +263,8 @@ TrecPointer<Page> Page::Get3DPage(TrecPointer<TInstance> in, TrecPointer<TWindow
 	ret->deviceH = GetWindowDC(window->GetWindowHandle());
 	ret->regRenderTarget = dxgiRender.Extract();
 	ret->instance = in;
-
-	ret->rt_type = render_target_dxgi;
+	*/
+	ret->rt_type = render_target_device_context;
 
 	GetClientRect(window->GetWindowHandle(), &ret->area);
 	convertCRectToD2DRect(&ret->area, &ret->dRect);
@@ -555,6 +601,16 @@ void Page::SetMiniHandler(TrecPointer<MiniHandler> mh)
 	miniHandler = mh;
 }
 
+RenderTargetType Page::GetType()
+{
+	return rt_type;
+}
+
+TrecComPointer<ID2D1GdiInteropRenderTarget> Page::GetGDIRenderTarget()
+{
+	return gdiRender;
+}
+
 
 
 UCHAR * Page::GetAnaGameType()
@@ -652,13 +708,9 @@ void Page::CreateLayout()
 		rootControl->onCreate(area, windowHandle->GetWindowEngine());
 }
 
-void Page::Draw()
+void Page::Draw(TWindowEngine* twe)
 {
 	if (!rootControl.Get() || !regRenderTarget.Get() || !clearBursh.Get()) return;
-
-	//regRenderTarget->BeginDraw();
-	//regRenderTarget->Clear(D2D1::ColorF(1.0f,1.0f,1.0f,0.0f));
-	regRenderTarget->FillRectangle(dRect, clearBursh.Get());
 	
 	regRenderTarget->SetTransform(adjustMatrix);
 	rootControl->onDraw();

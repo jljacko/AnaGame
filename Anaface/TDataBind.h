@@ -1,6 +1,6 @@
 #pragma once
 #include "TLayoutEx.h"
-class _ANAFACE_DLL TDataBind : public TLayoutEx
+class _ANAFACE_DLL TDataBind : public TControl
 {
 public:
 	TDataBind(TrecComPointer<ID2D1RenderTarget>, TrecPointer<TArray<styleTable>> ta);
@@ -15,6 +15,8 @@ public:
 protected:
 	TDataArrayBase* dataRaw;
 	TArrayBase* dataWrap;
-	bool byRow;
+	bool isStack;
+	UINT widthHeight;
+
 };
 

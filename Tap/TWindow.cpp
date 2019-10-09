@@ -121,16 +121,48 @@ void TWindow::Draw()
 	if (mainPage.Get())
 	{
 		TrecComPointer<ID2D1RenderTarget> rt = mainPage->GetRenderTarget();
+		
+		TWindowEngine* d3d = d3dEngine.Get();
 		if (!rt.Get()) return;
-		{
-			TWindowEngine* d3d = d3dEngine.Get();
 
+		if (mainPage->GetType() == render_target_device_context && d3d)
+		{
 			rt->BeginDraw();
-			if (d3d) d3d->PrepareScene(D2D1::ColorF(D2D1::ColorF::Wheat));
+			//rt->Clear(D2D1::ColorF(D2D1::ColorF::White));
+			d3d->PrepareScene(D2D1::ColorF(D2D1::ColorF::Wheat));
+
 			mainPage->Draw();
-			if (d3d) d3d->FinalizeScene();
+			HDC contDC = 0;
+			ID2D1GdiInteropRenderTarget* gdiRender = mainPage->GetGDIRenderTarget().Get();
+			if (gdiRender && SUCCEEDED(gdiRender->GetDC(D2D1_DC_INITIALIZE_MODE_COPY, &contDC)))
+			{
+				HDC windDC = GetDC(currentWindow);
+				SelectObject(windDC, GetStockObject(DC_BRUSH));
+				SetDCBrushColor(windDC, RGB(0, 0, 0));
+
+				
+				RECT loc = mainPage->GetArea();
+
+				int width = loc.right - loc.left, height = loc.bottom - loc.top;
+
+				//InvertRect(contDC, &loc);
+				int err = 0;
+				if (!BitBlt(windDC, 0, 0, width, height, contDC, 0, 0, SRCCOPY))
+					err = GetLastError();
+				gdiRender->ReleaseDC(nullptr);
+				d3d->FinalizeScene();
+			}
 			rt->EndDraw();
 		}
+		else
+		{
+			rt->BeginDraw();
+			rt->Clear(D2D1::ColorF(D2D1::ColorF::White));
+			mainPage->Draw(d3d);
+			rt->EndDraw();
+		}
+
+
 	}
 }
 

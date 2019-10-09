@@ -12,7 +12,7 @@
 */
 
 
-
+bool isLayout(TrecPointer<TControl> cont);
 
 
 
@@ -253,13 +253,6 @@ bool AnafaceParser::Obj(TString* va)
 	else if (!v.Compare(L"TDataBind") || !v.Compare(L"DataLayout"))
 	{
 		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TDataBind>(renderer, classList);// TrecPointer<TControl>((new TDataBind(renderer, classList)));
-		
-		if(!singleParam.Compare(L"Horizontal"))
-			dynamic_cast<TLayout*>(currentObj.Get())->setLayout(HMix);
-		else if(!singleParam.Compare(L"Grid"))
-			dynamic_cast<TLayout*>(currentObj.Get())->setLayout(grid);
-		else
-			dynamic_cast<TLayout*>(currentObj.Get())->setLayout(VMix);
 		addToTree(currentObj);
 	}
 	else if (!v.Compare(L"Class"))
@@ -309,26 +302,38 @@ bool AnafaceParser::Attribute(TrecPointer<TString> v, TString& e)
 	int value;
 	if (TString::Compare(e, L"|ColumnWidth") == 0)
 	{
-		bool flex = v->Find(L"*") != -1;
-		v->Remove(L'*');
-		if (v.Get()->ConvertToInt(&value))
-			return false;
-		else
+		if (isLayout(currentObj))
 		{
-			columnwidth.push_back(value);
-			columnFlex.push_back(flex);
+			bool flex = v->Find(L"*") != -1;
+			v->Remove(L'*');
+			if (v.Get()->ConvertToInt(&value))
+				return false;
+			else
+			{
+				columnwidth.push_back(value);
+				columnFlex.push_back(flex);
+			}
 		}
+		else if (currentObj.Get())
+			currentObj->addAttribute(TString(e), v);
 	}
 	else if (TString::Compare(e, L"|RowHeight") == 0)
 	{
-		bool flex = v->Find(L"*") != -1;
-		v->Remove(L'*');
-		if (v.Get()->ConvertToInt(&value))
-			return false;
-		else
+		if (isLayout(currentObj))
 		{
-			rowHeight.push_back(value);
-			rowFlex.push_back(flex);
+			bool flex = v->Find(L"*") != -1;
+			v->Remove(L'*');
+			if (v.Get()->ConvertToInt(&value))
+				return false;
+			else
+			{
+				rowHeight.push_back(value);
+				rowFlex.push_back(flex);
+			}
+		}
+		else if (currentObj.Get())
+		{
+			currentObj->addAttribute(TString(e), v);
 		}
 	}
 	else if (TString::Compare(e, L"|ImageSource") == 0 ||
@@ -489,10 +494,11 @@ void AnafaceParser::setLayoutPointer()
 
 bool isLayout(TrecPointer<TControl> cont)
 {
+	if (!cont.Get())
+		return false;
 	return !strcmp(typeid(*(cont.Get())).name(), typeid(TLayout).name()) ||
 		!strcmp(typeid(*(cont.Get())).name(), typeid(TLayoutEx).name()) ||
-		!strcmp(typeid(*(cont.Get())).name(), typeid(TSpreadSheet).name()) ||
-		!strcmp(typeid(*(cont.Get())).name(), typeid(TDataBind).name());
+		!strcmp(typeid(*(cont.Get())).name(), typeid(TSpreadSheet).name());
 }
 
 /*

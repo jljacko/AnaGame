@@ -194,6 +194,7 @@ bool ArenaApp::InitializeControls()
 
 	try
 	{
+		// Initialize Panel Controls
 		TLayout* mainLay = dynamic_cast<TLayout*>(outputControl.Get());
 		arena = dynamic_cast<TArena*>(mainControl.Get());
 		TLayout* panelLay = dynamic_cast<TLayout*>(mainLay->GetLayoutChild(0, 0).Get());
@@ -207,14 +208,23 @@ bool ArenaApp::InitializeControls()
 		assert(d_x && d_y && d_z &&
 			l_x && l_y && l_z);
 
+		// Initialize The Arena
 		TrecPointer<TString> strName;
 		strName = TrecPointerKey::GetNewTrecPointer<TString>(arenaName);
 		arena->addAttribute(TString(L"|EngineID"), strName);
 
+
+		// Create the Arena Engine and Initialize the Explorer Controls
 		modelCollection = TrecPointerKey::GetNewTrecPointer<TArenaEngine>(window->GetWindowEngine(), arenaName);
 		if (modelCollection.Get())
-			dynamic_cast<TDataBind*>(explorerControl.Get())->setData(modelCollection->GetModelList());
-
+		{
+			AnafaceUI* a_ui = dynamic_cast<AnafaceUI*>(explorerControl.Get());
+			assert(a_ui);
+			TrecPointer<TControl> modelData = a_ui->GetChildAt(0);
+			TDataBind* tdb = dynamic_cast<TDataBind*>(modelData.Get());
+			assert(tdb);
+			tdb->setData(modelCollection->GetModelList());
+		}
 		arena->setEngine(modelCollection);
 
 		TDataArray<DirectX::XMFLOAT3> scaleVertices;

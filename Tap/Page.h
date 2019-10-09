@@ -57,7 +57,7 @@ public:
 
 	void CreateLayout();
 
-	void Draw();
+	void Draw(TWindowEngine* twe = nullptr);
 
 	RECT GetArea();
 	void SetArea(RECT& loc);
@@ -83,6 +83,8 @@ public:
 	TrecPointer<TInstance> GetInstance();
 
 	void SetMiniHandler(TrecPointer<MiniHandler> mh);
+	RenderTargetType GetType();
+	TrecComPointer<ID2D1GdiInteropRenderTarget> GetGDIRenderTarget();
 
 protected:
 	Page();
