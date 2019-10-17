@@ -73,7 +73,15 @@ void TDataBind::onDraw(TObject * obj)
 					break;
 			}
 
+			messageState curState = cont->mState;
+
+
+			if (isContained(&mouseMovePoint, &curLoc))
+				cont->mState = mouseHover;
+
 			cont->onDraw(dataWrap->GetObjectAt(Rust));
+
+			cont->mState = curState;
 
 			if (isStack)
 			{
@@ -152,4 +160,110 @@ bool TDataBind::onCreate(RECT r, TrecPointer<TWindowEngine> d3d)
 	}
 
 	return ret;
+}
+
+/*void TDataBind::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr, TDataArray<TControl*>& clickedButtons)
+{
+	TControl::OnLButtonDown(nFlags, point, mOut, eventAr, clickedButtons);
+	if (mState == mouseLClick)
+	{
+		UINT items = 0;
+		if (dataRaw)
+			items = dataRaw->Size();
+		else if (dataWrap)
+			items = dataWrap->Count();
+
+		TrecPointer<TControl> cont = children.ElementAt(0);
+		if (!cont.Get())
+			return;
+		RECT original = cont->getLocation();
+
+		for (UINT Rust = 0; Rust < items && isContained(&point, &location); Rust++)
+		{
+			if (isContained(&point, &original))
+			{
+				resetArgs();
+				args.arrayLabel = Rust;
+				args.isClick = true;
+				args.isLeftClick = true;
+				args.eventType = On_sel_change;
+				args.control = this;
+				args.methodID = getEventID(On_sel_change);
+				args.point = point;
+				eventAr.push_back({ On_sel_change, this });
+				break;
+
+
+			}
+			if (isStack)
+			{
+				original.bottom += widthHeight;
+				original.top += widthHeight;
+			}
+			else
+			{
+				original.left += widthHeight;
+				original.right += widthHeight;
+			}
+		}
+
+
+	}
+}*/
+
+void TDataBind::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+{
+	bool wasClicked = mState == mouseLClick;
+	TControl::OnLButtonUp(nFlags, point, mOut, eventAr);
+	if (wasClicked && isContained(&point, &location))
+	{
+		UINT items = 0;
+		if (dataRaw)
+			items = dataRaw->Size();
+		else if (dataWrap)
+			items = dataWrap->Count();
+
+		TrecPointer<TControl> cont = children.ElementAt(0);
+		if (!cont.Get())
+			return;
+		RECT original = cont->getLocation();
+
+		for (UINT Rust = 0; Rust < items && isContained(&point, &location); Rust++)
+		{
+			if (isContained(&point, &original))
+			{
+				resetArgs();
+				args.arrayLabel = Rust;
+				args.isClick = true;
+				args.isLeftClick = true;
+				args.eventType = On_sel_change;
+				args.control = this;
+				args.methodID = getEventID(On_sel_change);
+				args.point = point;
+				eventAr.push_back({ On_sel_change, this });
+				break;
+
+
+			}
+			if (isStack)
+			{
+				original.bottom += widthHeight;
+				original.top += widthHeight;
+			}
+			else
+			{
+				original.left += widthHeight;
+				original.right += widthHeight;
+			}
+		}
+
+
+	}
+}
+
+void TDataBind::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+{
+	TControl::OnMouseMove(nFlags, point, mOut, eventAr);
+	if (mState == mouseHover)
+		mouseMovePoint = point;
 }

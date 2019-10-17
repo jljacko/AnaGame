@@ -36,6 +36,9 @@
     <ClInclude Include="SourceCodeApp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ModelHolder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Anagame_Builder.cpp">
@@ -48,6 +51,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SourceCodeApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelHolder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

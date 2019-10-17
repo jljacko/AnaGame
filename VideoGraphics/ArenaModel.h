@@ -37,7 +37,7 @@ public:
 	TString toString() override;
 	TString getVariableValueStr(const TString& varName) override;
 
-	void setName(TString& newName);
+	void setName(const TString& newName);
 	TString getName();
 
 	void SetNewEngine(TrecPointer<TArenaEngine> e);

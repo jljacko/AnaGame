@@ -67,7 +67,7 @@ int TWindowEngine::Initialize()
 
 
 	// Initialize the swap cahin
-	swapChainDescription.BufferCount = 1;
+	swapChainDescription.BufferCount = 2;
 	swapChainDescription.BufferDesc.Width = Location.right - Location.left;
 	swapChainDescription.BufferDesc.Height = Location.bottom - Location.top;
 	swapChainDescription.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
@@ -81,7 +81,7 @@ int TWindowEngine::Initialize()
 	swapChainDescription.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 	swapChainDescription.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 	swapChainDescription.Flags = DXGI_SWAP_CHAIN_FLAG_GDI_COMPATIBLE;
-	swapChainDescription.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+	swapChainDescription.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;// DXGI_SWAP_EFFECT_DISCARD;
 
 	unsigned int flags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
 
@@ -298,6 +298,8 @@ void TWindowEngine::PrepareScene(D2D1::ColorF color)
 	float clearColor[4] = { color.r, color.g ,color.b,color.a };
 
 	contextDevice->ClearRenderTargetView(renderTarget.Get(), clearColor);
+	ID3D11RenderTargetView* const renderer = renderTarget.Get();
+	contextDevice->OMSetRenderTargets(1, &renderer, nullptr);
 }
 
 /*

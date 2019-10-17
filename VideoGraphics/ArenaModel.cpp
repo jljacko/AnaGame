@@ -104,7 +104,11 @@ TString ArenaModel::toString()
 TString ArenaModel::getVariableValueStr(const TString & varName)
 {
 	if (!varName.Compare(L"Name"))
-		return name;
+	{
+		TString ret(L"Name: ");
+		ret.Append(name);
+		return ret;
+	}
 	if (!varName.Compare(L"location"))
 	{
 		TString ret;
@@ -120,9 +124,9 @@ TString ArenaModel::getVariableValueStr(const TString & varName)
 	return TString();
 }
 
-void ArenaModel::setName(TString & newName)
+void ArenaModel::setName(const TString & newName)
 {
-	name = newName;
+	name.Set(newName);
 }
 
 TString ArenaModel::getName()

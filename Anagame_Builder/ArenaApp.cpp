@@ -19,6 +19,8 @@ TString on_Near(L"OnNear");
 TString on_SetCameraRotate(L"OnSetCameraRotate");
 TString on_SetCameraTranslate(L"OnSetCameraTranslate");
 
+TString on_GetDefaultObject(L"OnGetDefaultObject");
+
 static UINT arenaCount = 0;
 
 
@@ -100,6 +102,10 @@ ArenaApp::ArenaApp(TrecPointer<TControl> m, TrecPointer<TControl> o, TrecPointer
 
 	enid.eventID = 13;
 	enid.name.Set(on_SetCameraTranslate);
+	handleList.push_back(enid);
+
+	enid.eventID = 14;
+	enid.name.Set(on_GetDefaultObject);
 	handleList.push_back(enid);
 
 	window = i->GetMainWindow();
@@ -216,15 +222,69 @@ bool ArenaApp::InitializeControls()
 
 		// Create the Arena Engine and Initialize the Explorer Controls
 		modelCollection = TrecPointerKey::GetNewTrecPointer<TArenaEngine>(window->GetWindowEngine(), arenaName);
-		if (modelCollection.Get())
+
+		AnafaceUI* a_ui = dynamic_cast<AnafaceUI*>(explorerControl.Get());
+		assert(a_ui);
+		TrecPointer<TControl> modelData = a_ui->GetChildAt(0);
+		TDataBind* tdb = dynamic_cast<TDataBind*>(modelData.Get());
+		assert(tdb);
+		tdb->setData(modelCollection->GetModelList());
+
+		// now set up Default Model collections
+		modelData = a_ui->GetChildAt(1);
+		tdb = dynamic_cast<TDataBind*>(modelData.Get());
+		assert(tdb);
+		tdb->setData(&basicModels);
+
+		// Create a Cube
+		TDataArray<DirectX::XMFLOAT3> cubeVertices;
+		cubeVertices.push_back(DirectX::XMFLOAT3(-1.0, -1.0, -1.0));   // 0
+		cubeVertices.push_back(DirectX::XMFLOAT3(-1.0, 1.0, -1.0));  // 1
+		cubeVertices.push_back(DirectX::XMFLOAT3(1.0, 1.0, -1.0));  // 2
+		cubeVertices.push_back(DirectX::XMFLOAT3(1.0, -1.0, -1.0)); // 3
+		cubeVertices.push_back(DirectX::XMFLOAT3(-1.0, -1.0, 1.0));  // 4
+		cubeVertices.push_back(DirectX::XMFLOAT3(-1.0, 1.0, 1.0)); // 5
+		cubeVertices.push_back(DirectX::XMFLOAT3(1.0, 1.0, 1.0)); // 6
+		cubeVertices.push_back(DirectX::XMFLOAT3(1.0, -1.0, 1.0));// 7
+
+		std::vector<UINT> v = {
+		   0,1,2, // front face
+		   0,2,3,
+		   4,6,5, // back face
+		   4,7,6,
+		   4,5,1, // left face
+		   4,1,0,
+		   3,2,6, // right face
+		   3,6,7,
+		   1,5,6, // top face
+		   1,6,2,
+		   4,0,3, // bottom face
+		   4,3,7
+		};
+		TDataArray<UINT> indices;
+		indices = v;
+		v.clear();
+		TDataArray<float> floats;
+
+		for (UINT c = 0; c < cubeVertices.Size(); c++)
 		{
-			AnafaceUI* a_ui = dynamic_cast<AnafaceUI*>(explorerControl.Get());
-			assert(a_ui);
-			TrecPointer<TControl> modelData = a_ui->GetChildAt(0);
-			TDataBind* tdb = dynamic_cast<TDataBind*>(modelData.Get());
-			assert(tdb);
-			tdb->setData(modelCollection->GetModelList());
+			floats.push_back(cubeVertices[c].x);
+			floats.push_back(cubeVertices[c].y);
+			floats.push_back(cubeVertices[c].z);
+			//floats.push_back(1.0f);
 		}
+
+		TrecPointer<ArenaModel> basicModel = TrecPointerKey::GetNewTrecPointer<ArenaModel>(modelCollection);
+		basicModel->SetVertexData(floats, default_shader_Single_Color);
+		basicModel->SetIndices(indices);
+		basicModel->setColorBuffer(0.0f, 0.0f, 1.0f, 1.0f);
+		basicModel->setPipeColorBuffer(1.0f, 0.0f, 0.0f, 1.0f);
+
+		basicModelsTrec.push_back(basicModel);
+		basicModels.push_back(basicModel.Get());
+		basicModel->setName(TString(L"Cube"));
+
+		// Set up model in the actual engine
 		arena->setEngine(modelCollection);
 
 		TDataArray<DirectX::XMFLOAT3> scaleVertices;
@@ -237,7 +297,7 @@ bool ArenaApp::InitializeControls()
 		scaleVertices.push_back(DirectX::XMFLOAT3(0.0, 0.0, 100.0));
 		scaleVertices.push_back(DirectX::XMFLOAT3(0.0, 0.0, -100.0));
 
-		TDataArray<float> floats;
+		floats.RemoveAll();
 
 		for (UINT c = 0; c < scaleVertices.Size(); c++)
 		{
@@ -453,4 +513,14 @@ void ArenaApp::OnSetCameraRotate(TControl* tc, EventArgs ea)
 void ArenaApp::OnSetCameraTranslate(TControl* tc, EventArgs ea)
 {
 	rotateMode = false;
+}
+
+void ArenaApp::OnGetDefaultObject(TControl* tc, EventArgs ea)
+{
+	if (ea.arrayLabel >= 0 && ea.arrayLabel < basicModels.Size() && modelCollection.Get() &&
+		ea.arrayLabel < basicModelsTrec.Size() && basicModelsTrec[ea.arrayLabel].Get())
+	{
+		ArenaModel* newModel = new ArenaModel(*basicModelsTrec[ea.arrayLabel].Get());
+		modelCollection->AddModel(*newModel);
+	}
 }

@@ -151,6 +151,7 @@ void TWindow::Draw()
 					err = GetLastError();
 				gdiRender->ReleaseDC(nullptr);
 				d3d->FinalizeScene();
+				
 			}
 			rt->EndDraw();
 		}

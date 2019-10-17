@@ -158,6 +158,7 @@
     <ClInclude Include="ArenaApp.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="MainLayoutHandler.h" />
+    <ClInclude Include="ModelHolder.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SourceCodeApp.h" />
     <ClInclude Include="targetver.h" />
@@ -166,6 +167,7 @@
     <ClCompile Include="Anagame_Builder.cpp" />
     <ClCompile Include="ArenaApp.cpp" />
     <ClCompile Include="MainLayoutHandler.cpp" />
+    <ClCompile Include="ModelHolder.cpp" />
     <ClCompile Include="SourceCodeApp.cpp" />
   </ItemGroup>
   <ItemGroup>

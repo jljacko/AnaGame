@@ -393,6 +393,7 @@ class _ANAFACE_DLL TControl : public TObject
 	friend class TControl_TDialog; // TDialog version of TControl editor
 	friend class TBorder;
 	friend class TControl;
+	friend class TDataBind;
 public:
 
 	TControl(TrecComPointer<ID2D1RenderTarget>, TrecPointer<TArray<styleTable>> styles, bool base = true);
