@@ -3,7 +3,7 @@
 #include "TagHeaders.h"
 #include "IntLanguage.h"
 
-BNFTag::BNFTag(TString & tagName)
+BNFTag::BNFTag(const TString & tagName)
 {
 	name.Set(tagName);
 }
@@ -132,37 +132,37 @@ UINT BNFTag::CompileTag(TDataArray<BNFTag*>& tagList)
 	// TO-Do: update call to address "\|", where we don't want to split
 	auto syntax = rawSyntax.split(TString(L"|"), true);
 
-	for (UINT c = 0; c < syntax->Count(); c++)
+	for (UINT c = 0; c < syntax->Size(); c++)
 	{
-		TString curSyntax = syntax->ElementAt(c).get();
-		TrecPointer<TArray<TString>> synComps = curSyntax.split(TString(L" "));
+		TString curSyntax = syntax->at(c);
+		TrecPointer<TDataArray<TString>> synComps = curSyntax.split(TString(L" "));
 
 		this->syntax.push_back(TDataArray<TagMark>());
 
-		for (UINT rust = 0; rust < synComps->Count(); rust++)
+		for (UINT rust = 0; rust < synComps->Size(); rust++)
 		{
-			TString token = synComps->ElementAt(rust).get();
+			TString token = synComps->at(rust);
 			token.Trim();
 
-			if (token.GetLength() < 2)
+			if (token.GetSize() < 2)
 				continue;
 
-			if (token[0] == L'\'' && token[token.GetLength() - 1] == L'\'')
+			if (token[0] == L'\'' && token[token.GetSize() - 1] == L'\'')
 			{
-				token.Set(token.SubString(1, token.GetLength() - 1));
+				token.Set(token.SubString(1, token.GetSize() - 1));
 
 				this->syntax[c].push_back(TagMark( false, token, -1 ));
 			}
-			else if (token[0] == L'<' && token[token.GetLength() - 1] == L'>')
+			else if (token[0] == L'<' && token[token.GetSize() - 1] == L'>')
 			{
-				token.Set(token.SubString(1, token.GetLength() - 1));
+				token.Set(token.SubString(1, token.GetSize() - 1));
 
 				this->syntax[c].push_back(TagMark{ true , token, findTagIndex(tagList, token) });
 			}
-			else if (token[0] == L'[' && token[token.GetLength() - 1] == L']'
-				&& token[1] == L'[' && token[token.GetLength() - 2] == L']')
+			else if (token[0] == L'[' && token[token.GetSize() - 1] == L']'
+				&& token[1] == L'[' && token[token.GetSize() - 2] == L']')
 			{
-				token.Set(token.SubString(2, token.GetLength() - 2));
+				token.Set(token.SubString(2, token.GetSize() - 2));
 
 				this->syntax[c].push_back(TagMark{ true , token, findTagIndex(tagList, token) });
 			}
@@ -303,7 +303,7 @@ TagCheck BNFTag::ProcessTag(TString& code, UINT codeStart, TrecPointer<TFile> fi
 			returnable.error.Set(error);
 			returnable.success = false;
 			returnable.returnValue = nullptr;
-			returnable.fileByteEnd = codeStart + code.GetLength();
+			returnable.fileByteEnd = codeStart + code.GetSize();
 			return returnable;
 		}
 		if (tag == this)
@@ -311,7 +311,7 @@ TagCheck BNFTag::ProcessTag(TString& code, UINT codeStart, TrecPointer<TFile> fi
 			returnable.error.Format(L"Error Processing Code for '%S'\n\tEncountered Endless recursive tag!", lang.getLanguageName());
 			returnable.success = false;
 			returnable.returnValue = nullptr;
-			returnable.fileByteEnd = codeStart + code.GetLength();
+			returnable.fileByteEnd = codeStart + code.GetSize();
 			return returnable;
 		}
 
@@ -327,7 +327,7 @@ TagCheck BNFTag::ProcessTag(TString& code, UINT codeStart, TrecPointer<TFile> fi
 			return returnable;
 		}
 
-		UINT appendChar = token + syntaxSample[syntaxStart + 1].mark.GetLength();
+		UINT appendChar = token + syntaxSample[syntaxStart + 1].mark.GetSize();
 		code2.Set(code.SubString(appendChar));
 
 		returnable = ProcessTag(code2, codeStart + appendChar, file, globalVariables, inter, lang, tags, syntaxLevel, syntaxStart + 2);
@@ -351,7 +351,7 @@ TagCheck BNFTag::ProcessTag(TString& code, UINT codeStart, TrecPointer<TFile> fi
 				return returnable;
 		}
 
-		UINT appendChar = tokenIndex + syntaxSample[syntaxStart].mark.GetLength();
+		UINT appendChar = tokenIndex + syntaxSample[syntaxStart].mark.GetSize();
 		TString code2 = code.SubString(appendChar);
 		code2.Trim();
 
@@ -435,16 +435,16 @@ TDataArray<BNFTag*>* setUpTagList(TFile & file, BlockType bt)
 
 		TString syn = line.SubString(split + 3, comment);
 
-		if (tag.GetLength() < 2)
+		if (tag.GetSize() < 2)
 			continue;
 		BNFTag* bTag = nullptr;
 
-		if (tag[0] == L'<' && tag[tag.GetLength() - 1] == L'>')
-			bTag = BNFTag::GetTag(tag.SubString(1, tag.GetLength() - 1));
+		if (tag[0] == L'<' && tag[tag.GetSize() - 1] == L'>')
+			bTag = BNFTag::GetTag(tag.SubString(1, tag.GetSize() - 1));
 
-		if (tag[0] == L'[' && tag[tag.GetLength() - 1] == L']'
-			&& tag[1] == L'[' && tag[tag.GetLength() - 2] == L']')
-			bTag = BNFTag::GetFunctionalTag(tag.SubString(2, tag.GetLength() - 2), bt);
+		if (tag[0] == L'[' && tag[tag.GetSize() - 1] == L']'
+			&& tag[1] == L'[' && tag[tag.GetSize() - 2] == L']')
+			bTag = BNFTag::GetFunctionalTag(tag.SubString(2, tag.GetSize() - 2), bt);
 
 		if (bTag)
 		{

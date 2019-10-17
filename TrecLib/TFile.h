@@ -1,5 +1,4 @@
 #pragma once
-#include "stdafx.h"
 #include "TrecLib.h"
 #include "TString.h"
 
@@ -24,37 +23,39 @@ typedef enum FileEncodingType
  * Class: TFile
  * Provides AnaGame's implementation of the File Class
 */
-class _TREC_LIB_DLL TFile : public CFile, public TObject
+class _TREC_LIB_DLL TFile : public TObject
 {
 public:
+
+	static const UINT t_file_read = GENERIC_READ;
+	static const UINT t_file_write = GENERIC_WRITE;
+	static const UINT t_file_share_delete = 0x00000400;
+	static const UINT t_file_share_read = 0x00000100;
+	static const UINT t_file_share_write = 0x00000200;
+	static const UINT t_file_create_always = (CREATE_ALWAYS << 16);
+	static const UINT t_file_create_new = (CREATE_NEW << 16);
+	static const UINT t_file_open_always = (OPEN_ALWAYS << 16);
+	static const UINT t_file_open_existing = (OPEN_EXISTING << 16);
+	static const UINT t_file_truncate_existing = TRUNCATE_EXISTING << 16;
+
 	TFile();
-	TFile(LPCTSTR lpszFileName,
+	TFile(TString& lpszFileName,
 		UINT nOpenFlags);
-	TFile(TString& file, UINT nOpenFlags);
 	~TFile();
 
 	// Methods that override CFile's Methods
-	BOOL Open(
-		LPCTSTR lpszFileName,
-		UINT nOpenFlags,
-		CFileException* pError = NULL) override;
+	bool Open(TString& lpszFileName,
+		UINT nOpenFlags);
 
-	BOOL Open(TString& file, UINT flags, CFileException* pError = NULL);
-
-	virtual BOOL Open(
-		LPCTSTR lpszFileName,
-		UINT nOpenFlags,
-		CAtlTransactionManager* pTM,
-		CFileException* pError = NULL)override;
 
 	// Methods Imported from CArchive
 	
-	BOOL ReadString(CString& rString);
-	UINT ReadString(CString& rString, UINT nMax);
-	LPTSTR ReadString(LPTSTR lpsz, UINT nMax);
-	UINT ReadString(CString& rString, WCHAR chara);
+	BOOL ReadString(TString& rString);
+	UINT ReadString(TString& rString, UINT nMax);
+
+	UINT ReadString(TString& rString, WCHAR chara);
 	
-	void WriteString(LPCTSTR lpsz);
+	void WriteString(const TString& lpsz);
 	bool IsOpen();
 	bool SetEncoding(FileEncodingType fet);
 	TString GetFileDirectory();
@@ -62,10 +63,31 @@ public:
 
 	TString GetFileExtension();
 
+	void Close();
+	void Flush();
+	TString GetFileName();
+	TString GetFilePath();
+	TString GetFileTitle();
+	ULONGLONG GetLength();
+	ULONGLONG GetPosition();
+
+	UINT Read(void* buffer, UINT count);
+	ULONGLONG Seek(LONGLONG offset, UINT from);
+	void SeekToBegin();
+	ULONGLONG SeekToEnd();
+	void Write(const void* buffer, UINT count);
+
+	FileEncodingType GetEncodingType();
+
 protected:
 	FileEncodingType DeduceEncodingType();
-private:
 
+	void ConvertFlags(UINT& input, UINT& open, UINT& security, UINT& creation);
+
+private:
+	TString filePath;
 	FileEncodingType fileEncode;
+	HANDLE fileHandle;
+	ULONGLONG position;
 };
 

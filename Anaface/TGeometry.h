@@ -1,6 +1,6 @@
 #pragma once
 #include <d2d1.h>
-#include <TrecComPointer.h>
+#include <TrecReference.h>
 #include "Anaface.h"
 
 class _ANAFACE_DLL TGeometry
@@ -19,7 +19,7 @@ public:
 	virtual int getWidth();
 	virtual void onCreate(RECT, bool);
 	virtual bool getClosure();
-	virtual void onDraw(ID2D1Brush*,ID2D1DCRenderTarget*);
+	virtual void onDraw(ID2D1Brush*,ID2D1RenderTarget*);
 	virtual void setFill(bool f);
 	virtual float getThickness();
 	virtual void setThickness(float f);

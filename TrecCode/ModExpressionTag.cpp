@@ -43,7 +43,7 @@ TagCheck ModExpressionTag::ProcessTag(TString & bounds, VariableContainer & glob
 	case AG_I_STRING:
 		try
 		{
-			expString = dynamic_cast<TString*>(de.right.returnValue->value.object.get());
+			expString = dynamic_cast<TString*>(de.right.returnValue->value.object.Get());
 			if (expString->ConvertToLong(&rightInt))
 			{
 				tryRightDouble = true;
@@ -86,7 +86,7 @@ TagCheck ModExpressionTag::ProcessTag(TString & bounds, VariableContainer & glob
 	case AG_I_STRING:
 		try
 		{
-			expString = dynamic_cast<TString*>(de.left.returnValue->value.object.get());
+			expString = dynamic_cast<TString*>(de.left.returnValue->value.object.Get());
 			if (expString->ConvertToLong(&leftInt))
 			{
 				tryLeftDouble = true;

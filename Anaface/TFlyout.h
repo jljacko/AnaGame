@@ -20,11 +20,11 @@ public:
 	TFlyout(TrecComPointer<ID2D1RenderTarget>, TrecPointer<TArray<styleTable>> ta);
 	virtual ~TFlyout();
 
-	bool onCreate(RECT);
+	bool onCreate(RECT, TrecPointer<TWindowEngine> d3d)override;
 	void onDraw(TObject* obj = nullptr) override;
 	bool Show(appearCondition);
 	void Hide();
-	afx_msg void OnLButtonDown(UINT nFlags, CPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
+	afx_msg void OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr, TDataArray<TControl*>& clickedControl);
 	static TFlyout* DoDraw();
 	virtual UCHAR* GetAnaGameType()override;
 protected:

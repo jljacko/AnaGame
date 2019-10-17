@@ -26,7 +26,7 @@ TagCheck BlockTag::ProcessTag(TString& code, UINT codeStart, TrecPointer<TFile> 
 
 		do {
 			codeEnd += file->ReadString(readCode, (UINT)100);
-			for (UINT Rust = 0; Rust < readCode.GetLength() && closeBlockStack; Rust++)
+			for (UINT Rust = 0; Rust < readCode.GetSize() && closeBlockStack; Rust++)
 			{
 				currentChar = readCode[Rust];
 				if (!mode)
@@ -40,7 +40,7 @@ TagCheck BlockTag::ProcessTag(TString& code, UINT codeStart, TrecPointer<TFile> 
 						closeBlockStack--;
 						if (!closeBlockStack)
 						{
-							codeEnd -= (readCode.GetLength() - Rust);
+							codeEnd -= (readCode.GetSize() - Rust);
 						}
 					}
 				}
@@ -50,13 +50,13 @@ TagCheck BlockTag::ProcessTag(TString& code, UINT codeStart, TrecPointer<TFile> 
 						mode == L'\0';
 				}
 			}
-		} while (readCode.GetLength() && closeBlockStack);
+		} while (readCode.GetSize() && closeBlockStack);
 		
 
 		break;
 	}
 
-	TrecPointer<TInterpretor> newInterpretor = new TInterpretor(inter);
+	TrecPointer<TInterpretor> newInterpretor = TrecPointerKey::GetNewTrecPointer<TInterpretor>(inter);
 	newInterpretor->SetGlobalVariables(&globalVariables);
 	newInterpretor->SetFile(file, codeStart, 0, codeEnd);
 

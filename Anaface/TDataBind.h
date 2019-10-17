@@ -1,6 +1,6 @@
 #pragma once
 #include "TLayoutEx.h"
-class _ANAFACE_DLL TDataBind : public TLayoutEx
+class _ANAFACE_DLL TDataBind : public TControl
 {
 public:
 	TDataBind(TrecComPointer<ID2D1RenderTarget>, TrecPointer<TArray<styleTable>> ta);
@@ -10,11 +10,16 @@ public:
 	virtual UCHAR* GetAnaGameType()override;
 	void setData(TDataArrayBase* data);
 	void setData(TArrayBase* data);
-	bool onCreate(RECT r) override;
+	bool onCreate(RECT r, TrecPointer<TWindowEngine> d3d) override;
+	//afx_msg virtual void OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr, TDataArray<TControl*>& clickedButtons) override;
+	afx_msg virtual void OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr) override;
+	afx_msg virtual void OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr) override;
 
 protected:
 	TDataArrayBase* dataRaw;
 	TArrayBase* dataWrap;
-	bool byRow;
+	bool isStack;
+	UINT widthHeight;
+	TPoint mouseMovePoint;
 };
 

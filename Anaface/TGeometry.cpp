@@ -1,4 +1,4 @@
-#include "stdafx.h"
+
 #include "TGeometry.h"
 
 
@@ -6,7 +6,6 @@ TGeometry::TGeometry()
 {
 	thickness = 1.0f;
 	fill = false;
-	sinker = nullptr;
 }
 
 TGeometry::TGeometry(bool fill)
@@ -60,7 +59,7 @@ bool TGeometry::getClosure()
 	return false;
 }
 
-void TGeometry::onDraw(ID2D1Brush*, ID2D1DCRenderTarget*)
+void TGeometry::onDraw(ID2D1Brush*, ID2D1RenderTarget*)
 {
 }
 

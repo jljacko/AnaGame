@@ -1,5 +1,5 @@
 #pragma once
-#include <ArenaEngine.h>
+#include <TArenaEngine.h>
 #include <ArenaModel.h>
 #include "TControl.h"
 
@@ -21,9 +21,9 @@ public:
 	TArena(TrecComPointer<ID2D1RenderTarget>, TrecPointer<TArray<styleTable>> ta, HWND h, CAMERA_TYPE lookTo = LOOK_TO);
 	~TArena();
 
-	bool onCreate(RECT) override;
-	TrecPointer<ArenaEngine> getEngine();
-	bool setEngine(TrecPointer<ArenaEngine> e);
+	bool onCreate(RECT, TrecPointer<TWindowEngine> d3d) override;
+	TrecPointer<TArenaEngine> getEngine();
+	bool setEngine(TrecPointer<TArenaEngine> e);
 	void removeEngine();
 
 	void onDraw(TObject* obj) override;
@@ -47,7 +47,7 @@ public:
 	DirectX::XMFLOAT3 GetCameraDirection();
 
 private:
-	TrecPointer<ArenaEngine> arenaEngine;
+	TrecPointer<TArenaEngine> arenaEngine;
 	HWND windowHandle;
 	HINSTANCE instanceHandle;
 

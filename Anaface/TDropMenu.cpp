@@ -28,9 +28,9 @@ TDropMenu::~TDropMenu()
 * Parameters: RECT l - the location on the menu
 * Returns: bool - true if renderTarget is set
 */
-bool TDropMenu::onCreate(RECT l)
+bool TDropMenu::onCreate(RECT l, TrecPointer<TWindowEngine> d3d)
 {
-	if (!renderTarget.get())
+	if (!renderTarget.Get())
 		return false;
 	renderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &dotBrush);
 	return true;
@@ -46,10 +46,19 @@ void TDropMenu::onDraw(TObject* obj)
 {
 	TControl::onDraw(obj);
 	TrecPointer<DropMenuNode> currentNode = rootNode;
-	if (!currentNode.get())
+	if (!currentNode.Get())
 		return;
 	
-	DrawNode(snip.top, currentNode);
+	DrawNode(location.top, currentNode);
+}
+
+void TDropMenu::SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget>rt)
+{
+	TControl::SetNewRenderTarget(rt);
+
+	if (dotBrush)
+		dotBrush->Release();
+	renderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &dotBrush);
 }
 
 /*
@@ -60,7 +69,7 @@ void TDropMenu::onDraw(TObject* obj)
 */
 bool TDropMenu::SetFolderAsRoot(TString & folder)
 {
-	DWORD dwAttrib = GetFileAttributes(folder);
+	DWORD dwAttrib = GetFileAttributes(folder.GetConstantBuffer());
 
 	if (!(dwAttrib != INVALID_FILE_ATTRIBUTES &&
 		(dwAttrib & FILE_ATTRIBUTE_DIRECTORY)))
@@ -91,9 +100,9 @@ UCHAR * TDropMenu::GetAnaGameType()
 */
 void TDropMenu::DrawNode(long & top, TrecPointer<DropMenuNode> node)
 {
-	if (!node.get() || !text1.get() || !dotBrush)
+	if (!node.Get() || !text1.Get() || !dotBrush)
 		return;
-	RECT curLoc = snip;
+	RECT curLoc = location;
 	curLoc.top = top;
 	curLoc.bottom = top + nodeHeight;
 	curLoc.left + 10;
@@ -101,7 +110,7 @@ void TDropMenu::DrawNode(long & top, TrecPointer<DropMenuNode> node)
 
 	text1->setCaption(node->caption);
 	//text1->setNewLocation(curLoc);
-	text1->onDraw(location, snip);
+	text1->onDraw(location);
 
 	if (node->hasChildren)
 	{

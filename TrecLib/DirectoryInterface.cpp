@@ -1,6 +1,7 @@
-#include "stdafx.h"
 #include "DirectoryInterface.h"
+#include <ShlObj.h>
 //#include "TString.h"
+
 
 
 static bool initialized = false;
@@ -10,12 +11,16 @@ static TString shadowDirectories[9];
 
 void ForgeDirectory(TString& dir)
 {
-	TrecPointer<TArray<TString>> pieces = dir.split(TString(L"/\\"));
+	auto pieces = dir.split(TString(L"/\\"));
 	TString bDir;
-	for (UINT rust = 0; rust < pieces->Count(); rust++)
+	for (UINT rust = 0; rust < pieces->Size(); rust++)
 	{
-		bDir += *pieces->ElementAt(rust).get() + L'\\';
-		CreateDirectoryW(bDir, 0);
+		TString adder = pieces->at(rust) + L'\\';
+		bDir.Append(adder);
+
+		WCHAR* dir_raw = bDir.GetBufferCopy();
+		CreateDirectoryW(dir_raw, 0);
+		delete[] dir_raw;
 	}
 }
 
@@ -29,7 +34,7 @@ void InitializeDirectories()
 {
 	WCHAR filepath[300];
 
-	ASSERT(GetModuleFileNameW(nullptr, filepath, 299));
+	GetModuleFileNameW(nullptr, filepath, 299);
 	UINT c = wcslen(filepath) - 1;
 	for (; filepath[c] != L'\\' && filepath[c] != L'/'; c--)
 	{
@@ -72,7 +77,7 @@ void InitializeDirectories()
 	directories[7].Set(tempString);
 
 	directories[8].Set(directories[7]);
-	directories[8].Replace(TString(L"\\Downloads"), L"");
+	directories[8].Replace(TString(L"\\Downloads"), TString(L""));
 
 	initialized = true;
 	
@@ -93,7 +98,9 @@ void InitializeDirectories()
 
 	for (UINT c = 0; c < 9; c++)
 	{
-		CreateDirectoryW(shadowDirectories[c], 0);
+		WCHAR* dirBuff = shadowDirectories[c].GetBufferCopy();
+		CreateDirectoryW(dirBuff, 0);
+		delete[] dirBuff;
 	}
 
 	initialized = true;

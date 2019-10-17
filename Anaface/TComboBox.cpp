@@ -1,4 +1,4 @@
-#include "stdafx.h"
+
 #include "TComboBox.h"
 
 TDataArray<TComboBox*> boxList;
@@ -69,7 +69,6 @@ TComboBox::TComboBox(TrecComPointer<ID2D1RenderTarget> rt, TrecPointer<TArray<st
 	boxList.push_back(this);
 	boxLoc = boxList.Size() - 1;
 	extendedSpace = D2D1_RECT_F{ 0,0,0,0 };
-	extendedBrush = nullptr;
 	vertexPoint = D2D1::Point2F();
 	//defaultText = NULL;
 }
@@ -100,37 +99,34 @@ TComboBox::~TComboBox()
 * Parameters: RECT r - the Location the Basic Box would be in
 * Returns: bool
 */
-bool TComboBox::onCreate(RECT r)
+bool TComboBox::onCreate(RECT r, TrecPointer<TWindowEngine> d3d)
 {
 	TrecPointer<TString> valpoint = attributes.retrieveEntry(TString(L"|SubHeight"));
-	if (valpoint.get() && !valpoint->ConvertToInt(&childHeight))
+	if (valpoint.Get() && !valpoint->ConvertToInt(&childHeight))
 	{
 
 	}
 	else
 		childHeight = 30;
 	valpoint = attributes.retrieveEntry(TString(L"|DefaultText"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!text1.get())
+		if (!text1.Get())
 		{
-			text1 = new TText(renderTarget,this);
+			text1 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget,this);
 		}
 		text1->removeCaption();
-		defaultText = valpoint.get();
+		defaultText = valpoint.Get();
 
 		text1->setCaption(defaultText);
-		valpoint->ReleaseBuffer();
-
-
 
 	}
 	int occ = 0;
 	valpoint = attributes.retrieveEntry(TString(L"|BoxEntry"),occ++);
 
-	while (valpoint.get())
+	while (valpoint.Get())
 	{
-		elements.Add(new TString(valpoint.get()));
+		elements.Add(valpoint);
 		valpoint = attributes.retrieveEntry(TString(L"|BoxEntry"), occ++);
 	}
 	
@@ -140,7 +136,7 @@ bool TComboBox::onCreate(RECT r)
 	//TrecPointer<TContainer> cont;
 	TrecPointer<TControl> tc;
 
-	TGadgetControl::onCreate(r);
+	TGadgetControl::onCreate(r,d3d);
 
 	leftpoint = D2D1::Point2F(DxLocation.left, DxLocation.top);
 	rightPoint = D2D1::Point2F(DxLocation.right, DxLocation.top);
@@ -153,20 +149,16 @@ bool TComboBox::onCreate(RECT r)
 	RECT entrybox = RECT{ 0,0,0,0 };
 	for (int c = 0; c < elements.Count(); c++)
 	{
-		tc = new TControl(renderTarget, styles);
+		tc = TrecPointerKey::GetNewSelfTrecPointer<TControl>(renderTarget, styles);
 		//cont = new TContainer();
 		//cont->setTControl(tc);
 
 
 		tc->setNewText(1);
-		TString CapParam = elements.ElementAt(c).get();
+		TString CapParam = elements.ElementAt(c).Get();
 
 
 		tc->text1->setCaption(CapParam); 
-
-		
-
-		elements.ElementAt(c)->ReleaseBuffer();
 
 		entrybox.left = location.left;
 		entrybox.right = location.right;
@@ -174,7 +166,7 @@ bool TComboBox::onCreate(RECT r)
 		entrybox.bottom = location.bottom + (c + 1)*childHeight;
 		children.Add(tc);
 		//cont->setLocation(entrybox);
-		tc->onCreate(entrybox);
+		tc->onCreate(entrybox,d3d);
 	}
 
 
@@ -184,9 +176,9 @@ bool TComboBox::onCreate(RECT r)
 		location.right, location.bottom + (childHeight) * (children.Count()));
 	D2D1_COLOR_F whiteColor = D2D1::ColorF(D2D1::ColorF::White, 0.9f);
 
-	ID2D1SolidColorBrush* extendedBrushRaw = nullptr;
-	HRESULT brushRes = renderTarget->CreateSolidColorBrush(whiteColor, &extendedBrushRaw);
-	extendedBrush = extendedBrushRaw;
+	TrecComPointer<ID2D1SolidColorBrush>::TrecComHolder extendedBrushRaw;
+	HRESULT brushRes = renderTarget->CreateSolidColorBrush(whiteColor, extendedBrushRaw.GetPointerAddress());
+	extendedBrush = extendedBrushRaw.Extract();
 	return SUCCEEDED(brushRes);
 
 	//return false;
@@ -204,7 +196,7 @@ void TComboBox::onDraw(TObject* obj)
 {
 	if (!isActive)
 		return;
-	if (!renderTarget.get())
+	if (!renderTarget.Get())
 		return;
 
 	// Although this code is seen in the TControl implementation of onDraw, 
@@ -212,50 +204,50 @@ void TComboBox::onDraw(TObject* obj)
 	// here unless showExtended is true.
 	if (mState == mouseLClick)
 	{
-		if (content3.get())
-			content3.get()->onDraw(location, snip);
-		else if (content1.get())
-			content1->onDraw(location, snip);
-		if (border3.get())
-			border3->onDraw(location, snip);
-		else if (border1.get())
-			border1->onDraw(location, snip);
-		if (text3.get())
-			text3->onDraw(location, snip, obj);
-		else if (text1.get())
-			text1->onDraw(location, snip, obj);
+		if (content3.Get())
+			content3.Get()->onDraw(location);
+		else if (content1.Get())
+			content1->onDraw(location);
+		if (border3.Get())
+			border3->onDraw(location);
+		else if (border1.Get())
+			border1->onDraw(location);
+		if (text3.Get())
+			text3->onDraw(location, obj);
+		else if (text1.Get())
+			text1->onDraw(location, obj);
 	}
 	else if (mState == mouseHover)
 	{
-		if (content2.get())
-			content2->onDraw(location, snip);
-		else if (content1.get())
-			content1->onDraw(location, snip);
-		if (border2.get())
-			border2->onDraw(location, snip);
-		else if (border1.get())
-			border1->onDraw(location, snip);
-		if (text2.get())
-			text2->onDraw(location, snip, obj);
-		else if (text1.get())
-			text1->onDraw(location, snip, obj);
+		if (content2.Get())
+			content2->onDraw(location);
+		else if (content1.Get())
+			content1->onDraw(location);
+		if (border2.Get())
+			border2->onDraw(location);
+		else if (border1.Get())
+			border1->onDraw(location);
+		if (text2.Get())
+			text2->onDraw(location, obj);
+		else if (text1.Get())
+			text1->onDraw(location, obj);
 	}
 	else
 	{
-		if (content1.get())
-			content1->onDraw(location, snip);
-		if (border1.get())
-			border1->onDraw(location, snip);
-		if (text1.get())
-			text1->onDraw(location, snip, obj);
+		if (content1.Get())
+			content1->onDraw(location);
+		if (border1.Get())
+			border1->onDraw(location);
+		if (text1.Get())
+			text1->onDraw(location, obj);
 	}
 
-	renderTarget->DrawLine(leftpoint, vertexPoint, brush.get());
-	renderTarget->DrawLine(vertexPoint, rightPoint, brush.get());
+	renderTarget->DrawLine(leftpoint, vertexPoint, brush.Get());
+	renderTarget->DrawLine(vertexPoint, rightPoint, brush.Get());
 
 if (showExtended)
 {
-	renderTarget->FillRectangle(extendedSpace, extendedBrush.get());
+	renderTarget->FillRectangle(extendedSpace, extendedBrush.Get());
 
 	for (int c = 0; c < children.Count(); c++)
 	{
@@ -275,7 +267,7 @@ if (showExtended)
 */
 void TComboBox::onDraw(ID2D1RenderTarget * rt)
 {
-	if (rt == renderTarget.get())
+	if (rt == renderTarget.Get())
 		onDraw();
 }
 
@@ -311,7 +303,7 @@ bool TComboBox::removeElement(TString)
 *				bool overrideChildren - whether to ignore the children to save
 * Returns: void
 */
-void TComboBox::storeInTML(CArchive * ar, int childLevel, bool ov)
+void TComboBox::storeInTML(TFile* ar, int childLevel, bool ov)
 {
 	//	_Unreferenced_parameter_(ov);
 
@@ -319,11 +311,11 @@ void TComboBox::storeInTML(CArchive * ar, int childLevel, bool ov)
 	TString appendable;
 	resetAttributeString(&appendable, childLevel + 1);
 	appendable.Append(L"|SubHeight:");
-	appendable.AppendFormat(_T("%d"), childHeight);
+	appendable.AppendFormat("%d", childHeight);
 	_WRITE_THE_STRING;
 
 
-	if (defaultText)
+	if (defaultText.GetSize())
 	{
 		appendable.Append(L"|DefaultText:");
 		appendable.Append(defaultText);
@@ -334,11 +326,11 @@ void TComboBox::storeInTML(CArchive * ar, int childLevel, bool ov)
 	for (int c = 0; c < children.Count(); c++)
 	{
 		appendable.Append(L"|BoxEntry:");
-		if (children.ElementAt(c).get())
+		if (children.ElementAt(c).Get())
 
-		tc = children.ElementAt(c).get();
+		tc = children.ElementAt(c).Get();
 
-		if (tc && tc->getText(1).get() && tc->text1->getCaption())
+		if (tc && tc->getText(1).Get() && tc->text1->getCaption().GetSize())
 		{
 			appendable.Append(tc->text1->getCaption());
 		}
@@ -364,6 +356,15 @@ bool TComboBox::GetExtensionStatus()
 	return showExtended;
 }
 
+void TComboBox::SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget>rt)
+{
+	TControl::SetNewRenderTarget(rt);
+	D2D1_COLOR_F whiteColor = D2D1::ColorF(D2D1::ColorF::White, 0.9f);
+	TrecComPointer<ID2D1SolidColorBrush>::TrecComHolder extendedBrushRaw;
+	HRESULT brushRes = renderTarget->CreateSolidColorBrush(whiteColor, extendedBrushRaw.GetPointerAddress());
+	extendedBrush = extendedBrushRaw.Extract();
+}
+
 /*
 * Method: TComboBox - OnLButtonDown
 * Purpose: Determins if the Combo-Box was clicked and if so, which element
@@ -373,9 +374,9 @@ bool TComboBox::GetExtensionStatus()
 *				TDataArray<EventID_Cred>& eventAr - allows Controls to add whatever Event Handler they have been assigned
 * Returns: void
 */
-void TComboBox::OnLButtonDown(UINT nFlags, CPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr)
+void TComboBox::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr, TDataArray<TControl*>& clickedControl)
 {
-
+	resetArgs();
 
 	// first check to see if it covers the whole area. Update show extended to false if
 	// necessary
@@ -387,7 +388,7 @@ void TComboBox::OnLButtonDown(UINT nFlags, CPoint point, messageOutput * mOut, T
 	if (!isContained(&point, &location) && !isContained(&point, &MFC_extended_Space))
 	{
 		showExtended =prepShowExtended = false;
-		TControl::OnLButtonDown(nFlags, point, mOut, eventAr);
+		TControl::OnLButtonDown(nFlags, point, mOut, eventAr, clickedControl);
 		return;
 	}
 //	*mOut = positiveOverrideUpdate;
@@ -413,7 +414,7 @@ void TComboBox::OnLButtonDown(UINT nFlags, CPoint point, messageOutput * mOut, T
 
 		if(extensionClear)
 			prepShowExtended = !prepShowExtended;
-		TControl::OnLButtonDown(nFlags, point, mOut,eventAr);
+		TControl::OnLButtonDown(nFlags, point, mOut,eventAr, clickedControl);
 		
 	}
 
@@ -423,15 +424,15 @@ void TComboBox::OnLButtonDown(UINT nFlags, CPoint point, messageOutput * mOut, T
 		TrecPointer<TControl> tc;
 		for (int c = 0; c < children.Count(); c++)
 		{
-			if (children.ElementAt(c).get())
+			if (children.ElementAt(c).Get())
 				tc = children.ElementAt(c);
-			if (tc.get())
+			if (tc.Get())
 			{
-				tc->OnLButtonDown(nFlags, point, mOut,eventAr);
+				tc->OnLButtonDown(nFlags, point, mOut,eventAr, clickedControl);
 				if (*mOut == negative || *mOut == negativeUpdate)
 					continue;
 
-				if (text1.get())
+				if (text1.Get())
 				{
 					text1->removeCaption();
 
@@ -452,8 +453,8 @@ void TComboBox::OnLButtonDown(UINT nFlags, CPoint point, messageOutput * mOut, T
 				args.isClick = false;
 				args.isLeftClick = false;
 				args.control = this;
-				if (text1.get() && text1->getCaption())
-					args.text = text1->getCaption();
+				if (text1.Get() && text1->getCaption().GetSize())
+					args.text.Set(text1->getCaption());
 
 				eventAr.push_back({On_sel_change,this});
 
@@ -512,7 +513,7 @@ void TComboBox::Resize(RECT r)
 	RECT entrybox = RECT{ 0,0,0,0 };
 	for (int c = 0; c < children.Count(); c++)
 	{
-		TControl* tc = children.ElementAt(c).get();
+		TControl* tc = children.ElementAt(c).Get();
 		if (!tc)
 			continue;
 

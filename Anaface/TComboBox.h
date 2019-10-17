@@ -14,16 +14,17 @@ public:
 	TComboBox(TrecComPointer<ID2D1RenderTarget> rt, TrecPointer<TArray<styleTable>> ta);
 	~TComboBox();
 
-	bool onCreate(RECT);
+	bool onCreate(RECT, TrecPointer<TWindowEngine> d3d)override;
 	void onDraw(TObject* obj = nullptr) override;
 	void onDraw(ID2D1RenderTarget* rt);
 	void addElement(TString);
 	bool removeElement(TString);
-	virtual void storeInTML(CArchive* ar, int childLevel,bool ov = true)override;
+	virtual void storeInTML(TFile* ar, int childLevel,bool ov = true)override;
 
 	bool GetExtensionStatus();
+	virtual void SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget>);
 
-	afx_msg virtual void OnLButtonDown(UINT nFlags, CPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
+	afx_msg virtual void OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr, TDataArray<TControl*>& clickedControl);
 	void decrimentLocation();
 	void FinalizeUpdate();
 

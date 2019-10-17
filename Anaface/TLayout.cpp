@@ -1,4 +1,4 @@
-#include "stdafx.h"
+
 #include "TLayout.h"
 
 /*
@@ -27,7 +27,6 @@ TLayout::TLayout(TrecComPointer<ID2D1RenderTarget> rt, TrecPointer<TArray<styleT
 	updateRow = true;
 	isLayout = true;
 	main = NULL;
-	internalBrush = nullptr;
 
 	internalColor = D2D1::ColorF(D2D1::ColorF::Black);
 	thickness = 1.0f;
@@ -139,10 +138,10 @@ bool TLayout::addColunm(int x, bool markDetected)
 			tempRect2 = returnRectY(c);
 			tempRect.top = tempRect2.top;
 			tempRect.bottom = tempRect2.bottom;
-			tempContC = new containerControl();
+			tempContC = TrecPointerKey::GetNewTrecPointer<containerControl>();
 			tempContC->x = colunms;
 			tempContC->y = c;
-			tempContC->contain = new TControl(renderTarget, styles);
+			tempContC->contain = TrecPointerKey::GetNewSelfTrecPointer<TControl>(renderTarget, styles);
 			
 			tempContC->contain->setLocation(tempRect);
 
@@ -164,10 +163,10 @@ bool TLayout::addColunm(int x, bool markDetected)
 		tempRect.right = tempRect.left + x;
 		tempRect.bottom = location.bottom;
 		tempRect.top = location.top;
-		tempContC = new containerControl();
+		tempContC = TrecPointerKey::GetNewTrecPointer<containerControl>();
 		tempContC->x = colunms++;
 		tempContC->y = 0;
-		tempContC->contain = new TControl(renderTarget, styles);
+		tempContC->contain = TrecPointerKey::GetNewSelfTrecPointer<TControl>(renderTarget, styles);
 
 		tempContC->contain->setLocation(tempRect);
 
@@ -226,10 +225,10 @@ bool TLayout::addRow(int y, bool markDetected)
 			tempRect2 = returnRectX(c);
 			tempRect.left = tempRect2.left;
 			tempRect.right = tempRect2.right;
-			tempContC = new containerControl();
+			tempContC = TrecPointerKey::GetNewTrecPointer<containerControl>();
 			tempContC->x = c;
 			tempContC->y = rows;
-			tempContC->contain = new TControl(renderTarget, styles);
+			tempContC->contain = TrecPointerKey::GetNewSelfTrecPointer<TControl>(renderTarget, styles);
 
 			tempContC->contain->setLocation(tempRect);
 
@@ -251,10 +250,10 @@ bool TLayout::addRow(int y, bool markDetected)
 		tempRect.bottom = tempRect.top + y;
 		tempRect.left = location.left;
 		tempRect.right = location.right;
-		tempContC = new containerControl();
+		tempContC = TrecPointerKey::GetNewTrecPointer<containerControl>();
 		tempContC->x = 0;
 		tempContC->y = rows++;
-		tempContC->contain = new TControl(renderTarget,styles);
+		tempContC->contain = TrecPointerKey::GetNewSelfTrecPointer<TControl>(renderTarget, styles);
 
 		tempContC->contain->setLocation(tempRect);
 
@@ -276,20 +275,20 @@ bool TLayout::addRow(int y, bool markDetected)
 */
 int TLayout::addChild(TrecPointer<TControl> tc, UINT x, UINT y)
 {
-	if (!tc.get())
+	if (!tc.Get())
 		return 1;
 	for (int c = 0; c < lChildren.Count();c++)
 	{
 		if (lChildren.ElementAt(c)->x == x && lChildren.ElementAt(c)->y == y)
 		{
-			if (!lChildren.ElementAt(c)->contain.get())
+			if (!lChildren.ElementAt(c)->contain.Get())
 				return 3;
 			lChildren.ElementAt(c)->extend = false;
 			lChildren.ElementAt(c)->contain = tc;
-			lChildren.ElementAt(c)->contain->setParent(TrecPointer<TControl>(this));
+			lChildren.ElementAt(c)->contain->setParent(TrecPointerKey::GetTrecPointerFromSoft<TControl>(tThis));
 			/*for (UINT rust = 0; rust < children.Count(); rust++)
 			{
-				if (children.ElementAt(rust).get() == tc.get())
+				if (children.ElementAt(rust).Get() == tc.Get())
 					return 0;
 			}
 			children.Add(tc);*/
@@ -311,13 +310,13 @@ int TLayout::addChild(TrecPointer<TControl> tc, UINT x, UINT y)
 */
 int TLayout::addChild(TrecPointer<TControl> tc, UINT x, UINT y, UINT x_2, UINT y_2)
 {
-	if (!tc.get())
+	if (!tc.Get())
 		return 1;
 	for (int c = 0; c < lChildren.Count(); c++)
 	{
 		if (lChildren.ElementAt(c)->x == x && lChildren.ElementAt(c)->y == y)
 		{
-			if (!lChildren.ElementAt(c)->contain.get())
+			if (!lChildren.ElementAt(c)->contain.Get())
 				return 3;
 			if (x_2 >= x && (x_2 < columnLines.Size() || !columnLines.Size())
 				&& y_2 >= y && (y_2 < rowLines.Size() || !rowLines.Size()))
@@ -329,7 +328,7 @@ int TLayout::addChild(TrecPointer<TControl> tc, UINT x, UINT y, UINT x_2, UINT y
 			else
 				lChildren.ElementAt(c)->extend = false;
 			lChildren.ElementAt(c)->contain = tc;
-			lChildren.ElementAt(c)->contain->setParent(TrecPointer<TControl>(this));
+			lChildren.ElementAt(c)->contain->setParent(TrecPointerKey::GetTrecPointerFromSoft<TControl>(tThis));
 			return 0;
 		}
 	}
@@ -362,10 +361,10 @@ bool TLayout::setGrid(TDataArray<int>& col, TDataArray<int>& row)
 	rowLines.push_back(row[0]);
 
 
-	tempContC = new containerControl();
+	tempContC = TrecPointerKey::GetNewTrecPointer<containerControl>();
 	tempContC->x = 0;
 	tempContC->y = 0;
-	tempContC->contain = new TControl(renderTarget, styles);
+	tempContC->contain = TrecPointerKey::GetNewSelfTrecPointer<TControl>(renderTarget, styles);
 
 	tempContC->contain->setLocation(tempRect);
 
@@ -429,7 +428,7 @@ bool TLayout::setStack(TDataArray<int>& nums)
 * Returns: int - 0
 * Note: DEPRECIATED - HTML reading functionality is to be handled by an HTML parser 
 */
-int TLayout::loadFromHTML(CArchive * ar)
+int TLayout::loadFromHTML(TFile * ar)
 {
 	return 0;
 }
@@ -442,7 +441,7 @@ int TLayout::loadFromHTML(CArchive * ar)
 *				bool ov - not used
 * Returns: void
 */
-void TLayout::storeInTML(CArchive * ar, int childLevel,bool ov)
+void TLayout::storeInTML(TFile * ar, int childLevel,bool ov)
 {
 	//_Unreferenced_parameter_(ov);
 
@@ -454,13 +453,13 @@ void TLayout::storeInTML(CArchive * ar, int childLevel,bool ov)
 		for (int c = 0; c < columnLines.Size();c++)
 		{
 			appendable.Append(L"|ColumnWidth:");
-			appendable.AppendFormat(_T("%d"), columnLines[c]);
+			appendable.AppendFormat(L"%d", columnLines[c]);
 			_WRITE_THE_STRING
 		}
 		for (int c = 0;c < rowLines.Size();c++)
 		{
 			appendable.Append(L"|RowHeight:");
-			appendable.AppendFormat(_T("%d"), rowLines[c]);
+			appendable.AppendFormat(L"%d", rowLines[c]);
 			_WRITE_THE_STRING
 		}
 		break;
@@ -470,7 +469,7 @@ void TLayout::storeInTML(CArchive * ar, int childLevel,bool ov)
 		for (int c = 0;c < rowLines.Size();c++)
 		{
 			appendable.Append(L"|RowHeight:");
-			appendable.AppendFormat(_T("%d"), rowLines[c]);
+			appendable.AppendFormat(L"%d", rowLines[c]);
 			_WRITE_THE_STRING
 		}
 		break;
@@ -480,7 +479,7 @@ void TLayout::storeInTML(CArchive * ar, int childLevel,bool ov)
 		for (int c = 0; c < columnLines.Size();c++)
 		{
 			appendable.Append(L"|ColumnWidth:");
-			appendable.AppendFormat(_T("%d"), columnLines[c]);
+			appendable.AppendFormat(L"%d", columnLines[c]);
 			_WRITE_THE_STRING
 		}
 	}
@@ -494,7 +493,7 @@ void TLayout::storeInTML(CArchive * ar, int childLevel,bool ov)
 * Parameters: CArchive * ar - the file to write to
 * Returns: void
 */
-void TLayout::storeInHTML(CArchive * ar)
+void TLayout::storeInHTML(TFile * ar)
 {
 }
 
@@ -504,7 +503,7 @@ void TLayout::storeInHTML(CArchive * ar)
 * Parameters: RECT margin - the location the layout has to work with
 * Returns: bool - success
 */
-bool TLayout::onCreate(RECT margin)
+bool TLayout::onCreate(RECT margin, TrecPointer<TWindowEngine> d3d)
 {
 	//TContainer* tempCont = NULL;
 
@@ -513,18 +512,18 @@ bool TLayout::onCreate(RECT margin)
 
 	TrecPointer<TString> valpoint = attributes.retrieveEntry(TString(L"|Margin"));
 	RECT marge = RECT{ 0,0,0,0 };
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		marge = convertStringToRECT(valpoint.get());
+		marge = convertStringToRECT(valpoint.Get());
 	}
 
 	valpoint = attributes.retrieveEntry(TString(L"|VerticalScroll"));
-	if (valpoint.get() && !valpoint->Compare(L"True") && !vScroll) // don't make a new one if one already exists
-		vScroll = new TScrollBar(*this, SCROLL_VERTICAL);
+	if (valpoint.Get() && !valpoint->Compare(L"True") && !vScroll) // don't make a new one if one already exists
+		vScroll = new TScrollBar(*this, so_vertical);
 
 	valpoint = attributes.retrieveEntry(TString(L"|HorizontalScroll"));
-	if (valpoint.get() && !valpoint->Compare(L"True") && !hScroll)
-		hScroll = new TScrollBar(*this, SCROLL_HORIZONTAL);
+	if (valpoint.Get() && !valpoint->Compare(L"True") && !hScroll)
+		hScroll = new TScrollBar(*this, so_horizontal);
 	
 	
 	int marginWidth = (margin.right - marge.right) - (margin.left + marge.left);
@@ -537,7 +536,7 @@ bool TLayout::onCreate(RECT margin)
 	int newValue = 0;
 	if (!hScroll && flexMarginWidth < 0)
 	{
-		hScroll = new TScrollBar(*this, SCROLL_HORIZONTAL);
+		hScroll = new TScrollBar(*this, so_horizontal);
 	}
 	else if (!hScroll || (organization != orgLayout::HStack)) // If Layout has a horizontal scroll bar, then no need to resize the columns
 	{
@@ -555,7 +554,7 @@ bool TLayout::onCreate(RECT margin)
 	 
 	if (!vScroll && flexMarginHeight < 0)
 	{
-		vScroll = new TScrollBar(*this, SCROLL_VERTICAL);
+		vScroll = new TScrollBar(*this, so_vertical);
 	}
 	if (!vScroll || (organization != orgLayout::VStack)) // Ditto with a vertical Scroll bar and rows
 	{
@@ -570,13 +569,11 @@ bool TLayout::onCreate(RECT margin)
 	}
 
 	// To-Do, adjust TLayout's handling of location in respect to scroll Bars
-	snip.bottom = margin.bottom - marge.bottom;
-	snip.left = margin.left + marge.left;
-	snip.right = margin.right - marge.right;
-	snip.top = margin.top + marge.top;
+	location.bottom = margin.bottom - marge.bottom;
+	location.left = margin.left + marge.left;
+	location.right = margin.right - marge.right;
+	location.top = margin.top + marge.top;
 
-	location.left = snip.left;
-	location.top = snip.top;
 	if (vScroll)
 	{
 		if (rowLines.Size())
@@ -585,11 +582,7 @@ bool TLayout::onCreate(RECT margin)
 			for (int c = 0;c < rowLines.Size();c++)
 				location.bottom += rowLines[c];
 		}
-		else
-			location.bottom = snip.bottom;
 	}
-	else
-		location.bottom = snip.bottom;
 
 	if (hScroll)
 	{
@@ -599,25 +592,23 @@ bool TLayout::onCreate(RECT margin)
 			for (int c = 0; c < columnLines.Size();c++)
 				location.right += columnLines[c];
 		}
-		else
-			location.right = snip.right;
 	}
-	else
-		location.right = snip.right;
+
+	children.Clear();
 
 	for (int c = 0; c < lChildren.Count();c++)
 	{
 
-		TrecPointer<TControl> tempCont = lChildren.ElementAt(c)->contain.get();
-		if (!tempCont.get())
+		TrecPointer<TControl> tempCont = lChildren.ElementAt(c)->contain;
+		if (!tempCont.Get())
 			continue;
 		int x = lChildren.ElementAt(c)->x, y = lChildren.ElementAt(c)->y;
 		tempCont->setLocation(getRawSectionLocation(y, x));
 
-		if (isZeroRect(tempCont->getLocation()))
-		{
-			tempCont->setLocation(location);
-		}
+		//if (isSnipZero(tempCont->getLocation()))
+		//{
+		//	tempCont->setLocation(location);
+		//}
 		
 		lChildren.ElementAt(c)->contain->setLocation( tempCont->getLocation());
 
@@ -631,7 +622,7 @@ bool TLayout::onCreate(RECT margin)
 		
 			//tempCont->onCreate(tempCont->getLocation());
 		
-		lChildren.ElementAt(c)->contain->onCreate(tempCont->getLocation());
+		lChildren.ElementAt(c)->contain->onCreate(tempCont->getLocation(), d3d);
 
 	}
 
@@ -643,14 +634,14 @@ bool TLayout::onCreate(RECT margin)
 	//}
 
 	valpoint = attributes.retrieveEntry(TString(L"|InternalBorderColor"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
 		internalInit = true;
-		internalColor = convertStringToD2DColor(valpoint.get());
+		internalColor = convertStringToD2DColor(valpoint.Get());
 	}
 
 	valpoint = attributes.retrieveEntry(TString(L"|InternalBorderThickness"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
 		valpoint->ConvertToFloat(&thickness);
 	}
@@ -661,14 +652,14 @@ bool TLayout::onCreate(RECT margin)
 
 
 
-	if (internalInit && renderTarget.get())
+	if (internalInit && renderTarget.Get())
 	{
-		ID2D1SolidColorBrush* solBrush = nullptr;
-		renderTarget->CreateSolidColorBrush(internalColor, &solBrush);
-		internalBrush = solBrush;
+		TrecComPointer<ID2D1SolidColorBrush>::TrecComHolder solBrush;
+		renderTarget->CreateSolidColorBrush(internalColor, solBrush.GetPointerAddress());
+		internalBrush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1SolidColorBrush>(solBrush);
 	}
 
-	return TControl::onCreate(margin);
+	return TControl::onCreate(margin, d3d);
 }
 
 /*
@@ -685,24 +676,24 @@ void TLayout::onDraw(TObject* obj)
 
 	for (int c = 0; c < lChildren.Count(); c++)
 	{
-		if(lChildren.ElementAt(c)->contain.get())
+		if(lChildren.ElementAt(c)->contain.Get())
 		lChildren.ElementAt(c)->contain->onDraw(obj);
 	}
-	if (internalBrush.get())
+	if (internalBrush.Get())
 	{
 		for (int c = 0; c < rowLines.Size();c++)
 		{
 			int add = rowLines[c];
 			renderTarget->DrawLine(D2D1::Point2F(location.left, location.top + add),
 				D2D1::Point2F(location.right, location.top + add),
-				internalBrush.get(), thickness);
+				internalBrush.Get(), thickness);
 		}
 		for (int c = 0; c < columnLines.Size();c++)
 		{
 			int add = columnLines[c];
 			renderTarget->DrawLine(D2D1::Point2F(location.left + add, location.top),
 				D2D1::Point2F(location.left, location.bottom),
-				internalBrush.get(), thickness);
+				internalBrush.Get(), thickness);
 		}
 	}
 }
@@ -1009,10 +1000,10 @@ void TLayout::Resize(RECT r)
 
 	for (UINT Rust = 0; Rust < lChildren.Count(); Rust++)
 	{
-		if (!lChildren.ElementAt(Rust).get())
+		if (!lChildren.ElementAt(Rust).Get())
 			continue;
-		containerControl cc = *(lChildren.ElementAt(Rust).get());
-		if (!cc.contain.get())
+		containerControl cc = *(lChildren.ElementAt(Rust).Get());
+		if (!cc.contain.Get())
 			continue;
 		RECT loc = getRawSectionLocation(cc.y, cc.x);
 		if (cc.extend)
@@ -1109,7 +1100,7 @@ UINT TLayout::determineMinHeightNeeded()
 	case VMix:
 		for (UINT c = 0; c < lChildren.Count() && lChildren.ElementAt(c)->y < rowLines.Size(); c++)
 		{
-			if (lChildren.ElementAt(c)->contain.get())
+			if (lChildren.ElementAt(c)->contain.Get())
 			{
 
 				UINT minSize = lChildren.ElementAt(c)->contain->determineMinHeightNeeded();
@@ -1129,7 +1120,7 @@ UINT TLayout::determineMinHeightNeeded()
 		
 		for (UINT c = 0; c < lChildren.Count() && lChildren.ElementAt(c)->x < columnLines.Size(); c++)
 		{
-			if (lChildren.ElementAt(c)->contain.get())
+			if (lChildren.ElementAt(c)->contain.Get())
 			{
 
 				UINT minSize = lChildren.ElementAt(c)->contain->determineMinHeightNeeded();
@@ -1149,9 +1140,9 @@ UINT TLayout::determineMinHeightNeeded()
 		
 		for (UINT c = 0; c < lChildren.Count(); c++)
 		{
-			if (!lChildren.ElementAt(c).get())
+			if (!lChildren.ElementAt(c).Get())
 				continue;
-			if (!lChildren.ElementAt(c)->contain.get())
+			if (!lChildren.ElementAt(c)->contain.Get())
 				continue;
 			UINT height = lChildren.ElementAt(c)->contain->determineMinHeightNeeded();
 			if (height > rowHieghts[lChildren.ElementAt(c)->y])
@@ -1173,14 +1164,14 @@ UINT TLayout::determineMinHeightNeeded()
 * Parameters: RECT& r - the new location to occupy
 * Returns: void
 */
-void TLayout::SetNewLocation(RECT & r)
+void TLayout::SetNewLocation(const RECT & r)
 {
 	TControl::SetNewLocation(r);
 
 	for (UINT c = 0; c < lChildren.Count(); c++)
 	{
-		containerControl* cc = lChildren.ElementAt(c).get();
-		if (!cc || !cc->contain.get())
+		containerControl* cc = lChildren.ElementAt(c).Get();
+		if (!cc || !cc->contain.Get())
 			continue;
 		//cc->contain->location = r;
 		cc->contain->SetNewLocation(getRawSectionLocation(cc->y, cc->x));
@@ -1293,7 +1284,7 @@ RECT TLayout::getRawSectionLocation(int r, int c)
 	for (UINT C = 0; C < lChildren.Count(); C++)
 	{
 		TrecPointer<containerControl> contContTemp = lChildren.ElementAt(C);
-		if (!contContTemp.get())
+		if (!contContTemp.Get())
 			continue;
 		if (contContTemp->x == c && contContTemp->y == r)
 		{
@@ -1319,7 +1310,7 @@ RECT TLayout::getRawSectionLocation(int r, int c)
 		else
 		{
 			returnable.bottom = returnable.top + rowLines[r];
-			if (contCont.get() && contCont->extend)
+			if (contCont.Get() && contCont->extend)
 			{
 				for(UINT C = contCont->y + 1; C <= contCont->y2 && C < rowLines.Size();C++)
 					returnable.bottom += rowLines[C];
@@ -1340,7 +1331,7 @@ RECT TLayout::getRawSectionLocation(int r, int c)
 		else
 		{
 			returnable.right = returnable.left + columnLines[c];
-			if (contCont.get() && contCont->extend)
+			if (contCont.Get() && contCont->extend)
 			{
 				for (UINT C = c + 1; C <= contCont->x2 && C < columnLines.Size(); C++)
 					returnable.right += columnLines[C];
@@ -1362,9 +1353,9 @@ TrecPointer<TControl> TLayout::GetLayoutChild(int x, int y)
 	containerControl cc;
 	for (int c = 0; c < lChildren.Count();c++)
 	{
-		if (!lChildren.ElementAt(c).get())
+		if (!lChildren.ElementAt(c).Get())
 			continue;
-		cc = *(lChildren.ElementAt(c).get());
+		cc = *(lChildren.ElementAt(c).Get());
 		if (cc.x == x && cc.y == y)
 			return TrecPointer<TControl>(cc.contain);
 	}
@@ -1386,4 +1377,16 @@ orgLayout TLayout::GetOrganization()
 UCHAR * TLayout::GetAnaGameType()
 {
 	return nullptr;
+}
+
+void TLayout::SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget> rt)
+{
+	TControl::SetNewRenderTarget(rt);
+
+	if (internalInit && renderTarget.Get())
+	{
+		TrecComPointer<ID2D1SolidColorBrush>::TrecComHolder solBrush;
+		renderTarget->CreateSolidColorBrush(internalColor, solBrush.GetPointerAddress());
+		internalBrush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1SolidColorBrush>(solBrush);
+	}
 }

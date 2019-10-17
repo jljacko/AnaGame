@@ -1,7 +1,7 @@
 //#include "stdafx.h"
 #include "AnafaceUI.h"
-#include "stdafx.h"
 #include <Logger.h>
+#include <wincodec.h>
 
 /*
 * Method:
@@ -27,15 +27,6 @@ TControl::TControl(TrecComPointer<ID2D1RenderTarget> rt,TrecPointer<TArray<style
 	vScroll = hScroll = nullptr;
 	renderTarget = rt;
 	styles = styTab;
-	border1 = nullptr;
-	border2 = nullptr;
-	border3 = nullptr;
-	text1 = nullptr;
-	text2 = nullptr;
-	text3 = nullptr;
-	content1 = nullptr;
-	content2 = nullptr;
-	content3 = nullptr;
 	location.bottom = 0;
 	location.top = 0;
 	location.left = 0;
@@ -47,7 +38,7 @@ TControl::TControl(TrecComPointer<ID2D1RenderTarget> rt,TrecPointer<TArray<style
 	overrideParent = true;
 	marginPriority = true;
 	dimensions = NULL;
-	margin = snip = RECT{ 0,0,0,0 };
+	margin = RECT{ 0,0,0,0 };
 	marginSet = false;
 	//PointerCase = TrecPointer<TControl>(this);
 	
@@ -91,7 +82,6 @@ TControl::TControl(TControl & rCont)
 	className = rCont.className;
 	ID = rCont.ID;
 	location = rCont.location;
-	snip = rCont.snip;
 	margin = rCont.margin;
 	vScroll = rCont.vScroll;
 	hScroll = rCont.hScroll;
@@ -106,24 +96,24 @@ TControl::TControl(TControl & rCont)
 	//content1 = content2 = content3 = NULL;
 	//border1 = border2 = border3 = NULL;
 
-	if(rCont.border1.get())
-	border1 = new TBorder((rCont.border1),(this));
-	if (rCont.border2.get())
-		border2 = new TBorder((rCont.border2), (this));
-	if (rCont.border3.get())
-		border3 = new TBorder((rCont.border3), (this));
-	if (rCont.text1.get())
-		text1 = new TText((rCont.text1), (this));
-	if (rCont.text2.get())
-		text2 = new TText((rCont.text2), (this));
-	if (rCont.text3.get())
-		text3 = new TText((rCont.text3), (this));
-	if (rCont.content1.get())
-		content1 = new TContent((rCont.content1), (this));
-	if(rCont.content2.get())
-		content2 = new TContent((rCont.content2), (this));
-	if(rCont.content3.get())
-		content3 = new TContent((rCont.content3), (this));
+	if(rCont.border1.Get())
+	border1 = TrecPointerKey::GetNewTrecPointer<TBorder>((rCont.border1),(this));
+	if (rCont.border2.Get())
+		border2 = TrecPointerKey::GetNewTrecPointer<TBorder>((rCont.border2), (this));
+	if (rCont.border3.Get())
+		border3 = TrecPointerKey::GetNewTrecPointer<TBorder>((rCont.border3), (this));
+	if (rCont.text1.Get())
+		text1 = TrecPointerKey::GetNewTrecPointer<TText>((rCont.text1), (this));
+	if (rCont.text2.Get())
+		text2 = TrecPointerKey::GetNewTrecPointer<TText>((rCont.text2), (this));
+	if (rCont.text3.Get())
+		text3 = TrecPointerKey::GetNewTrecPointer<TText>((rCont.text3), (this));
+	if (rCont.content1.Get())
+		content1 = TrecPointerKey::GetNewTrecPointer<TContent>((rCont.content1), (this));
+	if(rCont.content2.Get())
+		content2 = TrecPointerKey::GetNewTrecPointer<TContent>((rCont.content2), (this));
+	if(rCont.content3.Get())
+		content3 = TrecPointerKey::GetNewTrecPointer<TContent>((rCont.content3), (this));
 
 	ellipse = rCont.ellipse;
 	roundedRect = rCont.roundedRect;
@@ -197,15 +187,7 @@ TControl::TControl()
 
 	vScroll = hScroll = nullptr;
 	treeLevel = 0;
-	border1 = nullptr;
-	border2 = nullptr;
-	border3 = nullptr;
-	text1 = nullptr;
-	text2 = nullptr;
-	text3 = nullptr;
-	content1 = nullptr;
-	content2 = nullptr;
-	content3 = nullptr;
+
 	location.bottom = 0;
 	location.top = 0;
 	location.left = 0;
@@ -217,14 +199,12 @@ TControl::TControl()
 	overrideParent = true;
 	marginPriority = true;
 	dimensions = NULL;
-	margin = snip = RECT{ 0,0,0,0 };
+	margin = RECT{ 0,0,0,0 };
 	marginSet = false;
 	
 	isLayout = false;
 	isTextControl = false;
-	renderTarget = nullptr;
-	styles = nullptr;
-	factory = nullptr;
+
 	flyout = nullptr;
 	contextMenu = nullptr;
 	//PointerCase =TrecPointer<TControl>(this);
@@ -270,6 +250,51 @@ TControl::~TControl()
 	Log(lt_memory, logMessage);
 }
 
+void TControl::SetSelf(TrecPointer<TControl> self)
+{
+	if (this != self.Get())
+		throw L"Error! Function expected to recieve a protected reference to 'this' Object!";
+	tThis = TrecPointerKey::GetSoftPointerFromTrec<TControl>(self);
+}
+
+void TControl::SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget> rt)
+{
+	if (!rt.Get())
+		throw L"Error! Expected Render Target to be initialized!";
+
+	renderTarget = rt;
+
+	if (content1.Get())
+		content1->SetNewRenderTarget(rt);
+	if (content2.Get())
+		content2->SetNewRenderTarget(rt);
+	if (content3.Get())
+		content3->SetNewRenderTarget(rt);
+
+	if (border1.Get())
+		border1->SetNewRenderTarget(rt);
+	if (border2.Get())
+		border2->SetNewRenderTarget(rt);
+	if (border3.Get())
+		border3->SetNewRenderTarget(rt);
+
+	if (text1.Get())
+		text1->SetNewRenderTarget(rt);
+	if (text2.Get())
+		text2->SetNewRenderTarget(rt);
+	if (text3.Get())
+		text3->SetNewRenderTarget(rt);
+
+	for (UINT Rust = 0; Rust < children.Count(); Rust++)
+	{
+		auto cont = children.ElementAt(Rust);
+		if (cont.Get())
+			cont->SetNewRenderTarget(rt);
+	}
+}
+
+
+
 extern TDataArray<TTextField*> TextList;
 
 /*
@@ -279,7 +304,7 @@ extern TDataArray<TTextField*> TextList;
 * Returns: int - error
 * Note: DEPRECIATED - Functionality should be handled by an HTML parser that's Anaface Compatible
 */
-int TControl::loadFromHTML(CArchive * ar)
+int TControl::loadFromHTML(TFile * ar)
 {
 	return 0;
 }
@@ -292,7 +317,7 @@ int TControl::loadFromHTML(CArchive * ar)
 *				bool overrideChildren - whether to ignore the children to save
 * Returns: void
 */
-void TControl::storeInTML(CArchive * ar, int childLevel, bool overrideChildren)
+void TControl::storeInTML(TFile * ar, int childLevel, bool overrideChildren)
 {
 	TString appendable;
 	resetAttributeString(&appendable, childLevel + 1);
@@ -308,31 +333,31 @@ void TControl::storeInTML(CArchive * ar, int childLevel, bool overrideChildren)
 	}
 
 
-	if (className != "")
+	if (className.GetSize())
 	{
 		appendable.Append(L"|Class:");
 		appendable.Append(className);
 		ar->WriteString(appendable);
-		ar->WriteString(_T("\n"));
+		ar->WriteString(L"\n");
 		resetAttributeString(&appendable, childLevel + 1);
 	}
-	if (ID != "")
+	if (ID.GetSize())
 	{
 		appendable.Append(L"|id:");
 		appendable.Append(ID);
 		ar->WriteString(appendable);
-		ar->WriteString(_T("\n"));
+		ar->WriteString(L"\n");
 		resetAttributeString(&appendable, childLevel + 1);
 	}
 	appendable.Append(L"|VerticalScroll:"); 
 	appendable.Append(boolToString(vScroll));
 	ar->WriteString(appendable);
-	ar->WriteString(_T("\n"));
+	ar->WriteString(L"\n");
 	resetAttributeString(&appendable, childLevel + 1);
 	appendable.Append(L"|HorizontalScroll:");
 	appendable.Append(boolToString(hScroll));
 	ar->WriteString(appendable);
-	ar->WriteString(_T("\n"));
+	ar->WriteString(L"\n");
 	resetAttributeString(&appendable, childLevel + 1);
 
 	appendable.Append(L"|FixedHeight:");
@@ -348,7 +373,7 @@ void TControl::storeInTML(CArchive * ar, int childLevel, bool overrideChildren)
 		appendable.Append(L"|Margin:");
 		appendable.Append(convertRectToString(margin));
 		ar->WriteString(appendable);
-		ar->WriteString(_T("\n"));
+		ar->WriteString(L"\n");
 		resetAttributeString(&appendable, childLevel + 1);
 	}
 
@@ -358,37 +383,37 @@ void TControl::storeInTML(CArchive * ar, int childLevel, bool overrideChildren)
 		if (dimensions->height)
 		{
 			appendable.Append(L"|Height:");
-			appendable.AppendFormat(_T("%d"), dimensions->height);
+			appendable.AppendFormat(L"%d", dimensions->height);
 			_WRITE_THE_STRING
 		}
 		if (dimensions->width)
 		{
 			appendable.Append(L"|Width:");
-			appendable.AppendFormat(_T("%d"), dimensions->width);
+			appendable.AppendFormat(L"%d", dimensions->width);
 			_WRITE_THE_STRING
 		}
 		if (dimensions->maxHeight)
 		{
 			appendable.Append(L"|MaxHeight:");
-			appendable.AppendFormat(_T("%d"), dimensions->maxHeight);
+			appendable.AppendFormat(L"%d", dimensions->maxHeight);
 			_WRITE_THE_STRING
 		}
 		if (dimensions->maxWidth)
 		{
 			appendable.Append(L"|MaxWidth:");
-			appendable.AppendFormat(_T("%d"), dimensions->maxWidth);
+			appendable.AppendFormat(L"%d", dimensions->maxWidth);
 			_WRITE_THE_STRING
 		}
 		if (dimensions->minHeight)
 		{
 			appendable.Append(L"|MinHeight:");
-			appendable.AppendFormat(_T("%d"), dimensions->minHeight);
+			appendable.AppendFormat(L"%d", dimensions->minHeight);
 			_WRITE_THE_STRING
 		}
 		if (dimensions->minWidth)
 		{
 			appendable.Append(L"|MinWidth:");
-			appendable.AppendFormat(_T("%d"), dimensions->minWidth);
+			appendable.AppendFormat(L"%d", dimensions->minWidth);
 			_WRITE_THE_STRING
 		}
 	}
@@ -406,39 +431,39 @@ void TControl::storeInTML(CArchive * ar, int childLevel, bool overrideChildren)
 		appendable.Append(L"|Shape:RoundedRectangle");
 		_WRITE_THE_STRING;
 		appendable.Append(L"|RoundedRectX:");
-		appendable.AppendFormat(_T("%f"), ellipse.radiusX);
+		appendable.AppendFormat(L"%f", ellipse.radiusX);
 		_WRITE_THE_STRING;
 		appendable.Append(L"|RoundedRectY:");
-		appendable.AppendFormat(_T("%f"), ellipse.radiusY);
+		appendable.AppendFormat(L"%f", ellipse.radiusY);
 		_WRITE_THE_STRING;
 	}
 
 
-	if (border1.get())
+	if (border1.Get())
 	{
 		border1->storeInTML(ar, childLevel,normal);
 	}
-	if (border2.get())
+	if (border2.Get())
 	{
 		border2->storeInTML(ar, childLevel,mouseHover);
 	}
-	if (border3.get())
+	if (border3.Get())
 		border3->storeInTML(ar, childLevel,mouseLClick);
-	if (text1.get())
+	if (text1.Get())
 	{
 		text1->storeInTML(ar, childLevel,normal);
 	}
-	if (text2.get())
+	if (text2.Get())
 	{
 		text2->storeInTML(ar, childLevel,mouseHover);
 	}
-	if (text3.get())
+	if (text3.Get())
 		text3->storeInTML(ar, childLevel,mouseLClick);
-	if (content1.get())
+	if (content1.Get())
 		content1->storeInTML(ar, childLevel,normal);
-	if (content2.get())
+	if (content2.Get())
 		content2->storeInTML(ar, childLevel,mouseHover);
-	if (content3.get())
+	if (content3.Get())
 		content3->storeInTML(ar, childLevel,mouseLClick);
 
 
@@ -452,16 +477,16 @@ void TControl::storeInTML(CArchive * ar, int childLevel, bool overrideChildren)
 
 	resetAttributeString(&appendable, childLevel + 1);
 	ar->WriteString(appendable);
-	ar->WriteString(_T("/\n"));
+	ar->WriteString(L"/\n");
 }
 
 /*
 * Method: TControl - storeInHTML
 * Purpose: Enables a Control to save itself in an HTML file
-* Parameters: CArchive* ar - the file to save to
+* Parameters: TFile* ar - the file to save to
 * Returns: void
 */
-void TControl::storeInHTML(CArchive * ar)
+void TControl::storeInHTML(TFile * ar)
 {
 
 	
@@ -475,7 +500,7 @@ void TControl::storeInHTML(CArchive * ar)
 * Returns: bool - success
 * Note: You Must call this on the Root Control before any control can be drawn on sreen
 */
-bool TControl::onCreate(RECT contain)
+bool TControl::onCreate(RECT contain, TrecPointer<TWindowEngine> d3d)
 {
 	/* Check the status of the scroll bars. By default, they are off.
 	 * If the default holds, then the location of the TControl will have
@@ -483,12 +508,12 @@ bool TControl::onCreate(RECT contain)
 	 * actual size of the TControl, represented by it's location, could theoretically
 	 * be as large as the developer desires. The Snip will serve as the location to draw */
 	TrecPointer<TString> valpoint = attributes.retrieveEntry(TString(L"|VerticalScroll"));
-	if (valpoint.get() && !valpoint->Compare(L"True") && !vScroll) // don't make a new one if one already exists
-		vScroll = new TScrollBar(*this, SCROLL_VERTICAL);
+	if (valpoint.Get() && !valpoint->Compare(L"True") && !vScroll) // don't make a new one if one already exists
+		vScroll = new TScrollBar(*this, so_vertical);
 
 	valpoint = attributes.retrieveEntry(TString(L"|HorizontalScroll"));
-	if(valpoint.get() && !valpoint->Compare(L"True") && !hScroll)
-		hScroll = new TScrollBar(*this,SCROLL_HORIZONTAL);
+	if(valpoint.Get() && !valpoint->Compare(L"True") && !hScroll)
+		hScroll = new TScrollBar(*this, so_horizontal);
 
 	checkMargin(contain);
 	checkHeightWidth(contain);
@@ -510,19 +535,18 @@ bool TControl::onCreate(RECT contain)
 		location.bottom = contain.bottom - heightOffset;
 		location.left = contain.left + widthOffset;
 		location.right = contain.right - widthOffset;
-		snip = location;
 	}
 	else
 	{
 		if (!dimensions || !dimensions->height) // Use Margin regardless, nothing to override it
 		{
-			snip.bottom = contain.bottom - margin.bottom;
-			snip.top = contain.top + margin.top;
+			location.bottom = contain.bottom - margin.bottom;
+			location.top = contain.top + margin.top;
 		}
 		if (!dimensions || !dimensions->width)
 		{
-			snip.left = contain.left + margin.left;
-			snip.right = contain.right - margin.right;
+			location.left = contain.left + margin.left;
+			location.right = contain.right - margin.right;
 		}
 	}
 
@@ -530,20 +554,20 @@ bool TControl::onCreate(RECT contain)
 	{
 		if (dimensions && dimensions->height)
 		{
-			location.top = snip.top;
+			location.top = contain.top + margin.top;
 			location.bottom = location.top + dimensions->height;
-			if ((snip.bottom - snip.top) > (location.bottom - location.top))
-				location.bottom = snip.bottom;
+			if ((contain.bottom - contain.top) > (location.bottom - location.top))
+				location.bottom = contain.bottom - margin.bottom;
 		}
 		else
-			location = snip; // if conlfict with hScroll, next code will resolve
+			location = contain; // if conlfict with hScroll, next code will resolve
 
 
 	}
 	else if (marginPriority)
 	{
-		location.top = snip.top;
-		location.bottom = snip.bottom;
+		location.top = contain.top + margin.top;
+		location.bottom = contain.bottom - margin.bottom;
 		if (dimensions && dimensions->height)
 			dimensions->height = location.bottom - location.top;
 	}
@@ -552,48 +576,48 @@ bool TControl::onCreate(RECT contain)
 	{
 		if (dimensions && dimensions->width)
 		{
-			location.left = snip.left;
+			location.left = contain.left + margin.left;
 			location.right = location.left + dimensions->width;
-			if ((snip.right - snip.left) > (location.right - location.left))
-				location.right = snip.right;
+			if ((contain.right - contain.left) > (location.right - location.left))
+				location.right = contain.right - margin.right;
 		}
 		else
 		{
-			location.left = snip.left;
-			location.right = snip.right;
+			location.left = contain.left + margin.left;
+			location.right = contain.right - margin.right;
 		}
 
 
 	}
 	else if (marginPriority)
 	{
-		location.left = snip.left;
-		location.right = snip.right;
+		location.left = contain.left + margin.left;
+		location.right = contain.right - margin.right;
 		if (dimensions && dimensions->width)
 			dimensions->width = location.right - location.left;
 	}
 
 	valpoint = attributes.retrieveEntry(TString(L"|FixedHeight"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
 		if (!valpoint->Compare(L"true"))
 			fixHeight = true;
 	}
 	valpoint = attributes.retrieveEntry(TString(L"|FixedWidth"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
 		if (!valpoint->Compare(L"true"))
 			fixWidth = true;
 	}
 
 	valpoint = attributes.retrieveEntry(TString(L"|ArrayID"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
 		valpoint->ConvertToInt(&arrayID);
 	}
 
 	valpoint = attributes.retrieveEntry(TString(L"|Shape"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
 		if (valpoint->Compare(L"Ellipse"))
 		{
@@ -608,12 +632,12 @@ bool TControl::onCreate(RECT contain)
 			float xRound = (location.left - location.right) / 10;
 			float yRound = (location.bottom - location.top) / 10;
 			valpoint = attributes.retrieveEntry(TString(L"|RoundedRectX"));
-			if (valpoint.get() )
+			if (valpoint.Get() )
 			{
 				valpoint->ConvertToFloat(&xRound);
 			}
 			valpoint = attributes.retrieveEntry(TString(L"|RoundedRectY"));
-			if (valpoint.get())
+			if (valpoint.Get())
 			{
 				valpoint->ConvertToFloat(&yRound);
 			}
@@ -630,30 +654,30 @@ bool TControl::onCreate(RECT contain)
 
 	int occ1 = 0;
 	valpoint = attributes.retrieveEntry(TString(L"|Class"), occ1++);
-	while (valpoint.get())
+	while (valpoint.Get())
 	{
-		className += *valpoint.get();
+		className += *valpoint.Get();
 		className.Trim();
 		className += L";";
 		valpoint = attributes.retrieveEntry(TString(L"|Class"), occ1++);
 	}
 TrecPointer<styleTable> classy;
 
-	TrecPointer<TArray<TString>> classes = className.split(L";");
+	TrecPointer<TDataArray<TString>> classes = className.split(L";");
 
-	for (int c = 0; c < classes->Count(); c++)
+	for (int c = 0; c < classes->Size(); c++)
 	{
-		if (classes->ElementAt(c).get() && classes->ElementAt(c)->GetLength())
+		if (classes->at(c).GetSize())
 		{
-			if (styles.get())
+			if (styles.Get())
 			{
 
 				for (int c = 0; c < styles->Count(); c++)
 				{
-					if (styles->ElementAt(c)->style == className)
+					if (styles->ElementAt(c)->style == classes->at(c))
 					{
 						classy = styles->ElementAt(c);
-						if (classy.get())
+						if (classy.Get())
 							onCreate(&classy->names, contain);
 						//break;
 					}
@@ -665,17 +689,17 @@ TrecPointer<styleTable> classy;
 	/*
 	valpoint = attributes.retrieveEntry(TString(L"|Class"));
 	
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		className = *valpoint.get();
-		if (styles.get())
+		className = *valpoint.Get();
+		if (styles.Get())
 		{
 			
-			for (int c = 0; c < styles->Count(); c++)
+			for (int c = 0; c < styles->Size(); c++)
 			{
-				if (styles->ElementAt(c)->style == className)
+				if (styles->at(c)->style == className)
 				{
-					classy = styles->ElementAt(c);
+					classy = styles->at(c);
 					break;
 				}
 			}
@@ -683,20 +707,20 @@ TrecPointer<styleTable> classy;
 	}
 	*/
 	valpoint = attributes.retrieveEntry(TString(L"|id"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		ID = *valpoint.get();
+		ID = *valpoint.Get();
 	}
 	else
 	{
 		valpoint = attributes.retrieveEntry(TString(L"|ID"));
-		if (valpoint.get())
+		if (valpoint.Get())
 		{
-			ID = *valpoint.get();
+			ID = *valpoint.Get();
 		}
 	}
 
-	if (classy.get())
+	if (classy.Get())
 		onCreate(&classy->names, contain); // if there is a style to use, derive apperance based off of its specifications
 
 	onCreate(&attributes,contain); // then derive appearence based off of the individual control's spec. If there are any conflicts between
@@ -704,7 +728,7 @@ TrecPointer<styleTable> classy;
 	onCreate2(&attributes, contain);
 	onCreate3(&attributes, contain);
 
-	if (border1.get())
+	if (border1.Get())
 	{
 		switch (shape)
 		{
@@ -722,12 +746,12 @@ TrecPointer<styleTable> classy;
 		}
 	}
 		
-	if (content1.get())
+	if (content1.Get())
 	{
 		switch (shape)
 		{
 		case T_Rect:
-			content1->onCreate(location,snip);
+			content1->onCreate(location);
 			break;
 		case T_Rounded_Rect:
 			content1->onCreate(roundedRect);
@@ -739,9 +763,9 @@ TrecPointer<styleTable> classy;
 			break;
 		}
 	}
-	if (text1.get())
+	if (text1.Get())
 		text1->onCreate(location);
-	if (border2.get())
+	if (border2.Get())
 	{
 		switch (shape)
 		{
@@ -758,12 +782,12 @@ TrecPointer<styleTable> classy;
 			break;
 		}
 	}
-	if (content2.get())
+	if (content2.Get())
 	{
 		switch (shape)
 		{
 		case T_Rect:
-			content2->onCreate(location,snip);
+			content2->onCreate(location);
 			break;
 		case T_Rounded_Rect:
 			content2->onCreate(roundedRect);
@@ -776,9 +800,9 @@ TrecPointer<styleTable> classy;
 			break;
 		}
 	}
-	if (text2.get())
+	if (text2.Get())
 		text2->onCreate(location);
-	if (border3.get())
+	if (border3.Get())
 	{
 		switch (shape)
 		{
@@ -795,12 +819,12 @@ TrecPointer<styleTable> classy;
 			break;
 		}
 	}
-	if (content3.get())
+	if (content3.Get())
 	{
 		switch (shape)
 		{
 		case T_Rect:
-			content3->onCreate(location,snip);
+			content3->onCreate(location);
 			break;
 		case T_Rounded_Rect:
 			content3->onCreate(roundedRect);
@@ -812,22 +836,29 @@ TrecPointer<styleTable> classy;
 			break;
 		}
 	}
-	if (text3.get())
+	if (text3.Get())
 		text3->onCreate(location);
 	int occ = 0;
 	valpoint = attributes.retrieveEntry(TString(L"|ContainerLoc"), occ);
 
-	while (valpoint.get())
+	while (valpoint.Get())
 	{
 		if (occ < children.Count())
 		{
 			TrecPointer<TControl> contt = children.ElementAt(occ);
-			if (!contt.get())
+			if (!contt.Get())
 			{
 				// return error code;
 			}
 
-			contt->onCreate(convertStringToRECT(valpoint.get()));
+			RECT chLoc = convertStringToRECT(valpoint.Get());
+
+			
+			chLoc.left += location.left;
+			chLoc.top += location.top;
+			chLoc.bottom += location.top;
+			chLoc.right += location.left;
+			contt->onCreate(chLoc, d3d);
 		}
 		else
 		{
@@ -837,21 +868,18 @@ TrecPointer<styleTable> classy;
 
 	}
 
-/*	for (int c = 0; c < children.Count();c++)
-	{
-		if(children.ElementAt(c))
-		children.ElementAt(c)->onCreate(location);
-	}*/
-
 	valpoint = attributes.retrieveEntry(TString(L"|FlyoutLocation"));
-	if (valpoint.get() && flyout)
-		flyout->onCreate(convertStringToRECT(valpoint.get()));
+	if (valpoint.Get() && flyout)
+		flyout->onCreate(convertStringToRECT(valpoint.Get()),d3d);
 
 	if (contextMenu)
-		contextMenu->onCreate(location);
+		contextMenu->onCreate(location,d3d);
 
 
 	updateComponentLocation();
+
+	// Now see if any child element extends beyond 
+	CheckScroll();
 
 	return true;
 }
@@ -881,11 +909,11 @@ void TControl::Resize(RECT r)
 
 		for (UINT rust = 0; rust < children.Count(); rust++)
 		{
-			if (!children.ElementAt(rust).get())
+			if (!children.ElementAt(rust).Get())
 				continue;
 			RECT curLoc = children.ElementAt(rust)->getLocation();
-			CPoint curPoint = CPoint(curLoc.left - location.left, curLoc.top - location.top);
-			CPoint curSize = CPoint(curLoc.right - curLoc.left, curLoc.bottom - curLoc.top);
+			TPoint curPoint = TPoint(curLoc.left - location.left, curLoc.top - location.top);
+			TPoint curSize = TPoint(curLoc.right - curLoc.left, curLoc.bottom - curLoc.top);
 			curLoc.top = curLoc.top - curPoint.y + curPoint.y * t_ratio;
 			curLoc.left = curLoc.left - curPoint.x + curPoint.x * l_ratio;
 			curLoc.bottom = curLoc.bottom - curSize.y + curSize.y * h_ratio;
@@ -895,6 +923,7 @@ void TControl::Resize(RECT r)
 	}
 	location = r;
 	updateComponentLocation();
+	CheckScroll();
 }
 
 /*
@@ -908,7 +937,7 @@ bool TControl::setEventHandler(EventTarget & eh)
 {
 	for (int c = 0; c < children.Count(); c++)
 	{
-		TControl* tc = children.ElementAt(c).get();
+		TControl* tc = children.ElementAt(c).Get();
 		if (tc)
 			tc->setEventHandler(eh);
 	}
@@ -944,14 +973,14 @@ bool TControl::onScroll(int x, int y)
 	location.top += y;
 	for (int c = 0; c < children.Count(); c++)
 	{
-		TControl* cont = children.ElementAt(c).get();
+		TControl* cont = children.ElementAt(c).Get();
 		if (!cont)    // don't work with a null pointer
 			continue;
-		cont->onBeingScrolled(x, y, snip);
+		cont->onBeingScrolled(x, y);
 	}
 
 	updateComponentLocation();
-
+	CheckScroll();
 	return false;
 }
 
@@ -963,7 +992,7 @@ bool TControl::onScroll(int x, int y)
 *				const RECT& p_snip - the area of the parent control
 * Returns: bool - success
 */
-bool TControl::onBeingScrolled(int x, int y, const RECT & p_snip)
+bool TControl::onBeingScrolled(int x, int y)
 {
 	// Update real location of TControl
 	location.left += x;
@@ -971,52 +1000,17 @@ bool TControl::onBeingScrolled(int x, int y, const RECT & p_snip)
 	location.bottom += y;
 	location.top += y;
 
-	// To-Do: check to see if zero'd snips need to be restored
-
-
-
-	// if p_snip is zero, just zero snip, else update snip as usual
-	if (isSnipZero(p_snip))
-		zeroSnip(snip);
-	else
-	{
-		snip.left += x;
-		snip.right += x;
-		snip.bottom += y;
-		snip.top += y;
-	}
-
-	// Make the appropriate adjustments to the snip based off of provided snip
-	if (snip.bottom < p_snip.top)
-		zeroSnip(snip);
-	else if (snip.top < p_snip.top)
-		snip.top = p_snip.top;
-
-	if (snip.top > p_snip.bottom)
-		zeroSnip(snip);
-	else if (snip.bottom > p_snip.bottom)
-		snip.bottom = p_snip.bottom;
-
-	if (snip.left > p_snip.right)
-		zeroSnip(snip);
-	else if (snip.right > p_snip.right)
-		snip.right = p_snip.right;
-
-	if (snip.right < p_snip.left)
-		zeroSnip(snip);
-	else if (snip.left < p_snip.left)
-		snip.left = p_snip.left;
 
 	for (int c = 0; c < children.Count(); c++)
 	{
-		TControl* cont = children.ElementAt(c).get();
+		TControl* cont = children.ElementAt(c).Get();
 		if (!cont)    // don't work with a null pointer
 			continue;
-		cont->onBeingScrolled(x, y, snip);
+		cont->onBeingScrolled(x, y);
 	}
 
 	updateComponentLocation();
-
+	CheckScroll();
 	return false;
 }
 
@@ -1029,40 +1023,39 @@ bool TControl::onBeingScrolled(int x, int y, const RECT & p_snip)
 void TControl::scroll(RECT& loc)
 {
 	// Make sure that this Control is not out of view
-	TrecPointer<TControl> sh_parent = parent;
-	if (isSnipZero(snip) && sh_parent.get())
-		sh_parent->scroll(loc);
+
+	TControl* sh_parent = parent.Get();
 
 	// Test for need to Vertically Scroll
-	if (loc.bottom < snip.top)
+	if (loc.bottom < location.top)
 	{
-		if (!vScroll && sh_parent.get())
+		if (!vScroll && sh_parent)
 		{
 			sh_parent->scroll(loc);
 			return;
 		}
 
 	}
-	else if (loc.top > snip.bottom)
+	else if (loc.top > location.bottom)
 	{
-		if (!vScroll && sh_parent.get())
+		if (!vScroll && sh_parent)
 		{
 			sh_parent->scroll(loc);
 			return;
 		}
 	}
 
-	if (loc.left > snip.right)
+	if (loc.left > location.right)
 	{
-		if (!hScroll && sh_parent.get())
+		if (!hScroll && sh_parent)
 		{
 			sh_parent->scroll(loc);
 			return;
 		}
 	}
-	else if (loc.right < snip.left)
+	else if (loc.right < location.left)
 	{
-		if (!hScroll && sh_parent.get())
+		if (!hScroll && sh_parent)
 		{
 			sh_parent->scroll(loc);
 			return;
@@ -1081,11 +1074,11 @@ bool TControl::SetContextMenu(TrecPointer<TControl> cm)
 {
 	if(contextMenu)
 	return false;
-	if (!cm.get())
+	if (!cm.Get())
 		return false;
 	try
 	{
-		contextMenu = dynamic_cast<TContextMenu*>(cm.get());
+		contextMenu = dynamic_cast<TContextMenu*>(cm.Get());
 		
 		return true;
 	}
@@ -1105,25 +1098,25 @@ bool TControl::SetContextMenu(TrecPointer<TControl> cm)
 */
 void TControl::BreakShared()
 {
-	if (text1.get())
+	if (text1.Get())
 		text1->BreakShared();
-	if (content1.get())
+	if (content1.Get())
 		content1->BreakShared();
-	if (border1.get())
+	if (border1.Get())
 		border1->BreakShared();
 
-	if (text2.get())
+	if (text2.Get())
 		text2->BreakShared();
-	if (content2.get())
+	if (content2.Get())
 		content2->BreakShared();
-	if (border2.get())
+	if (border2.Get())
 		border2->BreakShared();
 
-	if (text3.get())
+	if (text3.Get())
 		text3->BreakShared();
-	if (content3.get())
+	if (content3.Get())
 		content3->BreakShared();
-	if (border3.get())
+	if (border3.Get())
 		border3->BreakShared();
 }
 
@@ -1133,17 +1126,17 @@ void TControl::BreakShared()
 * Parameters: TString& t - Class Name to add
 * Returns: void
 */
-void TControl::AddClass(TString & t)
+void TControl::AddClass(const TString & t)
 {
-	t.Trim();
-	if (className.GetLength())
+	TString trimmedT = t.GetTrim();
+	if (className.GetSize())
 	{
 
 		className += L";";
-		className += t;
+		className += trimmedT;
 	}
 	else
-		className = t;
+		className = trimmedT;
 }
 /*
 * Method: TControl - GetID
@@ -1161,6 +1154,11 @@ UCHAR * TControl::GetAnaGameType()
 	return nullptr;
 }
 
+void TControl::SetNormalMouseState()
+{
+	mState = normal;
+}
+
 /*
 * Method: TControl - onDraw
 * Purpose: Draws the control
@@ -1171,55 +1169,72 @@ void TControl::onDraw(TObject* obj)
 {
 	if (!isActive)
 		return;
+
+	ID2D1Layer* layer = nullptr;
+
+	if (vScroll || hScroll)
+	{
+		renderTarget->CreateLayer(&layer);
+		D2D1_RECT_F f_loc;
+		convertCRectToD2DRect(&location, &f_loc);
+		renderTarget->PushLayer(D2D1::LayerParameters(f_loc), layer);
+	}
+
 	if (mState == mouseLClick)
 	{
-		if (content3.get())
-			content3->onDraw(location, snip);
-		else if (content1.get())
-			content1->onDraw(location, snip);
-		if (border3.get())
-			border3->onDraw(location, snip);
-		else if (border1.get())
-			border1->onDraw(location, snip);
-		if (text3.get())
-			text3->onDraw(location, snip, obj);
-		else if (text1.get())
-			text1->onDraw(location, snip, obj);
+		if (content3.Get())
+			content3->onDraw(location);
+		else if (content1.Get())
+			content1->onDraw(location);
+		if (border3.Get())
+			border3->onDraw(location);
+		else if (border1.Get())
+			border1->onDraw(location);
+		if (text3.Get())
+			text3->onDraw(location, obj);
+		else if (text1.Get())
+			text1->onDraw(location, obj);
 	}
 	else if (mState == mouseHover)
 	{
-		if (content2.get())
-			content2->onDraw(location, snip);
-		else if (content1.get())
-			content1->onDraw(location, snip);
-		if (border2.get())
-			border2->onDraw(location, snip);
-		else if (border1.get())
-			border1->onDraw(location, snip);
-		if (text2.get())
-			text2->onDraw(location, snip, obj);
-		else if (text1.get())
-			text1->onDraw(location, snip, obj);
+		if (content2.Get())
+			content2->onDraw(location);
+		else if (content1.Get())
+			content1->onDraw(location);
+		if (border2.Get())
+			border2->onDraw(location);
+		else if (border1.Get())
+			border1->onDraw(location);
+		if (text2.Get())
+			text2->onDraw(location, obj);
+		else if (text1.Get())
+			text1->onDraw(location, obj);
 	}
 	else
 	{
-		if (content1.get())
-			content1->onDraw(location, snip);
-		if (border1.get())
-			border1->onDraw(location, snip);
-		if (text1.get())
-			text1->onDraw(location, snip, obj);
+		if (content1.Get())
+			content1->onDraw(location);
+		if (border1.Get())
+			border1->onDraw(location);
+		if (text1.Get())
+			text1->onDraw(location, obj);
 	}
 
 	if (vScroll)
-		vScroll->updateDraw();
+		vScroll->onDraw(renderTarget.Get());
 	if (hScroll)
-		hScroll->updateDraw();
+		hScroll->onDraw(renderTarget.Get());
 
 	for (int c = 0; c < children.Count(); c++)
 	{
 		children.ElementAt(c)->onDraw(obj);
 	}
+	if (layer)
+	{
+		renderTarget->PopLayer();
+		layer->Release();
+	}
+		layer = nullptr;
 }
 
 /*
@@ -1231,17 +1246,6 @@ void TControl::onDraw(TObject* obj)
 RECT TControl::getLocation()
 {
 	return location;
-}
-
-/*
-* Method: TControl - getSnip
-* Purpose: Retrieves the area of the screen the control can currently draw to
-* Parameters: void
-* Returns: RECT - the snip that can be drawn
-*/
-RECT TControl::getSnip()
-{
-	return snip;
 }
 
 /*
@@ -1274,7 +1278,7 @@ TrecComPointer<ID2D1RenderTarget> TControl::getRenderTarget()
 */
 TrecPointer<TControl> TControl::getParent()
 {
-	return parent;
+	return TrecPointerKey::GetTrecPointerFromSoft<TControl>(parent);
 }
 
 /*
@@ -1304,10 +1308,10 @@ bool TControl::getLayoutStatus()
 /*
 * Method: TControl - offsetLocation
 * Purpose: Moves the Control to the specified point
-* Parameters: CPoint cp - the point to move the control to 
+* Parameters: TPoint cp - the point to move the control to 
 * Returns: void
 */
-void TControl::offsetLocation(CPoint cp)
+void TControl::offsetLocation(TPoint cp)
 {
 	int height = location.bottom - location.top;
 	int width = location.right - location.left;
@@ -1316,8 +1320,6 @@ void TControl::offsetLocation(CPoint cp)
 	location.left = cp.x;
 	location.bottom = location.top + height;
 	location.right = location.left + width;
-
-	snip = location;
 
 	updateComponentLocation();
 }
@@ -1332,31 +1334,26 @@ void TControl::ShiftHorizontal(int degrees)
 {
 	location.left += degrees;
 	location.right += degrees;
-	if (!isZeroRect(convertRECTToD2DRectF(snip)))
-	{
-		snip.left += degrees;
-		snip.right += degrees;
-	}
 
-	if (text1.get())
+	if (text1.Get())
 		text1->ShiftHorizontal(degrees);
-	if (text2.get())
+	if (text2.Get())
 		text2->ShiftHorizontal(degrees);
-	if (text3.get())
+	if (text3.Get())
 		text3->ShiftHorizontal(degrees);
 
-	if (content1.get())
+	if (content1.Get())
 		content1->ShiftHorizontal(degrees);
-	if (content2.get())
+	if (content2.Get())
 		content2->ShiftHorizontal(degrees);
-	if (content3.get())
+	if (content3.Get())
 		content3->ShiftHorizontal(degrees);
 
-	if (border1.get())
+	if (border1.Get())
 		border1->ShiftHorizontal(degrees);
-	if (border2.get())
+	if (border2.Get())
 		border2->ShiftHorizontal(degrees);
-	if (border3.get())
+	if (border3.Get())
 		border3->ShiftHorizontal(degrees);
 }
 
@@ -1370,31 +1367,26 @@ void TControl::ShiftVertical(int degrees)
 {
 	location.top += degrees;
 	location.bottom += degrees;
-	if (!isZeroRect(convertRECTToD2DRectF(snip)))
-	{
-		snip.top += degrees;
-		snip.bottom += degrees;
-	}
 
-	if (text1.get())
+	if (text1.Get())
 		text1->ShiftVertical(degrees);
-	if (text2.get())
+	if (text2.Get())
 		text2->ShiftVertical(degrees);
-	if (text3.get())
+	if (text3.Get())
 		text3->ShiftVertical(degrees);
 
-	if (content1.get())
+	if (content1.Get())
 		content1->ShiftVertical(degrees);
-	if (content2.get())
+	if (content2.Get())
 		content2->ShiftVertical(degrees);
-	if (content3.get())
+	if (content3.Get())
 		content3->ShiftVertical(degrees);
 
-	if (border1.get())
+	if (border1.Get())
 		border1->ShiftVertical(degrees);
-	if (border2.get())
+	if (border2.Get())
 		border2->ShiftVertical(degrees);
-	if (border3.get())
+	if (border3.Get())
 		border3->ShiftVertical(degrees);
 }
 
@@ -1485,9 +1477,9 @@ void TControl::setHeight(int h)
 * Note: Call this method BEFORE calling onCreate. Otherwise, it will have no effect on the Control's
 *	appearence or functionality
 */
-bool TControl::addAttribute(TString& attr, TrecPointer<TString> val)
+bool TControl::addAttribute(const TString& attr, TrecPointer<TString> val)
 {
-	if(!attr || !val.get())
+	if(!attr.GetSize() || !val.Get())
 	return false;
 	attributes.addEntry(attr, val);
 	return true;
@@ -1501,11 +1493,11 @@ bool TControl::addAttribute(TString& attr, TrecPointer<TString> val)
 */
 bool TControl::addChild(TrecPointer<TControl> tcon)
 {
-	if(!tcon.get())
+	if(!tcon.Get())
 	return false;
 	children.Add(tcon);
 	
-	tcon->setParent(TrecPointer<TControl>(this));
+	tcon->setParent(TrecPointerKey::GetTrecPointerFromSoft<TControl>( tThis));
 	return true;
 	
 }
@@ -1586,56 +1578,48 @@ UINT TControl::determineMinHeightNeeded()
 * Parameters:
 * Returns:
 */
-void TControl::SetNewLocation(RECT & r)
+void TControl::SetNewLocation(const RECT & r)
 {
 	location = r;
-	if (!isZeroRect(convertRECTToD2DRectF(snip)))
-		snip = r;
 
-	if (text1.get())
+	if (text1.Get())
 	{
 		text1->bounds = convertRECTToD2DRectF(r);
 		text1->reCreateLayout();
 	}
-	if (text2.get())
+	if (text2.Get())
 	{
 		text2->bounds = convertRECTToD2DRectF(r);
 		text2->reCreateLayout();
 	}
-	if (text3.get())
+	if (text3.Get())
 	{
 		text3->bounds = convertRECTToD2DRectF(r);
 		text3->reCreateLayout();
 	}
-	if (border1.get())
+	if (border1.Get())
 	{
 		border1->loci = convertRECTToD2DRectF(r);
-		border1->snip = convertRECTToD2DRectF(snip);
 	}
-	if (border2.get())
+	if (border2.Get())
 	{
 		border2->loci = convertRECTToD2DRectF(r);
-		border2->snip = convertRECTToD2DRectF(snip);
 	}
-	if (border3.get())
+	if (border3.Get())
 	{
 		border3->loci = convertRECTToD2DRectF(r);
-		border3->snip = convertRECTToD2DRectF(snip);
 	}
-	if (content1.get())
+	if (content1.Get())
 	{
 		content1->location = convertRECTToD2DRectF(r);
-		content1->snip = convertRECTToD2DRectF(snip);
 	}
-	if (content2.get())
+	if (content2.Get())
 	{
 		content2->location = convertRECTToD2DRectF(r);
-		content2->snip = convertRECTToD2DRectF(snip);
 	}
-	if (content3.get())
+	if (content3.Get())
 	{
 		content3->location = convertRECTToD2DRectF(r);
-		content3->snip = convertRECTToD2DRectF(snip);
 	}
 }
 
@@ -1650,7 +1634,7 @@ void TControl::ShrinkHeight()
 {
 	for (UINT c = 0; c < children.Count(); c++)
 	{
-		if (!children.ElementAt(c).get())
+		if (!children.ElementAt(c).Get())
 			continue;
 		children.ElementAt(c)->ShrinkHeight();
 	}
@@ -1665,7 +1649,7 @@ void TControl::ShrinkHeight()
 */
 void TControl::setParent(TrecPointer<TControl> tcp)
 {
-	parent = tcp;
+	parent = TrecPointerKey::GetSoftPointerFromTrec<TControl>(tcp);
 }
 
 /*
@@ -1679,13 +1663,13 @@ TrecPointer<TText> TControl::getText(int n)
 	switch (n)
 	{
 	case 1:
-		return TrecPointer<TText>(text1);
+		return text1;
 	case 2:
-		return TrecPointer<TText>(text2);
+		return text2;
 	case 3:
-		return TrecPointer<TText>(text3);
+		return text3;
 	default:
-		return TrecPointer<TText>(nullptr);
+		return TrecPointer<TText>();
 	}
 
 }
@@ -1701,13 +1685,13 @@ TrecPointer<TContent> TControl::getContent(int n)
 	switch (n)
 	{
 	case 1:
-		return  TrecPointer<TContent>(content1);
+		return  content1;
 	case 2:
-		return  TrecPointer<TContent>(content2);
+		return  content2;
 	case 3:
-		return  TrecPointer<TContent>(content3);
+		return  content3;
 	default:
-		return  TrecPointer<TContent>(nullptr);
+		return  TrecPointer<TContent>();
 	}
 }
 
@@ -1722,13 +1706,13 @@ TrecPointer<TBorder> TControl::getBorder(int n)
 	switch (n)
 	{
 	case 1:
-		return  TrecPointer<TBorder>(border1);
+		return  border1;
 	case 2:
-		return  TrecPointer<TBorder>(border2);
+		return  border2;
 	case 3:
-		return  TrecPointer<TBorder>(border3);
+		return  border3;
 	default:
-		return  TrecPointer<TBorder>(nullptr);
+		return  TrecPointer<TBorder>();
 	}
 	
 }
@@ -1744,13 +1728,13 @@ void TControl::setNewText(int n)
 	switch (n)
 	{
 	case 1:
-		text1 = new TText(renderTarget, (this));
+		text1 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, (this));
 		break;
 	case 2:
-		text2 = new TText(renderTarget, (this));
+		text2 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, (this));
 		break;
 	case 3:
-		text3 = new TText(renderTarget, (this));
+		text3 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, (this));
 		break;
 	}
 }
@@ -1781,10 +1765,10 @@ bool TControl::onCreate(TMap<TString>* att, RECT loc)
 	valpoint = att->retrieveEntry(TString(L"|BorderThickness"));
 
 	borderThick:
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!border1.get())
-			border1 = new TBorder(renderTarget, (this));
+		if (!border1.Get())
+			border1 = TrecPointerKey::GetNewTrecPointer<TBorder>(renderTarget, (this));
 		valpoint->ConvertToFloat(&(border1->thickness));         // Logic Bug needs fixing
 	}
 	/*else
@@ -1796,11 +1780,11 @@ bool TControl::onCreate(TMap<TString>* att, RECT loc)
 	// 
 	valpoint = att->retrieveEntry(TString(L"|BorderColor"));
 	borderColor_:
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!border1.get())
-			border1 = new TBorder(renderTarget, (this));
-		border1->color = convertStringToD2DColor(valpoint.get());
+		if (!border1.Get())
+			border1 = TrecPointerKey::GetNewTrecPointer<TBorder>(renderTarget, (this));
+		border1->color = convertStringToD2DColor(valpoint.Get());
 	}
 	/*else
 	{
@@ -1811,10 +1795,10 @@ bool TControl::onCreate(TMap<TString>* att, RECT loc)
 	// 
 	valpoint = att->retrieveEntry(TString(L"|ContentThickness"));
 	contThick:
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!content1.get())
-			content1 = new TContent(renderTarget, (this));
+		if (!content1.Get())
+			content1 = TrecPointerKey::GetNewTrecPointer<TContent>(renderTarget, (this));
 		valpoint->ConvertToFloat(&(content1->thickness));
 	}
 	/*else
@@ -1826,11 +1810,11 @@ bool TControl::onCreate(TMap<TString>* att, RECT loc)
 	// 
 	valpoint = att->retrieveEntry(TString(L"|ContentColor"));
 	contColor:
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!content1.get())
-			content1 = new TContent(renderTarget, (this));
-		content1->color = convertStringToD2DColor(valpoint.get());
+		if (!content1.Get())
+			content1 = TrecPointerKey::GetNewTrecPointer<TContent>(renderTarget, (this));
+		content1->color = convertStringToD2DColor(valpoint.Get());
 	}
 	/*else
 	{
@@ -1840,91 +1824,91 @@ bool TControl::onCreate(TMap<TString>* att, RECT loc)
 
 	// 
 	valpoint = att->retrieveEntry(TString(L"|Caption"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!text1.get())
-			text1 = new TText(renderTarget, (this));
+		if (!text1.Get())
+			text1 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, (this));
 
-		text1->text = valpoint.get();
+		text1->text = valpoint.Get();
 
 	}
 
 	// 
 	valpoint = att->retrieveEntry(TString(L"|CaptionLocale"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!text1.get())
-			text1 = new TText(renderTarget, (this));
-		text1->locale = valpoint.get();
+		if (!text1.Get())
+			text1 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, (this));
+		text1->locale = valpoint.Get();
 
 	}
 
 	// 
 	valpoint = att->retrieveEntry(TString(L"|Font"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!text1.get())
-			text1 = new TText(renderTarget, (this));
-		text1->font = valpoint.get();
+		if (!text1.Get())
+			text1 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, (this));
+		text1->font = valpoint.Get();
 
 	}
 
 	// 
 	valpoint = att->retrieveEntry(TString(L"|FontColor"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!text1.get())
-			text1 = new TText(renderTarget, (this));
-		text1->color = convertStringToD2DColor(valpoint.get());
+		if (!text1.Get())
+			text1 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, (this));
+		text1->color = convertStringToD2DColor(valpoint.Get());
 	}
 
 	// 
 	valpoint = att->retrieveEntry(TString(L"|FontSize"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!text1.get())
-			text1 = new TText(renderTarget, (this));
+		if (!text1.Get())
+			text1 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, (this));
 		 valpoint->ConvertToFloat(&(text1->fontSize) );
 	}
 
 	valpoint = att->retrieveEntry(TString(L"|HorizontalAlignment"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!text1.get())
-			text1 = new TText(renderTarget, (this));
-		text1->setNewHorizontalAlignment(convertStringToTextAlignment(valpoint.get()));
+		if (!text1.Get())
+			text1 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, (this));
+		text1->setNewHorizontalAlignment(convertStringToTextAlignment(valpoint.Get()));
 	}
 	valpoint = att->retrieveEntry(TString(L"|VerticalAlignment"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!text1.get())
-			text1 = new TText(renderTarget, (this));
-		text1->setNewVerticalAlignment(convertStringToParagraphAlignment(valpoint.get()));
+		if (!text1.Get())
+			text1 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, (this));
+		text1->setNewVerticalAlignment(convertStringToParagraphAlignment(valpoint.Get()));
 	}
 	valpoint = att->retrieveEntry(TString(L"|ContentColor2"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!content1.get())
-			content1 = new TContent(renderTarget, (this));
-		content1->color2 = convertStringToD2DColor(valpoint.get());
+		if (!content1.Get())
+			content1 = TrecPointerKey::GetNewTrecPointer<TContent>(renderTarget, (this));
+		content1->color2 = convertStringToD2DColor(valpoint.Get());
 		content1->secondColor = true;
 	}
 
 	valpoint = att->retrieveEntry(TString(L"|ContentGrad1"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!content1.get())
-			content1 = new TContent(renderTarget, (this));
+		if (!content1.Get())
+			content1 = TrecPointerKey::GetNewTrecPointer<TContent>(renderTarget, (this));
 		float entry = 0.0f;
 		valpoint->ConvertToFloat(&entry);
 		//content1->secondColor = true;
 		content1->gradients[0].position = entry;
 	}
 	valpoint = att->retrieveEntry(TString(L"|ContentGrad2"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!content1.get())
-			content1 = new TContent(renderTarget, (this));
+		if (!content1.Get())
+			content1 = TrecPointerKey::GetNewTrecPointer<TContent>(renderTarget, (this));
 		float entry = 1.0f;
 		valpoint->ConvertToFloat(&entry);
 		//content1->secondColor = true;
@@ -1932,29 +1916,29 @@ bool TControl::onCreate(TMap<TString>* att, RECT loc)
 	}
 
 	valpoint = att->retrieveEntry(TString(L"|BorderColor2"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!border1.get())
-			border1 = new TBorder(renderTarget, (this));
-		border1->color2 = convertStringToD2DColor(valpoint.get());
+		if (!border1.Get())
+			border1 = TrecPointerKey::GetNewTrecPointer<TBorder>(renderTarget, (this));
+		border1->color2 = convertStringToD2DColor(valpoint.Get());
 		border1->secondColor = true;
 	}
 
 	valpoint = att->retrieveEntry(TString(L"|BorderGrad1"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!border1.get())
-			border1 = new TBorder(renderTarget, (this));
+		if (!border1.Get())
+			border1 = TrecPointerKey::GetNewTrecPointer<TBorder>(renderTarget, (this));
 		float entry = 0.0f;
 		valpoint->ConvertToFloat(&entry);
 		//border1->secondColor = true;
 		border1->gradients[0].position = entry;
 	}
 	valpoint = att->retrieveEntry(TString(L"|BorderGrad2"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!border1.get())
-			border1 = new TBorder(renderTarget, (this));
+		if (!border1.Get())
+			border1 = TrecPointerKey::GetNewTrecPointer<TBorder>(renderTarget, (this));
 		float entry = 1.0f;
 		valpoint->ConvertToFloat(&entry);
 		//border1->secondColor = true;
@@ -1963,39 +1947,39 @@ bool TControl::onCreate(TMap<TString>* att, RECT loc)
 
 	// 
 	valpoint = att->retrieveEntry(TString(L"|Caption"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!text1.get())
-			text1 = new TText(renderTarget, (this));
+		if (!text1.Get())
+			text1 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, (this));
 
-		text1->text = valpoint.get();
+		text1->text = valpoint.Get();
 		;
 	}
 
 	valpoint = att->retrieveEntry(TString(L"|TextColor2"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!text1.get())
-			text1 = new TText(renderTarget, (this));
-		text1->color2 = convertStringToD2DColor(valpoint.get());
+		if (!text1.Get())
+			text1 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, (this));
+		text1->color2 = convertStringToD2DColor(valpoint.Get());
 		text1->secondColor = true;
 	}
 
 	valpoint = att->retrieveEntry(TString(L"|TextGrad1"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!text1.get())
-			text1 = new TText(renderTarget, (this));
+		if (!text1.Get())
+			text1 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, (this));
 		float entry = 0.0f;
 		valpoint->ConvertToFloat(&entry);
 		//text1->secondColor = true;
 		text1->gradients[0].position = entry;
 	}
 	valpoint = att->retrieveEntry(TString(L"|TextGrad2"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!text1.get())
-			text1 = new TText(renderTarget, (this));
+		if (!text1.Get())
+			text1 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, (this));
 		float entry = 1.0f;
 		valpoint->ConvertToFloat(&entry);
 		//text1->secondColor = true;
@@ -2003,35 +1987,35 @@ bool TControl::onCreate(TMap<TString>* att, RECT loc)
 	}
 
 	valpoint = att->retrieveEntry(TString(L"|TextGradMode"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!text1.get())
-			text1 = new TText(renderTarget, (this));
+		if (!text1.Get())
+			text1 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, (this));
 		if (valpoint->Compare(L"Radial"))
 			text1->useRadial = true;
 	}
 	valpoint = att->retrieveEntry(TString(L"|ContentGradMode"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!content1.get())
-			content1 = new TContent(renderTarget, (this));
+		if (!content1.Get())
+			content1 = TrecPointerKey::GetNewTrecPointer<TContent>(renderTarget, (this));
 		if (valpoint->Compare(L"Radial"))
 			content1->useRadial = true;
 	}
 	valpoint = att->retrieveEntry(TString(L"|BorderGradMode"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!border1.get())
-			border1 = new TBorder(renderTarget, (this));
+		if (!border1.Get())
+			border1 = TrecPointerKey::GetNewTrecPointer<TBorder>(renderTarget, (this));
 		if (valpoint->Compare(L"Radial"))
 			border1->useRadial = true;
 	}
 
 	valpoint = att->retrieveEntry(TString(L"|ImageSource"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!content1.get())
-			content1 = new TContent(renderTarget, (this));
+		if (!content1.Get())
+			content1 = TrecPointerKey::GetNewTrecPointer<TContent>(renderTarget, (this));
 		valpoint->Replace(L"/", L"\\");
 		int res = generateImage(content1, valpoint, loc);
 	}
@@ -2050,180 +2034,180 @@ bool TControl::onCreate2(TMap<TString>* att, RECT loc)
 	TrecPointer<TString> valpoint;	// 
 
 	valpoint = att->retrieveEntry(TString(L"|HoverBorderThickness"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!border2.get())
+		if (!border2.Get())
 		{
-			if (border1.get())
-				border2 = new TBorder(border1, (this));
+			if (border1.Get())
+				border2 = TrecPointerKey::GetNewTrecPointer<TBorder>(border1, (this));
 			else
-				border2 = new TBorder(renderTarget, (this));
+				border2 = TrecPointerKey::GetNewTrecPointer<TBorder>(renderTarget, (this));
 		}
 		valpoint->ConvertToFloat(&(border2->thickness));         // Logic Bug needs fixing
 	}
 
 	// 
 	valpoint = att->retrieveEntry(TString(L"|HoverBorderColor"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!border2.get())
+		if (!border2.Get())
 		{
-			if (border1.get())
-				border2 = new TBorder(border1, (this));
+			if (border1.Get())
+				border2 = TrecPointerKey::GetNewTrecPointer<TBorder>(border1, (this));
 			else
-				border2 = new TBorder(renderTarget, (this));
+				border2 = TrecPointerKey::GetNewTrecPointer<TBorder>(renderTarget, (this));
 		}
-		border2->color = convertStringToD2DColor(valpoint.get());
+		border2->color = convertStringToD2DColor(valpoint.Get());
 	}
 
 	// 
 	valpoint = att->retrieveEntry(TString(L"|HoverContentThickness"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!content2.get())
+		if (!content2.Get())
 		{
-			if (content1.get())
-				content2 = new TContent(content1, (this));
+			if (content1.Get())
+				content2 = TrecPointerKey::GetNewTrecPointer<TContent>(content1, (this));
 			else
-				content2 = new TContent(renderTarget, (this));
+				content2 = TrecPointerKey::GetNewTrecPointer<TContent>(renderTarget, (this));
 		}
 		valpoint->ConvertToFloat(&(content2->thickness));
 	}
 
 	// 
 	valpoint = att->retrieveEntry(TString(L"|HoverContentColor"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!content2.get())
+		if (!content2.Get())
 		{
-			if (content1.get())
-				content2 = new TContent(content1, (this));
+			if (content1.Get())
+				content2 = TrecPointerKey::GetNewTrecPointer<TContent>(content1, (this));
 			else
-				content2 = new TContent(renderTarget, (this));
+				content2 = TrecPointerKey::GetNewTrecPointer<TContent>(renderTarget, (this));
 		}
-		content2->color = convertStringToD2DColor(valpoint.get());
+		content2->color = convertStringToD2DColor(valpoint.Get());
 	}
 
 	// 
 	valpoint = att->retrieveEntry(TString(L"|HoverCaption"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!text2.get())
+		if (!text2.Get())
 		{
-			if (text1.get())
-				text2 = new TText(text1, (this));
+			if (text1.Get())
+				text2 = TrecPointerKey::GetNewTrecPointer<TText>(text1, (this));
 			else
-				text2 = new TText(renderTarget, (this));
+				text2 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, (this));
 		}
-		text2->text = valpoint.get();
+		text2->text = valpoint.Get();
 
 	}
 
 	// 
 	valpoint = att->retrieveEntry(TString(L"|HoverCaptionLocale"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!text2.get())
+		if (!text2.Get())
 		{
-			if (text1.get())
-				text2 = new TText(text1, (this));
+			if (text1.Get())
+				text2 = TrecPointerKey::GetNewTrecPointer<TText>(text1, (this));
 			else
-				text2 = new TText(renderTarget, (this));
+				text2 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, (this));
 		}
-		text2->locale = valpoint.get();
+		text2->locale = valpoint.Get();
 		;
 	}
 
 	// 
 	valpoint = att->retrieveEntry(TString(L"|HoverFont"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!text2.get())
+		if (!text2.Get())
 		{
-			if (text1.get())
-				text2 = new TText(text1, (this));
+			if (text1.Get())
+				text2 = TrecPointerKey::GetNewTrecPointer<TText>(text1, (this));
 			else
-				text2 = new TText(renderTarget, (this));
+				text2 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, (this));
 		}
-		text2->font = valpoint.get();
+		text2->font = valpoint.Get();
 		;
 	}
 
 	// 
 	valpoint = att->retrieveEntry(TString(L"|HoverFontColor"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!text2.get())
+		if (!text2.Get())
 		{
-			if (text1.get())
-				text2 = new TText(text1, (this));
+			if (text1.Get())
+				text2 = TrecPointerKey::GetNewTrecPointer<TText>(text1, (this));
 			else
-				text2 = new TText(renderTarget, (this));
+				text2 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, (this));
 		}
-		text2->color = convertStringToD2DColor(valpoint.get());
+		text2->color = convertStringToD2DColor(valpoint.Get());
 	}
 
 	// 
 	valpoint = att->retrieveEntry(TString(L"|HoverFontSize"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!text2.get())
+		if (!text2.Get())
 		{
-			if (text1.get())
-				text2 = new TText(text1, (this));
+			if (text1.Get())
+				text2 = TrecPointerKey::GetNewTrecPointer<TText>(text1, (this));
 			else
-				text2 = new TText(renderTarget, (this));
+				text2 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, (this));
 		}
 		valpoint->ConvertToFloat(&(text2->fontSize));
 	}
 	valpoint = att->retrieveEntry(TString(L"|HoverHorizontalAlignment"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!text2.get())
+		if (!text2.Get())
 		{
-			if (text1.get())
-				text2 = new TText(text1, (this));
+			if (text1.Get())
+				text2 = TrecPointerKey::GetNewTrecPointer<TText>(text1, (this));
 			else
-				text2 = new TText(renderTarget, (this));
+				text2 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, (this));
 		}
-		text2->setNewHorizontalAlignment(convertStringToTextAlignment(valpoint.get()));
+		text2->setNewHorizontalAlignment(convertStringToTextAlignment(valpoint.Get()));
 	}
 	valpoint = att->retrieveEntry(TString(L"|HoverVerticalAlignment"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!text2.get())
+		if (!text2.Get())
 		{
-			if (text1.get())
-				text2 = new TText(text1, (this));
+			if (text1.Get())
+				text2 = TrecPointerKey::GetNewTrecPointer<TText>(text1, (this));
 			else
-				text2 = new TText(renderTarget, (this));
+				text2 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, (this));
 		}
-		text2->setNewVerticalAlignment(convertStringToParagraphAlignment(valpoint.get()));
+		text2->setNewVerticalAlignment(convertStringToParagraphAlignment(valpoint.Get()));
 	}
 
 	valpoint = att->retrieveEntry(TString(L"|HoverContentColor2"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!content2.get())
+		if (!content2.Get())
 		{
-			if (content1.get())
-				content2 = new TContent(content1, (this));
+			if (content1.Get())
+				content2 = TrecPointerKey::GetNewTrecPointer<TContent>(content1, (this));
 			else
-				content2 = new TContent(renderTarget, (this));
+				content2 = TrecPointerKey::GetNewTrecPointer<TContent>(renderTarget, (this));
 		}
-		content2->color2 = convertStringToD2DColor(valpoint.get());
+		content2->color2 = convertStringToD2DColor(valpoint.Get());
 		content2->secondColor = true;
 	}
 
 	valpoint = att->retrieveEntry(TString(L"|HoverContentGrad1"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!content2.get())
+		if (!content2.Get())
 		{
-			if (content1.get())
-				content2 = new TContent(content1, (this));
+			if (content1.Get())
+				content2 = TrecPointerKey::GetNewTrecPointer<TContent>(content1, (this));
 			else
-				content2 = new TContent(renderTarget, (this));
+				content2 = TrecPointerKey::GetNewTrecPointer<TContent>(renderTarget, (this));
 		}
 		float entry = 0.0f;
 		valpoint->ConvertToFloat(&entry);
@@ -2231,14 +2215,14 @@ bool TControl::onCreate2(TMap<TString>* att, RECT loc)
 		content2->gradients[0].position = entry;
 	}
 	valpoint = att->retrieveEntry(TString(L"|HoverContentGrad2"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!content2.get())
+		if (!content2.Get())
 		{
-			if (content1.get())
-				content2 = new TContent(content1, (this));
+			if (content1.Get())
+				content2 = TrecPointerKey::GetNewTrecPointer<TContent>(content1, (this));
 			else
-				content2 = new TContent(renderTarget, (this));
+				content2 = TrecPointerKey::GetNewTrecPointer<TContent>(renderTarget, (this));
 		}
 		float entry = 1.0f;
 		valpoint->ConvertToFloat(&entry);
@@ -2247,28 +2231,28 @@ bool TControl::onCreate2(TMap<TString>* att, RECT loc)
 	}
 
 	valpoint = att->retrieveEntry(TString(L"|HoverBorderColor2"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!border2.get())
+		if (!border2.Get())
 		{
-			if (border1.get())
-				border2 = new TBorder(border1, (this));
+			if (border1.Get())
+				border2 = TrecPointerKey::GetNewTrecPointer<TBorder>(border1, (this));
 			else
-				border2 = new TBorder(renderTarget, (this));
+				border2 = TrecPointerKey::GetNewTrecPointer<TBorder>(renderTarget, (this));
 		}
-		border2->color2 = convertStringToD2DColor(valpoint.get());
+		border2->color2 = convertStringToD2DColor(valpoint.Get());
 		border2->secondColor = true;
 	}
 
 	valpoint = att->retrieveEntry(TString(L"|HoverBorderGrad1"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!border2.get())
+		if (!border2.Get())
 		{
-			if (border1.get())
-				border2 = new TBorder(border1, (this));
+			if (border1.Get())
+				border2 = TrecPointerKey::GetNewTrecPointer<TBorder>(border1, (this));
 			else
-				border2 = new TBorder(renderTarget, (this));
+				border2 = TrecPointerKey::GetNewTrecPointer<TBorder>(renderTarget, (this));
 		}
 		float entry = 0.0f;
 		valpoint->ConvertToFloat(&entry);
@@ -2276,14 +2260,14 @@ bool TControl::onCreate2(TMap<TString>* att, RECT loc)
 		border2->gradients[0].position = entry;
 	}
 	valpoint = att->retrieveEntry(TString(L"|HoverBorderGrad2"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!border2.get())
+		if (!border2.Get())
 		{
-			if (border1.get())
-				border2 = new TBorder(border1, (this));
+			if (border1.Get())
+				border2 = TrecPointerKey::GetNewTrecPointer<TBorder>(border1, (this));
 			else
-				border2 = new TBorder(renderTarget, (this));
+				border2 = TrecPointerKey::GetNewTrecPointer<TBorder>(renderTarget, (this));
 		}
 		float entry = 1.0f;
 		valpoint->ConvertToFloat(&entry);
@@ -2293,42 +2277,42 @@ bool TControl::onCreate2(TMap<TString>* att, RECT loc)
 
 	// 
 	valpoint = att->retrieveEntry(TString(L"|HoverCaption"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!text2.get())
+		if (!text2.Get())
 		{
-			if (text1.get())
-				text2 = new TText(text1, (this));
+			if (text1.Get())
+				text2 = TrecPointerKey::GetNewTrecPointer<TText>(text1, (this));
 			else
-				text2 = new TText(renderTarget, (this));
+				text2 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, (this));
 		}
-		text2->text = valpoint.get();
+		text2->text = valpoint.Get();
 		;
 	}
 
 	valpoint = att->retrieveEntry(TString(L"|HoverTextColor2"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!text2.get())
+		if (!text2.Get())
 		{
-			if (text1.get())
-				text2 = new TText(text1, (this));
+			if (text1.Get())
+				text2 = TrecPointerKey::GetNewTrecPointer<TText>(text1, (this));
 			else
-				text2 = new TText(renderTarget, (this));
+				text2 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, (this));
 		}
-		text2->color2 = convertStringToD2DColor(valpoint.get());
+		text2->color2 = convertStringToD2DColor(valpoint.Get());
 		text2->secondColor = true;
 	}
 
 	valpoint = att->retrieveEntry(TString(L"|HoverTextGrad1"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!text2.get())
+		if (!text2.Get())
 		{
-			if (text1.get())
-				text2 = new TText(text1, (this));
+			if (text1.Get())
+				text2 = TrecPointerKey::GetNewTrecPointer<TText>(text1, (this));
 			else
-				text2 = new TText(renderTarget, (this));
+				text2 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, (this));
 		}
 		float entry = 0.0f;
 		valpoint->ConvertToFloat(&entry);
@@ -2336,14 +2320,14 @@ bool TControl::onCreate2(TMap<TString>* att, RECT loc)
 		text2->gradients[0].position = entry;
 	}
 	valpoint = att->retrieveEntry(TString(L"|HoverTextGrad2"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!text2.get())
+		if (!text2.Get())
 		{
-			if (text1.get())
-				text2 = new TText(text1, (this));
+			if (text1.Get())
+				text2 = TrecPointerKey::GetNewTrecPointer<TText>(text1, (this));
 			else
-				text2 = new TText(renderTarget, (this));
+				text2 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, (this));
 		}
 		float entry = 1.0f;
 		valpoint->ConvertToFloat(&entry);
@@ -2352,54 +2336,54 @@ bool TControl::onCreate2(TMap<TString>* att, RECT loc)
 	}
 
 	valpoint = att->retrieveEntry(TString(L"|HoverTextGradMode"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!text2.get())
+		if (!text2.Get())
 		{
-			if (text1.get())
-				text2 = new TText(text1, (this));
+			if (text1.Get())
+				text2 = TrecPointerKey::GetNewTrecPointer<TText>(text1, (this));
 			else
-				text2 = new TText(renderTarget, (this));
+				text2 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, (this));
 		}
 		if (valpoint->Compare(L"Radial"))
 			text2->useRadial = true;
 	}
 	valpoint = att->retrieveEntry(TString(L"|HoverContentGradMode"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!content2.get())
+		if (!content2.Get())
 		{
-			if (content1.get())
-				content2 = new TContent(content1, (this));
+			if (content1.Get())
+				content2 = TrecPointerKey::GetNewTrecPointer<TContent>(content1, (this));
 			else
-				content2 = new TContent(renderTarget, (this));
+				content2 = TrecPointerKey::GetNewTrecPointer<TContent>(renderTarget, (this));
 		}
 		if (valpoint->Compare(L"Radial"))
 			content2->useRadial = true;
 	}
 	valpoint = att->retrieveEntry(TString(L"|HoverBorderGradMode"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!border2.get())
+		if (!border2.Get())
 		{
-			if (border1.get())
-				border2 = new TBorder(border1, (this));
+			if (border1.Get())
+				border2 = TrecPointerKey::GetNewTrecPointer<TBorder>(border1, (this));
 			else
-				border2 = new TBorder(renderTarget, (this));
+				border2 = TrecPointerKey::GetNewTrecPointer<TBorder>(renderTarget, (this));
 		}
 		if (valpoint->Compare(L"Radial"))
 			border2->useRadial = true;
 	}
 
 	valpoint = att->retrieveEntry(TString(L"|HoverImageSource"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!content2.get())
+		if (!content2.Get())
 		{
-			if (content1.get())
-				content2 = new TContent(content1, (this));
+			if (content1.Get())
+				content2 = TrecPointerKey::GetNewTrecPointer<TContent>(content1, (this));
 			else
-				content2 = new TContent(renderTarget, (this));
+				content2 = TrecPointerKey::GetNewTrecPointer<TContent>(renderTarget, (this));
 		}
 		generateImage(content2, valpoint, loc);
 	}
@@ -2419,83 +2403,83 @@ bool TControl::onCreate3(TMap<TString>* att, RECT loc)
 	TrecPointer<TString> valpoint;	// 
 
 	valpoint = att->retrieveEntry(TString(L"|ClickBorderThickness"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!border3.get())
+		if (!border3.Get())
 		{
-			if (border1.get())
-				border3 = new TBorder(border1, (this));
+			if (border1.Get())
+				border3 = TrecPointerKey::GetNewTrecPointer<TBorder>(border1, (this));
 			else
-				border3 = new TBorder(renderTarget, (this));
+				border3 = TrecPointerKey::GetNewTrecPointer<TBorder>(renderTarget, (this));
 		}
 		valpoint->ConvertToFloat(&(border3->thickness));         // Logic Bug needs fixing
 	}
 
 	// 
 	valpoint = att->retrieveEntry(TString(L"|ClickBorderColor"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!border3.get())
+		if (!border3.Get())
 		{
-			if (border1.get())
-				border3 = new TBorder(border1, (this));
+			if (border1.Get())
+				border3 = TrecPointerKey::GetNewTrecPointer<TBorder>(border1, (this));
 			else
-				border3 = new TBorder(renderTarget, (this));
+				border3 = TrecPointerKey::GetNewTrecPointer<TBorder>(renderTarget, (this));
 		}
-		border3->color = convertStringToD2DColor(valpoint.get());
+		border3->color = convertStringToD2DColor(valpoint.Get());
 	}
 
 	// 
 	valpoint = att->retrieveEntry(TString(L"|ClickContentThickness"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!content3.get())
+		if (!content3.Get())
 		{
-			if (content1.get())
-				content3 = new TContent(content1, (this));
+			if (content1.Get())
+				content3 = TrecPointerKey::GetNewTrecPointer<TContent>(content1, (this));
 			else
-				content3 = new TContent(renderTarget, (this));
+				content3 = TrecPointerKey::GetNewTrecPointer<TContent>(renderTarget, (this));
 		}
 		valpoint->ConvertToFloat(&(content3->thickness));
 	}
 
 	// 
 	valpoint = att->retrieveEntry(TString(L"|ClickContentColor"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!content3.get())
+		if (!content3.Get())
 		{
-			if (content1.get())
-				content3 = new TContent(content1, (this));
+			if (content1.Get())
+				content3 = TrecPointerKey::GetNewTrecPointer<TContent>(content1, (this));
 			else
-				content3 = new TContent(renderTarget, (this));
+				content3 = TrecPointerKey::GetNewTrecPointer<TContent>(renderTarget, (this));
 		}
-		content3->color = convertStringToD2DColor(valpoint.get());
+		content3->color = convertStringToD2DColor(valpoint.Get());
 	}
 
 	valpoint = att->retrieveEntry(TString(L"|ClickContentColor2"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!content3.get())
+		if (!content3.Get())
 		{
-			if (content1.get())
-				content3 = new TContent(content1, (this));
+			if (content1.Get())
+				content3 = TrecPointerKey::GetNewTrecPointer<TContent>(content1, (this));
 			else
-				content3 = new TContent(renderTarget, (this));
+				content3 = TrecPointerKey::GetNewTrecPointer<TContent>(renderTarget, (this));
 		}
-		content3->color2 = convertStringToD2DColor(valpoint.get());
+		content3->color2 = convertStringToD2DColor(valpoint.Get());
 		content3->secondColor = true;
 	}
 
 	valpoint = att->retrieveEntry(TString(L"|ClickContentGrad1"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!content3.get())
+		if (!content3.Get())
 		{
-			if (content1.get())
-				content3 = new TContent(content1, (this));
+			if (content1.Get())
+				content3 = TrecPointerKey::GetNewTrecPointer<TContent>(content1, (this));
 			else
-				content3 = new TContent(renderTarget, (this));
+				content3 = TrecPointerKey::GetNewTrecPointer<TContent>(renderTarget, (this));
 		}
 		float entry = 0.0f;
 		valpoint->ConvertToFloat(&entry);
@@ -2503,14 +2487,14 @@ bool TControl::onCreate3(TMap<TString>* att, RECT loc)
 		content3->gradients[0].position = entry;
 	}
 	valpoint = att->retrieveEntry(TString(L"|ClickContentGrad2"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!content3.get())
+		if (!content3.Get())
 		{
-			if (content1.get())
-				content3 = new TContent(content1, (this));
+			if (content1.Get())
+				content3 = TrecPointerKey::GetNewTrecPointer<TContent>(content1, (this));
 			else
-				content3 = new TContent(renderTarget, (this));
+				content3 = TrecPointerKey::GetNewTrecPointer<TContent>(renderTarget, (this));
 		}
 		float entry = 1.0f;
 		valpoint->ConvertToFloat(&entry);
@@ -2519,28 +2503,28 @@ bool TControl::onCreate3(TMap<TString>* att, RECT loc)
 	}
 
 	valpoint = att->retrieveEntry(TString(L"|ClickBorderColor2"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!border3.get())
+		if (!border3.Get())
 		{
-			if (border1.get())
-				border3 = new TBorder(border1, (this));
+			if (border1.Get())
+				border3 = TrecPointerKey::GetNewTrecPointer<TBorder>(border1, (this));
 			else
-				border3 = new TBorder(renderTarget, (this));
+				border3 = TrecPointerKey::GetNewTrecPointer<TBorder>(renderTarget, (this));
 		}
-		border3->color2 = convertStringToD2DColor(valpoint.get());
+		border3->color2 = convertStringToD2DColor(valpoint.Get());
 		border3->secondColor = true;
 	}
 
 	valpoint = att->retrieveEntry(TString(L"|ClickBorderGrad1"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!border3.get())
+		if (!border3.Get())
 		{
-			if (border1.get())
-				border3 = new TBorder(border1, (this));
+			if (border1.Get())
+				border3 = TrecPointerKey::GetNewTrecPointer<TBorder>(border1, (this));
 			else
-				border3 = new TBorder(renderTarget, (this));
+				border3 = TrecPointerKey::GetNewTrecPointer<TBorder>(renderTarget, (this));
 		}
 		float entry = 0.0f;
 		valpoint->ConvertToFloat(&entry);
@@ -2548,14 +2532,14 @@ bool TControl::onCreate3(TMap<TString>* att, RECT loc)
 		border3->gradients[0].position = entry;
 	}
 	valpoint = att->retrieveEntry(TString(L"|ClickBorderGrad2"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!border3.get())
+		if (!border3.Get())
 		{
-			if (border1.get())
-				border3 = new TBorder(border1, (this));
+			if (border1.Get())
+				border3 = TrecPointerKey::GetNewTrecPointer<TBorder>(border1, (this));
 			else
-				border3 = new TBorder(renderTarget, (this));
+				border3 = TrecPointerKey::GetNewTrecPointer<TBorder>(renderTarget, (this));
 		}
 		float entry = 1.0f;
 		valpoint->ConvertToFloat(&entry);
@@ -2565,42 +2549,42 @@ bool TControl::onCreate3(TMap<TString>* att, RECT loc)
 
 	// 
 	valpoint = att->retrieveEntry(TString(L"|ClickCaption"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!text3.get())
+		if (!text3.Get())
 		{
-			if (text1.get())
-				text3 = new TText(text1, (this));
+			if (text1.Get())
+				text3 = TrecPointerKey::GetNewTrecPointer<TText>(text1, (this));
 			else
-				text3 = new TText(renderTarget, (this));
+				text3 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, (this));
 		}
-		text3->text = valpoint.get();
+		text3->text = valpoint.Get();
 		;
 	}
 
 	valpoint = att->retrieveEntry(TString(L"|ClickTextColor2"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!text3.get())
+		if (!text3.Get())
 		{
-			if (text1.get())
-				text3 = new TText(text1, (this));
+			if (text1.Get())
+				text3 = TrecPointerKey::GetNewTrecPointer<TText>(text1, (this));
 			else
-				text3 = new TText(renderTarget, (this));
+				text3 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, (this));
 		}
-		text3->color2 = convertStringToD2DColor(valpoint.get());
+		text3->color2 = convertStringToD2DColor(valpoint.Get());
 		text3->secondColor = true;
 	}
 
 	valpoint = att->retrieveEntry(TString(L"|ClickTextGrad1"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!text3.get())
+		if (!text3.Get())
 		{
-			if (text1.get())
-				text3 = new TText(text1, (this));
+			if (text1.Get())
+				text3 = TrecPointerKey::GetNewTrecPointer<TText>(text1, (this));
 			else
-				text3 = new TText(renderTarget, (this));
+				text3 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, (this));
 		}
 		float entry = 0.0f;
 		valpoint->ConvertToFloat(&entry);
@@ -2608,14 +2592,14 @@ bool TControl::onCreate3(TMap<TString>* att, RECT loc)
 		text3->gradients[0].position = entry;
 	}
 	valpoint = att->retrieveEntry(TString(L"|ClickTextGrad2"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!text3.get())
+		if (!text3.Get())
 		{
-			if (text1.get())
-				text3 = new TText(text1, (this));
+			if (text1.Get())
+				text3 = TrecPointerKey::GetNewTrecPointer<TText>(text1, (this));
 			else
-				text3 = new TText(renderTarget, (this));
+				text3 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, (this));
 		}
 		float entry = 1.0f;
 		valpoint->ConvertToFloat(&entry);
@@ -2624,40 +2608,40 @@ bool TControl::onCreate3(TMap<TString>* att, RECT loc)
 	}
 
 	valpoint = att->retrieveEntry(TString(L"|ClickTextGradMode"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!text3.get())
+		if (!text3.Get())
 		{
-			if (text1.get())
-				text3 = new TText(text1, (this));
+			if (text1.Get())
+				text3 = TrecPointerKey::GetNewTrecPointer<TText>(text1, (this));
 			else
-				text3 = new TText(renderTarget, (this));
+				text3 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, (this));
 		}
 		if (valpoint->Compare(L"Radial"))
 			text3->useRadial = true;
 	}
 	valpoint = att->retrieveEntry(TString(L"|ClickContentGradMode"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!content3.get())
+		if (!content3.Get())
 		{
-			if (content1.get())
-				content3 = new TContent(content1, (this));
+			if (content1.Get())
+				content3 = TrecPointerKey::GetNewTrecPointer<TContent>(content1, (this));
 			else
-				content3 = new TContent(renderTarget, (this));
+				content3 = TrecPointerKey::GetNewTrecPointer<TContent>(renderTarget, (this));
 		}
 		if (valpoint->Compare(L"Radial"))
 			content3->useRadial = true;
 	}
 	valpoint = att->retrieveEntry(TString(L"|ClickBorderGradMode"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!border3.get())
+		if (!border3.Get())
 		{
-			if (border1.get())
-				border3 = new TBorder(border1, (this));
+			if (border1.Get())
+				border3 = TrecPointerKey::GetNewTrecPointer<TBorder>(border1, (this));
 			else
-				border3 = new TBorder(renderTarget, (this));
+				border3 = TrecPointerKey::GetNewTrecPointer<TBorder>(renderTarget, (this));
 		}
 		if (valpoint->Compare(L"Radial"))
 			border3->useRadial = true;
@@ -2665,94 +2649,94 @@ bool TControl::onCreate3(TMap<TString>* att, RECT loc)
 
 	// 
 	valpoint = att->retrieveEntry(TString(L"|ClickCaptionLocale"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!text3.get())
+		if (!text3.Get())
 		{
-			if (text1.get())
-				text3 = new TText(text1, (this));
+			if (text1.Get())
+				text3 = TrecPointerKey::GetNewTrecPointer<TText>(text1, (this));
 			else
-				text3 = new TText(renderTarget, (this));
+				text3 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, (this));
 		}
-		text3->locale = valpoint.get();
+		text3->locale = valpoint.Get();
 		;
 	}
 
 	// 
 	valpoint = att->retrieveEntry(TString(L"|ClickFont"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!text3.get())
+		if (!text3.Get())
 		{
-			if (text1.get())
-				text3 = new TText(text1, (this));
+			if (text1.Get())
+				text3 = TrecPointerKey::GetNewTrecPointer<TText>(text1, (this));
 			else
-				text3 = new TText(renderTarget, (this));
+				text3 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, (this));
 		}
-		text3->font = valpoint.get();
+		text3->font = valpoint.Get();
 	}
 
 	// 
 	valpoint = att->retrieveEntry(TString(L"|ClickFontColor"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!text3.get())
+		if (!text3.Get())
 		{
-			if (text1.get())
-				text3 = new TText(text1, (this));
+			if (text1.Get())
+				text3 = TrecPointerKey::GetNewTrecPointer<TText>(text1, (this));
 			else
-				text3 = new TText(renderTarget, (this));
+				text3 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, (this));
 		}
-		text3->color = convertStringToD2DColor(valpoint.get());
+		text3->color = convertStringToD2DColor(valpoint.Get());
 	}
 
 	// 
 	valpoint = att->retrieveEntry(TString(L"|ClickFontSize"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!text3.get())
+		if (!text3.Get())
 		{
-			if (text1.get())
-				text3 = new TText(text1, (this));
+			if (text1.Get())
+				text3 = TrecPointerKey::GetNewTrecPointer<TText>(text1, (this));
 			else
-				text3 = new TText(renderTarget, (this));
+				text3 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, (this));
 		}
 		valpoint->ConvertToFloat(&(text3->fontSize));
 	}
 	valpoint = att->retrieveEntry(TString(L"|ClickHorizontalAlignment"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!text3.get())
+		if (!text3.Get())
 		{
-			if (text1.get())
-				text3 = new TText(text1, (this));
+			if (text1.Get())
+				text3 = TrecPointerKey::GetNewTrecPointer<TText>(text1, (this));
 			else
-				text3 = new TText(renderTarget, (this));
+				text3 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, (this));
 		}
-		text3->setNewHorizontalAlignment(convertStringToTextAlignment(valpoint.get()));
+		text3->setNewHorizontalAlignment(convertStringToTextAlignment(valpoint.Get()));
 	}
 	valpoint = att->retrieveEntry(TString(L"|ClickVerticalAlignment"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!text3.get())
+		if (!text3.Get())
 		{
-			if (text1.get())
-				text3 = new TText(text1, (this));
+			if (text1.Get())
+				text3 = TrecPointerKey::GetNewTrecPointer<TText>(text1, (this));
 			else
-				text3 = new TText(renderTarget, (this));
+				text3 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, (this));
 		}
-		text3->setNewVerticalAlignment(convertStringToParagraphAlignment(valpoint.get()));
+		text3->setNewVerticalAlignment(convertStringToParagraphAlignment(valpoint.Get()));
 	}
 
 	valpoint = att->retrieveEntry(TString(L"|ClickImageSource"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		if (!content3.get())
+		if (!content3.Get())
 		{
-			if (content1.get())
-				content3 = new TContent(content1, (this));
+			if (content1.Get())
+				content3 = TrecPointerKey::GetNewTrecPointer<TContent>(content1, (this));
 			else
-				content3 = new TContent(renderTarget, (this));
+				content3 = TrecPointerKey::GetNewTrecPointer<TContent>(renderTarget, (this));
 		}
 		generateImage(content3, valpoint,loc);
 	}
@@ -2770,53 +2754,107 @@ bool TControl::onCreate3(TMap<TString>* att, RECT loc)
 void TControl::updateComponentLocation()
 {
 	// Borders
-	if (border1.get())
+	if (border1.Get())
 	{
-		convertCRectToD2DRect(&snip, &(border1->snip));
 		convertCRectToD2DRect(&location, &(border1->loci));
 	}
-	if (border2.get())
+	if (border2.Get())
 	{
-		convertCRectToD2DRect(&snip, &(border2->snip));
 		convertCRectToD2DRect(&location, &(border2->loci));
 	}
-	if (border3.get())
+	if (border3.Get())
 	{
-		convertCRectToD2DRect(&snip, &(border3->snip));
 		convertCRectToD2DRect(&location, &(border3->loci));
 	}
 
 	// Content
-	if (text1.get())
+	if (text1.Get())
 	{
 		convertCRectToD2DRect(&location, &(text1->bounds));
 	}
-	if (text2.get())
+	if (text2.Get())
 	{
 		convertCRectToD2DRect(&location, &(text2->bounds));
 	}
-	if (text3.get())
+	if (text3.Get())
 	{
 		convertCRectToD2DRect(&location, &(text3->bounds));
 	}
 
 	// Content
-	if (content1.get())
+	if (content1.Get())
 	{
-		convertCRectToD2DRect(&snip, &(content1->snip));
 		convertCRectToD2DRect(&location, &(content1->location));
 	}
-	if (content2.get())
+	if (content2.Get())
 	{
-		convertCRectToD2DRect(&snip, &(content2->snip));
 		convertCRectToD2DRect(&location, &(content2->location));
 	}
-	if (content3.get())
+	if (content3.Get())
 	{
-		convertCRectToD2DRect(&snip, &(content3->snip));
 		convertCRectToD2DRect(&location, &(content3->location));
 	}
 
+}
+
+void TControl::CheckScroll()
+{
+	RECT area = location;
+
+	bool needV = false, needH = false;
+
+	for (UINT c = 0; c < children.Count(); c++)
+	{
+		auto con = children.ElementAt(c).Get();
+		if (!con) continue;
+
+		RECT cLoc = con->getLocation();
+
+		if (cLoc.bottom > area.bottom)
+		{
+			area.bottom = cLoc.bottom;
+			needV = true;
+		}
+		if (cLoc.top < area.top)
+		{
+			needV = true;
+			area.top = cLoc.top;
+		}
+		if (cLoc.right > area.right)
+		{
+			area.right = cLoc.right;
+			needH = true;
+		}
+		if (cLoc.left < area.left)
+		{
+			area.left = cLoc.left;
+			needH = true;
+		}
+	}
+
+	if (needV)
+	{
+		if (!vScroll)
+			vScroll = new TScrollBar(*this, so_vertical);
+		vScroll->Refresh(location, area);
+	}
+	else if (vScroll)
+	{
+		delete vScroll;
+		vScroll = nullptr;
+	}
+
+	if (needH)
+	{
+		if (hScroll)
+			hScroll = new TScrollBar(*this, so_horizontal);
+		hScroll->Refresh(location, area);
+	}
+	else if (hScroll)
+	{
+		delete hScroll;
+		hScroll = nullptr;
+	}
 }
 
 
@@ -2832,7 +2870,7 @@ void TControl::updateComponentLocation()
 */
 int TControl::generateImage(TrecPointer<TContent> tcon, TrecPointer<TString> p, RECT loc)
 {
-	if (!tcon.get() || !(p.get()))
+	if (!tcon.Get() || !(p.Get()))
 		return 1;
 	IWICImagingFactory* imageFactory = NULL;
 	IWICBitmapDecoder* decoder = NULL;
@@ -2847,11 +2885,14 @@ int TControl::generateImage(TrecPointer<TContent> tcon, TrecPointer<TString> p, 
 		(LPVOID*)&imageFactory);
 	if (!SUCCEEDED(result))
 		return 2;
-	result = imageFactory->CreateDecoderFromFilename(p->GetBuffer(),
+	WCHAR* buff = p->GetBufferCopy();
+	result = imageFactory->CreateDecoderFromFilename(buff,
 		NULL,
 		GENERIC_READ,
 		WICDecodeMetadataCacheOnLoad,
 		&decoder);
+	delete[] buff;
+	buff = nullptr;
 	if (!SUCCEEDED(result))
 	{
 		imageFactory->Release();
@@ -2914,18 +2955,18 @@ int TControl::generateImage(TrecPointer<TContent> tcon, TrecPointer<TString> p, 
 		converter->Release();
 		return 8;
 	}
-	if (!renderTarget.get())
+	if (!renderTarget.Get())
 	{
 		imageFactory->Release();
 		decoder->Release();
 		converter->Release();
 		return 9;
 	}
-	ID2D1Bitmap* map;
-	result = renderTarget->CreateBitmapFromWicBitmap(converter, &map);
-	tcon->image = map;
-	HRESULT result2 = renderTarget->CreateBitmapFromWicBitmap(converter, &map);
-	tcon->cropImage = map;
+	TrecComPointer<ID2D1Bitmap>::TrecComHolder map;
+	result = renderTarget->CreateBitmapFromWicBitmap(converter, map.GetPointerAddress());
+	tcon->image = map.Extract();
+	HRESULT result2 = renderTarget->CreateBitmapFromWicBitmap(converter, map.GetPointerAddress());
+	tcon->cropImage = map.Extract();
 	//decoder->GetFrameCount(&frameCount);
 	imageFactory->Release();
 	decoder->Release();
@@ -2945,35 +2986,25 @@ void TControl::checkMargin(RECT contain)
 {
 	TrecPointer<TString> valpoint = attributes.retrieveEntry(TString(L"|Margin"));
 	//margin = RECT{ 0,0,0,0 };
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		margin = convertStringToRECT(valpoint.get());
+		margin = convertStringToRECT(valpoint.Get());
 		marginSet = true;
 	}
 	
-	if (snip.bottom == 0 && snip.right == 0)
+	if (location.bottom == 0 && location.right == 0)
 	{
-		snip.bottom = contain.bottom - margin.bottom;
-		snip.left = contain.left + margin.left;
-		snip.top = contain.top + margin.top;
-		snip.right = contain.right - margin.right;
+		location.bottom = contain.bottom - margin.bottom;
+		location.left = contain.left + margin.left;
+		location.top = contain.top + margin.top;
+		location.right = contain.right - margin.right;
 	}
 	else
 	{
-		snip.bottom = snip.bottom - margin.bottom;
-		snip.left = snip.left + margin.left;
-		snip.right = snip.right - margin.right;
-		snip.top = snip.top + margin.top;
-	}
-	if (!hScroll)
-	{
-		location.left = snip.left;
-		location.right = snip.right;
-	}
-	if (!vScroll)
-	{
-		location.top = snip.top;
-		location.bottom = snip.bottom;
+		location.bottom = location.bottom - margin.bottom;
+		location.left = location.left + margin.left;
+		location.right = location.right - margin.right;
+		location.top = location.top + margin.top;
 	}
 }
 
@@ -2988,7 +3019,7 @@ void TControl::checkHeightWidth(RECT r)
 	//
 
 	TrecPointer<TString> valpoint = attributes.retrieveEntry(TString(L"|Height"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
 		generateSizeControl();
 		if (valpoint->ConvertToInt(&(dimensions->height)))
@@ -2996,7 +3027,7 @@ void TControl::checkHeightWidth(RECT r)
 	}
 
 	valpoint = attributes.retrieveEntry(TString(L"|Width"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
 		generateSizeControl();
 		if (valpoint->ConvertToInt(&(dimensions->width)))
@@ -3004,7 +3035,7 @@ void TControl::checkHeightWidth(RECT r)
 	}
 
 	valpoint = attributes.retrieveEntry(TString(L"|MaxHeight"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
 		generateSizeControl();
 		if (valpoint->ConvertToInt(&(dimensions->maxHeight)))
@@ -3012,7 +3043,7 @@ void TControl::checkHeightWidth(RECT r)
 	}
 
 	valpoint = attributes.retrieveEntry(TString(L"|MaxWidth"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
 		generateSizeControl();
 		if (valpoint->ConvertToInt(&(dimensions->maxWidth)))
@@ -3020,7 +3051,7 @@ void TControl::checkHeightWidth(RECT r)
 	}
 
 	valpoint = attributes.retrieveEntry(TString(L"|MinHeight"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
 		generateSizeControl();
 		if (valpoint->ConvertToInt(&(dimensions->minHeight)))
@@ -3028,7 +3059,7 @@ void TControl::checkHeightWidth(RECT r)
 	}
 
 	valpoint = attributes.retrieveEntry(TString(L"|MinWidth"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
 		generateSizeControl();
 		if (valpoint->ConvertToInt(&(dimensions->minWidth)))
@@ -3096,8 +3127,9 @@ void TControl::resetArgs()
 	args.control = this;
 	args.isClick = false;
 	args.isLeftClick = false;
-	args.methodID = 0;
-	args.point = { 0, 0 };
+	args.methodID = -1;
+	args.point.x = 0.0f;
+	args.point.y = 0.0f;
 	args.positive = false;
 	args.text.Empty();
 	args.type = L'\0';
@@ -3129,25 +3161,25 @@ int TControl::getEventID(R_Message_Type type)
 */
 void TControl::SetToRenderTarget()
 {
-	if (border1.get())
+	if (border1.Get())
 		border1->rt = renderTarget;
-	if (border2.get())
+	if (border2.Get())
 		border2->rt = renderTarget;
-	if (border3.get())
+	if (border3.Get())
 		border3->rt = renderTarget;
 
-	if (content1.get())
+	if (content1.Get())
 		content1->rt = renderTarget;
-	if (content2.get())
+	if (content2.Get())
 		content2->rt = renderTarget;
-	if (content3.get())
+	if (content3.Get())
 		content3->rt = renderTarget;
 
-	if (text1.get())
+	if (text1.Get())
 		text1->rt = renderTarget;
-	if (text2.get())
+	if (text2.Get())
 		text2->rt = renderTarget;
-	if (text3.get())
+	if (text3.Get())
 		text3->rt = renderTarget;
 }
 
@@ -3175,12 +3207,12 @@ void TControl::addEventID(R_Message_Type rmt, int e_id)
 * Method: TControl - OnRButtonUp
 * Purpose: Allows Control to catch the Right Mouse button release event and act accordingly
 * Parameters: UINT nFlags - flags provided by MFC's Message system, not used
-*				CPoint point - the point on screen where the event occured
+*				TPoint point - the point on screen where the event occured
 *				messageOutput* mOut - allows controls to keep track of whether ohter controls have caught the event
 *				TDataArray<EventID_Cred>& eventAr - allows Controls to add whatever Event Handler they have been assigned
 * Returns: void
 */
-afx_msg void TControl::OnRButtonUp(UINT nFlags, CPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+afx_msg void TControl::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
 	if (!isActive)
 		return;
@@ -3221,12 +3253,12 @@ afx_msg void TControl::OnRButtonUp(UINT nFlags, CPoint point, messageOutput* mOu
 * Method: TControl - OnLButtonDown
 * Purpose: Allows Control to catch the Left Mouse Button Down event and act accordingly
 * Parameters: UINT nFlags - flags provided by MFC's Message system, not used
-*				CPoint point - the point on screen where the event occured
+*				TPoint point - the point on screen where the event occured
 *				messageOutput* mOut - allows controls to keep track of whether ohter controls have caught the event
 *				TDataArray<EventID_Cred>& eventAr - allows Controls to add whatever Event Handler they have been assigned
 * Returns: void
 */
-afx_msg void TControl::OnLButtonDown(UINT nFlags, CPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+afx_msg void TControl::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr, TDataArray<TControl*>& clickedControls)
 {
 	if (!isActive)
 		return;
@@ -3245,8 +3277,8 @@ afx_msg void TControl::OnLButtonDown(UINT nFlags, CPoint point, messageOutput* m
 
 	for (int c = 0; c < children.Count();c++)
 	{
-		if (children.ElementAt(c).get())
-			children.ElementAt(c)->OnLButtonDown(nFlags, point, mOut,eventAr);
+		if (children.ElementAt(c).Get())
+			children.ElementAt(c)->OnLButtonDown(nFlags, point, mOut,eventAr, clickedControls);
 	}
 
 	if (*mOut == positiveOverride || *mOut == positiveOverrideUpdate)
@@ -3270,6 +3302,7 @@ afx_msg void TControl::OnLButtonDown(UINT nFlags, CPoint point, messageOutput* m
 			*mOut = positiveContinue;
 	}
 	mState = mouseLClick;
+	clickedControls.push_back(this);
 	
 	if (hasEvent(On_Click))
 	{
@@ -3321,12 +3354,12 @@ afx_msg void TControl::OnLButtonDown(UINT nFlags, CPoint point, messageOutput* m
 * Method: TControl - OnRButtonDown
 * Purpose: Allows Control to catch the Right Mouse button down event and act accordingly
 * Parameters: UINT nFlags - flags provided by MFC's Message system, not used
-*				CPoint point - the point on screen where the event occured
+*				TPoint point - the point on screen where the event occured
 *				messageOutput* mOut - allows controls to keep track of whether ohter controls have caught the event
 *				TDataArray<EventID_Cred>& eventAr - allows Controls to add whatever Event Handler they have been assigned
 * Returns: void
 */
-afx_msg void TControl::OnRButtonDown(UINT nFlags, CPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+afx_msg void TControl::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
 	if (!isActive)
 		return;
@@ -3345,7 +3378,7 @@ afx_msg void TControl::OnRButtonDown(UINT nFlags, CPoint point, messageOutput* m
 	}
 	for (int c = 0; c < children.Count();c++)
 	{
-		children.ElementAt(c)->OnLButtonDown(nFlags, point, mOut,eventAr);
+		children.ElementAt(c)->OnRButtonDown(nFlags, point, mOut,eventAr);
 		if (*mOut == negative)
 			continue;
 		if (*mOut == positiveOverride || *mOut == positiveOverrideUpdate)
@@ -3383,12 +3416,12 @@ afx_msg void TControl::OnRButtonDown(UINT nFlags, CPoint point, messageOutput* m
 * Method: TControl - OnMouseMove
 * Purpose: Allows Controls to catch the Mouse Move event and deduce if the cursor has hovered over it
 * Parameters: UINT nFlags - flags provided by MFC's Message system, not used
-*				CPoint point - the point on screen where the event occured
+*				TPoint point - the point on screen where the event occured
 *				messageOutput* mOut - allows controls to keep track of whether ohter controls have caught the event
 *				TDataArray<EventID_Cred>& eventAr - allows Controls to add whatever Event Handler they have been assigned
 * Returns: void
 */
-afx_msg void TControl::OnMouseMove(UINT nFlags, CPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+afx_msg void TControl::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
 	if (!isActive)
 		return;
@@ -3397,7 +3430,6 @@ afx_msg void TControl::OnMouseMove(UINT nFlags, CPoint point, messageOutput* mOu
 	{
 		if (mState != normal)
 		{
-			mState = normal;
 			*mOut = negativeUpdate;
 		}
 		else
@@ -3409,13 +3441,12 @@ afx_msg void TControl::OnMouseMove(UINT nFlags, CPoint point, messageOutput* mOu
 
 	for (int c = 0; c < children.Count();c++)
 	{
-		if (children.ElementAt(c).get())
+		if (children.ElementAt(c).Get())
 			children.ElementAt(c)->OnMouseMove(nFlags, point, mOut, eventAr);
 	}
 
 	if (*mOut == positiveOverride || *mOut == positiveOverrideUpdate)
 	{
-		mState = normal;
 		return;
 	}
 
@@ -3433,7 +3464,8 @@ afx_msg void TControl::OnMouseMove(UINT nFlags, CPoint point, messageOutput* mOu
 		else
 			*mOut = positiveContinue;
 	}
-	mState = mouseHover;
+	if(mState != mouseLClick)
+		mState = mouseHover;
 
 	if (hasEvent(On_Hover))
 	{
@@ -3451,28 +3483,28 @@ afx_msg void TControl::OnMouseMove(UINT nFlags, CPoint point, messageOutput* mOu
 * Method: TControl - OnContextMenu
 * Purpose: Allows Anaface to catch onContextMenu calls from MFC
 * Parameters: CWnd* pWnd - The window involved
-*				CPoint point - the point on screen where the event occured
+*				TPoint point - the point on screen where the event occured
 *				messageOutput* mOut - allows controls to keep track of whether ohter controls have caught the event
 *				TDataArray<EventID_Cred>& eventAr - allows Controls to add whatever Event Handler they have been assigned
 * Returns: void
 * Note: UNUSED - Anaface's own Context Menu system is preferable
-*/
-afx_msg void TControl::OnContextMenu(CWnd* pWnd, CPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+
+afx_msg void TControl::OnContextMenu(CWnd* pWnd, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
 	if (!isActive)
 		return;
-}
+}*/
 
 /*
 * Method: TControl - OnLButtonDblClk
 * Purpose: Allows control to catch the DOuble Click event and act accordingly
 * Parameters: UINT nFlags - flags provided by MFC's Message system, not used
-*				CPoint point - the point on screen where the event occured
+*				TPoint point - the point on screen where the event occured
 *				messageOutput* mOut - allows controls to keep track of whether ohter controls have caught the event
 *				TDataArray<EventID_Cred>& eventAr - allows Controls to add whatever Event Handler they have been assigned
 * Returns: void
 */
-afx_msg void TControl::OnLButtonDblClk(UINT nFlags, CPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+afx_msg void TControl::OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
 	if (!isActive)
 		return;
@@ -3482,17 +3514,17 @@ afx_msg void TControl::OnLButtonDblClk(UINT nFlags, CPoint point, messageOutput*
 * Method: TControl - OnLButtonUp
 * Purpose: Allows control to catch the Left Button Up event and act accordingly
 * Parameters: UINT nFlags - flags provided by MFC's Message system, not used
-*				CPoint point - the point on screen where the event occured
+*				TPoint point - the point on screen where the event occured
 *				messageOutput* mOut - allows controls to keep track of whether ohter controls have caught the event
 *				TDataArray<EventID_Cred>& eventAr - allows Controls to add whatever Event Handler they have been assigned
 * Returns: void
 */
-afx_msg void TControl::OnLButtonUp(UINT nFlags, CPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+afx_msg void TControl::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
 	if (!isActive)
 		return;
 
-	/*if (!parent.get())
+	/*if (!parent.Get())
 	{
 		for (int c = 0; c < TextList.Size(); c++)
 		{
@@ -3504,7 +3536,7 @@ afx_msg void TControl::OnLButtonUp(UINT nFlags, CPoint point, messageOutput* mOu
 
 	for (int c = 0; c < children.Count(); c++)
 	{
-		TControl* tc_temp = children.ElementAt(c).get();
+		TControl* tc_temp = children.ElementAt(c).Get();
 		if(tc_temp)
 		tc_temp->OnLButtonUp(nFlags, point, mOut,eventAr);
 		if (*mOut != negative && *mOut != negativeUpdate)
@@ -3556,8 +3588,8 @@ afx_msg bool TControl::OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlag
 	TControl* tcCall = NULL;
 	for (int c = 0; c < children.Count(); c++)
 	{
-		if (children.ElementAt(c).get())
-			tcCall = children.ElementAt(c).get();
+		if (children.ElementAt(c).Get())
+			tcCall = children.ElementAt(c).Get();
 
 		if (tcCall && tcCall->OnChar(fromChar, nChar, nRepCnt, nFlags, mOut, eventAr))
 		{
@@ -3586,17 +3618,17 @@ afx_msg bool TControl::OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlag
 * Method: TControl - Builder_OnLButtonUp
 * Purpose: Allows special calls from the Builder to know when the control is no longer being dragged
 * Parameters: UINT flags - Flags provided by MFC, not used
-*				CPoint point - the Point where event occured
+*				TPoint point - the Point where event occured
 *				TrecPointer<TControl>& mOut - allows control to mark itself - not used in this method
 * Returns: void 
 */
-afx_msg void TControl::Builder_OnLButtonUp(UINT flags, CPoint point, const TrecPointer<TControl>& mOut)
+afx_msg void TControl::Builder_OnLButtonUp(UINT flags, TPoint point, TControl** mOut)
 {
 	for (int c = 0; c < children.Count();c++)
 	{
-		if (!children.ElementAt(c).get())
+		if (!children.ElementAt(c).Get())
 			continue;
-		TControl* tc = children.ElementAt(c).get();
+		TControl* tc = children.ElementAt(c).Get();
 		tc->Builder_OnLButtonUp(flags, point, mOut);
 	}
 	rightBorder = leftBorder = topBorder = bottomBorder = onClickFocus = false;
@@ -3606,18 +3638,18 @@ afx_msg void TControl::Builder_OnLButtonUp(UINT flags, CPoint point, const TrecP
 * Method: TControl - Builder_OnLButtonDown
 * Purpose: Allows Controls to tell if a use of the Builder is planning to move them around
 * Parameters: UINT flags - Flags provided by MFC, not used
-*				CPoint point - the Point where event occured
+*				TPoint point - the Point where event occured
 *				TrecPointer<TControl>& mOut - allows control to mark itself - not used in this method
 *				messageOutput* o - Allows control to keep track of how other controls respond to the call
 * Returns: void
 */
-afx_msg void TControl::Builder_OnLButtonDown(UINT flags, CPoint point, TrecPointer<TControl>& mOut, messageOutput* o)
+afx_msg void TControl::Builder_OnLButtonDown(UINT flags, TPoint point, TControl** mOut, messageOutput* o)
 {
 	for (int c = 0; c < children.Count();c++)
 	{
-		if (!children.ElementAt(c).get()|| !children.ElementAt(c).get())
+		if (!children.ElementAt(c).Get()|| !children.ElementAt(c).Get())
 			continue;
-		TControl* tc = children.ElementAt(c).get();
+		TControl* tc = children.ElementAt(c).Get();
 		tc->Builder_OnLButtonDown(flags, point, mOut, o);
 		if (*o != negative && *o != negativeUpdate)
 		{
@@ -3626,19 +3658,19 @@ afx_msg void TControl::Builder_OnLButtonDown(UINT flags, CPoint point, TrecPoint
 		}
 	}
 	
-	if (isContained(&point, &snip))
+	if (isContained(&point, &location))
 	{
 		*o = positiveOverrideUpdate;
 		onClickFocus = true;
 		onFocus = true;
-		mOut = TrecPointer<TControl>(this);
+		*mOut = (this);
 	}
 	else
 	{
 		onClickFocus = onFocus = leftBorder = rightBorder = topBorder = bottomBorder = false;
 		*o = negativeUpdate;
 	}
-	if (abs((double)point.x - (double)snip.left) < 5)
+	if (abs((double)point.x - (double)location.left) < 5)
 	{
 		*o = positiveOverrideUpdate;
 		onClickFocus = true;
@@ -3649,7 +3681,7 @@ afx_msg void TControl::Builder_OnLButtonDown(UINT flags, CPoint point, TrecPoint
 		bottomBorder = false;
 		return;
 	}
-	if (abs((double)point.x - (double)snip.right) < 5)
+	if (abs((double)point.x - (double)location.right) < 5)
 	{
 		*o = positiveOverrideUpdate;
 		onClickFocus = true;
@@ -3660,7 +3692,7 @@ afx_msg void TControl::Builder_OnLButtonDown(UINT flags, CPoint point, TrecPoint
 		bottomBorder = false;
 		return;
 	}
-	if (abs((double)point.y - (double)snip.top) < 5)
+	if (abs((double)point.y - (double)location.top) < 5)
 	{
 		*o = positiveOverrideUpdate;
 		onClickFocus = true;
@@ -3671,7 +3703,7 @@ afx_msg void TControl::Builder_OnLButtonDown(UINT flags, CPoint point, TrecPoint
 		bottomBorder = false;
 		return;
 	}
-	if (abs((double)point.y - (double)snip.bottom) < 5)
+	if (abs((double)point.y - (double)location.bottom) < 5)
 	{
 		*o = positiveOverrideUpdate;
 		onClickFocus = true;
@@ -3689,24 +3721,24 @@ afx_msg void TControl::Builder_OnLButtonDown(UINT flags, CPoint point, TrecPoint
 * Method: TControl - Builder_OnMouseMove
 * Purpose: Allows controls to know when they are being moved
 * Parameters: UINT flags - Flags provided by MFC, not used
-*				CPoint point - the Point where event occured
+*				TPoint point - the Point where event occured
 *				TrecPointer<TControl>& mOut - allows control to mark itself - not used in this method
 *				const RECT& bounds - bounds of the parent
 *				messageOutput* o - Allows control to keep track of how other controls respond to the call
 * Returns: void
 */
-afx_msg void TControl::Builder_OnMouseMove(UINT flags, CPoint cp, TrecPointer<TControl>& mOut, const RECT& bounds, messageOutput* o)
+afx_msg void TControl::Builder_OnMouseMove(UINT flags, TPoint cp, TControl** mOut, const RECT& bounds, messageOutput* o)
 {
 	if (!onClickFocus)
 	{
 		TControl* point;
 		for (int c = 0; c < children.Count();c++)
 		{
-			point = children.ElementAt(c).get();
+			point = children.ElementAt(c).Get();
 			if (point)
 			{
 				//const TControlHolder** hold = &PointerCase;
-				point->Builder_OnMouseMove(flags, cp, TrecPointer<TControl>(this), location, o);
+				point->Builder_OnMouseMove(flags, cp, mOut, location, o);
 			}
 			if (*o == negative && *o == negativeUpdate) // then it is positive
 				return;
@@ -3721,40 +3753,33 @@ afx_msg void TControl::Builder_OnMouseMove(UINT flags, CPoint cp, TrecPointer<TC
 			margin.left = abs(bounds.left - cp.x);
 
 
-			snip.left = cp.x;
-			if (snip.left > snip.right)
-				switchLongs(snip.left, snip.right);
+			location.left = cp.x;
+			if (location.left > location.right)
+				switchLongs(location.left, location.right);
 			*o = positiveOverrideUpdate;
-			if (!hScroll)
-			{
-				location.left = snip.left;
-				location.right = snip.right;
-			}
 
-			if (content1.get())
+
+			if (content1.Get())
 			{
 				content1->location.left = location.left;
-				content1->snip.left = snip.left;
 			}
-			if (content2.get())
+			if (content2.Get())
 			{
 				content2->location.left = location.left;
-				content2->snip.left = snip.left;
 			}
-			if (content3.get())
+			if (content3.Get())
 			{
 				content3->location.left = location.left;
-				content3->snip.left = snip.left;
 			}
-			if (border1.get())
+			if (border1.Get())
 			{
 				border1->loci.left = location.left;
 			}
-			if (border2.get())
+			if (border2.Get())
 			{
 				border2->loci.left = location.left;
 			}
-			if (border3.get())
+			if (border3.Get())
 			{
 				border3->loci.left = location.left;
 			}
@@ -3767,40 +3792,32 @@ afx_msg void TControl::Builder_OnMouseMove(UINT flags, CPoint cp, TrecPointer<TC
 
 			margin.right = abs(bounds.right - cp.x);
 
-			snip.right = cp.x;
-			if (snip.left > snip.right)
-				switchLongs(snip.left, snip.right);
+			location.right = cp.x;
+			if (location.left > location.right)
+				switchLongs(location.left, location.right);
 			*o = positiveOverrideUpdate;
-			if (!hScroll)
-			{
-				location.left = snip.left;
-				location.right = snip.right;
-			}
 
-			if (content1.get())
+			if (content1.Get())
 			{
 				content1->location.right = location.right;
-				content1->snip.right = snip.right;
 			}
-			if (content2.get())
+			if (content2.Get())
 			{
 				content2->location.right = location.right;
-				content2->snip.right = snip.right;
 			}
-			if (content3.get())
+			if (content3.Get())
 			{
 				content3->location.right = location.right;
-				content3->snip.right = snip.right;
 			}
-			if (border1.get())
+			if (border1.Get())
 			{
 				border1->loci.right = location.right;
 			}
-			if (border2.get())
+			if (border2.Get())
 			{
 				border2->loci.right = location.right;
 			}
-			if (border3.get())
+			if (border3.Get())
 			{
 				border3->loci.right = location.right;
 			}
@@ -3813,40 +3830,33 @@ afx_msg void TControl::Builder_OnMouseMove(UINT flags, CPoint cp, TrecPointer<TC
 			margin.top = abs(bounds.top - cp.y);
 
 
-			snip.top = cp.y;
-			if (snip.top > snip.bottom)
-				switchLongs(snip.top, snip.bottom);
-			if (!vScroll)
-			{
-				location.bottom = snip.bottom;
-				location.top = snip.top;
-			}
+			location.top = cp.y;
+			if (location.top > location.bottom)
+				switchLongs(location.top, location.bottom);
+
 			*o = positiveOverrideUpdate;
 
-			if (content1.get())
+			if (content1.Get())
 			{
 				content1->location.top = location.top;
-				content1->snip.top = snip.top;
 			}
-			if (content2.get())
+			if (content2.Get())
 			{
 				content2->location.top = location.top;
-				content2->snip.top = snip.top;
 			}
-			if (content3.get())
+			if (content3.Get())
 			{
 				content3->location.top = location.top;
-				content3->snip.top = snip.top;
 			}
-			if (border1.get())
+			if (border1.Get())
 			{
 				border1->loci.top = location.top;
 			}
-			if (border2.get())
+			if (border2.Get())
 			{
 				border2->loci.top = location.top;
 			}
-			if (border3.get())
+			if (border3.Get())
 			{
 				border3->loci.top = location.top;
 			}
@@ -3857,41 +3867,34 @@ afx_msg void TControl::Builder_OnMouseMove(UINT flags, CPoint cp, TrecPointer<TC
 		{
 			margin.bottom = abs(bounds.bottom - cp.y);
 
-			snip.bottom = cp.y;
-			if (snip.top > snip.bottom)
-				switchLongs(snip.top, snip.bottom);
-			if (!vScroll)
-			{
-				location.bottom = snip.bottom;
-				location.top = snip.top;
-			}
+			location.bottom = cp.y;
+			if (location.top > location.bottom)
+				switchLongs(location.top, location.bottom);
+
 			*o = positiveOverrideUpdate;
 
 
-			if (content1.get())
+			if (content1.Get())
 			{
 				content1->location.bottom = location.bottom;
-				content1->snip.bottom = snip.bottom;
 			}
-			if (content2.get())
+			if (content2.Get())
 			{
 				content2->location.bottom = location.bottom;
-				content2->snip.bottom = snip.bottom;
 			}
-			if (content3.get())
+			if (content3.Get())
 			{
 				content3->location.bottom = location.bottom;
-				content3->snip.bottom = snip.bottom;
 			}
-			if (border1.get())
+			if (border1.Get())
 			{
 				border1->loci.bottom = location.bottom;
 			}
-			if (border2.get())
+			if (border2.Get())
 			{
 				border2->loci.bottom = location.bottom;
 			}
-			if (border3.get())
+			if (border3.Get())
 			{
 				border3->loci.bottom = location.bottom;
 			}
@@ -3948,25 +3951,21 @@ TBorder::TBorder(TrecComPointer<ID2D1RenderTarget>rtp, TControl*tc)
 {
 	rt = rtp;
 	cap = tc;
-	
-	brush = nullptr;
 
 	thickness = 1.0;
-	image = nullptr;
 	color = D2D1::ColorF(D2D1::ColorF::Black, 1.0);
 	color2 = D2D1::ColorF(D2D1::ColorF::Black, 1.0);
 	secondColor = false;
 	gradients[0].position = 0.0;
 	gradients[1].position = 1.0f;
-	stopColl = nullptr;
-	if (rt.get())
+	if (rt.Get())
 	{
-		ID2D1SolidColorBrush* br = nullptr;
-		rt->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Red), &br);
-		BuilderFocusBrush = br;
+		TrecComPointer<ID2D1SolidColorBrush>::TrecComHolder br;
+		rt->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Red), br.GetPointerAddress());
+		BuilderFocusBrush = br.Extract();
 	}
 	else
-		BuilderFocusBrush = nullptr;
+		BuilderFocusBrush.Nullify();
 
 	TString logMessage;
 	logMessage.Format(L"CREATE %p TBorder(TrecComPointer<ID2D1RenderTarget>, TControl*)", this);
@@ -3982,13 +3981,8 @@ TBorder::TBorder(TrecComPointer<ID2D1RenderTarget>rtp, TControl*tc)
 * Returns: void
 */
 TBorder::TBorder(TrecPointer<TBorder> & rBord,TControl* tc_holder)
-{
-	brush = nullptr;
-	BuilderFocusBrush = nullptr;
-	image = nullptr;
-	bitBrush = nullptr;
-	
-	if (!rBord.get())return;
+{	
+	if (!rBord.Get())return;
 
 	thickness = rBord->thickness;
 	style = rBord->style;
@@ -4026,19 +4020,12 @@ TBorder::TBorder(TrecPointer<TBorder> & rBord,TControl* tc_holder)
 */
 TBorder::TBorder()
 {
-	rt = nullptr;
-	//cap = ;
-	brush = nullptr;
 	thickness = 1.0;
-	image = nullptr;
 	color = D2D1::ColorF(D2D1::ColorF::Black, 1.0);
 	color2 = D2D1::ColorF(D2D1::ColorF::Black, 1.0);
 	secondColor = false;
 	gradients[0].position = 0.0;
 	gradients[1].position = 1.0f;
-	stopColl = nullptr;
-	BuilderFocusBrush = nullptr;
-	bitBrush = nullptr;
 	gradients->color = D2D1::ColorF(0.0f,0.0f,0.0f,1.0f);
 
 	TString logMessage;
@@ -4055,9 +4042,7 @@ TBorder::TBorder()
 */
 TBorder::~TBorder()
 {
-	rb.Delete();
-	lb.Delete();
-	sb.Delete();
+	brush.Delete();
 	
 	image.Delete();
 	stopColl.Delete();
@@ -4078,55 +4063,20 @@ TBorder::~TBorder()
 */
 bool TBorder::onCreate(RECT location)
 {
-	if (!rt.get())
+	if (!rt.Get())
 		return false;
 
-	brush = nullptr;
+	brush.Nullify();
 
-	stopColl = nullptr;
-	ID2D1GradientStopCollection* stopCollRaw = nullptr;
+	stopColl.Nullify();
+	TrecComPointer<ID2D1GradientStopCollection>::TrecComHolder stopCollRaw;
 	shape = T_Rect;
 	loci.bottom = location.bottom;
 	loci.left = location.left;
 	loci.right = location.right;
 	loci.top = location.top;
 
-	if (secondColor)
-	{
-
-		gradients[0].color = color;
-		gradients[1].color = color2;
-		rt->CreateGradientStopCollection(gradients, 2, &stopCollRaw);
-		if (useRadial)
-		{
-			ID2D1RadialGradientBrush* radBrush = nullptr;
-			rt->CreateRadialGradientBrush(D2D1::RadialGradientBrushProperties(
-				D2D1::Point2F(location.left, location.top),
-				D2D1::Point2F(location.right, location.bottom),
-				location.right-location.left,location.bottom-location.top),
-				stopCollRaw, &radBrush);
-			brush = radBrush;
-			rb = radBrush;
-		}
-		else
-		{
-			ID2D1LinearGradientBrush* linBrush = nullptr;
-			rt->CreateLinearGradientBrush(D2D1::LinearGradientBrushProperties(
-				D2D1::Point2F(location.left, location.top),
-				D2D1::Point2F(location.right, location.bottom)),
-				stopCollRaw, &linBrush);
-			brush = linBrush;
-			lb = linBrush;
-		}
-		stopColl = stopCollRaw;
-	}
-	else
-	{
-		ID2D1SolidColorBrush* solBrush = nullptr;
-		rt->CreateSolidColorBrush(color, &solBrush);
-		brush = solBrush;
-		sb = solBrush;
-	}
+	ResetBrush();
 
 
 	return true;
@@ -4143,52 +4093,14 @@ bool TBorder::onCreate(D2D1_ELLIPSE e)
 
 
 	shape = T_Ellipse;
-	if (!rt.get())
+	if (!rt.Get())
 		return false;
 	loci.left = e.point.x - e.radiusX;
 	loci.right = e.point.x + e.radiusX;
 	loci.top = e.point.y - e.radiusY;
 	loci.bottom = e.point.y + e.radiusY;
 
-	brush = nullptr;
-
-	stopColl = nullptr;
-	ID2D1GradientStopCollection* stopCollRaw = nullptr;
-	if (secondColor)
-	{
-		gradients[0].color = color;
-		gradients[1].color = color2;
-		rt->CreateGradientStopCollection(gradients, 2, &stopCollRaw);
-		if (useRadial)
-		{
-			ID2D1RadialGradientBrush* radBrush = nullptr;
-			rt->CreateRadialGradientBrush(D2D1::RadialGradientBrushProperties(
-				D2D1::Point2F(loci.left, loci.top),
-				D2D1::Point2F(loci.right, loci.bottom),
-				loci.right - loci.left, loci.bottom - loci.top),
-				stopCollRaw, &radBrush);
-			brush = radBrush;
-			rb = radBrush;
-		}
-		else
-		{
-			ID2D1LinearGradientBrush* linBrush = nullptr;
-			rt->CreateLinearGradientBrush(D2D1::LinearGradientBrushProperties(
-				D2D1::Point2F(loci.left, loci.top),
-				D2D1::Point2F(loci.right, loci.bottom)),
-				stopCollRaw, &linBrush);
-			brush = linBrush;
-			lb = linBrush;
-		}
-		stopColl = stopCollRaw;
-	}
-	else
-	{
-		ID2D1SolidColorBrush* solBrush = nullptr;
-		rt->CreateSolidColorBrush(color, &solBrush);
-		brush = solBrush;
-		sb = solBrush;
-	}
+	ResetBrush();
 	circle = e;
 	return true;
 }
@@ -4203,53 +4115,16 @@ bool TBorder::onCreate(D2D1_ROUNDED_RECT rr)
 {
 
 	shape = T_Rounded_Rect;
-	if (!rt.get())
+	if (!rt.Get())
 		return false;
 	roundedRect = rr;
-	brush = nullptr;
-	stopColl = nullptr;
-	ID2D1GradientStopCollection* stopCollRaw = nullptr;
 
 	loci.left = rr.rect.left;
 	loci.right = rr.rect.right;
 	loci.top = rr.rect.top;
 	loci.bottom = rr.rect.bottom;
 
-	if (secondColor)
-	{
-		gradients[0].color = color;
-		gradients[1].color = color2;
-		rt->CreateGradientStopCollection(gradients, 2, &stopCollRaw);
-		if (useRadial)
-		{
-			ID2D1RadialGradientBrush* radBrush = nullptr;
-			rt->CreateRadialGradientBrush(D2D1::RadialGradientBrushProperties(
-				D2D1::Point2F(loci.left, loci.top),
-				D2D1::Point2F(loci.right, loci.bottom),
-				loci.right - loci.left, loci.bottom - loci.top),
-				stopCollRaw, &radBrush);
-			brush = radBrush;
-			rb = radBrush;
-		}
-		else
-		{
-			ID2D1LinearGradientBrush* linBrush = nullptr;
-			rt->CreateLinearGradientBrush(D2D1::LinearGradientBrushProperties(
-				D2D1::Point2F(loci.left, loci.top),
-				D2D1::Point2F(loci.right, loci.bottom)),
-				stopCollRaw, &linBrush);
-			brush = linBrush;
-			lb = linBrush;
-		}
-		stopColl = stopCollRaw;
-	}
-	else
-	{
-		ID2D1SolidColorBrush* solBrush = nullptr;
-		rt->CreateSolidColorBrush(color, &solBrush);
-		brush = solBrush;
-		sb = solBrush;
-	}
+	ResetBrush();
 	return true;
 }
 
@@ -4260,71 +4135,52 @@ bool TBorder::onCreate(D2D1_ROUNDED_RECT rr)
 * Parameters: void
 * Returns: void
 */
-void TBorder::onDraw(RECT& loc, RECT& snip)
+void TBorder::onDraw(RECT& loc)
 {
 	
 	//TrecPointer<TControl> cap = TrecPointer<TControl>(cap);
-	if (rt.get() && brush.get() && cap)
+	if (rt.Get() && brush.Get() && cap)
 	{
-		D2D1_RECT_F f_loc, f_snip;
-		convertCRectToD2DRect(&snip, &f_snip);
+		D2D1_RECT_F f_loc;
 		convertCRectToD2DRect(&loc, &f_loc);
 		bool drawRect = true;
 		//if (snip.left > loci.left || snip.top > loci.top ||
 			//snip.right < loci.right || snip.bottom < loci.bottom)
 		//	drawRect = false;
 
-
-		if (loc == snip)
+		switch(shape)
 		{
-			switch (shape)
-			{
-			case T_Rect:
-				rt->DrawRectangle(&loci, brush.get(), thickness);
-				break;
-			case T_Rounded_Rect:
-
-				roundedRect.rect = f_snip;
-				rt->DrawRoundedRectangle(&roundedRect, brush.get(), thickness);
-				break;
-			case T_Ellipse:
-
-				circle.point.x = (f_snip.right + f_snip.left) / 2;
-				circle.point.y = (f_snip.bottom + f_snip.top) / 2;
-				circle.radiusX = f_snip.right - f_snip.left;
-				circle.radiusY = f_snip.bottom - f_snip.top;
-				rt->DrawEllipse(&circle, brush.get(), thickness);
-				break;
-			case T_Custom_shape:
-				break;
-			}
-		}
-		else
-		{
-			if (snip.left >= loci.left)
-				rt->DrawLine(D2D1::Point2F(snip.left, snip.top), D2D1::Point2F(snip.left, snip.bottom), brush.get(), thickness);
-			if (snip.top >= loci.top)
-				rt->DrawLine(D2D1::Point2F(snip.left, snip.top), D2D1::Point2F(snip.right, snip.top), brush.get(), thickness);
-			if (snip.right <= loci.right)
-				rt->DrawLine(D2D1::Point2F(snip.right, snip.top), D2D1::Point2F(snip.right, snip.bottom), brush.get(), thickness);
-			if (snip.bottom >= loci.bottom)
-				rt->DrawLine(D2D1::Point2F(snip.left, snip.bottom), D2D1::Point2F(snip.right, snip.bottom), brush.get(), thickness);
+		case T_Rect:
+			rt->DrawRectangle(&loci, brush.Get(), thickness);
+			break;
+		case T_Rounded_Rect:
+			rt->DrawRoundedRectangle(&roundedRect, brush.Get(), thickness);
+			break;
+		case T_Ellipse:
+			circle.point.x = (f_loc.right + f_loc.left) / 2;
+			circle.point.y = (f_loc.bottom + f_loc.top) / 2;
+			circle.radiusX = f_loc.right - f_loc.left;
+			circle.radiusY = f_loc.bottom - f_loc.top;
+			rt->DrawEllipse(&circle, brush.Get(), thickness);
+			break;
+		case T_Custom_shape:
+			break;
 		}
 		
 		/*if (drawRect)
 		{
-			if (cap->onFocus && BuilderFocusBrush.get())
+			if (cap->onFocus && BuilderFocusBrush.Get())
 			{
 				switch (shape)
 				{
 				case T_Rect:
-					rt->DrawRectangle(&loci, BuilderFocusBrush.get(), 10.0);
+					rt->DrawRectangle(&loci, BuilderFocusBrush.Get(), 10.0);
 					break;
 				case T_Rounded_Rect:
-					rt->DrawRoundedRectangle(&roundedRect, BuilderFocusBrush.get(), 10.0);
+					rt->DrawRoundedRectangle(&roundedRect, BuilderFocusBrush.Get(), 10.0);
 					break;
 				case T_Ellipse:
-					rt->DrawEllipse(&circle, BuilderFocusBrush.get(), 10.0);
+					rt->DrawEllipse(&circle, BuilderFocusBrush.Get(), 10.0);
 					break;
 				case T_Custom_shape:
 					break;
@@ -4336,13 +4192,13 @@ void TBorder::onDraw(RECT& loc, RECT& snip)
 				{
 				case T_Rect:
 
-					rt->DrawRectangle(&loci, brush.get(), thickness);
+					rt->DrawRectangle(&loci, brush.Get(), thickness);
 					break;
 				case T_Rounded_Rect:
-					rt->DrawRoundedRectangle(&roundedRect, brush.get(), thickness);
+					rt->DrawRoundedRectangle(&roundedRect, brush.Get(), thickness);
 					break;
 				case T_Ellipse:
-					rt->DrawEllipse(&circle, brush.get(), thickness);
+					rt->DrawEllipse(&circle, brush.Get(), thickness);
 					break;
 				case T_Custom_shape:
 					break;
@@ -4367,8 +4223,12 @@ void TBorder::onDraw(RECT& loc, RECT& snip)
 void TBorder::setColor(D2D1::ColorF cf)
 {
 	color = cf;
-	if (sb.get())
-		sb->SetColor(cf);
+	if (brush.Get())
+	{
+		ID2D1SolidColorBrush* sb = dynamic_cast<ID2D1SolidColorBrush*>(brush.Get());
+		if(sb)
+			sb->SetColor(cf);
+	}
 }
 
 /*
@@ -4438,11 +4298,6 @@ void TBorder::ShiftHorizontal(int degrees)
 {
 	loci.left += degrees;
 	loci.right += degrees;
-	if (!isZeroRect(snip))
-	{
-		snip.left += degrees;
-		snip.right += degrees;
-	}
 }
 
 /*
@@ -4455,10 +4310,53 @@ void TBorder::ShiftVertical(int degrees)
 {
 	loci.top += degrees;
 	loci.bottom += degrees;
-	if (!isZeroRect(snip))
+}
+
+void TBorder::SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget> rt)
+{
+	if (!rt.Get())
+		throw L"Error! Expected render target to be initialized!";
+	this->rt = rt;
+	ResetBrush();
+}
+
+void TBorder::ResetBrush()
+{
+	TrecComPointer<ID2D1GradientStopCollection>::TrecComHolder stopCollRaw;
+	if (secondColor)
 	{
-		snip.top += degrees;
-		snip.bottom += degrees;
+
+		gradients[0].color = color;
+		gradients[1].color = color2;
+		rt->CreateGradientStopCollection(gradients, 2, stopCollRaw.GetPointerAddress());
+		stopColl = stopCollRaw.Extract();
+		if (useRadial)
+		{
+			TrecComPointer<ID2D1RadialGradientBrush>::TrecComHolder radBrush;
+			rt->CreateRadialGradientBrush(D2D1::RadialGradientBrushProperties(
+				D2D1::Point2F(loci.left, loci.top),
+				D2D1::Point2F(loci.right, loci.bottom),
+				loci.right - loci.left, loci.bottom - loci.top),
+				stopColl.Get(), radBrush.GetPointerAddress());
+
+			brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1RadialGradientBrush>(radBrush);
+		}
+		else
+		{
+			TrecComPointer<ID2D1LinearGradientBrush>::TrecComHolder linBrush;
+			rt->CreateLinearGradientBrush(D2D1::LinearGradientBrushProperties(
+				D2D1::Point2F(loci.left, loci.top),
+				D2D1::Point2F(loci.right, loci.bottom)),
+				stopColl.Get(), linBrush.GetPointerAddress());
+			brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1LinearGradientBrush>(linBrush);
+		}
+
+	}
+	else
+	{
+		TrecComPointer<ID2D1SolidColorBrush>::TrecComHolder solBrush;
+		rt->CreateSolidColorBrush(color, solBrush.GetPointerAddress());
+		brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1SolidColorBrush>(solBrush);
 	}
 }
 
@@ -4470,28 +4368,28 @@ void TBorder::ShiftVertical(int degrees)
 *				messageState ms - which Border the current Border is (the Border itself does not know)
 * Returns:
 */
-int TBorder::storeInTML(CArchive * ar, int childLevel,messageState ms)
+int TBorder::storeInTML(TFile * ar, int childLevel,messageState ms)
 {
 	TString writable;
 	resetAttributeString(&writable, childLevel +1);
-	CString val;
-	val.Format(_T("%f"), thickness);
+	TString val;
+	val.Format(L"%f", thickness);
 	ar->WriteString(writable);
 	switch (ms)
 	{
 	case normal:
-		ar->WriteString(_T("|BorderThickness:"));
+		ar->WriteString(L"|BorderThickness:");
 		break;
 	case mouseHover:
-		ar->WriteString(_T("|HoverBorderThickness:"));
+		ar->WriteString(L"|HoverBorderThickness:");
 		break;
 	case mouseLClick:
-		ar->WriteString(_T("|ClickBorderThickness:"));
+		ar->WriteString(L"|ClickBorderThickness:");
 		break;
 	}
 	
 	ar->WriteString(val);
-	ar->WriteString(_T("\n"));
+	ar->WriteString("\n");
 	val = convertD2DColorToString(color);
 	//ar->WriteString(writable);
 
@@ -4511,7 +4409,7 @@ int TBorder::storeInTML(CArchive * ar, int childLevel,messageState ms)
 	ar->WriteString(writable);
 
 	ar->WriteString(val);
-	ar->WriteString(_T("\n"));
+	ar->WriteString(L"\n");
 	return 0;
 }
 
@@ -4547,15 +4445,12 @@ TText::TText(TrecComPointer<ID2D1RenderTarget>rtp,TControl* tc)
 	fontStretch = DWRITE_FONT_STRETCH_NORMAL;
 	horizontalAlignment = DWRITE_TEXT_ALIGNMENT_LEADING;
 	verticalAlignment = DWRITE_PARAGRAPH_ALIGNMENT_NEAR;
-	fontLayout = nullptr;
-	format = nullptr; textLength = 0;
-	writeFact = nullptr;
+	textLength = 0;
 	
 	color2 = D2D1::ColorF(D2D1::ColorF::Black, 1.0);
 	secondColor = false;
 	gradients[0].position = 0.0;
 	gradients[1].position = 1.0f;
-	gradStop = nullptr;
 
 	TString logMessage;
 	logMessage.Format(L"CREATE %p TText(TrecComPointer<ID2D1RenderTarget>, TControl*)", this);
@@ -4572,7 +4467,7 @@ TText::TText(TrecComPointer<ID2D1RenderTarget>rtp,TControl* tc)
 */
 TText::TText(TrecPointer<TText> & rText, TControl* tc_holder)
 {
-	if (!rText.get())
+	if (!rText.Get())
 		return;
 
 	rt = rText->rt;
@@ -4581,7 +4476,6 @@ TText::TText(TrecPointer<TText> & rText, TControl* tc_holder)
 	bounds = rText->bounds;
 	setCaption(rText->text);
 
-	penBrush = nullptr;
 	fontWeight = rText->fontWeight;
 	fontStyle = rText->fontStyle;
 	fontStretch = rText->fontStretch;
@@ -4629,20 +4523,15 @@ TText::TText()
 	fontWeight = DWRITE_FONT_WEIGHT_REGULAR;
 	fontStyle = DWRITE_FONT_STYLE_NORMAL;
 	fontStretch = DWRITE_FONT_STRETCH_NORMAL;
-	rt = nullptr;
-	//cap = NULL;
-	fontLayout = nullptr;
-	format = nullptr; textLength = 0;
+	textLength = 0;
 
-	writeFact = nullptr;
+
 	horizontalAlignment = DWRITE_TEXT_ALIGNMENT_CENTER;
 	verticalAlignment = DWRITE_PARAGRAPH_ALIGNMENT_CENTER;
-	penBrush = nullptr;
 	color2 = D2D1::ColorF(D2D1::ColorF::Black, 1.0);
 	secondColor = false;
 	gradients[0].position = 0.0;
 	gradients[1].position = 1.0f;
-	gradStop = nullptr;
 
 	TString logMessage;
 	logMessage.Format(L"CREATE %p TText()", this);
@@ -4664,16 +4553,14 @@ TText::~TText()
 
 	Log(lt_memory, logMessage);
 
-	writeFact = nullptr;
+	writeFact.Nullify();
 
 
 	format.Delete();
 
 	fontLayout.Delete();
 
-	rb.Delete();
-	lb.Delete();
-	sb.Delete();
+	penBrush.Delete();
 	
 }
 
@@ -4686,37 +4573,37 @@ TText::~TText()
 int TText::onCreate(RECT loc)
 {
 
-	if (rt.get() == NULL)
+	if (rt.Get() == NULL)
 		return 1;
 
 
-	writeFact = nullptr;
-	IDWriteFactory* rawFact = nullptr;
+	writeFact.Nullify();
+	TrecComPointer<IDWriteFactory>::TrecComHolder rawFact;
 
 	HRESULT results = DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED,
 		__uuidof(IDWriteFactory),
-		reinterpret_cast<IUnknown**>(&rawFact));
+		reinterpret_cast<IUnknown**>(rawFact.GetPointerAddress()));
 
 	if (!SUCCEEDED(results))
 		return 2;
 
-	writeFact = rawFact;
+	writeFact = rawFact.Extract();
 
 	if(fontSize <= 0.0)
 		fontSize = 12.0;
 
-	format = nullptr;
-	IDWriteTextFormat* wtf = nullptr;
+	format.Nullify();
+	TrecComPointer<IDWriteTextFormat>::TrecComHolder wtf;
 	results = writeFact->CreateTextFormat(
-		font,
+		font.GetConstantBuffer(),
 		NULL,
 		fontWeight,
 		fontStyle,
 		fontStretch,
 		fontSize,
-		locale,
-		&wtf);
-	format = wtf;
+		locale.GetConstantBuffer(),
+		wtf.GetPointerAddress());
+	format = wtf.Extract();
 	
 	if (!SUCCEEDED(results))
 		return 3;
@@ -4733,52 +4620,15 @@ int TText::onCreate(RECT loc)
 	bounds.right = loc.right;
 	bounds.top = loc.top;
 
+	ResetBrush();
 
-	penBrush = nullptr;
-	gradStop = nullptr;
-	ID2D1GradientStopCollection* gradStopRaw = nullptr;
-	if (secondColor)
-	{
-		gradients[0].color = color;
-		gradients[1].color = color2;
-		rt->CreateGradientStopCollection(gradients, 2, &gradStopRaw);
-		if (useRadial)
-		{
-			ID2D1RadialGradientBrush* radBrush = nullptr;
-			rt->CreateRadialGradientBrush(D2D1::RadialGradientBrushProperties(
-				D2D1::Point2F(bounds.left, bounds.top),
-				D2D1::Point2F(bounds.right, bounds.bottom),
-				bounds.right - bounds.left, bounds.bottom - bounds.top),
-				gradStopRaw, &radBrush);
-			penBrush = radBrush;
-			rb = radBrush;
-		}
-		else
-		{
-			ID2D1LinearGradientBrush* linBrush = nullptr;
-			rt->CreateLinearGradientBrush(D2D1::LinearGradientBrushProperties(
-				D2D1::Point2F(bounds.left, bounds.top),
-				D2D1::Point2F(bounds.right, bounds.bottom)),
-				gradStopRaw, &linBrush);
-			penBrush = linBrush;
-			lb = linBrush;
-		}
-		gradStop = gradStopRaw;
-	}
-	else
-	{
-		ID2D1SolidColorBrush* solBrush = nullptr;
-		rt->CreateSolidColorBrush(color, &solBrush);
-		penBrush = solBrush;
-		sb = solBrush;
-	}
 	if (!SUCCEEDED(results))
 		return 5;
 
 	
-	IDWriteTextLayout* wtl = nullptr;
-	results = writeFact->CreateTextLayout(text.GetBuffer(), text.GetLength(), format.get(), loc.right - loc.left, loc.bottom - loc.top, &wtl);
-	fontLayout = wtl;
+	TrecComPointer<IDWriteTextLayout>::TrecComHolder wtl;
+	results = writeFact->CreateTextLayout(text.GetConstantBuffer(), text.GetSize(), format.Get(), loc.right - loc.left, loc.bottom - loc.top, wtl.GetPointerAddress());
+	fontLayout = wtl.Extract();
 
 	if(SUCCEEDED(results))
 	return 0;
@@ -4800,12 +4650,12 @@ void TText::reCreateLayout()
 
 void TText::reCreateLayout(TString & str)
 {
-	fontLayout = nullptr;
-	if (text && format.get())
+	fontLayout.Nullify();
+	if (format.Get())
 	{
-		IDWriteTextLayout* wfl = nullptr;
-		writeFact->CreateTextLayout(str, (UINT32)wcslen(str), format.get(), bounds.right - bounds.left, bounds.bottom - bounds.top, &wfl);
-		fontLayout = wfl;
+		TrecComPointer<IDWriteTextLayout>::TrecComHolder wfl;
+		writeFact->CreateTextLayout(str.GetConstantBuffer(), str.GetSize(), format.Get(), bounds.right - bounds.left, bounds.bottom - bounds.top, wfl.GetPointerAddress());
+		fontLayout = wfl.Extract();
 	}
 }
 
@@ -4815,34 +4665,34 @@ void TText::reCreateLayout(TString & str)
 * Parameters: RECT r - the area to draw
 * Returns: bool success
 */
-bool TText::onDraw(RECT& loc, RECT& snip, TObject* obj)
+bool TText::onDraw(RECT& loc, TObject* obj)
 {
-	if (!penBrush.get() || !rt.get())
+	if (!penBrush.Get() || !rt.Get())
 		return false;
 	D2D1_RECT_F snipF = { 0.0f,0.0f,0.0f,0.0f };
 	convertCRectToD2DRect(&loc, &snipF);
 	if (bounds != snipF)
 		bounds = snipF;
 	// TString print;
-	if (obj && text.GetLength() > 0 && text.GetAt(0) == L'{' && text.GetAt(text.GetLength() - 1) == L'}')
+	if (obj && text.GetSize() > 0 && text.GetAt(0) == L'{' && text.GetAt(text.GetSize() - 1) == L'}')
 	{
-		TString print = obj->getVariableValueStr(text.SubString(1, text.GetLength() - 1));
+		TString print = obj->getVariableValueStr(text.SubString(1, text.GetSize() - 1));
 		reCreateLayout(print);
 	}
 	
-	if (convertCRectToD2DRect(&snip, &snipF))
+	if (convertCRectToD2DRect(&loc, &snipF))
 	{
 		bounds = snipF;
-		if (fontLayout.get())
+		if (fontLayout.Get())
 		{
 			fontLayout->SetMaxHeight(snipF.bottom - snipF.top);
 			fontLayout->SetMaxWidth(snipF.right - snipF.left);
-			rt->DrawTextLayout(D2D1::Point2F(snipF.left, snipF.top), fontLayout.get(), penBrush.get());
+			rt->DrawTextLayout(D2D1::Point2F(snipF.left, snipF.top), fontLayout.Get(), penBrush.Get());
 		}
 		
 	}
 	else
-		rt->DrawTextLayout(D2D1::Point2F(snipF.left, snipF.top), fontLayout.get(), penBrush.get());
+		rt->DrawTextLayout(D2D1::Point2F(snipF.left, snipF.top), fontLayout.Get(), penBrush.Get());
 	/*
 	rt->DrawTextW(text,
 		(UINT32)wcslen(text),
@@ -4861,8 +4711,12 @@ bool TText::onDraw(RECT& loc, RECT& snip, TObject* obj)
 void TText::setColor(D2D1::ColorF cf)
 {
 	color = cf;
-	if (sb.get())
-		sb->SetColor(cf);
+	if (penBrush.Get())
+	{
+		ID2D1SolidColorBrush* sb = dynamic_cast<ID2D1SolidColorBrush*>(penBrush.Get());
+		if (sb)
+			sb->SetColor(cf);
+	}
 }
 
 /*
@@ -4914,7 +4768,7 @@ void TText::setNewFontSize(float fs)
 void TText::setNewHorizontalAlignment(DWRITE_TEXT_ALIGNMENT ha)
 {
 	horizontalAlignment = ha;
-	if (format.get())
+	if (format.Get())
 	{
 		format->SetTextAlignment(ha);
 		reCreateLayout();
@@ -4930,7 +4784,7 @@ void TText::setNewHorizontalAlignment(DWRITE_TEXT_ALIGNMENT ha)
 void TText::setNewVerticalAlignment(DWRITE_PARAGRAPH_ALIGNMENT va)
 {
 	verticalAlignment = va;
-	if (format.get())
+	if (format.Get())
 	{
 		format->SetParagraphAlignment(va);
 		reCreateLayout();
@@ -5099,7 +4953,7 @@ void TText::ShiftHorizontal(int degrees)
 {
 	bounds.left += degrees;
 	bounds.right += degrees;
-	//if (!isZeroRect(snip))
+	//if (!isSnipZero(snip))
 	//{
 	//	snip->left += degrees;
 	//	snip->right += degrees;
@@ -5118,6 +4972,56 @@ void TText::ShiftVertical(int degrees)
 	bounds.bottom += degrees;
 }
 
+void TText::SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget> rt)
+{
+	if (!rt.Get())
+		throw L"Error! Expected Render Target to be initialized!";
+
+	this->rt = rt;
+	ResetBrush();
+}
+
+void TText::ResetBrush()
+{
+	penBrush.Nullify();
+	gradStop.Nullify();
+	TrecComPointer<ID2D1GradientStopCollection>::TrecComHolder gradStopRaw;
+	if (secondColor)
+	{
+		gradients[0].color = color;
+		gradients[1].color = color2;
+		rt->CreateGradientStopCollection(gradients, 2, gradStopRaw.GetPointerAddress());
+		gradStop = gradStopRaw.Extract();
+
+		if (useRadial)
+		{
+			TrecComPointer<ID2D1RadialGradientBrush>::TrecComHolder radBrush;
+			rt->CreateRadialGradientBrush(D2D1::RadialGradientBrushProperties(
+				D2D1::Point2F(bounds.left, bounds.top),
+				D2D1::Point2F(bounds.right, bounds.bottom),
+				bounds.right - bounds.left, bounds.bottom - bounds.top),
+				gradStop.Get(), radBrush.GetPointerAddress());
+			penBrush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1RadialGradientBrush>(radBrush);
+		}
+		else
+		{
+			TrecComPointer<ID2D1LinearGradientBrush>::TrecComHolder linBrush;
+			rt->CreateLinearGradientBrush(D2D1::LinearGradientBrushProperties(
+				D2D1::Point2F(bounds.left, bounds.top),
+				D2D1::Point2F(bounds.right, bounds.bottom)),
+				gradStop.Get(), linBrush.GetPointerAddress());
+			penBrush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1LinearGradientBrush>(linBrush);
+		}
+
+	}
+	else
+	{
+		TrecComPointer<ID2D1SolidColorBrush>::TrecComHolder solBrush;
+		rt->CreateSolidColorBrush(color, solBrush.GetPointerAddress());
+		penBrush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1SolidColorBrush>(solBrush);
+	}
+}
+
 
 
 /*
@@ -5128,7 +5032,7 @@ void TText::ShiftVertical(int degrees)
 *				messageState ms - the version of the text it is (TText doesn't know if it is normal, hover, or click)
 * Returns: int - 0
 */
-int TText::storeInTML(CArchive * ar, int childLevel,messageState ms)
+int TText::storeInTML(TFile * ar, int childLevel,messageState ms)
 {
 	TString writable;
 	resetAttributeString(&writable, childLevel + 1);
@@ -5136,131 +5040,131 @@ int TText::storeInTML(CArchive * ar, int childLevel,messageState ms)
 	switch (ms)
 	{
 	case normal:
-		ar->WriteString(_T("|Caption:"));
+		ar->WriteString(L"|Caption:");
 		break;
 	case mouseHover:
-		ar->WriteString(_T("|HoverCaption:"));
+		ar->WriteString(L"|HoverCaption:");
 		break;
 	case mouseLClick:
-		ar->WriteString(_T("|ClickCaption:"));
+		ar->WriteString(L"|ClickCaption:");
 	}
 
 	ar->WriteString(text);
-	ar->WriteString(_T("\n"));
+	ar->WriteString(L"\n");
 
 	ar->WriteString(writable);
 
 	switch (ms)
 	{
 	case normal:
-		ar->WriteString(_T("|CaptionLocale:"));
+		ar->WriteString(L"|CaptionLocale:");
 		break;
 	case mouseHover:
-		ar->WriteString(_T("|HoverCaptionLocale:"));
+		ar->WriteString(L"|HoverCaptionLocale:");
 		break;
 	case mouseLClick:
-		ar->WriteString(_T("|ClickCaptionLocale:"));
+		ar->WriteString(L"|ClickCaptionLocale:");
 	}
 	ar->WriteString(locale);
-	ar->WriteString(_T("\n"));
+	ar->WriteString(L"\n");
 
 	ar->WriteString(writable);
 	switch (ms)
 	{
 	case normal:
-		ar->WriteString(_T("|Font:"));
+		ar->WriteString(L"|Font:");
 		break;
 	case mouseHover:
-		ar->WriteString(_T("|HoverFont:"));
+		ar->WriteString(L"|HoverFont:");
 		break;
 	case mouseLClick:
-		ar->WriteString(_T("|ClickFont:"));
+		ar->WriteString(L"|ClickFont:");
 	}
 
 	ar->WriteString(font);
-	ar->WriteString(_T("\n"));
+	ar->WriteString(L"\n");
 
-	CString val = convertD2DColorToString(color);
+	TString val = convertD2DColorToString(color);
 	ar->WriteString(writable);
 	switch (ms)
 	{
 	case normal:
-		ar->WriteString(_T("|FontColor:"));
+		ar->WriteString(L"|FontColor:");
 		break;
 	case mouseHover:
-		ar->WriteString(_T("|HoverFontColor:"));
+		ar->WriteString(L"|HoverFontColor:");
 		break;
 	case mouseLClick:
-		ar->WriteString(_T("|ClickFontColor:"));
+		ar->WriteString(L"|ClickFontColor:");
 	}
 
 	ar->WriteString(val);
-	ar->WriteString(_T("\n"));
-	val.Format(_T("%f"), fontSize);
+	ar->WriteString(L"\n");
+	val.Format(L"%f", fontSize);
 	ar->WriteString(writable);
 	switch (ms)
 	{
 	case normal:
-		ar->WriteString(_T("|FontSize:"));
+		ar->WriteString(L"|FontSize:");
 		break;
 	case mouseHover:
-		ar->WriteString(_T("|HoverFontSize:"));
+		ar->WriteString(L"|HoverFontSize:");
 		break;
 	case mouseLClick:
-		ar->WriteString(_T("|ClickFontSize:"));
+		ar->WriteString(L"|ClickFontSize:");
 	}
 
 	ar->WriteString(val);
-	ar->WriteString(_T("\n"));
+	ar->WriteString(L"\n");
 	resetAttributeString(&writable, childLevel +1);
 	ar->WriteString(writable);
 	switch (ms)
 	{
 	case normal:
-		ar->WriteString(_T("|VerticalAlignment:"));
+		ar->WriteString(L"|VerticalAlignment:");
 		break;
 	case mouseHover:
-		ar->WriteString(_T("|HoverVerticalAlignment:"));
+		ar->WriteString(L"|HoverVerticalAlignment:");
 		break;
 	case mouseLClick:
-		ar->WriteString(_T("|ClickVerticalAlignment:"));
+		ar->WriteString(L"|ClickVerticalAlignment:");
 	}
 	switch (verticalAlignment)
 	{
 	case DWRITE_PARAGRAPH_ALIGNMENT_FAR:
-		ar->WriteString(_T("Bottom\n"));
+		ar->WriteString(L"Bottom\n");
 		break;
 	case DWRITE_PARAGRAPH_ALIGNMENT_NEAR:
-		ar->WriteString(_T("Top\n"));
+		ar->WriteString(L"Top\n");
 		break;
 	default:
-		ar->WriteString(_T("Center\n"));
+		ar->WriteString(L"Center\n");
 	}
 	ar->WriteString(writable);
 	switch (ms)
 	{
 	case normal:
-		ar->WriteString(_T("|HorizontalAlignment:"));
+		ar->WriteString(L"|HorizontalAlignment:");
 		break;
 	case mouseHover:
-		ar->WriteString(_T("|HoverHorizontalAlignment:"));
+		ar->WriteString(L"|HoverHorizontalAlignment:");
 		break;
 	case mouseLClick:
-		ar->WriteString(_T("|ClickHorizontalAlignment:"));
+		ar->WriteString(L"|ClickHorizontalAlignment:");
 	}
 	switch (horizontalAlignment)
 	{
 	case DWRITE_TEXT_ALIGNMENT_JUSTIFIED:
-		ar->WriteString(_T("Justified\n"));
+		ar->WriteString(L"Justified\n");
 		break;
 	case DWRITE_TEXT_ALIGNMENT_LEADING:
-		ar->WriteString(_T("Right\n"));
+		ar->WriteString(L"Right\n");
 		break;
 	case DWRITE_TEXT_ALIGNMENT_TRAILING:
-		ar->WriteString(_T("Left\n"));
+		ar->WriteString(L"Left\n");
 		break;
 	default:
-		ar->WriteString(_T("Center\n"));
+		ar->WriteString(L"Center\n");
 	}
 
 
@@ -5291,17 +5195,13 @@ TContent::TContent(TrecComPointer<ID2D1RenderTarget>rtp, TControl* tc)
 	rt = rtp;
 	cap = tc;
 	
-	bitmap = nullptr;
 	thickness = 1.0;
 	color = D2D1::ColorF(D2D1::ColorF::Black, 1.0);
-	image = nullptr;
-	cropImage = nullptr;
-	snip = location = D2D1_RECT_F{ 0,0,0,0 };
+	location = D2D1_RECT_F{ 0,0,0,0 };
 	color2 = D2D1::ColorF(D2D1::ColorF::Black, 1.0);
 	secondColor = false;
 	gradients[0].position = 0.0;
 	gradients[1].position = 1.0f;
-	gradStop = nullptr;
 
 	TString logMessage;
 	logMessage.Format(L"CREATE %p TContent(TrecComPointer<ID2D1RenderTarget>, TControl*)", this);
@@ -5317,22 +5217,13 @@ TContent::TContent(TrecComPointer<ID2D1RenderTarget>rtp, TControl* tc)
 */
 TContent::TContent()
 {
-
-	
-	rt = nullptr;
-	//cap = 0;
-	brush = nullptr;
-	bitmap = nullptr;
 	thickness = 1.0;
 	color = D2D1::ColorF(D2D1::ColorF::Black, 1.0);
-	image = nullptr;
-	cropImage = nullptr;
-	snip = location = D2D1_RECT_F{ 0,0,0,0 };
+	location = D2D1_RECT_F{ 0,0,0,0 };
 	color2 = D2D1::ColorF(D2D1::ColorF::Black, 1.0);
 	secondColor = false;
 	gradients[0].position = 0.0;
 	gradients[1].position = 1.0f;
-	gradStop = nullptr;
 
 	TString logMessage;
 	logMessage.Format(L"CREATE %p TContent()", this);
@@ -5349,19 +5240,14 @@ TContent::TContent()
 */
 TContent::TContent(TrecPointer<TContent> &rCont, TControl* tc_holder)
 {
-	if (!rCont.get())return;
+	if (!rCont.Get())return;
 
 	rt = rCont->rt;
-	brush = nullptr;
-	bitmap = nullptr;
-	image = nullptr;
-	cropImage = nullptr;
 	
 	thickness =rCont->thickness;
 	style = rCont->style;
 	color = rCont->color;
 	location = rCont->location;
-	snip = rCont->snip;
 	
 	cap = tc_holder;
 	shape = rCont->shape;
@@ -5396,9 +5282,7 @@ TContent::~TContent()
 	bitmap.Delete();
 
 	image.Delete();
-	rb.Delete();
-	lb.Delete();
-	sb.Delete();
+	brush.Delete();
 
 	cropImage.Delete();
 
@@ -5415,7 +5299,7 @@ TContent::~TContent()
 *				RECT s - the snip, where the control can appear
 * Returns: bool - success (whether the resources are prepared)
 */
-bool TContent::onCreate(RECT l, RECT s)
+bool TContent::onCreate(RECT l)
 {
 
 	location.top = l.top;
@@ -5423,55 +5307,18 @@ bool TContent::onCreate(RECT l, RECT s)
 	location.right = l.right;
 	location.bottom = l.bottom;
 
-	convertCRectToD2DRect(&s, &snip);
-
-	if (!rt.get())
+	if (!rt.Get())
 		return false;
 
-	brush = nullptr;
+	brush.Nullify();
 
-	ID2D1GradientStopCollection* gradStopRaw = nullptr;
-	if (secondColor)
-	{
-		gradients[0].color = color;
-		gradients[1].color = color2;
-		rt->CreateGradientStopCollection(gradients, 2, &gradStopRaw);
-		if (useRadial)
-		{
-			ID2D1RadialGradientBrush* radBrush = nullptr;
-			rt->CreateRadialGradientBrush(D2D1::RadialGradientBrushProperties(
-				D2D1::Point2F(location.left, location.top),
-				D2D1::Point2F(location.right, location.bottom),
-				location.right - location.left, location.bottom - location.top),
-				gradStopRaw, &radBrush);
-			brush = radBrush;
-			rb = radBrush;
-		}
-		else
-		{
-			ID2D1LinearGradientBrush* linBrush = nullptr;
-			rt->CreateLinearGradientBrush(D2D1::LinearGradientBrushProperties(
-				D2D1::Point2F(location.left, location.top),
-				D2D1::Point2F(location.right, location.bottom)),
-				gradStopRaw, &linBrush);
-			brush = linBrush;
-			lb = linBrush;
-		}
-		gradStop = gradStopRaw;
-	}
-	else
-	{
-		ID2D1SolidColorBrush* solBrush = nullptr;
-		rt->CreateSolidColorBrush(color, &solBrush);
-		brush = solBrush;
-		sb = solBrush;
-	}
+	ResetBrush();
 
-	if (image.get())
+	if (image.Get())
 	{
-		ID2D1BitmapBrush* bit = nullptr;
-		rt->CreateBitmapBrush(image.get(), &bit);
-		bitmap = bit;
+		TrecComPointer<ID2D1BitmapBrush>::TrecComHolder bit;
+		rt->CreateBitmapBrush(image.Get(), bit.GetPointerAddress());
+		bitmap = bit.Extract();
 	}
 
 	return true;
@@ -5486,51 +5333,16 @@ bool TContent::onCreate(RECT l, RECT s)
 bool TContent::onCreate(D2D1_ELLIPSE e)
 {
 
-	if (!rt.get())
+	if (!rt.Get())
 		return false;
 	circle = e;
-	brush = nullptr;
+	brush.Nullify();
 
 	location.left = e.point.x - e.radiusX;
 	location.right = e.point.x + e.radiusX;
 	location.top = e.point.y - e.radiusY;
 	location.bottom = e.point.y + e.radiusY;
-	ID2D1GradientStopCollection* gradStopRaw = nullptr;
-	if (secondColor)
-	{
-		gradients[0].color = color;
-		gradients[1].color = color2;
-		rt->CreateGradientStopCollection(gradients, 2, &gradStopRaw);
-		if (useRadial)
-		{
-			ID2D1RadialGradientBrush* radBrush = nullptr;
-			rt->CreateRadialGradientBrush(D2D1::RadialGradientBrushProperties(
-				D2D1::Point2F(location.left, location.top),
-				D2D1::Point2F(location.right, location.bottom),
-				location.right - location.left, location.bottom - location.top),
-				gradStopRaw, &radBrush);
-			brush = radBrush;
-			rb = radBrush;
-		}
-		else
-		{
-			ID2D1LinearGradientBrush* linBrush = nullptr;
-			rt->CreateLinearGradientBrush(D2D1::LinearGradientBrushProperties(
-				D2D1::Point2F(location.left, location.top),
-				D2D1::Point2F(location.right, location.bottom)),
-				gradStopRaw, &linBrush);
-			brush = linBrush;
-			lb = linBrush;
-		}
-		gradStop = gradStopRaw;
-	}
-	else
-	{
-		ID2D1SolidColorBrush* solBrush = nullptr;
-		rt->CreateSolidColorBrush(color, &solBrush);
-		brush = solBrush;
-		sb = solBrush;
-	}
+	ResetBrush();
 	return true;
 }
 
@@ -5542,53 +5354,17 @@ bool TContent::onCreate(D2D1_ELLIPSE e)
 */
 bool TContent::onCreate(D2D1_ROUNDED_RECT rr)
 {
-	if (!rt.get())
+	if (!rt.Get())
 		return false;
 	roundedRect = rr;
-	brush = nullptr;
+	brush.Nullify();
 
 	location.left = rr.rect.left;
 	location.right = rr.rect.right;
 	location.top = rr.rect.top;
 	location.bottom = rr.rect.bottom;
 
-	ID2D1GradientStopCollection* gradStopRaw = nullptr;
-
-	if (secondColor)
-	{
-		gradients[0].color = color;
-		gradients[1].color = color2;
-		rt->CreateGradientStopCollection(gradients, 2, &gradStopRaw);
-		if (useRadial)
-		{
-			ID2D1RadialGradientBrush* radBrush = nullptr;
-			rt->CreateRadialGradientBrush(D2D1::RadialGradientBrushProperties(
-				D2D1::Point2F(location.left, location.top),
-				D2D1::Point2F(location.right, location.bottom),
-				location.right - location.left, location.bottom - location.top),
-				gradStopRaw, &radBrush);
-			brush = radBrush;
-			rb = radBrush;
-		}
-		else
-		{
-			ID2D1LinearGradientBrush* linBrush = nullptr;
-			rt->CreateLinearGradientBrush(D2D1::LinearGradientBrushProperties(
-				D2D1::Point2F(location.left, location.top),
-				D2D1::Point2F(location.right, location.bottom)),
-				gradStopRaw, &linBrush);
-			brush = linBrush;
-			lb = linBrush;
-		}
-		gradStop = gradStopRaw;
-	}
-	else
-	{
-		ID2D1SolidColorBrush* solBrush = nullptr;
-		rt->CreateSolidColorBrush(color, &solBrush);
-		brush = solBrush;
-		sb = solBrush;
-	}
+	ResetBrush();
 	return true;
 }
 
@@ -5602,11 +5378,6 @@ void TContent::ShiftHorizontal(int degrees)
 {
 	location.left += degrees;
 	location.right += degrees;
-	if (!isZeroRect(snip))
-	{
-		snip.left += degrees;
-		snip.right += degrees;
-	}
 }
 
 /*
@@ -5619,11 +5390,6 @@ void TContent::ShiftVertical(int degrees)
 {
 	location.top += degrees;
 	location.bottom += degrees;
-	if (!isZeroRect(snip))
-	{
-		snip.top += degrees;
-		snip.bottom += degrees;
-	}
 }
 
 /*
@@ -5632,24 +5398,24 @@ void TContent::ShiftVertical(int degrees)
 * Parameters: void
 * Returns: void
 */
-void TContent::onDraw(RECT& loc, RECT& snip)
+void TContent::onDraw(RECT& loc)
 {
-	if (!rt.get())
+	if (!rt.Get())
 		return;
 
 	D2D1_RECT_F f_snip;
-	convertCRectToD2DRect(&snip, &f_snip);
+	convertCRectToD2DRect(&loc, &f_snip);
 
-	if (brush.get())
+	if (brush.Get())
 	{
 		switch (shape)
 		{
 		case T_Rect:
-			rt->FillRectangle(f_snip, brush.get());
+			rt->FillRectangle(f_snip, brush.Get());
 			break;
 		case T_Rounded_Rect:
 			roundedRect.rect = f_snip;
-			rt->FillRoundedRectangle(&roundedRect, brush.get());
+			rt->FillRoundedRectangle(&roundedRect, brush.Get());
 
 			break;
 		case T_Ellipse:
@@ -5657,34 +5423,22 @@ void TContent::onDraw(RECT& loc, RECT& snip)
 			circle.point.y = (f_snip.bottom + f_snip.top) / 2;
 			circle.radiusX = f_snip.right - f_snip.left;
 			circle.radiusY = f_snip.bottom - f_snip.top;
-			rt->FillEllipse(&circle, brush.get());
+			rt->FillEllipse(&circle, brush.Get());
 			break;
 		case T_Custom_shape:
 			break;
 		}
 	}
-	if (image.get() && bitmap.get() && cropImage.get())
+	if (image.Get() && bitmap.Get() && cropImage.Get())
 	{
 		D2D1_RECT_F f_loc;
 		convertCRectToD2DRect(&loc, &f_loc);
-		if(loc == snip)
-			rt->DrawBitmap(image.get(), f_snip);
-		else
-		{
-			D2D1_POINT_2U point{ 0,0 };
-			D2D1_RECT_U cropSnip;
-			cropSnip.bottom = abs(f_loc.bottom - f_snip.bottom);
-			cropSnip.left = abs(f_snip.left - f_loc.left);
-			cropSnip.right = abs(f_loc.right - f_snip.right);
-			cropSnip.top = abs(f_snip.top - f_loc.top);
-			if (cropSnip.bottom < cropSnip.top || cropSnip.right < cropSnip.left)
-				return;
-			cropImage->CopyFromBitmap(&point, image.get(), &cropSnip);
-			rt->DrawBitmap(cropImage.get(), f_snip);
-		}
+
+			rt->DrawBitmap(image.Get(), f_snip);
+	
 		//cropImage->CopyFromBitmap(NULL)
 		
-		//rt->DrawBitmap(image, snip, thickness, D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR, location);
+		//rt->DrawBitmap(image, thickness, D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR, location);
 		
 	}
 }
@@ -5695,7 +5449,7 @@ void TContent::onDraw(RECT& loc, RECT& snip)
 * Parameters: void
 * Returns: D2D1::ColorF - the current color
 */
-D2D1::ColorF TContent::getColor()
+D2D1_COLOR_F TContent::getColor()
 {
 	return color;
 }
@@ -5720,11 +5474,15 @@ bool TContent::setOpaquency(float f)
 * Parameters: D2D1::ColorF cf - the new color
 * Returns: void 
 */
-void TContent::setColor(D2D1::ColorF cf)
+void TContent::setColor(D2D1_COLOR_F cf)
 {
 	color = cf;
-	if (sb.get())
-		sb->SetColor(cf);
+	if (brush.Get())
+	{
+		ID2D1SolidColorBrush* sb = dynamic_cast<ID2D1SolidColorBrush*>(brush.Get());
+		if (sb)
+			sb->SetColor(cf);
+	}
 }
 
 /*
@@ -5740,80 +5498,76 @@ RECT TContent::getLocation()
 
 void TContent::SetRadialImage(TDataArray<D2D1_COLOR_F>& colors)
 {
-	ID2D1GradientStopCollection* stopper = getStopCollection(colors);
-	if (!stopper) return;
+	TrecComPointer<ID2D1GradientStopCollection> stopper = getStopCollection(colors);
+	if (!stopper.Get()) return;
 
 	gradStop = stopper;
-	ID2D1RadialGradientBrush* radBrush = nullptr;
+	TrecComPointer<ID2D1RadialGradientBrush>::TrecComHolder radBrush;
 	rt->CreateRadialGradientBrush(D2D1::RadialGradientBrushProperties(
 		D2D1::Point2F(location.left, location.top),
 		D2D1::Point2F(location.right, location.bottom),
 		location.right - location.left, location.bottom - location.top),
-		stopper, &radBrush);
-	brush = radBrush;
-	rb = radBrush;
+		stopper.Get(), radBrush.GetPointerAddress());
+	brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1RadialGradientBrush>(radBrush);
 }
 
 void TContent::SetLinearImage(TDataArray<D2D1_COLOR_F>& colors)
 {
-	ID2D1GradientStopCollection* stopper = getStopCollection(colors);
-	if (!stopper) return;
+	TrecComPointer<ID2D1GradientStopCollection> stopper = getStopCollection(colors);
+	if (!stopper.Get()) return;
 
 	gradStop = stopper;
-	ID2D1LinearGradientBrush* linBrush = nullptr;
+	TrecComPointer<ID2D1LinearGradientBrush>::TrecComHolder linBrush;
 	rt->CreateLinearGradientBrush(D2D1::LinearGradientBrushProperties(
 		D2D1::Point2F(location.left, location.top),
 		D2D1::Point2F(location.right, location.bottom)),
-		stopper, &linBrush);
-	brush = linBrush;
-	lb = linBrush;
+		stopper.Get(), linBrush.GetPointerAddress());
+	brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1LinearGradientBrush>(linBrush);
 }
 
 void TContent::SetRadialImage(TDataArray<D2D1_GRADIENT_STOP>& colors)
 {
-	ID2D1GradientStopCollection* stopper = nullptr;
+	TrecComPointer<ID2D1GradientStopCollection>::TrecComHolder stopper;
 
-	if (!rt.get()) return;
+	if (!rt.Get()) return;
 
-	rt->CreateGradientStopCollection(colors.data(), colors.Size(), &stopper);
+	rt->CreateGradientStopCollection(colors.data(), colors.Size(), stopper.GetPointerAddress());
 
-	if (!stopper) return;
+	if (!(*stopper.GetPointerAddress())) return;
 
-	gradStop = stopper;
-	ID2D1RadialGradientBrush* radBrush = nullptr;
+	gradStop = stopper.Extract();
+	TrecComPointer<ID2D1RadialGradientBrush>::TrecComHolder radBrush;
 	rt->CreateRadialGradientBrush(D2D1::RadialGradientBrushProperties(
 		D2D1::Point2F(location.left, location.top),
 		D2D1::Point2F(location.right, location.bottom),
 		location.right - location.left, location.bottom - location.top),
-		stopper, &radBrush);
-	brush = radBrush;
-	rb = radBrush;
+		gradStop.Get(), radBrush.GetPointerAddress());
+	brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1RadialGradientBrush>(radBrush);
 }
 
 void TContent::SetLinearImage(TDataArray<D2D1_GRADIENT_STOP>& colors)
 {
-	ID2D1GradientStopCollection* stopper = nullptr;
+	TrecComPointer<ID2D1GradientStopCollection>::TrecComHolder stopper;
 
-	if (!rt.get()) return;
+	if (!rt.Get()) return;
 	
-	rt->CreateGradientStopCollection(colors.data(), colors.Size(), &stopper);
+	rt->CreateGradientStopCollection(colors.data(), colors.Size(), stopper.GetPointerAddress());
 
-	if (!stopper) return;
+	if (!(*stopper.GetPointerAddress())) return;
 
-	gradStop = stopper;
-	ID2D1LinearGradientBrush* linBrush = nullptr;
+	gradStop = stopper.Extract();
+	TrecComPointer<ID2D1LinearGradientBrush>::TrecComHolder linBrush;
 	rt->CreateLinearGradientBrush(D2D1::LinearGradientBrushProperties(
 		D2D1::Point2F(location.left, location.top),
 		D2D1::Point2F(location.right, location.bottom)),
-		stopper, &linBrush);
-	brush = linBrush;
-	lb = linBrush;
+		gradStop.Get(), linBrush.GetPointerAddress());
+	brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1LinearGradientBrush>(linBrush);
 }
 
-ID2D1GradientStopCollection* TContent::getStopCollection(TDataArray<D2D1_COLOR_F>& colors)
+TrecComPointer<ID2D1GradientStopCollection> TContent::getStopCollection(TDataArray<D2D1_COLOR_F>& colors)
 {
-	if (!rt.get() || !colors.Size()) return nullptr;
-	ID2D1GradientStopCollection* stop = nullptr;
+	if (!rt.Get() || !colors.Size()) return TrecComPointer<ID2D1GradientStopCollection>();
+	TrecComPointer<ID2D1GradientStopCollection>::TrecComHolder stop;
 	TDataArray<D2D1_GRADIENT_STOP> gradients;
 
 	float stopValue = 1.0f / static_cast<float>(colors.Size());
@@ -5824,8 +5578,63 @@ ID2D1GradientStopCollection* TContent::getStopCollection(TDataArray<D2D1_COLOR_F
 		gradients.push_back(gStop);
 	}
 
-	rt->CreateGradientStopCollection(gradients.data(), gradients.Size(), &stop);
-	return stop;
+	rt->CreateGradientStopCollection(gradients.data(), gradients.Size(), stop.GetPointerAddress());
+	return stop.Extract();
+}
+
+void TContent::SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget> rt)
+{
+	if (!rt.Get())
+		throw L"Error! Expected Render Target to be initialized!";
+
+	this->rt = rt;
+
+	ResetBrush();
+
+	if (image.Get())
+	{
+		TrecComPointer<ID2D1BitmapBrush>::TrecComHolder bit;
+		rt->CreateBitmapBrush(image.Get(), bit.GetPointerAddress());
+		bitmap = bit.Extract();
+	}
+}
+
+void TContent::ResetBrush()
+{
+	TrecComPointer<ID2D1GradientStopCollection>::TrecComHolder gradStopRaw;
+	if (secondColor)
+	{
+		gradients[0].color = color;
+		gradients[1].color = color2;
+		rt->CreateGradientStopCollection(gradients, 2, gradStopRaw.GetPointerAddress());
+		gradStop = gradStopRaw.Extract();
+		if (useRadial)
+		{
+			TrecComPointer<ID2D1RadialGradientBrush>::TrecComHolder radBrush;
+			rt->CreateRadialGradientBrush(D2D1::RadialGradientBrushProperties(
+				D2D1::Point2F(location.left, location.top),
+				D2D1::Point2F(location.right, location.bottom),
+				location.right - location.left, location.bottom - location.top),
+				gradStop.Get(), radBrush.GetPointerAddress());
+			brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1RadialGradientBrush>(radBrush);
+		}
+		else
+		{
+			TrecComPointer<ID2D1LinearGradientBrush>::TrecComHolder linBrush;
+			rt->CreateLinearGradientBrush(D2D1::LinearGradientBrushProperties(
+				D2D1::Point2F(location.left, location.top),
+				D2D1::Point2F(location.right, location.bottom)),
+				gradStop.Get(), linBrush.GetPointerAddress());
+			brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1LinearGradientBrush>(linBrush);
+		}
+
+	}
+	else
+	{
+		TrecComPointer<ID2D1SolidColorBrush>::TrecComHolder solBrush;
+		rt->CreateSolidColorBrush(color, solBrush.GetPointerAddress());
+		brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1SolidColorBrush>(solBrush);
+	}
 }
 
 /*
@@ -5836,43 +5645,43 @@ ID2D1GradientStopCollection* TContent::getStopCollection(TDataArray<D2D1_COLOR_F
 *				messageState ms - the state the content is (Object does not know this)
 * Returns: int - 0
 */
-int TContent::storeInTML(CArchive * ar, int childLevel,messageState ms)
+int TContent::storeInTML(TFile * ar, int childLevel,messageState ms)
 {
 	TString writable;
 	resetAttributeString(&writable, childLevel + 1);
-	CString val;
-	val.Format(_T("%f"), thickness);
+	TString val;
+	val.Format(L"%f", thickness);
 	ar->WriteString(writable);
 	switch (ms)
 	{
 	case normal:
-		ar->WriteString(_T("|ContentThickness:"));
+		ar->WriteString(L"|ContentThickness:");
 		break;
 	case mouseHover:
-		ar->WriteString(_T("|HoverContentThickness:"));
+		ar->WriteString(L"|HoverContentThickness:");
 		break;
 	case mouseLClick:
-		ar->WriteString(_T("|ClickContentThickness:"));
+		ar->WriteString(L"|ClickContentThickness:");
 	}
 
 	ar->WriteString(val);
-	ar->WriteString(_T("\n"));
+	ar->WriteString(L"\n");
 	val = convertD2DColorToString(color);
 	ar->WriteString(writable);
 	switch (ms)
 	{
 	case normal:
-		ar->WriteString(_T("|ContentColor:"));
+		ar->WriteString(L"|ContentColor:");
 		break;
 	case mouseHover:
-		ar->WriteString(_T("|HoverContentColor:"));
+		ar->WriteString(L"|HoverContentColor:");
 		break;
 	case mouseLClick:
-		ar->WriteString(_T("|ClickContentColor:"));
+		ar->WriteString(L"|ClickContentColor:");
 	}
 
 	ar->WriteString(val);
-	ar->WriteString(_T("\n"));
+	ar->WriteString(L"\n");
 	return 0;
 }
 
@@ -5920,7 +5729,7 @@ TContainer::~TContainer()
 *
 bool TContainer::setTControl(TrecPointer<TControl>tc)
 {
-	if (!tc.get())
+	if (!tc.Get())
 		return false;
 	child = tc;
 	return true;
@@ -5944,7 +5753,7 @@ bool TContainer::onCreate(RECT ma,RECT bounds)
 	location.bottom = location.top + ma.bottom;
 	location.right = location.left + ma.right;
 
-	if(!child.get())
+	if(!child.Get())
 		return false;
 	beenCreated = true;
 	ChildCreate(location);
@@ -5968,7 +5777,7 @@ bool TContainer::onCreate(RECT l)
 	if (beenCreated)
 		return false;
 	beenCreated = true;
-	if (!child.get())
+	if (!child.Get())
 		return false;
 	else
 		return ChildCreate(location);
@@ -5988,7 +5797,7 @@ bool TContainer::onCreate()
 	if (beenCreated)
 		return false;
 	beenCreated = true;
-	if (!child.get())
+	if (!child.Get())
 		return false;
 	else
 		return ChildCreate(location);
@@ -6002,7 +5811,7 @@ bool TContainer::onCreate()
 *
 void TContainer::onDraw()
 {
-	if (child.get())
+	if (child.Get())
 		ChildDraw();
 }
 
@@ -6027,7 +5836,7 @@ void TContainer::ShiftHorizontal(int degrees)
 {
 	location.left += degrees;
 	location.right += degrees;
-	if (!isZeroRect(snip))
+	if (!isSnipZero(snip))
 	{
 		snip.left += degrees;
 		snip.right += degrees;
@@ -6044,7 +5853,7 @@ void TContainer::ShiftVertical(int degrees)
 {
 	location.top += degrees;
 	location.bottom += degrees;
-	if (!isZeroRect(snip))
+	if (!isSnipZero(snip))
 	{
 		snip.top += degrees;
 		snip.bottom += degrees;
@@ -6055,14 +5864,14 @@ void TContainer::ShiftVertical(int degrees)
 * Method: TContainer - OnLButtonUp
 * Purpose: Allows control to catch the Left Button Up event and act accordingly
 * Parameters: UINT u - flags provided by MFC's Message system, not used
-*				CPoint point - the point on screen where the event occured
+*				TPoint point - the point on screen where the event occured
 *				messageOutput* mOut - allows controls to keep track of whether ohter controls have caught the event
 *				TDataArray<EventID_Cred>& eventAr - allows Controls to add whatever Event Handler they have been assigned
 * Returns: void
 *
-void TContainer::OnLButtonUp(UINT u, CPoint cp, messageOutput * mo, TDataArray<EventID_Cred>& eventAr)
+void TContainer::OnLButtonUp(UINT u, TPoint cp, messageOutput * mo, TDataArray<EventID_Cred>& eventAr)
 {
-	if (child.get())
+	if (child.Get())
 	{
 		child->OnLButtonUp(u, cp, mo, eventAr);
 	}
@@ -6072,14 +5881,14 @@ void TContainer::OnLButtonUp(UINT u, CPoint cp, messageOutput * mo, TDataArray<E
 * Method: TContainer - OnLButtonDown
 * Purpose: Allows Control to catch the Left Mouse Button Down event and act accordingly
 * Parameters: UINT u - flags provided by MFC's Message system, not used
-*				CPoint point - the point on screen where the event occured
+*				TPoint point - the point on screen where the event occured
 *				messageOutput* mOut - allows controls to keep track of whether ohter controls have caught the event
 *				TDataArray<EventID_Cred>& eventAr - allows Controls to add whatever Event Handler they have been assigned
 * Returns: void
 *
-void TContainer::OnLButtonDown(UINT u, CPoint cp, messageOutput* mo, TDataArray<EventID_Cred>& eventAr)
+void TContainer::OnLButtonDown(UINT u, TPoint cp, messageOutput* mo, TDataArray<EventID_Cred>& eventAr)
 {
-	if (child.get())
+	if (child.Get())
 	{
 		child->OnLButtonDown(u, cp, mo, eventAr);
 	}
@@ -6089,14 +5898,14 @@ void TContainer::OnLButtonDown(UINT u, CPoint cp, messageOutput* mo, TDataArray<
 * Method: TContainer - OnMouseMove
 * Purpose: Allows Controls to catch the Mouse Move event and deduce if the cursor has hovered over it
 * Parameters: UINT u - flags provided by MFC's Message system, not used
-*				CPoint point - the point on screen where the event occured
+*				TPoint point - the point on screen where the event occured
 *				messageOutput* mOut - allows controls to keep track of whether ohter controls have caught the event
 *				TDataArray<EventID_Cred>& eventAr - allows Controls to add whatever Event Handler they have been assigned
 * Returns: void
 *
-void TContainer::OnMouseMove(UINT u, CPoint cp, messageOutput* mo, TDataArray<EventID_Cred>& eventAr)
+void TContainer::OnMouseMove(UINT u, TPoint cp, messageOutput* mo, TDataArray<EventID_Cred>& eventAr)
 {
-	if (child.get())
+	if (child.Get())
 	{
 		child->OnMouseMove(u, cp, mo, eventAr);
 	}
@@ -6126,10 +5935,10 @@ int TContainer::storeInTML(CArchive * ar, int childLevel)
 	resetAttributeString(&str, childLevel);
 	CString val = convertRectToString(location);
 	ar->WriteString(str);
-	ar->WriteString(_T("|ContainerLoc:"));
+	ar->WriteString(L"|ContainerLoc:"));
 	ar->WriteString(val);
-	ar->WriteString(_T("\n"));
-	if (child.get())
+	ar->WriteString(L"\n"));
+	if (child.Get())
 	{
 		child->storeInTML(ar, childLevel + 1);
 	}
@@ -6155,7 +5964,7 @@ void TContainer::storeInHTML(CArchive * ar)
 *
 void TContainer::setParent(TrecPointer<TControl> tc)
 {
-	if (child.get())
+	if (child.Get())
 	{
 		child->setParent(tc);
 	}
@@ -6180,7 +5989,7 @@ void TContainer::setLocation(RECT & r)
 *
 bool TContainer::ChildCreate(RECT l)
 {
-	if (!child.get())
+	if (!child.Get())
 		return false;
 	return child->onCreate(l);
 }
@@ -6193,7 +6002,7 @@ bool TContainer::ChildCreate(RECT l)
 *
 void TContainer::ChildDraw()
 {
-	if (!child.get())
+	if (!child.Get())
 		return;
 	child->onDraw();
 }
@@ -6218,16 +6027,16 @@ void resetAttributeString(TString* st, int cou)
 * Parameters: D2D1::ColorF - the color to convert
 * Returns: CString - the Color in string form
 */
-CString convertD2DColorToString(D2D1::ColorF color) 
+TString convertD2DColorToString(D2D1_COLOR_F color) 
 {
-	CString val;
-	val.Format(_T("%f"), color.r);
-	CString col = val + TString(",");
-	val.Format(_T("%f"), color.g);
+	TString val;
+	val.Format(L"%f", color.r);
+	TString col = val + TString(",");
+	val.Format(L"%f", color.g);
 	col = col + val + TString(",");
-	val.Format(_T("%f"), color.b);
+	val.Format(L"%f", color.b);
 	col = col + val + TString(",");
-	val.Format(_T("%f"), color.a);
+	val.Format(L"%f", color.a);
 	col = col + val;
 	return col;
 }
@@ -6239,19 +6048,19 @@ CString convertD2DColorToString(D2D1::ColorF color)
 * Parameters: RECT - the Rectangle to convert
 * Returns: CString - the Representation of a rectangle in string form
 */
-CString convertRectToString(RECT sty) 
+TString convertRectToString(RECT sty) 
 {
-	CString val;
-	val.Format(_T("%d"), sty.top);
+	TString val;
+	val.Format(L"%d", sty.top);
 
-	CString comma(L",");
+	TString comma(L",");
 
-	CString col = val + comma;
-	val.Format(_T("%d"), sty.left);
+	TString col = val + comma;
+	val.Format(L"%d", sty.left);
 	col = col + val + comma;
-	val.Format(_T("%d"), sty.bottom);
+	val.Format(L"%d", sty.bottom);
 	col = col + val + comma;
-	val.Format(_T("%d"), sty.right);
+	val.Format(L"%d", sty.right);
 	col = col + val;
 	return col;
 }
@@ -6272,18 +6081,18 @@ RECT convertStringToRECT(TString* str)
 		return returnable;
 	}
 
-	TrecPointer<TArray<TString>> strSpl = str->split(",");
+	TrecPointer<TDataArray<TString>> strSpl = str->split(",");
 
 	
 	int res[4] = { 0,0,0,0 };
-	if (strSpl.get() == NULL || strSpl->Count() != 4)
+	if (strSpl.Get() == NULL || strSpl->Size() != 4)
 	{
 		goto fallBack;
 	}
-	res[0] = strSpl->ElementAt(0)->ConvertToInt((int*)&returnable.top);
-	res[1] = strSpl->ElementAt(1)->ConvertToInt((int*)&returnable.left);
-	res[2] = strSpl->ElementAt(2)->ConvertToInt((int*)&returnable.bottom);
-	res[3] = strSpl->ElementAt(3)->ConvertToInt((int*)&returnable.right);
+	res[0] = strSpl->at(0).ConvertToInt((int*)&returnable.top);
+	res[1] = strSpl->at(1).ConvertToInt((int*)&returnable.left);
+	res[2] = strSpl->at(2).ConvertToInt((int*)&returnable.bottom);
+	res[3] = strSpl->at(3).ConvertToInt((int*)&returnable.right);
 	if (res[0] > 0 || res[1] > 0 || res[2] > 0 || res[3] > 0)
 		goto fallBack;
 	return returnable; LONG i;
@@ -6306,14 +6115,14 @@ D2D1::ColorF convertStringToD2DColor(TString *str)
 		return D2D1::ColorF(0.0f, 0.0f, 0.0f, 1.0f);
 	}
 
-	TrecPointer<TArray<TString>> strSpl = str->split(",");
+	TrecPointer<TDataArray<TString>> strSpl = str->split(",");
 
 	
 	
-	res[0] = strSpl->ElementAt(0)->ConvertToFloat(&rgba[0]);
-	res[1] = strSpl->ElementAt(1)->ConvertToFloat(&rgba[1]);
-	res[2] = strSpl->ElementAt(2)->ConvertToFloat(&rgba[2]);
-	res[3] = strSpl->ElementAt(3)->ConvertToFloat(&rgba[3]);
+	res[0] = strSpl->at(0).ConvertToFloat(&rgba[0]);
+	res[1] = strSpl->at(1).ConvertToFloat(&rgba[1]);
+	res[2] = strSpl->at(2).ConvertToFloat(&rgba[2]);
+	res[3] = strSpl->at(3).ConvertToFloat(&rgba[3]);
 	if (res[0] > 0 || res[1] > 0 || res[2] > 0 || res[3] > 0)
 	{
 		goto colorFallBack;
@@ -6352,11 +6161,11 @@ bool convertCRectToD2DRect(RECT* mfcr, D2D_RECT_F* d2dr)
 /*
 * Function: isContained
 * Purpose: Checks of a point is within a given MFC Rectangle
-* Parameters: const CPoint* - the point to check
+* Parameters: const TPoint* - the point to check
 *				const RECT* - the rectangle to check
 * Returns: bool - whether the point is withing the bounds
 */
-bool isContained(const CPoint* cp, const RECT* r)
+bool isContained(const TPoint* cp, const RECT* r)
 {
 	if (!cp || !r)
 		return false;
@@ -6367,11 +6176,11 @@ bool isContained(const CPoint* cp, const RECT* r)
 /*
 * Function: isContained
 * Purpose: Checks of a point is within a given Direct2D Rectangle
-* Parameters: const CPoint* - the point to check
+* Parameters: const TPoint* - the point to check
 *				const D2D1_RECT_F* - the rectangle to check
 * Returns: bool - whether the point is withing the bounds
 */
-bool isContained(const CPoint* cp, const D2D1_RECT_F* r)
+bool isContained(const TPoint* cp, const D2D1_RECT_F* r)
 {
 	if (!cp || !r)
 		return false;
@@ -6382,12 +6191,12 @@ bool isContained(const CPoint* cp, const D2D1_RECT_F* r)
 /*
 * Function: isContained
 * Purpose: Checks if a point is in a certain ellipse
-* Parameters: const CPoint* - the point to check
+* Parameters: const TPoint* - the point to check
 *				const D2D1_ELLIPSE* - the ellipse to check
 * Returns: bool - whether the point is within the specified bounds
 */
 // To-Do: improve function as more math is learned
-bool isContained(const CPoint& cp, const D2D1_ELLIPSE& el) 
+bool isContained(const TPoint& cp, const D2D1_ELLIPSE& el) 
 {
 
 	return (pow((cp.x - el.point.x),2) / pow(el.radiusX,2)
@@ -6444,9 +6253,10 @@ void ZeroMemory_(EventArgs & ea)
 	ea.isClick = false;
 	ea.isLeftClick = false;
 	ea.methodID = -1;
-	ea.point = CPoint(0, 0);
+	ea.point.x = 0.0f;
+	ea.point.y = 0.0f;
 	ea.positive = false;
-	ea.text = L"";
+	ea.text.Empty();
 }
 
 
@@ -6472,6 +6282,11 @@ void switchLongs(LONG & l1, LONG & l2)
 * Returns: bool - whether the RECT is "Zero" or not
 */
 bool isSnipZero(const RECT & snip)
+{
+	return !snip.bottom && !snip.left && !snip.right && !snip.top;
+}
+
+bool _ANAFACE_DLL isSnipZero(const D2D1_RECT_F& snip)
 {
 	return !snip.bottom && !snip.left && !snip.right && !snip.top;
 }

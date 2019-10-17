@@ -1,4 +1,4 @@
-#include "stdafx.h"
+
 #include "TArena.h"
 #include <d3d11.h>
 #include <DirectXMath.h>
@@ -17,7 +17,7 @@ TArena::TArena(TrecComPointer<ID2D1RenderTarget> rt, TrecPointer<TArray<styleTab
 {
 	cameraType = type;
 	windowHandle = h;
-	instanceHandle = AfxGetInstanceHandle();
+	instanceHandle = GetModuleHandle(nullptr);
 	viewport = NULL;
 	projector = DirectX::XMMatrixPerspectiveFovLH(0.25f*DirectX::XM_PI, 800.0f / 600.0f, 1.0f, 1000.0f);
 
@@ -50,9 +50,9 @@ TArena::~TArena()
 * Parameters: RECT r - the location on screen where arena is to show
 * Returns: bool - ignore
 */
-bool TArena::onCreate(RECT r )
+bool TArena::onCreate(RECT r, TrecPointer<TWindowEngine> d3d)
 {
-	TControl::onCreate(r);
+	TControl::onCreate(r,d3d);
 
 	TrecPointer<TString> valpoint = attributes.retrieveEntry(TString(L"|EngineID"));
 
@@ -60,61 +60,54 @@ bool TArena::onCreate(RECT r )
 
 	projector = DirectX::XMMatrixPerspectiveFovLH(0.25f*DirectX::XM_PI, aspect,1.0f, 1000.0f);
 	
+	viewport = new D3D11_VIEWPORT;
+	viewport->TopLeftX = r.left;
+	viewport->TopLeftY = r.top;
+	viewport->Height = r.bottom - r.top;
+	viewport->Width = r.right - r.left;
+	viewport->MinDepth = 0.0f;
+	viewport->MaxDepth = 1.0f;
 
-	if (valpoint.get())
+	if (valpoint.Get() && d3d.Get())
 	{
-		arenaEngine = ArenaEngine::GetArenaEngine(*(valpoint.get()),windowHandle,AfxGetInstanceHandle());
-		if (!arenaEngine.get())
+		arenaEngine = TrecPointerKey::GetNewTrecPointer<TArenaEngine>(d3d, *valpoint.Get());//   ArenaEngine::GetArenaEngine(*(valpoint.Get()), windowHandle, GetModuleHandle(nullptr));
+		if (!arenaEngine.Get())
 			return false;
-
-		arenaEngine->initialize(windowHandle,instanceHandle);
-
-		//viewport = (D3DEngine::getViewPort(valpoint->GetBuffer(), r));
-		viewport = new D3D11_VIEWPORT;
-		viewport->TopLeftX = r.left;
-		viewport->TopLeftY = r.top;
-		viewport->Height = r.bottom - r.top;
-		viewport->Width = r.right - r.left;
-		viewport->MinDepth = 0.0f;
-		viewport->MaxDepth = 1.0f;
-		//valpoint->ReleaseBuffer();
-
-		
 	}
 
 	valpoint = attributes.retrieveEntry(TString(L"|CameraType"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
 		if (!valpoint->Compare(L"LookAt"))
 			lookTo = false;
 	}
 
 	valpoint = attributes.retrieveEntry(TString(L"|StartingDirection"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		TrecPointer<TArray<TString>> numbers = valpoint->split(TString(L","));
-		if (numbers.get() && numbers->Count() > 2)
+		TrecPointer<TDataArray<TString>> numbers = valpoint->split(TString(L","));
+		if (numbers.Get() && numbers->Size() > 2)
 		{
 			float numbers3[3] = { 0.0f, 0.0f, 0.0f };
 
-			TrecPointer<TString> curString = numbers->ElementAt(0);
-			if (curString.get())
+			TString curString = numbers->at(0);
+			if (curString.GetSize())
 			{
-				if (!curString->ConvertToFloat(&numbers3[0]))
+				if (!curString.ConvertToFloat(&numbers3[0]))
 					direction_3.x = numbers3[0];
 			}
 			
-			curString = numbers->ElementAt(1);
-			if (curString.get())
+			curString = numbers->at(1);
+			if (curString.GetSize())
 			{
-				if (!curString->ConvertToFloat(&numbers3[1]))
+				if (!curString.ConvertToFloat(&numbers3[1]))
 					direction_3.y = numbers3[1];
 			}
 
-			curString = numbers->ElementAt(2);
-			if (curString.get())
+			curString = numbers->at(2);
+			if (curString.GetSize())
 			{
-				if (!curString->ConvertToFloat(&numbers3[2]))
+				if (!curString.ConvertToFloat(&numbers3[2]))
 					direction_3.z = numbers3[2];
 			}
 
@@ -133,48 +126,48 @@ bool TArena::onCreate(RECT r )
 
 
 	valpoint = attributes.retrieveEntry(TString(L"|StartingLocation"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		TrecPointer<TArray<TString>> numbers = valpoint->split(TString(L","));
-		if (numbers.get() && numbers->Count() > 2)
+		TrecPointer<TDataArray<TString>> numbers = valpoint->split(TString(L","));
+		if (numbers.Get() && numbers->Size() > 2)
 		{
 			float numbers3[3] = { 0.0f,0.0f,0.0f };
 
-			TrecPointer<TString> curString = numbers->ElementAt(0);
-			if (curString.get())
+			TString curString = numbers->at(0);
+			if (curString.GetSize())
 			{
-				if (!curString->ConvertToFloat(&numbers3[0]))
+				if (!curString.ConvertToFloat(&numbers3[0]))
 					location_3.x = numbers3[0];
 			}
 
-			curString = numbers->ElementAt(1);
-			if (curString.get())
+			curString = numbers->at(1);
+			if (curString.GetSize())
 			{
-				if (!curString->ConvertToFloat(&numbers3[1]))
+				if (!curString.ConvertToFloat(&numbers3[1]))
 					location_3.y = numbers3[1];
 			}
-			curString = numbers->ElementAt(2);
-			if (curString.get())
+			curString = numbers->at(2);
+			if (curString.GetSize())
 			{
-				if (!curString->ConvertToFloat(&numbers3[2]))
+				if (!curString.ConvertToFloat(&numbers3[2]))
 					location_3.z = numbers3[2];
 			}
 		}
 	}
 
 	valpoint = attributes.retrieveEntry(TString(L"|Up"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		TrecPointer<TArray<TString>> numbers = valpoint->split(TString(L","));
-		if (numbers.get() && numbers->Count() > 2)
+		TrecPointer<TDataArray<TString>> numbers = valpoint->split(TString(L","));
+		if (numbers.Get() && numbers->Size() > 2)
 		{
 			float* numbers3[3] = { &up_3.x, &up_3.y,&up_3.z };
 			for (UINT c = 0; c < 3; c++)
 			{
-				TrecPointer<TString> curString = numbers->ElementAt(c);
-				if (curString.get())
+				TString curString = numbers->at(c);
+				if (curString.GetSize())
 				{
-					if (curString->ConvertToFloat(numbers3[c]))
+					if (curString.ConvertToFloat(numbers3[c]))
 					{
 						if (c == 1)
 							*numbers3[c] = 1.0f;
@@ -188,7 +181,7 @@ bool TArena::onCreate(RECT r )
 	}
 	RefreshVectors();
 
-	return arenaEngine.get() && viewport;
+	return arenaEngine.Get() && viewport;
 
 	
 }
@@ -199,7 +192,7 @@ bool TArena::onCreate(RECT r )
 * Parameters: void
 * Returns: TrecPointer<ArenaEngine> - the engine arena control is attached to
 */
-TrecPointer<ArenaEngine> TArena::getEngine()
+TrecPointer<TArenaEngine> TArena::getEngine()
 {
 	return arenaEngine;
 }
@@ -210,10 +203,9 @@ TrecPointer<ArenaEngine> TArena::getEngine()
 * Parameters: TrecPointer<ArenaEngine> e - the engine to set
 * Returns: bool - success of function
 */
-bool TArena::setEngine(TrecPointer<ArenaEngine> e)
+bool TArena::setEngine(TrecPointer<TArenaEngine> e)
 {
-	if(e.get() || !arenaEngine.get())
-	return false;
+	
 	arenaEngine = e;
 	return true;
 }
@@ -226,8 +218,7 @@ bool TArena::setEngine(TrecPointer<ArenaEngine> e)
 */
 void TArena::removeEngine()
 {
-	arenaEngine->Release();
-	arenaEngine = null<ArenaEngine>();
+	arenaEngine.Nullify();
 }
 
 /*
@@ -239,8 +230,8 @@ void TArena::removeEngine()
 void TArena::onDraw(TObject* obj)
 {
 	//TControl::onDraw();
-	if (content1.get())
-		content1->onDraw(TControl::location, snip);
+	if (content1.Get())
+		content1->onDraw(TControl::location);
 	
 	/*if (renderTarget)
 	{
@@ -255,15 +246,15 @@ void TArena::onDraw(TObject* obj)
 		}
 	}*/
 
-	if (arenaEngine.get() && viewport)
+	if (arenaEngine.Get() && viewport)
 	{
 		arenaEngine->RenderScene(projector,camera, *viewport);
 	}
 
-	if (text1.get())
-		text1->onDraw(TControl::location, snip, obj);
-	if (border1.get())
-		border1->onDraw(TControl::location, snip);
+	if (text1.Get())
+		text1->onDraw(TControl::location, obj);
+	if (border1.Get())
+		border1->onDraw(TControl::location);
 	for (int c = 0; c < children.Count(); c++)
 	{
 		children.ElementAt(c)->onDraw(obj);

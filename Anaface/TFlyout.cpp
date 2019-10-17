@@ -1,4 +1,4 @@
-#include "stdafx.h"
+
 #include "TFlyout.h"
 
 TDataArray<TFlyout*> flyouts;
@@ -39,11 +39,11 @@ TFlyout::~TFlyout()
 * Parameters: RECT r - the location of the Control
 * Returns: bool - false
 */
-bool TFlyout::onCreate(RECT r)
+bool TFlyout::onCreate(RECT r, TrecPointer<TWindowEngine> d3d)
 {
 	TrecPointer<TString> valpoint = attributes.retrieveEntry(TString(L"|Type"));
 
-	if (!valpoint.get() || valpoint->Compare(L"TCanvas"))
+	if (!valpoint.Get() || valpoint->Compare(L"TCanvas"))
 	{
 		organization = tCanvas;
 	}
@@ -66,7 +66,7 @@ bool TFlyout::onCreate(RECT r)
 	{
 		valpoint = attributes.retrieveEntry(TString(L"|OnAppear"));
 
-		if (!valpoint.get())
+		if (!valpoint.Get())
 		{
 			appearWhen = appear_onClick;
 
@@ -104,9 +104,9 @@ bool TFlyout::onCreate(RECT r)
 	r.top = exitRect.bottom;
 
 	if (organization == tCanvas)
-		TControl::onCreate(r);
+		TControl::onCreate(r,d3d);
 	else
-		TLayout::onCreate(r);
+		TLayout::onCreate(r,d3d);
 
 	return false;
 }
@@ -207,7 +207,7 @@ void TFlyout::Hide()
 *				TDataArray<EventID_Cred>& eventAr - the List of Events in a User's actions
 * Returns: void
 */
-void TFlyout::OnLButtonDown(UINT nFlags, CPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr)
+void TFlyout::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr, TDataArray<TControl*>& clickedControl)
 {
 	if (!isShown)
 	{
@@ -220,7 +220,7 @@ void TFlyout::OnLButtonDown(UINT nFlags, CPoint point, messageOutput * mOut, TDa
 		*mOut = negativeUpdate;return;
 	}
 
-	TControl::OnLButtonDown(nFlags, point, mOut, eventAr);
+	TControl::OnLButtonDown(nFlags, point, mOut, eventAr, clickedControl);
 }
 
 /*

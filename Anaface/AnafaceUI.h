@@ -8,7 +8,7 @@
 #include "TCheckBox.h"
 #include "TFlyout.h"
 #include "TArena.h"
-#include "TVideo.h"
+//#include "TVideo.h"
 #include "TContextMenu.h"
 #include "TCanvas.h"
 #include "TImage.h"
@@ -17,7 +17,7 @@ class AnafaceUI;
 typedef struct _ANAFACE_DLL auiHold {
 	TArray<TControl> children;
 	RECT location = { 0,0,0,0 };
-	TrecPointer<TControl> current = nullptr;
+	TrecPointer<TControl> current;
 	TArray<TString> source;
 }auiHold;
 
@@ -38,16 +38,25 @@ public:
 	AnafaceUI(TrecComPointer<ID2D1RenderTarget>, TrecPointer<TArray<styleTable>> ta, HWND);
 	virtual ~AnafaceUI();
 
+	afx_msg virtual void OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
+	afx_msg virtual void OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr, TDataArray<TControl*>& clickedControl);
+	afx_msg virtual void OnRButtonDown(UINT nFlags, TPoint, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
+	afx_msg virtual void OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
+	//afx_msg void OnContextMenu(CWnd* pWnd, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
+	afx_msg virtual void OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
+	afx_msg virtual void OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
+	afx_msg virtual bool OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
 
 
 	bool switchView(UINT x);
 
+	virtual void SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget> rt);
 
-	afx_msg virtual void OnLButtonDown(UINT nFlags, CPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
+	// afx_msg virtual void OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
 //	int loadFromTML(CArchive* ar);
-	bool onCreate(RECT)override;
+	bool onCreate(RECT, TrecPointer<TWindowEngine> d3d)override;
 	int addControl(TrecPointer<TControl> control, TString tabName);
-	int addControl(CArchive* arch);
+	int addControl(TFile* arch);
 	void setDontAddControl(TrecPointer<TControl> control);
 	void onDraw(TObject* obj) override;
 	TrecPointer<TControl> GetChildAt(UINT c);
@@ -64,9 +73,14 @@ public:
 
 private:
 	TrecPointer<TControl> currentControl;
-	TrecPointer<TLayoutEx> tabs;
+	TrecPointer<TControl> tabs_base;
+
+	TrecPointer<TWindowEngine> windowEngine;
+
+	TLayoutEx* tabs;
 	int tabHeight;
 	HWND winHandle;
 	UINT unknownTab;
+	bool proceed;
 };
 

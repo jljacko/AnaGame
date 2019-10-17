@@ -1,6 +1,6 @@
 #pragma once
 #include <TString.h>
-#include "stdafx.h"
+#include <TFile.h>
 #include "Anaface.h"
 class _ANAFACE_DLL Parser
 {

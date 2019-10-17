@@ -1,4 +1,4 @@
-#include "stdafx.h"
+
 #include "HTML_Reader.h"
 
 UCHAR HTML_ReaderType[] = { 3, 0b10000000, 3, 1 };
@@ -11,15 +11,7 @@ UCHAR HTML_ReaderType[] = { 3, 0b10000000, 3, 1 };
 * Returns: void
 * Note: Could be depreciated - CArchive is unique to MFC and CArchive could be replaced with TFile
 */
-HTML_Reader::HTML_Reader(CArchive* ca, Parser_* p):ParseReader_(ca,p)
-{
-	charDeduced = false;
-	openTaken = false;
-	contentMode = false;
-	contentSpace = false;
-	contentS = makeTrecPointer<TString>();
-	usingWide = false;
-}
+
 
 HTML_Reader::HTML_Reader(TFile * ta, Parser_ *p):ParseReader_(ta,p)
 {
@@ -27,7 +19,7 @@ HTML_Reader::HTML_Reader(TFile * ta, Parser_ *p):ParseReader_(ta,p)
 	openTaken = false;
 	contentMode = false;
 	contentSpace = false;
-	contentS = makeTrecPointer<TString>();
+	contentS = TrecPointerKey::GetNewTrecPointer<TString>();
 	usingWide = false;
 }
 
@@ -53,7 +45,9 @@ bool HTML_Reader::read(int * i)
 		return false;
 
 	unsigned char char2[2];
-	reader->Read(char2, 2);
+	if (!tReader)
+		return false;
+	tReader->Read(char2, 2);
 	DeduceCharType(char2);
 
 	if (!charDeduced)
@@ -68,14 +62,14 @@ bool HTML_Reader::read(int * i)
 		memcpy(&w, char2, 2);
 		TString t;
 		if (!isWhiteSpace(w))
-			t += w;
+			t.AppendChar(w);
 		//*i = 0;
 		int ri = 0;
-		while (reader->Read(char2, 2) == 2)
+		while (tReader->Read(char2, 2) == 2)
 		{
 			memcpy(&w, char2, 2);
 			if (!isWhiteSpace(w))
-				t += w;
+				t.AppendChar(w);
 			else
 			{
 				ri++;
@@ -97,11 +91,11 @@ bool HTML_Reader::read(int * i)
 		TString t;
 
 		if (!isWhiteSpace(w1))
-			t += w1;
+			t.AppendChar( w1);
 		if (!isWhiteSpace(w2))
-			t += w2;
+			t.AppendChar(w2);
 		int ri = 0;
-		while (reader->Read(&charFir, 1) == 1)
+		while (tReader->Read(&charFir, 1) == 1)
 		{
 			w1 = ReturnWCharType(charFir);
 
@@ -118,13 +112,13 @@ bool HTML_Reader::read(int * i)
 					//if (!isWhiteSpace(w1))
 					//	contentSpace = true;
 					//if (contentSpace)
-						*contentS.get() += w1;
+						contentS.Get()->AppendChar(w1);
 
 				}
 			}
 			else
 			{
-				t += w1;
+				t.AppendChar(w1);
 				if (w1 == L'>')
 				{
 
@@ -218,19 +212,19 @@ bool HTML_Reader::isWhiteSpace(WCHAR c)
 */
 bool HTML_Reader::DeduceToken(TString & t)
 {
-	if (!t.GetLength())
+	if (!t.GetSize())
 		return true;
 
-	TrecPointer<TArray<TString>> tokens = t.split(L"<>");
+	TrecPointer<TDataArray<TString>> tokens = t.split(L"<>");
 
-	if (!tokens.get())
+	if (!tokens.Get())
 		return false;
 
-	// We expect the count to at least be 1
-	if (tokens->Count())
+	// We expect the Size to at least be 1
+	if (tokens->Size())
 	{
-		TrecPointer<TArray<TString>> tokens2 = tokens->ElementAt(0)->split(L"\"");
-		if (tokens2.get() && tokens2->Count())
+		auto tokens2 = tokens->at(0).split(L"\"");
+		if (tokens2.Get() && tokens2->Size())
 		{
 			if (!parseQuoteTokens(tokens2))
 				return false;
@@ -282,10 +276,10 @@ bool HTML_Reader::DeduceToken(TString & t)
 	else if (t.Find(L'=') != -1)
 	{
 		TrecPointer<TArray<TString>> peices = t.split(TString(L"="));
-		if (peices->Count() == 2)
+		if (peices->Size() == 2)
 		{
-			respond->Attribute(peices->ElementAt(1), peices->ElementAt(0)->GetBuffer());
-			peices->ElementAt(0)->GetBuffer();
+			respond->Attribute(peices->at(1), peices->at(0)->GetBuffer());
+			peices->at(0)->GetBuffer();
 		}
 	}
 	*/
@@ -293,16 +287,6 @@ bool HTML_Reader::DeduceToken(TString & t)
 	return true;
 }
 
-/*
-* Method: HTML_Reader - GetArchive
-* Purpose: Retrieves the archive used for the HTML file
-* Parameters: void
-* Returns: CArchive* - the archive being used
-*/
-CArchive * HTML_Reader::GetArchive()
-{
-	return reader;
-}
 
 /*
 * Method: HTML_Reader - SubmitToken
@@ -321,60 +305,60 @@ void HTML_Reader::SubmitToken(TString t)
 * Parameters: TrecPointer<TArray<TString>>& tokens - the tokens to parse
 * Returns: bool - success result
 */
-bool HTML_Reader::parseQuoteTokens(TrecPointer<TArray<TString>>& tokens)
+bool HTML_Reader::parseQuoteTokens(TrecPointer<TDataArray<TString>>& tokens)
 {
-	if(!tokens.get() || !tokens->Count())
+	if(!tokens.Get() || !tokens->Size())
 		return false;
 
-	TrecPointer<TArray<TString>> tokens2 = tokens->ElementAt(0)->split(L" \n\t\r\v\f");
-	respond->Obj(tokens2->ElementAt(0).get());
+	auto tokens2 = tokens->at(0).split(L" \n\t\r\v\f");
+	respond->Obj(&tokens2->at(0));
 	
 
 
 
 
-	if (tokens2->Count() > 1)
+	if (tokens2->Size() > 1)
 	{
-		if (tokens->Count() > 1)
+		if (tokens->Size() > 1)
 		{
-			tokens2->ElementAt(tokens2->Count() - 1)->Append(*tokens->ElementAt(1).get());
-			TrecPointer<TArray<TString>> tokens3 = tokens2->ElementAt(1)->split(L"=");
-			if (tokens3->Count() > 1 && tokens3->ElementAt(0).get())
+			tokens2->at(tokens2->Size() - 1).Append(tokens->at(1));
+			auto tokens3 = tokens2->at(1).split(L"=");
+			if (tokens3->Size() > 1)
 			{
-				respond->Attribute(tokens3->ElementAt(1), *tokens3->ElementAt(0).get());
-				//tokens3->ElementAt(1)->ReleaseBuffer();
+				respond->Attribute(&tokens3->at(1), tokens3->at(0));
+				//tokens3->at(1)->ReleaseBuffer();
 			}
 
 			// To-Do: Implement support for quotation marks
-			for (UINT c = 3; c < tokens->Count(); c += 2)
+			for (UINT c = 3; c < tokens->Size(); c += 2)
 			{
-				tokens2 = tokens->ElementAt(c-1)->split(L" \n\t\r\v\f");
-				tokens2->ElementAt(tokens2->Count() - 1)->Append(*tokens->ElementAt(c).get());
-				tokens3 = tokens2->ElementAt(0)->split(L"=");
-				if (tokens3->Count() > 1 && tokens3->ElementAt(0).get())
+				tokens2 = tokens->at(c-1).split(L" \n\t\r\v\f");
+				tokens2->at(tokens2->Size() - 1).Append(tokens->at(c));
+				tokens3 = tokens2->at(0).split(L"=");
+				if (tokens3->Size() > 1)
 				{
-					respond->Attribute(tokens3->ElementAt(1), *tokens3->ElementAt(0).get());
-					//tokens3->ElementAt(1)->ReleaseBuffer();
+					respond->Attribute(&tokens3->at(1), tokens3->at(0));
+					//tokens3->at(1)->ReleaseBuffer();
 				}
-				else if (tokens3->Count() == 1)
+				else if (tokens3->Size() == 1)
 				{
-					respond->Obj(tokens3->ElementAt(0).get());
+					respond->Obj(&tokens3->at(0));
 				}
 			}
 		}
 		else
 		{
-			for (UINT c = 1; c < tokens2->Count(); c++)
+			for (UINT c = 1; c < tokens2->Size(); c++)
 			{
-				TrecPointer<TArray<TString>> tokens3 = tokens2->ElementAt(c)->split(L"=");
-				if (tokens3->Count() > 1 && tokens3->ElementAt(1).get())
+				auto tokens3 = tokens2->at(c).split(L"=");
+				if (tokens3->Size() > 1)
 				{
-					respond->Attribute(tokens3->ElementAt(0), *tokens3->ElementAt(1).get());
-					//tokens3->ElementAt(1)->ReleaseBuffer();
+					respond->Attribute(&tokens3->at(0), tokens3->at(1));
+					//tokens3->at(1)->ReleaseBuffer();
 				}
-				else if (tokens3->Count() == 1)
+				else if (tokens3->Size() == 1)
 				{
-					respond->Obj(tokens3->ElementAt(0).get());
+					respond->Obj(&tokens3->at(0));
 				}
 			}
 		}
@@ -391,7 +375,8 @@ bool HTML_Reader::parseQuoteTokens(TrecPointer<TArray<TString>>& tokens)
 */
 void HTML_Reader::endContentMode()
 {
-	respond->Attribute(contentS, TString(L"caption"));
+	TString cap(L"caption");
+	respond->Attribute(contentS, cap);
 	contentMode = false;
 	contentSpace = false;
 	contentS->Empty();

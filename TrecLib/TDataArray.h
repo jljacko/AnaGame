@@ -3,7 +3,7 @@
 #include "TString.h"
 #include "TDataArrayBase.h"
 
-
+#include <vector>
 
 
 
@@ -19,6 +19,23 @@ private:
 	// UINT size, capacity;
 
 public:
+	/*
+	* Method: (TDataArray) (Constructor)
+	* Purpose: Sets up a TDataArray based off an existing one
+	* Parameters: TDataArray<T>& newArray - the Data Array to copy
+	* Returns: void
+	*/
+	TDataArray(const TDataArray<T>& newArray) : TDataArrayBase(newArray.Size(), newArray.Capacity())
+	{
+		array = new T[newArray.Capacity()];
+		
+		for (UINT c = 0; c < newArray.Size() && c < newArray.Capacity(); c++)
+		{
+			if (c < newArray.Capacity())
+				array[c] = newArray.array[c];
+		}
+		//memcpy_s(array, capacity, newArray.GetArray(), capacity);
+	}
 
 	/*
 	* Method: TDataArray - data
@@ -50,7 +67,7 @@ public:
 	* Parameters: TDataArray<T>& newArray - the Data Array to copy
 	* Returns: void
 	*/
-	void operator=(TDataArray<T>& newArray)
+	void operator=(const TDataArray<T>& newArray)
 	{
 		if (array)
 			delete[] array;
@@ -61,7 +78,7 @@ public:
 		for (UINT c = 0; c < size && c < capacity; c++)
 		{
 			if(c < capacity)
-			array[c] = newArray[c];
+			array[c] = newArray.array[c];
 		}//memcpy_s(array, capacity, newArray.GetArray(), capacity);
 	}
 
@@ -84,7 +101,7 @@ public:
 	* Parameters: std::vector<T, std::allocator<T>>& vectorSource - the vector to copy
 	* Returns: void
 	*/
-	void operator=(std::vector<T, std::allocator<T>>& vectorSource)
+	void operator=(const std::vector<T, std::allocator<T>>& vectorSource)
 	{
 		if (array)
 			delete[] array;
@@ -106,21 +123,7 @@ public:
 		array = new T[5];
 	}
 
-	/*
-	* Method: (TDataArray) (Constructor)
-	* Purpose: Sets up a TDataArray based off an existing one
-	* Parameters: TDataArray<T>& newArray - the Data Array to copy
-	* Returns: void
-	*/
-	TDataArray(TDataArray<T>& newArray) : TDataArrayBase(newArray.Size(), newArray.Capacity())
-	{
-		array = new T[newArray.Capacity()];
-		
-		for (UINT c = 0; c < newArray.Size() && c < newArray.Capacity(); c++)
-			if(c < newArray.Capacity())
-			array[c] = newArray[c];
-		//memcpy_s(array, capacity, newArray.GetArray(), capacity);
-	}
+
 
 	/*
 	* Method: (TDataArray) (Destructor)
@@ -141,7 +144,7 @@ public:
 	* Parameters: void
 	* Returns: UINT - the size of the unerlying array being used
 	*/
-	UINT Capacity()
+	UINT Capacity() const
 	{
 		return capacity;
 	}
@@ -226,7 +229,7 @@ public:
 	* Parameters: void
 	* Returns: T* data address in memory
 	*/
-	T** data()
+	T** data() const
 	{
 		return array;
 	}
@@ -404,7 +407,7 @@ public:
 	{
 		if (array)
 			delete[] array;
-		array = new (T*)[capacity = 5];
+		array = new T*[capacity = 5];
 		size = 0;
 	}
 

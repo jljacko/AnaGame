@@ -30,7 +30,7 @@ TImage::~TImage()
 	}
 }
 
-UINT TImage::onFill(CPoint& pixel, D2D1_COLOR_F& color, float tolerance)
+UINT TImage::onFill(TPoint& pixel, D2D1_COLOR_F& color, float tolerance)
 {
 	if(currentImage >= images.Size())
 		return 1;
@@ -114,40 +114,40 @@ UINT TImage::onFill(CPoint& pixel, D2D1_COLOR_F& color, float tolerance)
 
 UINT TImage::setLinearGradient(TDataArray<D2D1_COLOR_F>& colors)
 {
-	if (!cover.get())
-		cover = new TContent(renderTarget, this);
+	if (!cover.Get())
+		cover = TrecPointerKey::GetNewTrecPointer<TContent>(renderTarget, this);
 	cover->SetLinearImage(colors);
 	return 0;
 }
 
 UINT TImage::setRadialGradient(TDataArray<D2D1_COLOR_F>& colors)
 {
-	if (!cover.get())
-		cover = new TContent(renderTarget, this);
+	if (!cover.Get())
+		cover = TrecPointerKey::GetNewTrecPointer<TContent>(renderTarget, this);
 	cover->SetRadialImage(colors);
 	return 0;
 }
 
 UINT TImage::setLinearGradient(TDataArray<D2D1_GRADIENT_STOP>& colors)
 {
-	if (!cover.get())
-		cover = new TContent(renderTarget, this);
+	if (!cover.Get())
+		cover = TrecPointerKey::GetNewTrecPointer<TContent>(renderTarget, this);
 	cover->SetLinearImage(colors);
 	return 0;
 }
 
 UINT TImage::setRadialGradient(TDataArray<D2D1_GRADIENT_STOP>& colors)
 {
-	if (!cover.get())
-		cover = new TContent(renderTarget, this);
+	if (!cover.Get())
+		cover =TrecPointerKey::GetNewTrecPointer<TContent>(renderTarget, this);
 	cover->SetRadialImage(colors);
 	return 0;
 }
 
 
-UINT TImage::rotate(CPoint& point)
+UINT TImage::rotate(TPoint& point)
 {
-	CPoint center((location.left + location.right) / 2, (location.bottom + location.top) / 2);
+	TPoint center((location.left + location.right) / 2, (location.bottom + location.top) / 2);
 	double degrees = atan2(-(static_cast<double>(point.y) - center.y),
 		(static_cast<double>(point.x) - center.y));
 	rotation = D2D1::Matrix3x2F::Rotation(degrees,D2D1::Point2F(center.x, center.y));
@@ -156,13 +156,20 @@ UINT TImage::rotate(CPoint& point)
 
 void TImage::onDraw(TObject* obj)
 {
-	if (!renderTarget.get()) return;
+	if (!renderTarget.Get()) return;
 	renderTarget->SetTransform(rotation);
 	TControl::onDraw(obj);
 	renderTarget->SetTransform(identityMatrix);
 }
 
-void MarkPixels(CPoint& startPoint, UINT idealPixel, float tolerance, TDataArray<TDataArray<PixelMark>>& pixels)
+void TImage::SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget>rt)
+{
+	TControl::SetNewRenderTarget(rt);
+
+	// To Do:: Enable switch
+}
+
+void MarkPixels(TPoint& startPoint, UINT idealPixel, float tolerance, TDataArray<TDataArray<PixelMark>>& pixels)
 {
 }
 

@@ -1,11 +1,17 @@
-#include "stdafx.h"
+
 #include "TDataArrayBase.h"
 UCHAR TDataArrayType[] = { 1, 0b00100000 };
 
-TDataArrayBase::TDataArrayBase(UINT s, UINT c)
+TDataArrayBase::TDataArrayBase(const UINT s, const UINT c)
 {
 	size = s;
 	capacity = c;
+}
+
+TDataArrayBase::TDataArrayBase(const TDataArrayBase& copy)
+{
+	size = copy.Size();
+	capacity = copy.Capacity();
 }
 
 
@@ -30,7 +36,12 @@ UCHAR * TDataArrayBase::GetAnaGameType()
  * Parameters: void
  * Returns: UINT - The Size of the DataArray
  */
-UINT TDataArrayBase::Size()
+UINT TDataArrayBase::Size() const
 {
 	return size;
+}
+
+UINT TDataArrayBase::Capacity() const
+{
+	return capacity;
 }

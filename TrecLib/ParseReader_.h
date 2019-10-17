@@ -1,5 +1,4 @@
 #pragma once
-#include "stdafx.h"
 #include "Parser_.h"
 #include "TObject.h"
 #include "TFile.h"
@@ -11,7 +10,6 @@
 class _TREC_LIB_DLL ParseReader_ : public TObject
 {
 public:
-	ParseReader_(CArchive*, Parser_*);
 	ParseReader_(TFile*, Parser_*);
 	~ParseReader_();
 
@@ -20,7 +18,6 @@ public:
 	virtual UCHAR* GetAnaGameType();
 
 protected:
-	CArchive* reader;
 	TFile* tReader;
 	Parser_* respond;
 	//CStdioFile* fileActualReader;

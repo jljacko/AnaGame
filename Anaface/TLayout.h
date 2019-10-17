@@ -59,11 +59,11 @@ public:
 	//bool setMainChild(int, int);
 
 	//int loadFromTML(CArchive* ar) override;
-	int loadFromHTML(CArchive* ar) override;
-	void storeInTML(CArchive* ar, int childLevel,bool ov = false)override;
-	void storeInHTML(CArchive* ar)override;
+	int loadFromHTML(TFile* ar) override;
+	void storeInTML(TFile* ar, int childLevel,bool ov = false)override;
+	void storeInHTML(TFile* ar)override;
 
-	virtual bool onCreate(RECT)override;
+	virtual bool onCreate(RECT, TrecPointer<TWindowEngine> d3d)override;
 	virtual void onDraw(TObject* obj = nullptr) override;
 
 	int returnColumnsWidth(int x);
@@ -71,7 +71,7 @@ public:
 	int getColunmWidth(int x);
 	int getRowHeight(int y);
 	virtual UINT determineMinHeightNeeded()override;
-	void SetNewLocation(RECT& r)override;
+	void SetNewLocation(const RECT& r)override;
 	void ShrinkHeight()override;
 
 	void setNewColunmSize(int xLoc, int x);
@@ -86,6 +86,8 @@ public:
 	orgLayout GetOrganization();
 
 	virtual UCHAR* GetAnaGameType()override;
+
+	virtual void SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget> rt);
 
 protected:
 	TArray<containerControl> lChildren;   // used to organize children more easily than regular TControl

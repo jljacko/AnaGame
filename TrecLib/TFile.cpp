@@ -1,4 +1,4 @@
-#include "stdafx.h"
+
 #include "TFile.h"
 #include "TString.h"
 
@@ -13,7 +13,8 @@ UCHAR TFileType[] = { 2, 0b10000000, 2 };
 TFile::TFile()
 {
 	fileEncode = fet_unknown;
-	CFile();
+	fileHandle = 0;
+	position = 0ULL;
 }
 
 /*
@@ -23,34 +24,11 @@ TFile::TFile()
 *			UINT nOpenFlags - flags that specify the open status of the file
 * Returns: void
 */
-TFile::TFile(LPCTSTR lpszFileName, UINT nOpenFlags) 
+TFile::TFile(TString& lpszFileName, UINT nOpenFlags) 
 {
-	fileEncode = fet_unknown;
-
-	if (!CFile::Open(lpszFileName, nOpenFlags))
-		return;
-
-	// Here, the file is open, try to deduce the file type
-	fileEncode = DeduceEncodingType();
+	Open(lpszFileName, nOpenFlags);
 }
 
-/*
-* Method: (TFile) (Constructor)
-* Purpose: Creates a file that presumably will be opened
-* Parameters: TString& file - the File name to open
-* Returns: UINT nOpenFlags - flags that specify the open status of the file
-*/
-TFile::TFile(TString & file, UINT nOpenFlags)
-{
-	fileEncode = fet_unknown;
-	;
-
-	if (!CFile::Open(file, nOpenFlags))
-		return;
-
-	// Here, the file is open, try to deduce the file type
-	fileEncode = DeduceEncodingType();
-}
 
 /*
 * Method: (TFile) (Destructor) 
@@ -60,6 +38,7 @@ TFile::TFile(TString & file, UINT nOpenFlags)
 */
 TFile::~TFile()
 {
+	Close();
 }
 
 /*
@@ -70,53 +49,35 @@ TFile::~TFile()
 *			CFileException * pError - Error information
 * Returns: BOOL - success or failure to open file
 */
-BOOL TFile::Open(LPCTSTR lpszFileName, UINT nOpenFlags, CFileException * pError)
+bool TFile::Open(TString& lpszFileName, UINT nOpenFlags)
 {
-	BOOL opened = pError ? CFile::Open(lpszFileName, nOpenFlags, pError) :
-		CFile::Open(lpszFileName, nOpenFlags);
-	if (opened)
-		fileEncode = DeduceEncodingType();
-	else
-		fileEncode = fet_unknown;
-	return opened;
+	fileEncode = fet_unknown;
+
+	WCHAR* fName = lpszFileName.GetBufferCopy();
+	UINT readWrite = 0, sharing = 0, atts = 0;
+	ConvertFlags(nOpenFlags, readWrite, sharing, atts);
+
+	// If no attribute for opening is specified, use the value most likely to succeed
+	if (!atts)
+		atts = OPEN_ALWAYS;
+	fileHandle = CreateFileW(fName, readWrite, sharing, nullptr, atts, FILE_ATTRIBUTE_NORMAL, nullptr);
+
+	
+	if (fileHandle == INVALID_HANDLE_VALUE)
+	{
+		fileHandle = 0;
+		int err = GetLastError();
+		return false;
+	}
+
+	// Here, the file is open, try to deduce the file type
+	fileEncode = DeduceEncodingType();
+	filePath.Set(lpszFileName);
+	return true;
 }
 
-/*
-* Method: TFile - Open
-* Purpose: Opens the File
-* Parameters: TString& file - The File to open
-*			UINT flags - Flags to open the file
-*			CFileException * pError - Error information
-* Returns: BOOL - success or failure to open file
-*/
-BOOL TFile::Open(TString & file, UINT flags, CFileException * pError)
-{
-	BOOL opened = CFile::Open(file, flags, pError);
-	if (opened)
-		fileEncode = DeduceEncodingType();
-	else
-		fileEncode = fet_unknown;
-	return opened;
-}
 
-/*
-* Method: TFile - Open
-* Purpose: Opens the File
-* Parameters: LPCTSTR lpszFileName - The File to open
-*			UINT nOpenFlags - Flags to open the file
-*			CAtlTransactionManager * pTM - some junk parameter that makes no sense
-*			CFileException * pError - Error information
-* Returns: BOOL - success or failure to open file
-*/
-BOOL TFile::Open(LPCTSTR lpszFileName, UINT nOpenFlags, CAtlTransactionManager * pTM, CFileException * pError)
-{
-	BOOL opened = CFile::Open(lpszFileName, nOpenFlags, pTM, pError);
-	if (opened)
-		fileEncode = DeduceEncodingType();
-	else
-		fileEncode = fet_unknown;
-	return opened;
-}
+
 
 
 /*
@@ -125,46 +86,50 @@ BOOL TFile::Open(LPCTSTR lpszFileName, UINT nOpenFlags, CAtlTransactionManager *
 * Parameters: CString& rString - the String to read into
 * Returns: BOOL - success of reading
 */
-BOOL TFile::ReadString(CString & rString)
+BOOL TFile::ReadString(TString & rString)
 {
 	bool success = false;
 	rString.Empty();
+	char letter[1];
+	UCHAR letter2[2];
+	WCHAR cLetter;
+	UCHAR temp;
+	WCHAR wLetter;
 	switch (fileEncode)
 	{
 	case fet_acsii:
-		char letter[1];
-		while (Read(&letter, 1))
+		
+		while (Read(&letter[0], 1))
 		{
 			if (letter[0] == '\n')
 				break;
-			rString += ReturnWCharType(letter[0]);
+			rString.AppendChar(ReturnWCharType(letter[0]));
 			success = true;
 		}
 		
 		break;
 	case fet_unicode:
-		UCHAR letter2[2];
-		while (Read(&letter2, 2))
+		
+		while (Read(letter2, 2))
 		{
-			WCHAR cLetter;
-			UCHAR temp = letter2[0];
+			temp = letter2[0];
 			letter2[0] = letter2[1];
 			letter2[1] = temp;
 			memcpy(&cLetter, letter2, 2);
 			if (cLetter == L'\n')
 				break;
-			rString += cLetter;
+			rString.AppendChar(cLetter);
 			success = true;
 		}
 
 		break;
 	case fet_unicode_little:
-		WCHAR wLetter;
+		
 		while (Read(&wLetter, 2))
 		{
 			if (wLetter == L'\n')
 				break;
-			rString += wLetter;
+			rString.AppendChar(wLetter);
 			success = true;
 		}
 
@@ -172,7 +137,7 @@ BOOL TFile::ReadString(CString & rString)
 	return success;
 }
 
-UINT TFile::ReadString(CString & rString, UINT nMax)
+UINT TFile::ReadString(TString & rString, UINT nMax)
 {
 	rString.Empty();
 	UINT rust = 0;
@@ -182,7 +147,7 @@ UINT TFile::ReadString(CString & rString, UINT nMax)
 		char letter[1];
 		for ( ; rust <= nMax && Read(&letter, 1); rust++)
 		{
-			rString += ReturnWCharType(letter[0]);
+			rString.AppendChar(ReturnWCharType(letter[0]));
 		}
 
 		break;
@@ -197,7 +162,7 @@ UINT TFile::ReadString(CString & rString, UINT nMax)
 			letter2[1] = temp;
 			memcpy(&cLetter, letter2, 2);
 			
-			rString += cLetter;
+			rString.AppendChar(cLetter);
 		}
 
 		break;
@@ -206,63 +171,15 @@ UINT TFile::ReadString(CString & rString, UINT nMax)
 		
 		for( ; rust <= nMax && Read(&wLetter, 2); rust++ )
 		{
-			rString += wLetter;
+			rString.AppendChar(wLetter);
 		}
 		
 	}
 	return rust;
 }
 
-/*
-* Method: TFile - ReadString
-* Purpose: Reads a line in a file into a String, taking into account the file encoding
-* Parameters: LPTSTR lpsz - the buffer to hold the string
-*			UINT nMax - the size of the buffer
-* Returns: LPTSTR - the buffer
-*/
-LPTSTR TFile::ReadString(LPTSTR lpsz, UINT nMax)
-{
-	switch (fileEncode)
-	{
-	case fet_acsii:
-	case fet_unicode8:
-		char letter[1];
-		for (UINT c = 0; Read(&letter, 1) && c < nMax;c++)
-		{
-			if (letter[0] == '\n')
-				break;
-			lpsz[c] = ReturnWCharType(letter[0]);
-		}
-		break;
-	case fet_unicode:
-		UCHAR letter2[2];
-		for(UINT c = 0; Read(&letter2, 2) && c < nMax;c++)
-		{
-			WCHAR cLetter;
-			UCHAR temp = letter2[0];
-			letter2[0] = letter2[1];
-			letter2[1] = temp;
-			memcpy(&cLetter, letter2, 2);
-			if (cLetter == L'\n')
-				break;
-			lpsz[c] = cLetter;
-		}
-		break;
-	case fet_unicode_little:
-	case fet_unknown:
-		fileEncode = fet_unicode_little; // If unknown, just use the default
-		WCHAR wLetter;
-		for (UINT c = 0;Read(&wLetter, 2) && c < nMax;c++)
-		{
-			if (wLetter == L'\n')
-				break;
-			lpsz[c] = wLetter;
-		}
-	}
-	return lpsz;
-}
 
-UINT TFile::ReadString(CString & rString, WCHAR chara)
+UINT TFile::ReadString(TString & rString, WCHAR chara)
 {
 	bool success = false;
 	rString.Empty();
@@ -274,7 +191,7 @@ UINT TFile::ReadString(CString & rString, WCHAR chara)
 		{
 			if (letter[0] == chara)
 				break;
-			rString += ReturnWCharType(letter[0]);
+			rString.AppendChar(ReturnWCharType(letter[0]));
 			success = true;
 		}
 
@@ -290,7 +207,7 @@ UINT TFile::ReadString(CString & rString, WCHAR chara)
 			memcpy(&cLetter, letter2, 2);
 			if (cLetter == chara)
 				break;
-			rString += cLetter;
+			rString.AppendChar( cLetter);
 			success = true;
 		}
 
@@ -301,12 +218,12 @@ UINT TFile::ReadString(CString & rString, WCHAR chara)
 		{
 			if (wLetter == chara)
 				break;
-			rString += wLetter;
+			rString.AppendChar(wLetter);
 			success = true;
 		}
 
 	}
-	return rString.GetLength();
+	return rString.GetSize();
 }
 
 /*
@@ -315,7 +232,7 @@ UINT TFile::ReadString(CString & rString, WCHAR chara)
 * Parameters: LPCTSTR lpsz - the Stringt to write
 * Returns: void
 */
-void TFile::WriteString(LPCTSTR lpsz)
+void TFile::WriteString(const TString& lpsz)
 {
 	UINT size = 0;
 	CHAR* acsiiText = nullptr;
@@ -323,16 +240,17 @@ void TFile::WriteString(LPCTSTR lpsz)
 	WCHAR cLetter = L'\0';
 	UCHAR bytes[2];
 	UCHAR temp = 0;
+	WCHAR* bufferString = lpsz.GetBufferCopy();
 	if (fileEncode == fet_unknown)
 		fileEncode = fet_unicode_little;
 	switch (fileEncode)
 	{
 	case fet_acsii:
 	case fet_unicode8:
-		size = wcslen(lpsz);
+		size = lpsz.GetSize();
 		acsiiText = new CHAR[size * 2 + 1];
 		wBytes = WideCharToMultiByte(CP_ACP,
-			0, lpsz, -1,
+			0, bufferString, -1,
 			acsiiText, size * 2, NULL,
 			NULL);
 		Write(acsiiText, wBytes);
@@ -351,8 +269,10 @@ void TFile::WriteString(LPCTSTR lpsz)
 		break;
 	case fet_unicode_little:
 		for (UINT c = 0; lpsz[c] != L'\0'; c++)
-			Write(&lpsz[c], 2);
+			Write(&bufferString[c], 2);
 	}
+
+	delete[] bufferString;
 }
 
 /*
@@ -363,7 +283,7 @@ void TFile::WriteString(LPCTSTR lpsz)
 */
 bool TFile::IsOpen()
 {
-	return m_hFile != CFile::hFileNull;
+	return fileHandle != 0;
 }
 
 /*
@@ -390,14 +310,13 @@ bool TFile::SetEncoding(FileEncodingType fet)
 */
 TString TFile::GetFileDirectory()
 {
-	if(!IsOpen())
+	TString sep(L"/\\");
+	int seperate = filePath.FindLastOneOf(sep);
+
+	if (seperate == -1)
 		return TString();
-	TString directory = GetFilePath();
-	TString fileName = GetFileName();
-	int ind = directory.Find(fileName, 0);
-	if (ind > 0)
-		directory.Delete(ind, fileName.GetLength());
-	return directory;
+
+	return filePath.SubString(0, seperate + 1);
 }
 
 /*
@@ -416,7 +335,7 @@ TString TFile::GetFileExtension()
 	TString ext = GetFileName();
 	if(ext.Find(L'.') == -1)
 		return ext;
-	for (int c = ext.GetLength() - 1; c >= 0; c--)
+	for (int c = ext.GetSize() - 1; c >= 0; c--)
 	{
 		if (ext[c] == L'.')
 		{
@@ -424,6 +343,46 @@ TString TFile::GetFileExtension()
 		}
 	}
 	return ext;
+}
+
+void TFile::Close()
+{
+	if (fileHandle)
+		CloseHandle((HANDLE)fileHandle);
+	fileHandle = 0;
+}
+
+void TFile::Flush()
+{
+	if (!fileHandle)
+		return;
+	FlushFileBuffers((HANDLE)fileHandle);
+}
+
+void TFile::Write(const void* buffer, UINT count)
+{
+	if (!fileHandle)
+		return;
+	LPDWORD resCount = new DWORD;
+	LPDWORD resCount2 = resCount;
+	LPOVERLAPPED lap = new OVERLAPPED;
+	LPOVERLAPPED lap2 = lap;
+	BOOL res = WriteFile((HANDLE)fileHandle, buffer, count, resCount, nullptr);
+
+	if (!res)
+	{
+		int err = GetLastError();
+		return;
+	}
+	position += *resCount;
+
+	delete resCount2;
+	delete lap2;
+}
+
+FileEncodingType TFile::GetEncodingType()
+{
+	return fileEncode;
 }
 
 /*
@@ -434,7 +393,7 @@ TString TFile::GetFileExtension()
 */
 FileEncodingType TFile::DeduceEncodingType()
 {
-	if (m_hFile == CFile::hFileNull)
+	if (!IsOpen())
 		return fet_unknown;
 	if (GetLength() < 2)
 		return fet_unknown;
@@ -512,4 +471,144 @@ FileEncodingType TFile::DeduceEncodingType()
 			return fet_acsii;
 	}
 	return fet_unknown;
+}
+
+void TFile::ConvertFlags(UINT& input, UINT& open, UINT& security, UINT& creation)
+{
+	open = input & 0xff000000;
+
+	security = (input >> 8) & 0x000000ff;
+	creation = (input >> 16) & 0x000000ff;
+}
+
+TString TFile::GetFileName()
+{
+	TString sep(L"/\\");
+	int seperate = filePath.FindLastOneOf(sep);
+
+	if(seperate == -1)
+		return TString();
+
+	return filePath.SubString(seperate + 1);
+}
+
+TString TFile::GetFilePath()
+{
+	return filePath;
+}
+
+TString TFile::GetFileTitle()
+{
+	UINT length = filePath.GetSize();
+	WCHAR* cTitle = new WCHAR[length + 1];
+	ZeroMemory(cTitle, sizeof(WCHAR) * (length + 1));
+	WCHAR* pathBuffer = filePath.GetBufferCopy();
+
+	TString ret;
+	if (!::GetFileTitleW(pathBuffer, cTitle, length))
+	{
+		ret.Set(cTitle);
+	}
+
+	delete[] cTitle;
+	delete[] pathBuffer;
+	return ret;
+}
+
+ULONGLONG TFile::GetLength()
+{
+	LARGE_INTEGER  len_li;
+	GetFileSizeEx((HANDLE)fileHandle, &len_li);
+	LONGLONG  len_ll = len_li.QuadPart;
+	return len_ll;
+}
+
+ULONGLONG TFile::GetPosition()
+{
+	return position;
+}
+
+UINT TFile::Read(void* buffer, UINT count)
+{
+	if(!fileHandle)
+		return 0;
+	LPDWORD resCount = new DWORD;
+	LPDWORD resCount2 = resCount;
+	LPOVERLAPPED lap = new _OVERLAPPED;
+	LPOVERLAPPED lap2 = lap;
+	BOOL res = ReadFile((HANDLE)fileHandle, buffer, count, resCount, nullptr);
+
+	if (!res)
+		return 0;
+	position += *resCount;
+
+	DWORD stackResCount = *resCount;
+
+	delete resCount;
+	delete lap2;
+	return stackResCount;
+}
+
+ULONGLONG TFile::Seek(LONGLONG offset, UINT from)
+{
+	if (!fileHandle) return 0;
+	PLONG hZero = new LONG;
+	*hZero = 0;
+	PLONG store = hZero;
+	DWORD res = SetFilePointer((HANDLE)fileHandle, offset, hZero, from);
+
+	if (res != INVALID_SET_FILE_POINTER)
+	{
+		ULONGLONG upper = static_cast<ULONGLONG>(*hZero) << 32;
+
+		position = upper + static_cast<ULONGLONG>(res);
+	}
+	else
+	{
+		// To-Do:
+	}
+	delete store;
+	return position;
+}
+
+void TFile::SeekToBegin()
+{
+	if (!fileHandle) return;
+	PLONG hZero = new LONG;
+	*hZero = 0;
+	PLONG store = hZero;
+	DWORD res = SetFilePointer((HANDLE)fileHandle, 0, hZero, FILE_BEGIN);
+
+	if (res != INVALID_SET_FILE_POINTER)
+	{
+		position = 0;
+	}
+	else
+	{
+		// To-Do:
+	}
+
+	delete store;
+}
+
+ULONGLONG TFile::SeekToEnd()
+{
+	if (!fileHandle) return 0;
+	PLONG hZero = new LONG;
+	*hZero = 0;
+	PLONG store = hZero;
+	DWORD res = SetFilePointer((HANDLE)fileHandle, 0, hZero, FILE_END);
+
+	if (res != INVALID_SET_FILE_POINTER)
+	{
+		ULONGLONG upper = static_cast<ULONGLONG>(*hZero) << 32;
+
+		position = upper + static_cast<ULONGLONG>(res);
+	}
+	else
+	{
+		// To-Do:
+	}
+
+	delete store;
 }

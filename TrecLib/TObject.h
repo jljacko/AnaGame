@@ -1,9 +1,10 @@
 #pragma once
-//#define _AFXDLL
-#include "afx.h"
+
 #include <new>
 #include <memory>
 #include "TrecLib.h"
+
+#include "AnagameDef.h"
 
 
 extern UCHAR TArrayType[];
@@ -23,7 +24,7 @@ public:
 	virtual ~TObject();
 
 	virtual UCHAR* GetAnaGameType();
-	virtual TString getVariableValueStr(TString& varName);
+	virtual TString getVariableValueStr(const TString& varName);
 	virtual TString toString();
 
 protected:

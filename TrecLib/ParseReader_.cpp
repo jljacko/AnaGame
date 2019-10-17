@@ -1,29 +1,8 @@
-#include "stdafx.h"
+
 #include "ParseReader_.h"
 
 UCHAR ParseReaderType[] = { 2, 0b10000000, 3 };
 
-/*
-* Method: (ParseReader_) (Constructor)
-* Purpose: Sets up the parser to use
-* Parameters: CArchive* car - the CArchive to use
-*			Parser_* par - the parser to call upon
-* Returns: void
-* Note: Could be depreciated - CArchive is unique to MFC and CArchive could be replaced with TFile
-*/
-ParseReader_::ParseReader_(CArchive* car, Parser_* par)
-{
-	reader = car;
-	respond = par;
-	//fileActualReader = new CStdioFile();
-
-	if (!car || !par)
-		materials = false;
-	else
-		materials = true;
-	usingTFile = false;
-	tReader = nullptr;
-}
 
 /*
 * Method: (ParseReader_) (Constructor)
@@ -41,7 +20,6 @@ ParseReader_::ParseReader_(TFile *tf, Parser_ *par)
 	else
 		materials = true;
 	usingTFile = true;
-	reader = nullptr;
 }
 
 /*

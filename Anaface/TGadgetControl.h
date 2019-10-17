@@ -13,10 +13,12 @@ public:
 	TGadgetControl(TrecComPointer<ID2D1RenderTarget> rt, TrecPointer<TArray<styleTable>> ta, bool isGagetBase = true);
 	virtual ~TGadgetControl();
 
-	virtual void storeInTML(CArchive* ar, int childLevel,bool ov = false) override;
+	virtual void storeInTML(TFile* ar, int childLevel,bool ov = false) override;
 
-	bool onCreate(RECT);
+	bool onCreate(RECT, TrecPointer<TWindowEngine> d3d)override;
 	virtual UCHAR* GetAnaGameType()override;
+
+	virtual void SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget>);
 
 	void Resize(RECT r) override;
 protected:

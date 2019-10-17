@@ -1,4 +1,4 @@
-#include "stdafx.h"
+
 #include "TCheckBox.h"
 
 /*
@@ -30,16 +30,16 @@ TCheckBox::~TCheckBox()
 * Parameters: RECT r - the location for the check-box
 * Returns: bool - ignore
 */
-bool TCheckBox::onCreate(RECT r)
+bool TCheckBox::onCreate(RECT r, TrecPointer<TWindowEngine> d3d)
 {
-	TGadgetControl::onCreate(r);
-	if (text1.get())
+	TGadgetControl::onCreate(r,d3d);
+	if (text1.Get())
 	{
 		text1->bounds.left = text1->bounds.left + bSize;
 	}
 	else
 	{
-		text1 = new TText(renderTarget, this);
+		text1 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, this);
 		text1->text = L"Check-Box";
 
 
@@ -62,15 +62,15 @@ void TCheckBox::onDraw(TObject* obj)
 
 
 
-	renderTarget->DrawRectangle(&DxLocation, brush.get());
+	renderTarget->DrawRectangle(&DxLocation, brush.Get());
 	if (isClicked)
 	{
 		D2D1_POINT_2F upLeft = D2D1::Point2F(DxLocation.left, DxLocation.top);
 		D2D1_POINT_2F upRight = D2D1::Point2F(DxLocation.right, DxLocation.top);
 		D2D1_POINT_2F downLeft = D2D1::Point2F(DxLocation.left, DxLocation.bottom);
 		D2D1_POINT_2F downRight = D2D1::Point2F(DxLocation.right, DxLocation.bottom);
-		renderTarget->DrawLine(upLeft, downRight, brush.get());
-		renderTarget->DrawLine(upRight, downLeft, brush.get());
+		renderTarget->DrawLine(upLeft, downRight, brush.Get());
+		renderTarget->DrawLine(upRight, downLeft, brush.Get());
 	}
 }
 
@@ -94,8 +94,9 @@ bool TCheckBox::IsClicked()
 *				TDataArray<EventID_Cred>& eventAr - the List of Events in a User's actions
 * Returns: void
 */
-void TCheckBox::OnLButtonDown(UINT nFlags, CPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr)
+void TCheckBox::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr, TDataArray<TControl*>& clickedControl)
 {	
+	resetArgs();
 	if (isContained(&point, &location))
 	{
 		//onClick = true;
@@ -108,13 +109,13 @@ void TCheckBox::OnLButtonDown(UINT nFlags, CPoint point, messageOutput * mOut, T
 
 			args.eventType = On_check;
 			args.positive = isClicked;
-			if (text1.get())
-				args.text = text1->text;
+			if (text1.Get())
+				args.text.Set(text1->text);
 			args.methodID = getEventID(On_check);
 		}
 
 	}
-	TControl::OnLButtonDown(nFlags, point, mOut,eventAr);
+	TControl::OnLButtonDown(nFlags, point, mOut,eventAr, clickedControl);
 }
 
 /*
@@ -126,8 +127,9 @@ void TCheckBox::OnLButtonDown(UINT nFlags, CPoint point, messageOutput * mOut, T
 *				TDataArray<EventID_Cred>& eventAr - the List of Events in a User's actions
 * Returns: void
 */
-void TCheckBox::OnLButtonUp(UINT nFlags, CPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr)
+void TCheckBox::OnLButtonUp(UINT nFlags, TPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr)
 {
+	resetArgs();
 	TControl::OnLButtonUp(nFlags, point, mOut,eventAr);
 }
 

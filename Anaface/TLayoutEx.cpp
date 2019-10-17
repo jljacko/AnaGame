@@ -1,4 +1,4 @@
-#include "stdafx.h"
+
 #include "TLayoutEx.h"
 
 
@@ -120,9 +120,9 @@ TrecPointer<TControl> TLayoutEx::RemoveChild(UINT x, UINT y)
 	return ret;
 }
 
-bool TLayoutEx::onCreate(RECT r)
+bool TLayoutEx::onCreate(RECT r, TrecPointer<TWindowEngine> d3d)
 {
-	return TLayout::onCreate(r);
+	return TLayout::onCreate(r,d3d);
 }
 
 void TLayoutEx::onDraw(TObject* obj)

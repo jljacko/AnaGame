@@ -29,12 +29,9 @@ IntLanguage * IntLanguage::getLanguage(TString & langName)
 	TString langDef = folderTarget + TString(L"language.properties");
 	TFile langFile;
 	
-	CFileException ex;
-	if (!langFile.Open(langDef, CFile::modeRead, &ex))
-	{
-		TCHAR buf[200];
-		ex.GetErrorMessage(buf, 200);
 
+	if (!langFile.Open(langDef, TFile::t_file_read))
+	{
 		return nullptr;
 	}
 
@@ -50,45 +47,45 @@ IntLanguage * IntLanguage::getLanguage(TString & langName)
 	TMap<TString> maps;
 	for (UINT Rust = 0; Rust < lines.Size(); Rust++)
 	{
-		TrecPointer<TArray<TString>> sections = lines[Rust].split(L":");
-		if (!sections.get() || sections->Count() < 2)
+		auto sections = lines[Rust].split(L":");
+		if (!sections.Get() || sections->Size() < 2)
 			continue;
 
-		TString value = sections->ElementAt(1).get();
-		for (UINT c = 2; c < sections->Count(); c++)
+		TString value = sections->at(1);
+		for (UINT c = 2; c < sections->Size(); c++)
 		{
 			value.Append(L":");
-			value.Append(*(sections->ElementAt(c).get()));
+			value.Append(sections->at(c));
 		}
 
-		if (!value.GetLength())
+		if (!value.GetSize())
 			continue;
 
 		if (value.GetAt(0) == L'\"')
 			value.Set(value.SubString(1));
 
-		if (!value.GetLength())
+		if (!value.GetSize())
 			continue;
 
-		if (value.GetAt(value.GetLength() - 1) == L'\"')
-			value.Set(value.SubString(0, value.GetLength() - 1));
+		if (value.GetAt(value.GetSize() - 1) == L'\"')
+			value.Set(value.SubString(0, value.GetSize() - 1));
 
 
-		maps.addEntry(*sections->ElementAt(0).get(), TrecPointer<TString>(new TString(value)));
+		maps.addEntry(sections->at(0), TrecPointerKey::GetNewTrecPointer<TString>(value));
 	}
 
 	TrecPointer<TString> val = maps.retrieveEntry(TString(L"String Tokens"));
 
 	IntLanguage* lang = new IntLanguage();
 
-	if (val.get())
+	if (val.Get())
 	{
 		val->Trim();
-		TrecPointer<TArray<TString>> str = val->split(L";");
-		for (UINT c = 0; c < str->Count(); c++)
+		auto str = val->split(L";");
+		for (UINT c = 0; c < str->Size(); c++)
 		{
-			parseSpecialCharacters(*str->ElementAt(c).get());
-			lang->string.push_back(str->ElementAt(c).get());
+			parseSpecialCharacters(str->at(c));
+			lang->string.push_back(str->at(c));
 		}
 	}
 
@@ -96,80 +93,78 @@ IntLanguage * IntLanguage::getLanguage(TString & langName)
 
 
 
-	if (val.get())
+	if (val.Get())
 	{
 		val->Trim();
-		TrecPointer<TArray<TString>> str = val->split(L";");
-		for (UINT c = 0; c < str->Count(); c++)
+		auto str = val->split(L";");
+		for (UINT c = 0; c < str->Size(); c++)
 		{
-			parseSpecialCharacters(*str->ElementAt(c).get());
-			lang->multiLineString.push_back(str->ElementAt(c).get());
+			parseSpecialCharacters(str->at(c));
+			lang->multiLineString.push_back(str->at(c));
 		}
 	}
 
 	val = maps.retrieveEntry(TString(L"Single Line Comment Start"));
 	
-	if (val.get())
+	if (val.Get())
 	{
 		val->Trim();
-		parseSpecialCharacters(*val.get());
-		lang->singleComment.Set(val.get());
+		parseSpecialCharacters(*val.Get());
+		lang->singleComment.Set(val.Get());
 	}
 
 	val = maps.retrieveEntry(TString(L"Multi-line Comment Start"));
-	if (val.get())
+	if (val.Get())
 	{
 		val->Trim();
-		parseSpecialCharacters(*val.get());
-		lang->startComment.Set(val.get());
+		parseSpecialCharacters(*val.Get());
+		lang->startComment.Set(val.Get());
 	}
 
 	val = maps.retrieveEntry(TString(L"Multi-line Comment End"));
-	if (val.get())
+	if (val.Get())
 	{
 		val->Trim();
-		parseSpecialCharacters(*val.get());
-		lang->endComment.Set(val.get());
+		parseSpecialCharacters(*val.Get());
+		lang->endComment.Set(val.Get());
 	}
 	val = maps.retrieveEntry(TString(L"Statement End"));
-	if (val.get())
+	if (val.Get())
 	{
 		val->Trim();
-		parseSpecialCharacters(*val.get());
-		lang->statementEnd.Set(val.get());
+		parseSpecialCharacters(*val.Get());
+		lang->statementEnd.Set(val.Get());
 	}
 
 	val = maps.retrieveEntry(TString(L"Block Boundaries"));
-	if (val.get())
+	if (val.Get())
 	{
 		val->Trim();
-		parseSpecialCharacters(*val.get());
-		lang->blockMarks.Set(val.get());
+		parseSpecialCharacters(*val.Get());
+		lang->blockMarks.Set(val.Get());
 	}
 
 	// To-Do: Add some checking for conflicts
 
 	// Now collect the root tag
 	val = maps.retrieveEntry(TString(L"Root BNF"));
-	if (val.get())
+	if (val.Get())
 	{
 		val->Trim();
-		lang->rootBNF.Set(val.get());
+		lang->rootBNF.Set(val.Get());
 	}
 
 	// To-Do: No conflicts have been detected, now to set up Code syntax parsing
 	val = maps.retrieveEntry(TString(L"Syntax File"));
-	if (val.get())
+	if (val.Get())
 	{
 		val->Trim();
-		TString syntaxFile = folderTarget + val.get();
+		TString syntaxFile = folderTarget + val.Get();
 		TFile bnf;
 		
-		CFileException ex;
-		if (!bnf.Open(syntaxFile, CFile::modeRead, &ex))
+	
+		if (!bnf.Open(syntaxFile, TFile::t_file_read))
 		{
-			WCHAR buff[200];
-			ex.GetErrorMessage(buff, 200);
 			int e = 0;
 		}
 
@@ -208,7 +203,7 @@ UINT IntLanguage::ProcessCode(TString & statement, TrecPointer<TFile> file, UINT
 	if(startIndex == -1 || !tagList || !tagList->Size() || !gv || !inter)
 		return 1;
 
-	if (!rootBNF.GetLength())
+	if (!rootBNF.GetSize())
 		return 2;
 
 	// tagList->at(startIndex)->ProcessTag(statement, *gv, *inter, *tagList);

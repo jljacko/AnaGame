@@ -1,4 +1,4 @@
-#include "stdafx.h"
+
 #include "Logger.h"
 
 #include "TFile.h"
@@ -45,11 +45,11 @@ bool openLog(LogType lt) {
 	GetSystemTime(&time);
 
 	TString fileName2;
-	fileName2.FormatMessage(_T("%u-%u-%u_%u_%u_%u.log"), time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);
+	fileName2.Format(TString(L"%u-%u-%u_%u_%u_%u.log"), time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);
 
 	fileName.Append(fileName2);
 
-	return logFile->Open(fileName, CFile::modeWrite | CFile::typeText | CFile::modeCreate);
+	return logFile->Open(fileName, OF_WRITE | OF_CREATE);
 }
 
 
@@ -62,7 +62,7 @@ void _TREC_LIB_DLL Log(LogType lt, TString& logMessage)
 	GetSystemTime(&time);
 
 	TString fileName2;
-	fileName2.FormatMessage(_T("%u-%u-%u_%u:%u:%u:%u_%u  "), time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond, time.wMilliseconds, GetProcessId(AfxGetInstanceHandle()));
+	fileName2.Format(TString(L"%u-%u-%u_%u:%u:%u:%u_%u  "), time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond, time.wMilliseconds, GetCurrentProcessId());
 
 	switch (lt)
 	{

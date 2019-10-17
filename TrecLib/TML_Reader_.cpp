@@ -1,17 +1,7 @@
-#include "stdafx.h"
+
 #include "TML_Reader_.h"
 
-/*
-* Method: (TML_Reader_) (Constructor)
-* Purpose: Sets up the parser to use
-* Parameters: CArchive* car - the CArchive to use
-*			Parser_* par - the parser to call upon
-* Returns: void
-* Note: Could be depreciated - CArchive is unique to MFC and CArchive could be replaced with TFile
-*/
-TML_Reader_::TML_Reader_(CArchive* ca, Parser_* p) :ParseReader_(ca, p)
-{
-}
+
 
 TML_Reader_::TML_Reader_(TFile * ta, Parser_ * p) : ParseReader_(ta,p)
 {
@@ -39,7 +29,7 @@ bool TML_Reader_::read(int *l)
 	// don't bother reading a file format 
 	if (!materials)
 		return false;
-	CString* line = new CString();
+	TString line;
 
 	//CFileException fileExp;
 
@@ -50,21 +40,21 @@ bool TML_Reader_::read(int *l)
 	bool noError = true;
 
 
-	while (ReadString(*line))
+	while (ReadString(line))
 	{
 		lineNumber++;
-		line->Trim();
+		line.Trim();
 
-		if (lineNumber == 1 && line->Find(L"TML") == -1)
+		if (lineNumber == 1 && line.Find(L"TML") == -1)
 			goto skipper;
 
-		if (line->Find(L"-/") != -1)
+		if (line.Find(L"-/") != -1)
 			break;
-		if (line->Find(L"-|Type:") != -1)
+		if (line.Find(L"-|Type:") != -1)
 		{
 
 		}
-		if (line->Find(L"-|Version:"))
+		if (line.Find(L"-|Version:"))
 		{
 
 		}
@@ -72,13 +62,13 @@ bool TML_Reader_::read(int *l)
 
 
 
-	while (ReadString(*line) && line != NULL && line->Find(L"->End") == -1)
+	while (ReadString(line) && line.Find(L"->End") == -1)
 	{
 		lineNumber++;
-		line->Trim();
+		line.Trim();
 		// First check to see if we need to go up or down
 	skipper:
-		testLevel = line->Find(L">");
+		testLevel = line.Find(L">");
 		if (testLevel > level)
 		{
 			level = testLevel;
@@ -101,12 +91,12 @@ bool TML_Reader_::read(int *l)
 		}
 
 		// now parse appropriately
-		if (line->Find(L"->") != -1) // it's there
+		if (line.Find(L"->") != -1) // it's there
 		{
-			CString enterable = line->Right(line->GetLength() - (line->Find(L"->") + 2));
+			TString enterable(line.SubString(line.Find(L"->") + 2));
 			if (enterable.Find(L"#") != -1)
 			{
-				enterable = enterable.Left(enterable.Find(L"#") - 1);
+				enterable.Set(enterable.SubString(0, enterable.Find(L"#")));
 			}
 			TString* tEnterable = new TString(&enterable);
 			//TrecPointer<TString> holdString = tEnterable;
@@ -119,20 +109,15 @@ bool TML_Reader_::read(int *l)
 				return false;
 			}
 		}
-		strLoc = line->Find(L"-|");
-		if (strLoc != -1 && line->Find(L":") > strLoc)
+		strLoc = line.Find(L"-|");
+		if (strLoc != -1 && line.Find(L":") > strLoc)
 		{
-			CString mainEnterable = line->Right(line->GetLength() - (line->Find(L"-|") + 1)); // Should be +2 but TControls expect the '|'
-			TString enterable = mainEnterable.Left(mainEnterable.Find(L":"));
+			TString mainEnterable = line.SubString(line.Find(L"-|") + 1); // Should be +2 but TControls expect the '|'
+			TString enterable = mainEnterable.SubString(0, mainEnterable.Find(L":"));
 
-			int big = line->GetLength();
-			int nSmall = line->Find(L":");
-			mainEnterable = mainEnterable.Right(mainEnterable.GetLength() - (mainEnterable.Find(L":") + 1)); // 1 added to avoid the ':' in it
+			mainEnterable.Set(mainEnterable.SubString(mainEnterable.Find(L":") + 1, mainEnterable.Find(L"#"))); // 1 added to avoid the ':' in it
 
-			if (mainEnterable.Find(L"#") != -1)
-			{
-				mainEnterable = mainEnterable.Left(mainEnterable.Find(L"#"));
-			}
+
 
 			mainEnterable.Trim();
 			//WCHAR* mainEntBuff = enterable.GetBuffer();
@@ -141,7 +126,7 @@ bool TML_Reader_::read(int *l)
 			//enterable.ReleaseBuffer();
 
 			TrecPointer<TString> tEnterable;
-			tEnterable = new TString(&mainEnterable);
+			tEnterable = TrecPointerKey::GetNewTrecPointer<TString>(&mainEnterable);
 			//tEnterable.hold();
 			noError = respond->Attribute(tEnterable, enterable);
 			
@@ -167,12 +152,10 @@ bool TML_Reader_::read(int *l)
 	return true;
 }
 
-bool TML_Reader_::ReadString(CString & line)
+bool TML_Reader_::ReadString(TString & line)
 {
 	if (!materials)
 		return false;
-	if (usingTFile)
-		return tReader->ReadString(line);
-	else
-		return reader->ReadString(line);
+	return tReader->ReadString(line);
+
 }

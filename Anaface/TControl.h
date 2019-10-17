@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"					// MFC Support
+
 #include <d2d1.h>					// Direct 2D support
 #include <d2d1_1.h>					// Help with the D2D1Context Device if necessary
 #include <dwrite.h>					// Direct Write
@@ -9,14 +9,21 @@
 #include "ControlTypeSafety.h"
 #include "TScrollBar.h"
 #include "EventTarget.h"
-#include <TrecComPointer.h>
+#include <TrecReference.h>
 #include <TDataArray.h>
+#include <TFile.h>
+#include <TPoint.h>
+
+#include <TWindowEngine.h>
 
 //#define _TREC_LIB_DLL __declspec(dllimport)
 #include <TMap.h>
 
+#define afx_msg
+
 class TControl;
 class TFlyout;
+class TContextMenu;
 //using namespace ControlTypeSafety;
 
 // Declare existance of classes so that they can be attributes
@@ -24,7 +31,7 @@ class TFlyout;
 
 
 #define _WRITE_THE_STRING 		ar->WriteString(appendable);      \
-	ar->WriteString(_T("\n"));                  \
+	ar->WriteString(L"\n");                  \
 	resetAttributeString(&appendable, childLevel + 1);
 
 /* Used by the control to determine which to draw */
@@ -36,7 +43,7 @@ typedef enum messageState
 	mouseRClick
 } messageState;
 
-/* Allows individual Controls to communicate with the message engine that called it*/
+/* Allows individual Controls to communicate with the message engine that called it
 typedef enum messageOutput
 {
 	negative,
@@ -45,7 +52,7 @@ typedef enum messageOutput
 	positiveContinue,
 	positiveOverrideUpdate,
 	positiveContinueUpdate
-}messageOutput;
+}messageOutput;*/
 
 // Determines the message type for UI Responsiveness
 typedef enum R_Message_Type
@@ -72,7 +79,7 @@ typedef struct EventArgs
 {
 	TString text;
 	bool positive;
-	CPoint point;
+	TPoint point;
 	bool isClick;
 	bool isLeftClick;
 	R_Message_Type eventType;
@@ -148,7 +155,7 @@ public:
 	bool onCreate(D2D1_ROUNDED_RECT);
 
 	// Drawing Method
-	void onDraw(RECT& loc, RECT& snip);
+	void onDraw(RECT& loc);
 
 	// Handling Colors
 	// NOTE: For Compatibility between AnaGame for Windows and an eventual AnaGame for Unix,
@@ -169,18 +176,19 @@ private:
 	//CMap<CString, CString, CString, CString> styles;
 
 	TrecComPointer<ID2D1Brush> brush;												// The Brush to Paint with
-	TrecComPointer<ID2D1RadialGradientBrush> rb;
-	TrecComPointer<ID2D1LinearGradientBrush> lb;
-	TrecComPointer<ID2D1SolidColorBrush> sb;
+
+	void SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget>);
+	void ResetBrush();
+
 	TrecComPointer <ID2D1SolidColorBrush> BuilderFocusBrush;						// Used by the Builder to Highlight Controls under editing
 	float thickness = 1.0f;											// Thickness
-	CString style;													// Holds a special style, NOTE: Feature not Implemented
+	TString style;													// Holds a special style, NOTE: Feature not Implemented
 	D2D1::ColorF color = D2D1::ColorF(D2D1::ColorF::Black, 1.0);	// The Color of the Border
 	D2D1::ColorF color2 = D2D1::ColorF(D2D1::ColorF::Black, 1.0);	// The Second color used by multi color styles of the Control
 	TrecComPointer<ID2D1RenderTarget> rt;											// Pointer to the Render Target to Draw to
 	TrecComPointer<ID2D1BitmapBrush> bitBrush;										// In the event that an image is part of the Border
 	TrecComPointer<ID2D1Bitmap> image;												// the Image of the above structure
-	int storeInTML(CArchive* ar, int childLevel,messageState);		// Method to save the border in a TML File for later reconstrcting
+	int storeInTML(TFile* ar, int childLevel,messageState);		// Method to save the border in a TML File for later reconstrcting
 	TControl* cap;									// The TControl that owns the Border
 	TShape shape;													// Shape to Draw
 	bool secondColor;												// Whether or not a second color is being used
@@ -197,8 +205,6 @@ private:
 	D2D1_ELLIPSE circle;
 	D2D1_ROUNDED_RECT roundedRect;
 	void BreakShared();
-
-	D2D1_RECT_F snip; // The Portion of the Control to actually draw
 };
 
 /*
@@ -229,7 +235,7 @@ public:
 	void reCreateLayout(TString& str);
 
 	// Draw the Text
-	bool onDraw(RECT& loc, RECT& snip, TObject* obj = nullptr);
+	bool onDraw(RECT& loc, TObject* obj = nullptr);
 
 	// Handling Colors
 	// NOTE: For Compatibility between AnaGame for Windows and an eventual AnaGame for Unix,
@@ -270,15 +276,16 @@ public:
 private:
 	//CMap<CString, CString, CString, CString> styles;
 	TrecComPointer<ID2D1RenderTarget> rt;								// Render Target to focus on
-	TrecComPointer<IDWriteFactory> writeFact;							// Direct Write Factory
+	TrecComPointer<IDWriteFactory> writeFact;// Direct Write Factory
+	
+	void SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget>);
+	void ResetBrush();
 	
 	D2D1_RECT_F bounds;									// Location of the text
 	TString text;										// Text stored
 	UINT32 textLength;									// Length of text
 	TrecComPointer<ID2D1Brush> penBrush;								// Brush to draw with
-	TrecComPointer<ID2D1RadialGradientBrush> rb;
-	TrecComPointer<ID2D1LinearGradientBrush> lb;
-	TrecComPointer<ID2D1SolidColorBrush> sb;
+
 
 	DWRITE_FONT_WEIGHT fontWeight;
 	DWRITE_FONT_STYLE fontStyle;
@@ -291,7 +298,7 @@ private:
 	TString locale;
 	TString font;
 	D2D1::ColorF color = D2D1::ColorF(D2D1::ColorF::Black, 1.0);
-	int storeInTML(CArchive* ar, int childLevel,messageState);
+	int storeInTML(TFile* ar, int childLevel,messageState);
 	TControl* cap;
 
 	bool secondColor;
@@ -321,15 +328,15 @@ public:
 	TContent(TrecPointer<TContent>&, TControl*);
 	~TContent();
 
-	bool onCreate(RECT,RECT);
+	bool onCreate(RECT);
 	bool onCreate(D2D1_ELLIPSE);
 	bool onCreate(D2D1_ROUNDED_RECT);
 	void ShiftHorizontal(int degrees);
 	void ShiftVertical(int degrees);
-	void onDraw(RECT& loc, RECT& snip);
-	D2D1::ColorF getColor();
+	void onDraw(RECT& loc);
+	D2D1_COLOR_F getColor();
 	bool setOpaquency(float f);
-	void setColor(D2D1::ColorF);
+	void setColor(D2D1_COLOR_F);
 	RECT getLocation();
 
 	void SetRadialImage(TDataArray<D2D1_COLOR_F>& colors);
@@ -339,27 +346,26 @@ public:
 	void SetLinearImage(TDataArray<D2D1_GRADIENT_STOP>& colors);
 
 private:
-	ID2D1GradientStopCollection* getStopCollection(TDataArray<D2D1_COLOR_F>& colors);
-
+	TrecComPointer<ID2D1GradientStopCollection> getStopCollection(TDataArray<D2D1_COLOR_F>& colors);
+	void SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget>);
+	void ResetBrush();
 
 	//CMap<CString, CString, CString, CString> styles;
 	TrecComPointer<ID2D1RenderTarget> rt;
 
 	TrecComPointer<ID2D1Brush> brush;
-	TrecComPointer<ID2D1RadialGradientBrush> rb;
-	TrecComPointer<ID2D1LinearGradientBrush> lb;
-	TrecComPointer<ID2D1SolidColorBrush> sb;
+
 	TrecComPointer<ID2D1BitmapBrush> bitmap;
 
 	float thickness = 1.0f;
-	CString style;
-	D2D1::ColorF color = D2D1::ColorF(D2D1::ColorF::Black, 1.0);
-	D2D1_RECT_F location, snip;
+	TString style;
+	D2D1_COLOR_F color;
+	D2D1_RECT_F location;
 	TrecComPointer<ID2D1Bitmap> image;
 	TrecComPointer<ID2D1Bitmap> cropImage;
 
 
-	int storeInTML(CArchive* ar, int childLevel,messageState);
+	int storeInTML(TFile* ar, int childLevel,messageState);
 	TControl* cap;
 	TShape shape;
 	bool secondColor;
@@ -378,44 +384,6 @@ private:
 	void BreakShared();
 };
 
-/*
-class _ANAFACE_DLL TContainer
-{
-	friend class TControl;
-	friend class TLayout;
-	friend class TComboBox;
-	friend class TContextMenu;
-public:
-	TContainer();
-	virtual ~TContainer();
-	bool setTControl(TrecPointer<TControl>);
-	bool onCreate(RECT, RECT);
-	bool onCreate(RECT);
-	bool onCreate();
-	void onDraw();
-	RECT getLocation();
-	void ShiftHorizontal(int degrees);
-	void ShiftVertical(int degrees);
-
-	void OnLButtonUp(UINT, CPoint, messageOutput*, TDataArray<EventID_Cred>& eventAr);
-	void OnLButtonDown(UINT, CPoint, messageOutput*, TDataArray<EventID_Cred>& eventAr);
-	void OnMouseMove(UINT, CPoint, messageOutput*, TDataArray<EventID_Cred>& eventAr);
-
-	TrecPointer<TControl> getChildControl();
-	int storeInTML(CArchive * ar, int childLevel);
-	void storeInHTML(CArchive * ar);
-	void setParent(TrecPointer<TControl>);
-	void setLocation(RECT& r);
-
-private:
-	RECT location, snip;
-	TrecPointer<TControl> child;
-//	int storeInTML(CArchive* ar, int childLevel);
-	bool beenCreated;
-	bool ChildCreate(RECT);
-	void ChildDraw();
-	//void BreakShared();
-};*/
 
 
 class _ANAFACE_DLL TControl : public TObject
@@ -425,6 +393,7 @@ class _ANAFACE_DLL TControl : public TObject
 	friend class TControl_TDialog; // TDialog version of TControl editor
 	friend class TBorder;
 	friend class TControl;
+	friend class TDataBind;
 public:
 
 	TControl(TrecComPointer<ID2D1RenderTarget>, TrecPointer<TArray<styleTable>> styles, bool base = true);
@@ -432,44 +401,47 @@ public:
 	TControl();
 	virtual ~TControl();
 
+	void SetSelf(TrecPointer<TControl> self);
+
+	virtual void SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget>);
+
 	//virtual int loadFromTML(CArchive* ar);
-	virtual int loadFromHTML(CArchive* ar);
-	virtual void storeInTML(CArchive* ar, int childLevel, bool overrideChildren = false);
-	virtual void storeInHTML(CArchive* ar);
+	virtual int loadFromHTML(TFile* ar);
+	virtual void storeInTML(TFile* ar, int childLevel, bool overrideChildren = false);
+	virtual void storeInHTML(TFile* ar);
 
 	// Normal running messages
-	afx_msg void OnRButtonUp(UINT nFlags, CPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
-	afx_msg virtual void OnLButtonDown(UINT nFlags, CPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
-	afx_msg void OnRButtonDown(UINT nFlags, CPoint, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
-	afx_msg virtual void OnMouseMove(UINT nFlags, CPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
-	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
-	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
-	afx_msg virtual void OnLButtonUp(UINT nFlags, CPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
+	afx_msg virtual void OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
+	afx_msg virtual void OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr, TDataArray<TControl*>& clickedButtons);
+	afx_msg virtual void OnRButtonDown(UINT nFlags, TPoint, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
+	afx_msg virtual void OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
+	//afx_msg void OnContextMenu(CWnd* pWnd, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
+	afx_msg virtual void OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
+	afx_msg virtual void OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
 	afx_msg virtual bool OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlags, messageOutput *mOut, TDataArray<EventID_Cred>& eventAr);
 
 	// Builder Messages
-	afx_msg void Builder_OnLButtonUp(UINT flags, CPoint point, const TrecPointer<TControl>& mOut);
-	afx_msg void Builder_OnLButtonDown(UINT flags, CPoint point, TrecPointer<TControl>& mOut, messageOutput* o);
-	afx_msg void Builder_OnMouseMove(UINT flags, CPoint, TrecPointer<TControl>& mOut,const RECT&, messageOutput* o);
+	afx_msg void Builder_OnLButtonUp(UINT flags, TPoint point, TControl** mOut);
+	afx_msg void Builder_OnLButtonDown(UINT flags, TPoint point, TControl** mOut, messageOutput* o);
+	afx_msg void Builder_OnMouseMove(UINT flags, TPoint, TControl** mOut,const RECT&, messageOutput* o);
 	afx_msg void Remove_Builder_Click_Focus();
 
 	void setActive(bool act);
 	EventArgs getEventArgs();
 
-	virtual bool onCreate(RECT);
+	virtual bool onCreate(RECT, TrecPointer<TWindowEngine> d3d);
 	virtual void Resize(RECT);
 	bool setEventHandler(EventTarget& eh);
 	void updateArrayID(int aid);
 
 	virtual void onDraw(TObject* obj = nullptr);
 	RECT getLocation();
-	RECT getSnip();
 	RECT getMargin();
 	TrecComPointer<ID2D1RenderTarget> getRenderTarget();
 	TrecPointer<TControl> getParent();
 	void setExternalBounds(RECT);
 	bool getLayoutStatus();
-	void offsetLocation(CPoint);
+	void offsetLocation(TPoint);
 
 	void ShiftHorizontal(int degrees);
 	void ShiftVertical(int degrees);
@@ -489,10 +461,10 @@ public:
 	void setMLeft(int l);
 
 	virtual UINT determineMinHeightNeeded();
-	virtual void SetNewLocation(RECT& r);
+	virtual void SetNewLocation(const RECT& r);
 	virtual void ShrinkHeight();
 
-	bool addAttribute(TString&, TrecPointer<TString>);
+	bool addAttribute(const TString&, TrecPointer<TString>);
 	bool addChild(TrecPointer<TControl>);
 
 	void setParent(TrecPointer<TControl> tcp);
@@ -505,14 +477,16 @@ public:
 
 	// Methods to support Scrolling
 	bool onScroll(int x, int y);
-	bool onBeingScrolled(int x, int y, const RECT& p_snip);
+	bool onBeingScrolled(int x, int y);
 	void scroll(RECT& loc);
 	bool SetContextMenu(TrecPointer<TControl> cm);
 	void BreakShared();
-	void AddClass(TString& t);
+	void AddClass(const TString& t);
 	TString GetID();
-
+	void resetArgs();
 	virtual UCHAR* GetAnaGameType()override;
+
+	void SetNormalMouseState();
 
 protected:
 	//CMap<CString, CString, CString, CString> styles;
@@ -520,11 +494,14 @@ protected:
 	bool boundsPreset;
 	TString className;
 	TString ID;
-	RECT location, snip, margin;
+	RECT location, margin;
 	TScrollBar *vScroll, *hScroll;
 	TrecComPointer<ID2D1Factory> factory;
 	TrecComPointer<ID2D1RenderTarget> renderTarget;
-	TrecPointer<TControl> parent;
+	
+	TrecPointerSoft<TControl> parent;
+	TrecPointerSoft<TControl> tThis;
+
 	//TrecPointer<TControl> PointerCase;
 	BYTE treeLevel;
 	TrecPointer<TBorder> border1, border2, border3;
@@ -540,6 +517,7 @@ protected:
 	bool onCreate3(TMap<TString>*, RECT);
 
 	void updateComponentLocation();
+	void CheckScroll();
 
 	int generateImage(TrecPointer<TContent> tcon, TrecPointer<TString> p,RECT loc);
 
@@ -569,7 +547,7 @@ protected:
 	TDataArray<EventTypeID> eventList;// 
 	bool isActive;                // Controls can be disabled
 	bool hasEvent(R_Message_Type type);
-	void resetArgs();
+
 	int getEventID(R_Message_Type type);
 
 	void SetToRenderTarget();
@@ -602,7 +580,7 @@ void _ANAFACE_DLL resetAttributeString(TString* st, int cou);
 * Parameters: D2D1::ColorF - the color to convert
 * Returns: CString - the Color in string form
 */
-CString _ANAFACE_DLL convertD2DColorToString(D2D1::ColorF);
+TString _ANAFACE_DLL convertD2DColorToString(D2D1_COLOR_F);
 
 /*
 * Function: convertRectToString
@@ -610,7 +588,7 @@ CString _ANAFACE_DLL convertD2DColorToString(D2D1::ColorF);
 * Parameters: RECT - the Rectangle to convert
 * Returns: CString - the Representation of a rectangle in string form
 */
-CString _ANAFACE_DLL convertRectToString(RECT);
+TString _ANAFACE_DLL convertRectToString(RECT);
 
 /*
 * Function: convertStringToRECT
@@ -634,7 +612,7 @@ D2D1::ColorF _ANAFACE_DLL convertStringToD2DColor(TString*);
 * Parameters: RECT - the Rectangle to Convert
 * Returns: D2D1_RECT_F - the D2D Rectangle sought
 */
-D2D1_RECT_F convertRECTToD2DRectF(RECT);
+D2D1_RECT_F _ANAFACE_DLL convertRECTToD2DRectF(RECT);
 
 /*
 * Function: convertD2DRectToRECT
@@ -642,7 +620,7 @@ D2D1_RECT_F convertRECTToD2DRectF(RECT);
 * Parameters: D2D1_RECT_F f - the D2D Rectangle to convert
 * Returns: RECT - the MFC rectangle created
 */
-RECT convertD2DRectToRECT(D2D1_RECT_F f);
+RECT _ANAFACE_DLL convertD2DRectToRECT(D2D1_RECT_F f);
 
 /*
 * Function: convertCRectToD2DRect
@@ -651,35 +629,35 @@ RECT convertD2DRectToRECT(D2D1_RECT_F f);
 *				D2D1_RECT_F* - the destination rectangle
 * Returns: false if either parameter is null
 */
-bool convertCRectToD2DRect(RECT*, D2D1_RECT_F*);
+bool _ANAFACE_DLL convertCRectToD2DRect(RECT*, D2D1_RECT_F*);
 
 /*
 * Function: isContained
 * Purpose: Checks of a point is within a given MFC Rectangle
-* Parameters: const CPoint* - the point to check
+* Parameters: const TPoint* - the point to check
 *				const RECT* - the rectangle to check
 * Returns: bool - whether the point is withing the bounds
 */
-bool isContained(const CPoint*, const RECT*);
+bool _ANAFACE_DLL isContained(const TPoint*, const RECT*);
 
 /*
 * Function: isContained
 * Purpose: Checks of a point is within a given Direct2D Rectangle
-* Parameters: const CPoint* - the point to check
+* Parameters: const TPoint* - the point to check
 *				const D2D1_RECT_F* - the rectangle to check
 * Returns: bool - whether the point is withing the bounds
 */
-bool isContained(const CPoint*, const D2D1_RECT_F*);
+bool _ANAFACE_DLL isContained(const TPoint*, const D2D1_RECT_F*);
 
 /*
 * Function: isContained
 * Purpose: Checks if a point is in a certain ellipse
-* Parameters: const CPoint* - the point to check
+* Parameters: const TPoint* - the point to check
 *				const D2D1_ELLIPSE* - the ellipse to check
 * Returns: bool - whether the point is within the specified bounds
 * Note: Algorithm for function found on https://math.stackexchange.com/questions/76457/check-if-a-point-is-within-an-ellipse
 */
-bool isContained(const CPoint&, const D2D1_ELLIPSE&);
+bool isContained(const TPoint&, const D2D1_ELLIPSE&);
 
 /*
 * Function: convertStringToTextAlignment
@@ -721,6 +699,14 @@ void switchLongs(LONG& l1, LONG& l2);
 * Returns: bool - whether the RECT is "Zero" or not
 */
 bool _ANAFACE_DLL isSnipZero(const RECT& snip);
+
+/*
+* Function: isSnipZero
+* Purpose: Checks if a Rectangle is a "Zero" rectangle
+* Parameters: const D2D1_RECT_F& snip - the Rectangle to check
+* Returns: bool - whether the RECT is "Zero" or not
+*/
+bool _ANAFACE_DLL isSnipZero(const D2D1_RECT_F& snip);
 
 /*
 * Function: zeroSnip

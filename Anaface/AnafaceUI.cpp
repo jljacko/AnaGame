@@ -1,4 +1,4 @@
-#include "stdafx.h"
+
 #include "AnafaceUI.h"
 
 /*
@@ -13,6 +13,8 @@ AnafaceUI::AnafaceUI(TrecComPointer<ID2D1RenderTarget>rt, TrecPointer <TArray<st
 {
 	winHandle = win;
 	tabHeight = unknownTab = 0;
+	tabs = nullptr;
+	proceed = true;
 }
 
 /*
@@ -50,10 +52,18 @@ bool AnafaceUI::switchView(UINT x)
 		}
 		catch (...)
 		{
-			currentControl = nullptr;
+			currentControl.Nullify();
 		}
 	}
 	return false;
+}
+
+void AnafaceUI::SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget> rt)
+{
+	TControl::SetNewRenderTarget(rt);
+	if (tabs)
+		tabs->SetNewRenderTarget(rt);
+	
 }
 
 /*
@@ -100,6 +110,10 @@ int AnafaceUI::loadFromTML(CArchive * ar)
 }*/
 
 
+void AnafaceUI::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+{
+}
+
 /*
 * Method: AnafaceUI - OnLButtonDown
 * Purpose: Allows the AnafaceUI to catch when a tab is 
@@ -109,23 +123,62 @@ int AnafaceUI::loadFromTML(CArchive * ar)
 *			TDataArray<EventID_Cred>& eventAr - events and their handlers documented by the control
 * Returns: void
 */
-void AnafaceUI::OnLButtonDown(UINT nFlags, CPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr)
+void AnafaceUI::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr, TDataArray<TControl*>& clickedControl)
 {
-	if (tabs.get())
+	if (tabs)
 	{
 		for (UINT c = 0; c < tabs->lChildren.Count(); c++)
 		{
-			if (!tabs->lChildren.ElementAt(c).get())
+			if (!tabs->lChildren.ElementAt(c).Get())
 				continue;
 			TrecPointer<TControl> tcon = tabs->lChildren.ElementAt(c)->contain;
-			if (!tcon.get())
+			if (!tcon.Get())
 				continue;
 			
 			messageOutput tempOut = negative;
-			tcon->OnLButtonDown(nFlags, point, &tempOut, eventAr);
+			tcon->OnLButtonDown(nFlags, point, &tempOut, eventAr, clickedControl);
 			if (tempOut != negative && tempOut != negativeUpdate)
 			{
-				if (children.Count() > c && children.ElementAt(c).get())
+				if (children.Count() > c && children.ElementAt(c).Get())
+				{
+					currentControl = children.ElementAt(c);
+					*mOut = messageOutput::positiveOverride;
+					resetArgs();
+					args.eventType = R_Message_Type::On_sel_change;
+					args.point = point;
+					args.methodID = -1;
+					args.isClick = true;
+					args.isLeftClick = true;
+					args.control = this;
+					args.arrayLabel = c;
+					eventAr.push_back(EventID_Cred{ On_Click,this });
+					return;
+				}
+			}
+		}
+	}
+
+	if (currentControl.Get() && proceed)
+		currentControl->OnLButtonDown(nFlags, point, mOut, eventAr, clickedControl);
+}
+
+void AnafaceUI::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+{
+	if (tabs)
+	{
+		for (UINT c = 0; c < tabs->lChildren.Count(); c++)
+		{
+			if (!tabs->lChildren.ElementAt(c).Get())
+				continue;
+			TrecPointer<TControl> tcon = tabs->lChildren.ElementAt(c)->contain;
+			if (!tcon.Get())
+				continue;
+
+			messageOutput tempOut = negative;
+			tcon->OnRButtonDown(nFlags, point, &tempOut, eventAr);
+			if (tempOut != negative && tempOut != negativeUpdate)
+			{
+				if (children.Count() > c && children.ElementAt(c).Get())
 				{
 					currentControl = children.ElementAt(c);
 					*mOut = messageOutput::positiveOverride;
@@ -135,8 +188,128 @@ void AnafaceUI::OnLButtonDown(UINT nFlags, CPoint point, messageOutput * mOut, T
 		}
 	}
 
-	if (currentControl.get())
-		currentControl->OnLButtonDown(nFlags, point, mOut, eventAr);
+	if (currentControl.Get() && proceed)
+		currentControl->OnRButtonDown(nFlags, point, mOut, eventAr);
+}
+
+void AnafaceUI::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+{
+	if (tabs)
+	{
+		for (UINT c = 0; c < tabs->lChildren.Count(); c++)
+		{
+			if (!tabs->lChildren.ElementAt(c).Get())
+				continue;
+			TrecPointer<TControl> tcon = tabs->lChildren.ElementAt(c)->contain;
+			if (!tcon.Get())
+				continue;
+
+			messageOutput tempOut = negative;
+			tcon->OnMouseMove(nFlags, point, &tempOut, eventAr);
+			if (tempOut != negative && tempOut != negativeUpdate)
+			{
+				if (children.Count() > c && children.ElementAt(c).Get())
+				{
+					currentControl = children.ElementAt(c);
+					*mOut = messageOutput::positiveOverride;
+					return;
+				}
+			}
+		}
+	}
+
+	if (currentControl.Get() && proceed)
+		currentControl->OnMouseMove(nFlags, point, mOut, eventAr);
+}
+
+void AnafaceUI::OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+{
+	if (tabs)
+	{
+		for (UINT c = 0; c < tabs->lChildren.Count(); c++)
+		{
+			if (!tabs->lChildren.ElementAt(c).Get())
+				continue;
+			TrecPointer<TControl> tcon = tabs->lChildren.ElementAt(c)->contain;
+			if (!tcon.Get())
+				continue;
+
+			messageOutput tempOut = negative;
+			tcon->OnLButtonDblClk(nFlags, point, &tempOut, eventAr);
+			if (tempOut != negative && tempOut != negativeUpdate)
+			{
+				if (children.Count() > c && children.ElementAt(c).Get())
+				{
+					currentControl = children.ElementAt(c);
+					*mOut = messageOutput::positiveOverride;
+					return;
+				}
+			}
+		}
+	}
+
+	if (currentControl.Get() && proceed)
+		currentControl->OnLButtonDblClk(nFlags, point, mOut, eventAr);
+}
+
+void AnafaceUI::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+{
+	if (tabs)
+	{
+		for (UINT c = 0; c < tabs->lChildren.Count(); c++)
+		{
+			if (!tabs->lChildren.ElementAt(c).Get())
+				continue;
+			TrecPointer<TControl> tcon = tabs->lChildren.ElementAt(c)->contain;
+			if (!tcon.Get())
+				continue;
+
+			messageOutput tempOut = negative;
+			tcon->OnLButtonUp(nFlags, point, &tempOut, eventAr);
+			if (tempOut != negative && tempOut != negativeUpdate)
+			{
+				if (children.Count() > c && children.ElementAt(c).Get())
+				{
+					currentControl = children.ElementAt(c);
+					*mOut = messageOutput::positiveOverride;
+					return;
+				}
+			}
+		}
+	}
+
+	if (currentControl.Get() && proceed)
+		currentControl->OnLButtonUp(nFlags, point, mOut, eventAr);
+}
+
+bool AnafaceUI::OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+{
+	if (tabs)
+	{
+		for (UINT c = 0; c < tabs->lChildren.Count(); c++)
+		{
+			if (!tabs->lChildren.ElementAt(c).Get())
+				continue;
+			TrecPointer<TControl> tcon = tabs->lChildren.ElementAt(c)->contain;
+			if (!tcon.Get())
+				continue;
+
+			messageOutput tempOut = negative;
+			tcon->OnChar(fromChar, nChar, nRepCnt, nFlags, mOut, eventAr);
+			if (tempOut != negative && tempOut != negativeUpdate)
+			{
+				if (children.Count() > c && children.ElementAt(c).Get())
+				{
+					currentControl = children.ElementAt(c);
+					*mOut = messageOutput::positiveOverride;
+					return true;
+				}
+			}
+		}
+	}
+
+	if (currentControl.Get() && proceed)
+		currentControl->OnChar(fromChar, nChar, nRepCnt, nFlags, mOut, eventAr);
 }
 
 
@@ -146,53 +319,55 @@ void AnafaceUI::OnLButtonDown(UINT nFlags, CPoint point, messageOutput * mOut, T
 * Parameters: RECT container - the location the control will be stored
 * Returns: bool
 */
-bool AnafaceUI::onCreate(RECT container)
+bool AnafaceUI::onCreate(RECT container, TrecPointer<TWindowEngine> d3d)
 {
-	TControl::onCreate(container);
+	windowEngine = d3d;
+	TControl::onCreate(container,d3d);
 	RECT r;
 	TrecPointer<TString> valpoint = attributes.retrieveEntry(TString(L"|TabHeight"));
-	if (valpoint.get())
+	if (valpoint.Get())
 	{
-		tabs = new TLayoutEx(renderTarget, styles);
+		tabs_base = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TLayoutEx>(renderTarget, styles);
+		tabs = dynamic_cast<TLayoutEx*>(tabs_base.Get());
 		tabs->setLayout(HStack);
 		if (valpoint->ConvertToInt(&tabHeight))
 			tabHeight = 30;
 
-		 r = CRect(location.left, location.top, location.right, location.top + tabHeight);
+		r = RECT{ location.left, location.top, location.right, location.top + tabHeight };
 		for (UINT C = 0; C < children.Count(); C++)
 		{
-			TControl* tcon = children.ElementAt(C).get();
+			TControl* tcon = children.ElementAt(C).Get();
 			if (!tcon)
 				continue;
 			
 			if (!tcon)
 				continue;
 			tabs->addColunm(60, true);
-			TrecPointer<TControl> newTab = new TControl(renderTarget, styles);
+			TrecPointer<TControl> newTab = TrecPointerKey::GetNewSelfTrecPointer<TControl>(renderTarget, styles);
 			tabs->addChild(newTab, tabs->getColumnNumber() - 1, 0);
 		}
 
-		if (styles.get())
+		if (styles.Get())
 		{
 			valpoint = attributes.retrieveEntry(TString(L"|TabStyle"));
-			if (valpoint.get())
+			if (valpoint.Get())
 			{
 				styleTable* st;
 				for (UINT c = 0; c < styles->Count(); c++)
 				{
-					if (!styles->ElementAt(c).get())
+					if (!styles->ElementAt(c).Get())
 						continue;
-					st = styles->ElementAt(c).get();
-					if (st->style == valpoint.get())
+					st = styles->ElementAt(c).Get();
+					if (st->style == valpoint.Get())
 					{
 						for (UINT C = 0; C < children.Count(); C++)
 						{
 							TrecPointer<TControl> newTab = tabs->GetLayoutChild(C,0);
-							if(!newTab.get())
+							if(!newTab.Get())
 								continue;
 							for (UINT rust = 0; rust < st->names.count(); rust++)
 							{
-								tEntry<TString>* ent = st->names.GetEntryAt(rust).get();
+								tEntry<TString>* ent = st->names.GetEntryAt(rust).Get();
 								if (!ent)
 									continue;
 								newTab->addAttribute(ent->key, ent->object);
@@ -203,7 +378,7 @@ bool AnafaceUI::onCreate(RECT container)
 			} // End of Valpoint if for "TabStyle"
 
 		} // End of Tab Style
-		if (children.Count() && children.ElementAt(0).get())
+		if (children.Count() && children.ElementAt(0).Get())
 			currentControl = children.ElementAt(0);
 
 	}// End of valpoint if statement for "TabHeight" and code for creating tabs
@@ -212,27 +387,27 @@ bool AnafaceUI::onCreate(RECT container)
 
 	for (int c = 0; c < children.Count(); c++)
 	{
-		TControl* tc = children.ElementAt(c).get();
+		TControl* tc = children.ElementAt(c).Get();
 		if (tc)
-			tc->onCreate(container);
+			tc->onCreate(container,d3d);
 	}
 
-	if (tabs.get())
+	if (tabs)
 	{
-		tabs->onCreate(r);
+		tabs->onCreate(r,d3d);
 
 		for (UINT c = 0; c < children.Count(); c++)
 		{
-			TControl* tcon = children.ElementAt(c).get();
+			TControl* tcon = children.ElementAt(c).Get();
 			if (!tcon)
 				continue;
 			
 			TrecPointer<TControl> tc2 = tabs->GetLayoutChild(c, 0);
-			if (!tc2.get())
+			if (!tc2.Get())
 				continue;
 			TString id = tcon->GetID();
 			TrecPointer<TText> text = tc2->getText(1);
-			if (!text.get())
+			if (!text.Get())
 				continue;
 			text->setCaption(id);
 		}
@@ -242,11 +417,18 @@ bool AnafaceUI::onCreate(RECT container)
 
 	valpoint = attributes.retrieveEntry(TString(L"|BeginningChildIndex"));
 	int ind = -1;
-	if (valpoint.get() && !valpoint->ConvertToInt(&ind))
+	if (valpoint.Get() && !valpoint->ConvertToInt(&ind))
 	{
 		if (ind > -1 && ind < children.Count())
 			currentControl = children.ElementAt(ind);
 	}
+
+	valpoint = attributes.retrieveEntry(TString(L"|ExternalApp"));
+	if (valpoint.Get() && valpoint->CompareNoCase(TString(L"true")))
+	{
+		proceed = false;
+	}
+
 
 	return false;
 }
@@ -260,11 +442,11 @@ bool AnafaceUI::onCreate(RECT container)
 */
 int AnafaceUI::addControl(TrecPointer<TControl> control, TString tabName)
 {
-	if (control.get())
+	if (control.Get())
 	{
 		for (UINT c = 0; c < children.Count(); c++)
 		{
-			if (control.get() == children.ElementAt(c).get())
+			if (control.Get() == children.ElementAt(c).Get())
 			{
 				currentControl = children.ElementAt(c);
 				return c;
@@ -288,15 +470,15 @@ int AnafaceUI::addControl(TrecPointer<TControl> control, TString tabName)
 * Returns: int - 0 if successful
 * Note: INCOMPLETE - not properly implimented, DEPRECIATED - CArchive should be replaced with TFile
 */
-int AnafaceUI::addControl(CArchive * arch)
+int AnafaceUI::addControl(TFile * arch)
 {
 	if (!arch)
 		return -2;
 
-	CFile* file = arch->GetFile();
-	if (!file)
+
+	if (!arch)
 		return -3;
-	TString fileName = file->GetFileName();
+	TString fileName = arch->GetFileName();
 
 	return 0;
 }
@@ -309,11 +491,11 @@ int AnafaceUI::addControl(CArchive * arch)
 */
 void AnafaceUI::setDontAddControl(TrecPointer<TControl> control)
 {
-	if (control.get())
+	if (control.Get())
 	{
 		//TrecPointer<TContainer> tc(new TContainer());
 		//tc->setTControl(control);
-		control->onCreate(location);
+		control->onCreate(location,windowEngine);
 		currentControl = control;
 	}
 }
@@ -331,52 +513,52 @@ void AnafaceUI::onDraw(TObject* obj)
 		return;
 	if (mState == mouseLClick)
 	{
-		if (content3.get())
-			content3->onDraw(location, snip);
-		else if (content1.get())
-			content1->onDraw(location, snip);
-		if (border3.get())
-			border3->onDraw(location, snip);
-		else if (border1.get())
-			border1->onDraw(location, snip);
-		if (text3.get())
-			text3->onDraw(location, snip, obj);
-		else if (text1.get())
-			text1->onDraw(location, snip, obj);
+		if (content3.Get())
+			content3->onDraw(location);
+		else if (content1.Get())
+			content1->onDraw(location);
+		if (border3.Get())
+			border3->onDraw(location);
+		else if (border1.Get())
+			border1->onDraw(location);
+		if (text3.Get())
+			text3->onDraw(location, obj);
+		else if (text1.Get())
+			text1->onDraw(location, obj);
 	}
 	else if (mState == mouseHover)
 	{
-		if (content2.get())
-			content2->onDraw(location, snip);
-		else if (content1.get())
-			content1->onDraw(location, snip);
-		if (border2.get())
-			border2->onDraw(location, snip);
-		else if (border1.get())
-			border1->onDraw(location, snip);
-		if (text2.get())
-			text2->onDraw(location, snip, obj);
-		else if (text1.get())
-			text1->onDraw(location, snip, obj);
+		if (content2.Get())
+			content2->onDraw(location);
+		else if (content1.Get())
+			content1->onDraw(location);
+		if (border2.Get())
+			border2->onDraw(location);
+		else if (border1.Get())
+			border1->onDraw(location);
+		if (text2.Get())
+			text2->onDraw(location, obj);
+		else if (text1.Get())
+			text1->onDraw(location, obj);
 	}
 	else
 	{
-		if (content1.get())
-			content1->onDraw(location, snip);
-		if (border1.get())
-			border1->onDraw(location, snip);
-		if (text1.get())
-			text1->onDraw(location, snip, obj);
+		if (content1.Get())
+			content1->onDraw(location);
+		if (border1.Get())
+			border1->onDraw(location);
+		if (text1.Get())
+			text1->onDraw(location, obj);
 	}
-
+	/*
 	if (vScroll)
 		vScroll->updateDraw();
 	if (hScroll)
 		hScroll->updateDraw();
-
-	if (tabs.get())
+	*/
+	if (tabs)
 		tabs->onDraw(obj);
-	if (currentControl.get())
+	if (currentControl.Get() && proceed)
 		currentControl->onDraw(obj);
 }
 
@@ -417,26 +599,26 @@ UCHAR * AnafaceUI::GetAnaGameType()
 
 void AnafaceUI::AddNewTab(TString t)
 {
-	if (tabs.get())
+	if (tabs)
 	{
 		TrecPointer<TString> valpoint = attributes.retrieveEntry(TString(L"|TabStyle"));
-		TrecPointer<TControl> tc(new TControl(renderTarget, styles));
-		if (valpoint.get())
+		TrecPointer<TControl> tc(TrecPointerKey::GetNewSelfTrecPointer<TControl>(renderTarget, styles));
+		if (valpoint.Get())
 		{
 			styleTable* st;
 			for (UINT c = 0; c < styles->Count(); c++)
 			{
-				if (!styles->ElementAt(c).get())
+				if (!styles->ElementAt(c).Get())
 					continue;
-				st = styles->ElementAt(c).get();
+				st = styles->ElementAt(c).Get();
 
-				if (st->style == valpoint.get())
+				if (st->style == valpoint.Get())
 				{
 
 					for (UINT rust = 0; rust < st->names.count(); rust++)
 					{
 
-						tEntry<TString>* ent = st->names.GetEntryAt(rust).get();
+						tEntry<TString>* ent = st->names.GetEntryAt(rust).Get();
 						if (!ent)
 							continue;
 						tc->addAttribute(ent->key, ent->object);
@@ -447,18 +629,18 @@ void AnafaceUI::AddNewTab(TString t)
 			}
 
 		}
-		if (t == TString(L""))
+		if (!t.Compare(L""))
 		{
 			t.Format(L"Unknown (%d)", unknownTab++);
 		}
 
-		tc->addAttribute(TString(L"|Caption"), TrecPointer<TString>(new TString(t)));
+		tc->addAttribute(TString(L"|Caption"), TrecPointerKey::GetNewTrecPointer<TString>(t));
 		UINT indexAdd = tabs->AddCol(40);
 		if (indexAdd)
 		{
 			tabs->addChild(tc, indexAdd - 1, 0);
 			RECT tabLoc = tabs->getRawSectionLocation(0, indexAdd - 1);
-			tc->onCreate(tabLoc);
+			tc->onCreate(tabLoc,windowEngine);
 		}
 	}
 }
@@ -483,11 +665,11 @@ void AnafaceUI::Resize(RECT r)
 
 	for (UINT Rust = 0; Rust < children.Count(); Rust++)
 	{
-		if (children.ElementAt(Rust).get())
+		if (children.ElementAt(Rust).Get())
 			children.ElementAt(Rust)->Resize(r);
 	}
 
-	if (tabs.get())
+	if (tabs)
 	{
 		RECT tabLoc = location;
 		tabLoc.bottom = tabLoc.top + tabHeight;

@@ -20,14 +20,14 @@ public:
 	TSpreadSheet(TrecComPointer<ID2D1RenderTarget>, TrecPointer<TArray<styleTable>> ta, HWND w);
 	~TSpreadSheet();
 
-	virtual bool onCreate(RECT)override;
+	virtual bool onCreate(RECT, TrecPointer<TWindowEngine> d3d)override;
 	virtual void onDraw(TObject* obj = nullptr) override;
 	virtual UCHAR* GetAnaGameType()override;
 
 	TString GetData();
 	TString GetDataSplitTokens();
 
-	afx_msg void OnLButtonDown(UINT nFlags, CPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr) override;
+	afx_msg void OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr, TDataArray<TControl*>& clickedControl) override;
 
 protected:
 	TString title, splitTokens;
@@ -35,6 +35,6 @@ protected:
 	bool initializeFields, drawLines, stickToNums, hasTitle;
 	TDataArray<BorderList> borders;
 	HWND window;
-
+	TrecPointer<TWindowEngine> winEngine;
 };
 
