@@ -78,6 +78,9 @@
     <ClInclude Include="TPoint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TTrecPointerArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">

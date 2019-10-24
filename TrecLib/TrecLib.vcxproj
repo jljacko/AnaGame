@@ -178,6 +178,7 @@
     <ClInclude Include="TrecLib.h" />
     <ClInclude Include="TrecReference.h" />
     <ClInclude Include="TString.h" />
+    <ClInclude Include="TTrecPointerArray.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DirectoryInterface.cpp" />
