@@ -38,6 +38,41 @@ typedef enum EnumImplementation
 	ei_labelledUnion
 };
 
+// Message that running code can send back to the interpretor to know when it is time to stop, restart from the beginning, or some other action
+typedef enum InterpretorMessage
+{
+	im_run,
+	im_break,		// Stops the interpretor without returning a value to the parent interpretor
+	im_continue,	// Causes the interpretor to restart
+	im_return		// Stops the interpretor and returns a value to the parant interpretor
+}InterpretorMessage;
+
+// 
+typedef enum InterpretorResource
+{
+	ir_none,
+	ir_file,
+	ir_string
+}InterpretorResource;
+
+// Used when filtering-out comments for simpler code parsing
+typedef enum CodeMode
+{
+	cm_reg,		// currently in regular code
+	cm_sinStr,	// currently in a single-line String
+	cm_mulStr,	// currently in a multi-line String
+	cm_sinCom,	// currently in a single-line comment
+	cm_mulCom	// currently in a multi-line comment
+}CodeMode;
+
+// Used when filtering out comments to know when a given string is being generated and where in the file that string begins
+typedef struct DoubIndex
+{
+	int strInd;
+	TString stringQ;
+} DoubIndex;
+
+
 class TLanguage :
 	public TObject
 {
@@ -45,9 +80,24 @@ public:
 	static TrecPointer<TLanguage> getLanguage(TString& langName);
 	static TrecPointer<TLanguage> getLanguage(TString& langName, TString& langVersion);
 
+	UINT PreProcessFile(TrecPointer<TFile>& sourceFile);
+
+
 protected:
 	TLanguage();
 	~TLanguage();
+
+	// Preprocess Pipeline
+	bool RunCommentFilter(TrecPointer<TFile> file, TString& newFileName);
+	void UpdateDoubIndex(TString& buff, UINT index, DoubIndex& sinCom, DoubIndex& newLine, DoubIndex& mulCom,
+		DoubIndex& mulComE, DoubIndex& sinStr, DoubIndex& mulStr);
+
+	DoubIndex getNextSingleComment(TString& buff, UINT index);
+	DoubIndex getNextNewline(TString& buff, UINT index);
+	DoubIndex getNextMultiComment(TString& buff, UINT index);
+	DoubIndex getNextMultiCommentEnd(TString& buff, UINT index);
+	DoubIndex getNextSingleString(TString& buff, UINT index);
+	DoubIndex getNextMultiString(TString& buff, UINT index);
 
 	// Very Basic information about this particular language
 	TString language;					// Name of the Language

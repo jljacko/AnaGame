@@ -44,7 +44,7 @@ public:
 	~TFile();
 
 	// Methods that override CFile's Methods
-	bool Open(TString& lpszFileName,
+	bool Open(const TString& lpszFileName,
 		UINT nOpenFlags);
 
 
