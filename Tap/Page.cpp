@@ -540,6 +540,10 @@ void Page::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArra
 	if (!isContained(&point, &area))
 		return;
 
+	
+
+	if (rootControl.Get())
+		rootControl->OnLButtonUp(nFlags, point, mOut, eventAr);
 	UINT curSize = clickedControl.Size();
 	for (UINT c = 0; c < clickedControl.Size(); c++)
 	{
@@ -547,10 +551,6 @@ void Page::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArra
 			clickedControl[c]->SetNormalMouseState();
 	}
 	clickedControl.RemoveAll();
-
-	if (rootControl.Get())
-		rootControl->OnLButtonUp(nFlags, point, mOut, eventAr);
-
 	if (curSize)
 	{
 		switch (*mOut)
