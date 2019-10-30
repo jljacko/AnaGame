@@ -24,7 +24,7 @@ public:
 
 		for (UINT Rust = 0; Rust < newArray.Size(); Rust++)
 		{
-			if (c < newArray.Capacity())
+			if (Rust < newArray.Capacity())
 				array[Rust] = newArray.array[Rust];
 		}
 	}

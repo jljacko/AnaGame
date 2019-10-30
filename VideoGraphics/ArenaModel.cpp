@@ -33,9 +33,6 @@ ArenaModel::ArenaModel(TrecPointer<TArenaEngine> ae)
 	swapChain = engine->getSwapChain();
 	constructionWorked = context.Get() && device.Get() && renderTarget.Get() && swapChain.Get();
 
-
-	engine->AddModel(*this);
-
 	location.x = 0.0f;
 	location.z = 0.0f;
 	location.y = 0.0f;
@@ -143,10 +140,10 @@ TString ArenaModel::getName()
 void ArenaModel::SetNewEngine(TrecPointer<TArenaEngine> e)
 {
 	if (engine.Get())
-		engine->RemoveModel(this);
+		engine->RemoveModel(TrecPointerKey::GetTrecPointerFromSoft<ArenaModel>(self));
 
 	engine = e;
-	engine->AddModel(*this);
+	engine->AddModel(TrecPointerKey::GetTrecPointerFromSoft<ArenaModel>(self));
 }
 
 /*
@@ -748,6 +745,13 @@ UCHAR ArenaModelType[] = { 2, 0b10000000, 6 };
 UCHAR * ArenaModel::GetAnaGameType()
 {
 	return ArenaModelType;
+}
+
+void ArenaModel::SetSelf(TrecPointer<ArenaModel> s)
+{
+	if (this != s.Get())
+		throw L"Error! Expected Self TrecPointer to point at 'this'";
+	self = TrecPointerKey::GetSoftPointerFromTrec<ArenaModel>(s);
 }
 
 /*

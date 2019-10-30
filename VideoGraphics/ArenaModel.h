@@ -74,6 +74,11 @@ public:
 
 	virtual UCHAR* GetAnaGameType() override;
 
+	void SetSelf(TrecPointer<ArenaModel>);
+
+protected:
+	TrecPointerSoft<ArenaModel> self;
+
 private:
 	TString name;
 

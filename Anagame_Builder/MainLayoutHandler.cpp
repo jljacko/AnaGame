@@ -92,6 +92,10 @@ MainLayoutHandler::MainLayoutHandler(TrecPointer<TInstance> ins) : EventHandler(
 
 MainLayoutHandler::~MainLayoutHandler()
 {
+	for (UINT Rust = 0; Rust < ActiveDocuments.Size(); Rust++)
+	{
+		ActiveDocuments[Rust].Delete();
+	}
 }
 
 void MainLayoutHandler::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)

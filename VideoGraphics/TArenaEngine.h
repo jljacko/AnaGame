@@ -1,7 +1,7 @@
 #pragma once
 #include "TWindowEngine.h"
 #include "TShaderHost.h"
-
+#include <TTrecPointerArray.h>
 class ArenaModel;
 
 /*
@@ -19,8 +19,9 @@ public:
 	bool SetShader(DefaultShader ds);
 
 	void RenderScene(DirectX::XMMATRIX& proj, DirectX::XMMATRIX& cam, D3D11_VIEWPORT& viewPort);
-	void AddModel(ArenaModel& ae);
-	void RemoveModel(ArenaModel* ae);
+	void AddModel(TrecPointer<ArenaModel> ae);
+	void RemoveModel(TrecPointer<ArenaModel> ae);
+	TrecPointer<ArenaModel> GetModel(UINT Rust);
 
 	// Direct3D Get Methods
 	TrecComPointer<ID3D11DeviceContext> getDevice();
@@ -50,13 +51,13 @@ public:
 
 	TString GetName();
 
-	TDataArray<ArenaModel*>* GetModelList();
+	TTrecPointerArray<ArenaModel>* GetModelList();
 protected:
 	TrecPointer<TWindowEngine> windowEngine;
 	TString engineName;
 	DirectX::XMMATRIX camera, mvp;
 
-	TDataArray<ArenaModel*> models;
+	TTrecPointerArray<ArenaModel> models;
 	D3D11_RASTERIZER_DESC rasterizer;
 	TrecComPointer<ID3D11RasterizerState> rasterizerState;
 	bool doMvp;

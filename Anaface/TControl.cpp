@@ -4853,7 +4853,7 @@ TString TText::getCaption()
 * Parameters: TString& string - the new Caption to use
 * Returns: void
 */
-void TText::setCaption(TString& string)
+void TText::setCaption(const TString& string)
 {
 	text.Set(string);
 	reCreateLayout();

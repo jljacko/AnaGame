@@ -162,10 +162,16 @@ bool TDataBind::onCreate(RECT r, TrecPointer<TWindowEngine> d3d)
 	return ret;
 }
 
-/*void TDataBind::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr, TDataArray<TControl*>& clickedButtons)
+void TDataBind::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr, TDataArray<TControl*>& clickedButtons)
 {
 	TControl::OnLButtonDown(nFlags, point, mOut, eventAr, clickedButtons);
-	if (mState == mouseLClick)
+
+	if (*mOut == positiveOverride || *mOut == positiveOverrideUpdate)
+	{
+		clickedButtons.push_back(this);
+		mState = mouseLClick;
+	}
+	/*if (mState == mouseLClick)
 	{
 		UINT items = 0;
 		if (dataRaw)
@@ -208,8 +214,8 @@ bool TDataBind::onCreate(RECT r, TrecPointer<TWindowEngine> d3d)
 		}
 
 
-	}
-}*/
+	}*/
+}
 
 void TDataBind::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {

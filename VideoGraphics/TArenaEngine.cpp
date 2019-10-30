@@ -18,6 +18,7 @@ TArenaEngine::TArenaEngine(TrecPointer<TWindowEngine> wEngine, const TString& na
 
 TArenaEngine::~TArenaEngine()
 {
+	int e = 0;
 }
 
 bool TArenaEngine::SetShader(int id)
@@ -47,33 +48,41 @@ void TArenaEngine::RenderScene(DirectX::XMMATRIX& proj, DirectX::XMMATRIX& cam, 
 
 	for (UINT c = 0; c < models.Size(); c++)
 	{
-		if (models[c])
+		if (models[c].Get())
 			models[c]->Render(proj, cam);
 	}
 }
 
-void TArenaEngine::AddModel(ArenaModel& ae)
+void TArenaEngine::AddModel(TrecPointer<ArenaModel> ae)
 {
 	for (UINT C = 0; C < models.Size(); C++)
 	{
-		if (models[C] == &ae)
+		if (models[C].Get() == ae.Get())
 		{
 			return;
 		}
 	}
-	models.push_back(&ae);
+	models.push_back(ae);
 }
 
-void TArenaEngine::RemoveModel(ArenaModel* ae)
+void TArenaEngine::RemoveModel(TrecPointer<ArenaModel> ae)
 {
 	for (UINT C = 0; C < models.Size(); C++)
 	{
-		if (models[C] == ae)
+		if (models[C].Get() == ae.Get())
 		{
 			models.RemoveAt(C);
 			return;
 		}
 	}
+}
+
+
+TrecPointer<ArenaModel> TArenaEngine::GetModel(UINT Rust)
+{
+	if (Rust >= models.Size())
+		return TrecPointer<ArenaModel>();
+	return models[Rust];
 }
 
 TrecComPointer<ID3D11DeviceContext> TArenaEngine::getDevice()
@@ -195,7 +204,7 @@ TString TArenaEngine::GetName()
 	return engineName;
 }
 
-TDataArray<ArenaModel*>* TArenaEngine::GetModelList()
+TTrecPointerArray<ArenaModel>* TArenaEngine::GetModelList()
 {
 	return &models;
 }

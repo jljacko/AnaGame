@@ -18,14 +18,17 @@ TString on_Far(L"OnFar");
 TString on_Near(L"OnNear");
 TString on_SetCameraRotate(L"OnSetCameraRotate");
 TString on_SetCameraTranslate(L"OnSetCameraTranslate");
-
+TString on_SelectCurrentObject(L"OnSelectObject");
 TString on_GetDefaultObject(L"OnGetDefaultObject");
+TString on_ToggleObjectAndCamera(L"OnToggleObjectAndCamera");
 
 static UINT arenaCount = 0;
 
 
 ArenaApp::ArenaApp(TrecPointer<TControl> m, TrecPointer<TControl> o, TrecPointer<TControl> e, TrecPointer<TInstance> i, TString& arenaName) : MiniHandler(m, o, e, i)
 {
+	focusOnModel = false;
+
 	this->arenaName.Set(arenaName);
 
 	arenaHandlers.push_back(&ArenaApp::TextDirectionX);
@@ -44,6 +47,10 @@ ArenaApp::ArenaApp(TrecPointer<TControl> m, TrecPointer<TControl> o, TrecPointer
 	arenaHandlers.push_back(&ArenaApp::OnNear);
 	arenaHandlers.push_back(&ArenaApp::OnSetCameraRotate);
 	arenaHandlers.push_back(&ArenaApp::OnSetCameraTranslate);
+
+	arenaHandlers.push_back(&ArenaApp::OnGetDefaultObject);
+	arenaHandlers.push_back(&ArenaApp::OnSelectObject);
+	arenaHandlers.push_back(&ArenaApp::OnToggleObjectAndCamera);
 
 	// Now set the structure to link the listeners to their text name
 	eventNameID enid;
@@ -106,6 +113,14 @@ ArenaApp::ArenaApp(TrecPointer<TControl> m, TrecPointer<TControl> o, TrecPointer
 
 	enid.eventID = 14;
 	enid.name.Set(on_GetDefaultObject);
+	handleList.push_back(enid);
+
+	enid.eventID = 15;
+	enid.name.Set(on_SelectCurrentObject);
+	handleList.push_back(enid);
+
+	enid.eventID = 16;
+	enid.name.Set(on_ToggleObjectAndCamera);
 	handleList.push_back(enid);
 
 	window = i->GetMainWindow();
@@ -188,6 +203,8 @@ ArenaApp::~ArenaApp()
 	explorerControl.Delete();
 	mainControl.Delete();
 	outputControl.Delete();
+
+	modelCollection.Delete();
 }
 
 bool ArenaApp::InitializeControls()
@@ -213,6 +230,10 @@ bool ArenaApp::InitializeControls()
 
 		assert(d_x && d_y && d_z &&
 			l_x && l_y && l_z);
+
+		// Set up the Camera/Model Sign to be toggled
+		panelLay = dynamic_cast<TLayout*>(mainLay->GetLayoutChild(1, 0).Get());
+		camModToggleSign = panelLay->GetLayoutChild(1, 2);
 
 		// Initialize The Arena
 		TrecPointer<TString> strName;
@@ -274,15 +295,15 @@ bool ArenaApp::InitializeControls()
 			//floats.push_back(1.0f);
 		}
 
-		TrecPointer<ArenaModel> basicModel = TrecPointerKey::GetNewTrecPointer<ArenaModel>(modelCollection);
+		TrecPointer<ArenaModel> basicModel = TrecPointerKey::GetNewSelfTrecPointer<ArenaModel>(modelCollection);
 		basicModel->SetVertexData(floats, default_shader_Single_Color);
 		basicModel->SetIndices(indices);
 		basicModel->setColorBuffer(0.0f, 0.0f, 1.0f, 1.0f);
 		basicModel->setPipeColorBuffer(1.0f, 0.0f, 0.0f, 1.0f);
 
-		basicModelsTrec.push_back(basicModel);
-		basicModels.push_back(basicModel.Get());
+		basicModels.push_back(basicModel);
 		basicModel->setName(TString(L"Cube"));
+		modelCollection->AddModel(basicModel);
 
 		// Set up model in the actual engine
 		arena->setEngine(modelCollection);
@@ -311,10 +332,12 @@ bool ArenaApp::InitializeControls()
 		for (UINT c = 0; c < scaleVertices.Size(); c++)
 			uints.push_back(c);
 
-		scale = TrecPointerKey::GetNewTrecPointer<ArenaModel>(modelCollection);
+		scale = TrecPointerKey::GetNewSelfTrecPointer<ArenaModel>(modelCollection);
 		scale->SetVertexData(floats, default_shader_Single_Color, D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 		scale->SetIndices(uints);
 		scale->setColorBuffer(0.0f, 0.0f, 1.0f, 1.0f);
+
+		modelCollection->AddModel(scale);
 		//scale->setPipeColorBuffer(1.0f, 0.0f, 0.0f, 1.0f);
 
 		//modelCollection->AddModel(*(scale.Get()));
@@ -377,6 +400,15 @@ void ArenaApp::HandleEvents(TDataArray<EventID_Cred>& cred)
 
 void ArenaApp::SetArenaName(TString& name)
 {
+	this->arenaName.Set(name);
+}
+
+void ArenaApp::UpdatePanelText()
+{
+	if (focusOnModel)
+		UpdateModelText();
+	else
+		UpdateCameraText();
 }
 
 void ArenaApp::UpdateCameraText()
@@ -386,6 +418,21 @@ void ArenaApp::UpdateCameraText()
 	DirectX::XMFLOAT3 dir = arena->GetCameraDirection(),
 		loc = arena->GetCameraLocation();
 
+	UpdatePosDirText(dir, loc);
+}
+
+void ArenaApp::UpdateModelText()
+{
+	if (!currentModel.Get())
+		return;
+	DirectX::XMFLOAT3 dir = currentModel->GetDirection(),
+		loc = currentModel->GetLocation();
+
+	UpdatePosDirText(dir, loc);
+}
+
+void ArenaApp::UpdatePosDirText(DirectX::XMFLOAT3& dir, DirectX::XMFLOAT3& loc)
+{
 	if (d_x)
 		d_x->setNumericText(dir.x);
 	if (d_y)
@@ -406,7 +453,10 @@ void ArenaApp::TextDirectionX(TControl* tc, EventArgs ea)
 	float f = 0.0f;
 	if (!ea.text.ConvertToFloat(&f))
 	{
-		arena->UpdateDir(f, 0);
+		if (!focusOnModel)
+			arena->UpdateDir(f, 0);
+		//else if (currentModel.Get())
+			//currentModel->Rotate(0.5, DirectX::XMFLOAT3(1.0f,0.0f,0.0f));
 	}
 }
 
@@ -415,7 +465,8 @@ void ArenaApp::TextLocationX(TControl* tc, EventArgs ea)
 	float f = 0.0f;
 	if (!ea.text.ConvertToFloat(&f))
 	{
-		arena->UpdatePos(f, 0);
+		if (!focusOnModel)
+			arena->UpdatePos(f, 0);
 	}
 }
 
@@ -424,6 +475,7 @@ void ArenaApp::TextDirectionY(TControl* tc, EventArgs ea)
 	float f = 0.0f;
 	if (!ea.text.ConvertToFloat(&f))
 	{
+		if (!focusOnModel)
 		arena->UpdateDir(f, 1);
 	}
 }
@@ -433,6 +485,7 @@ void ArenaApp::TextLocationY(TControl* tc, EventArgs ea)
 	float f = 0.0f;
 	if (!ea.text.ConvertToFloat(&f))
 	{
+		if (!focusOnModel)
 		arena->UpdatePos(f, 1);
 	}
 }
@@ -442,6 +495,7 @@ void ArenaApp::TextDirectionZ(TControl* tc, EventArgs ea)
 	float f = 0.0f;
 	if (!ea.text.ConvertToFloat(&f))
 	{
+		if (!focusOnModel)
 		arena->UpdateDir(f, 2);
 	}
 }
@@ -451,6 +505,7 @@ void ArenaApp::TextLocationZ(TControl* tc, EventArgs ea)
 	float f = 0.0f;
 	if (!ea.text.ConvertToFloat(&f))
 	{
+		if (!focusOnModel)
 		arena->UpdatePos(f, 2);
 	}
 }
@@ -461,7 +516,7 @@ void ArenaApp::OnUp(TControl* tc, EventArgs ea)
 		arena->Rotate(0.0, 0.1);
 	else
 		arena->Translate(0.1, DirectX::XMFLOAT3(0.0, 1.0, 0.0));
-	UpdateCameraText();
+	UpdatePanelText();
 }
 
 void ArenaApp::OnDown(TControl* tc, EventArgs ea)
@@ -470,7 +525,7 @@ void ArenaApp::OnDown(TControl* tc, EventArgs ea)
 		arena->Rotate(0.0, -0.1);
 	else
 		arena->Translate(-0.1, DirectX::XMFLOAT3(0.0, 1.0, 0.0));
-	UpdateCameraText();
+	UpdatePanelText();
 }
 
 void ArenaApp::OnLeft(TControl* tc, EventArgs ea)
@@ -479,7 +534,7 @@ void ArenaApp::OnLeft(TControl* tc, EventArgs ea)
 		arena->Rotate(0.1, 0.0);
 	else
 		arena->Translate(0.1, DirectX::XMFLOAT3(1.0, 0.0, 0.0));
-	UpdateCameraText();
+	UpdatePanelText();
 }
 
 void ArenaApp::OnRight(TControl* tc, EventArgs ea)
@@ -488,21 +543,21 @@ void ArenaApp::OnRight(TControl* tc, EventArgs ea)
 		arena->Rotate(-0.1, 0.0);
 	else
 		arena->Translate(-0.1, DirectX::XMFLOAT3(1.0, 0.0, 0.0));
-	UpdateCameraText();
+	UpdatePanelText();
 }
 
 void ArenaApp::OnNear(TControl* tc, EventArgs ea)
 {
 	if (!rotateMode)
 		arena->Translate(0.1, DirectX::XMFLOAT3(0.0, 0.0, 1.0));
-	UpdateCameraText();
+	UpdatePanelText();
 }
 
 void ArenaApp::OnFar(TControl* tc, EventArgs ea)
 {
 	if (!rotateMode)
 		arena->Translate(-0.1, DirectX::XMFLOAT3(0.0, 0.0, 1.0));
-	UpdateCameraText();
+	UpdatePanelText();
 }
 
 void ArenaApp::OnSetCameraRotate(TControl* tc, EventArgs ea)
@@ -515,12 +570,33 @@ void ArenaApp::OnSetCameraTranslate(TControl* tc, EventArgs ea)
 	rotateMode = false;
 }
 
+void ArenaApp::OnSelectObject(TControl* tc, EventArgs ea)
+{
+	if (!modelCollection.Get()) return;
+
+	currentModel = modelCollection->GetModel(ea.arrayLabel);
+}
+
+void ArenaApp::OnToggleObjectAndCamera(TControl*, EventArgs ea)
+{
+	focusOnModel = !focusOnModel;
+	
+	if (!camModToggleSign.Get())
+		return;
+	
+	if (focusOnModel)
+		camModToggleSign->getText(1)->setCaption(TString(L"Model"));
+	else
+		camModToggleSign->getText(1)->setCaption(TString(L"Camera"));
+
+	UpdatePanelText();
+}
+
 void ArenaApp::OnGetDefaultObject(TControl* tc, EventArgs ea)
 {
-	if (ea.arrayLabel >= 0 && ea.arrayLabel < basicModels.Size() && modelCollection.Get() &&
-		ea.arrayLabel < basicModelsTrec.Size() && basicModelsTrec[ea.arrayLabel].Get())
+	if (ea.arrayLabel >= 0 && ea.arrayLabel < basicModels.Size() && modelCollection.Get() && basicModels[ea.arrayLabel].Get())
 	{
-		ArenaModel* newModel = new ArenaModel(*basicModelsTrec[ea.arrayLabel].Get());
-		modelCollection->AddModel(*newModel);
+		TrecPointer<ArenaModel> newModel = TrecPointerKey::GetNewSelfTrecPointer<ArenaModel>(*basicModels[ea.arrayLabel].Get());
+		modelCollection->AddModel(newModel);
 	}
 }

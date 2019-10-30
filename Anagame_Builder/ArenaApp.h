@@ -23,16 +23,23 @@ public:
 	TDataArray<ArenaBuilderEvents> arenaHandlers;
 	void SetArenaName(TString& name);
 
+	void UpdatePanelText();
+
 	void UpdateCameraText();
+	void UpdateModelText();
 protected:
+	void UpdatePosDirText(DirectX::XMFLOAT3& d, DirectX::XMFLOAT3& l);
+
 	TArena* arena;
 	TrecPointer<TArenaEngine> modelCollection;
 
-	TDataArray<ArenaModel*> basicModels;
-	TDataArray<TrecPointer<ArenaModel>> basicModelsTrec;
+	TTrecPointerArray<ArenaModel> basicModels;
+	TrecPointer<ArenaModel> currentModel;
+	bool focusOnModel;
 
 	TrecPointer<ArenaModel> scale;
 	TTextField *d_x, *d_y, *d_z, *l_x, *l_y, *l_z;
+	TrecPointer<TControl> camModToggleSign;
 	bool rotateMode;
 	TString arenaName;
 
@@ -51,6 +58,9 @@ protected:
 	void OnFar(TControl* tc, EventArgs ea);
 	void OnSetCameraRotate(TControl* tc, EventArgs ea);
 	void OnSetCameraTranslate(TControl* tc, EventArgs ea);
+
+	void OnSelectObject(TControl* tc, EventArgs ea);
+	void OnToggleObjectAndCamera(TControl*, EventArgs ea);
 
 	void OnGetDefaultObject(TControl* tc, EventArgs ea);
 };
