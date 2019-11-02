@@ -265,12 +265,20 @@ void TControl::SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget> rt)
 	renderTarget = rt;
 
 	if (content1.Get())
+	{
+		generateImage(content1, attributes.retrieveEntry(TString(L"|ImageSource")), location);
 		content1->SetNewRenderTarget(rt);
+	}
 	if (content2.Get())
+	{
+		generateImage(content2, attributes.retrieveEntry(TString(L"|HoverImageSource")), location);
 		content2->SetNewRenderTarget(rt);
+	}
 	if (content3.Get())
+	{
+		generateImage(content3, attributes.retrieveEntry(TString(L"|ClickImageSource")), location);
 		content3->SetNewRenderTarget(rt);
-
+	}
 	if (border1.Get())
 		border1->SetNewRenderTarget(rt);
 	if (border2.Get())
@@ -1168,6 +1176,9 @@ void TControl::SetNormalMouseState()
 void TControl::onDraw(TObject* obj)
 {
 	if (!isActive)
+		return;
+
+	if ((location.bottom - location.top) < 1 || (location.right - location.left) < 1)
 		return;
 
 	ID2D1Layer* layer = nullptr;
@@ -5591,12 +5602,12 @@ void TContent::SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget> rt)
 
 	ResetBrush();
 
-	if (image.Get())
+	/*if (image.Get())
 	{
 		TrecComPointer<ID2D1BitmapBrush>::TrecComHolder bit;
 		rt->CreateBitmapBrush(image.Get(), bit.GetPointerAddress());
 		bitmap = bit.Extract();
-	}
+	}*/
 }
 
 void TContent::ResetBrush()

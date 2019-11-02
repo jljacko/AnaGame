@@ -334,6 +334,20 @@ cont3:
 	return false;
 }
 
+void MiniHandler::OnResize(RECT newSize)
+{
+	if (mainPage.Get() && mainControl.Get())
+	{
+		mainPage->SetArea(mainControl->getLocation());
+	}
+
+	if (outputControl.Get() && outputPane.Get())
+		outputPane->SetArea(outputControl->getLocation());
+
+	if (explorerPane.Get() && explorerControl.Get())
+		explorerPane->SetArea(explorerControl->getLocation());
+}
+
 void MiniHandler::SetSelf(TrecPointer<MiniHandler> s)
 {
 	if (!s.Get() || s.Get() != this)

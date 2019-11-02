@@ -60,7 +60,7 @@ public:
 	void Draw(TWindowEngine* twe = nullptr);
 
 	RECT GetArea();
-	void SetArea(RECT& loc);
+	void SetArea(const RECT& loc);
 
 	afx_msg void OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut);
 	afx_msg void OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut);
@@ -69,6 +69,7 @@ public:
 	afx_msg void OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut);
 	afx_msg void OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut);
 	afx_msg bool OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlags, messageOutput *mOut);
+	afx_msg void OnResize(RECT& newLoc, UINT nFlags, TrecPointer<TWindowEngine>);
 
 	afx_msg void OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
 	afx_msg void OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
@@ -77,10 +78,13 @@ public:
 	afx_msg void OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
 	afx_msg void OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
 	afx_msg bool OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
+	afx_msg void OnResize(RECT& newLoc, UINT nFlags, TDataArray<EventID_Cred>& eventAr);
 	afx_msg bool OnDestroy();
 
 	void SetSelf(TrecPointer<Page>);
 	TrecPointer<TInstance> GetInstance();
+
+	void Clean3D();
 
 	void SetMiniHandler(TrecPointer<MiniHandler> mh);
 	RenderTargetType GetType();
@@ -121,5 +125,8 @@ protected:
 
 	// Anaface Resources
 	TDataArray<TControl*> clickedControl;
+
+	UINT SetUpDeviceContextTarget(TrecPointer<TWindowEngine> winEnginie);
+	void SetUpHwndRenderTarget();
 };
 

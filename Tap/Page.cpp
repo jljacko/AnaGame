@@ -16,6 +16,102 @@ Page::Page()
 	scale = 1.0f;
 }
 
+UINT Page::SetUpDeviceContextTarget(TrecPointer<TWindowEngine> winEngine)
+{
+	TrecComPointer<ID2D1Factory1> fact = instance->GetFactory();
+	if (!fact.Get())
+		throw L"Error! Factory Object MUST be initialized!";
+
+	if (!winEngine.Get())
+		throw L"Error! ArenaEngine Object MUST be initialized for a 3D enabled Page";
+	//if (!eh.Get())
+	//	throw L"Error! Event Handler MUST be instantiated!";
+
+
+	TrecComPointer<IDXGISurface1> surf = winEngine->GetSurface();
+	if (!surf.Get())
+		throw L"Error! Provided 3D Engine does not have a Surface to create a 2D Render Target with!";
+
+	TrecComPointer<IDXGIDevice> dev = winEngine->getDeviceD_U();
+
+	TrecComPointer<ID2D1Device>::TrecComHolder d2dDevHolder;
+
+	HRESULT res = fact->CreateDevice(dev.Get(), d2dDevHolder.GetPointerAddress());
+	if (FAILED(res))
+		throw L"Error! 2D Device Creation failed!";
+	TrecComPointer<ID2D1Device> d2dDev = d2dDevHolder.Extract();
+
+	TrecComPointer<ID2D1DeviceContext>::TrecComHolder contextRenderHolder;
+	res = d2dDev->CreateDeviceContext(D2D1_DEVICE_CONTEXT_OPTIONS_NONE, contextRenderHolder.GetPointerAddress());
+
+	if (FAILED(res))
+		throw L"ERROR! Failed to Generate 3D Compatiblie Render Target!";
+
+	D2D1_BITMAP_PROPERTIES1 bmp1;
+	bmp1.colorContext = nullptr;
+	bmp1.dpiX = bmp1.dpiY = 0;
+	bmp1.pixelFormat = D2D1::PixelFormat(
+		DXGI_FORMAT_B8G8R8A8_UNORM,
+		D2D1_ALPHA_MODE_IGNORE
+	);
+	bmp1.bitmapOptions = D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_GDI_COMPATIBLE
+		| D2D1_BITMAP_OPTIONS_CANNOT_DRAW;
+
+	regRenderTarget = TrecPointerKey::GetComPointer<ID2D1RenderTarget, ID2D1DeviceContext>(contextRenderHolder);
+
+	TrecComPointer<ID2D1Bitmap1>::TrecComHolder bitHolder;
+	res = reinterpret_cast<ID2D1DeviceContext*>(regRenderTarget.Get())->CreateBitmapFromDxgiSurface(surf.Get(), bmp1, bitHolder.GetPointerAddress());
+
+	if (FAILED(res))
+		throw L"ERROR! Could Not retrieve Bitmap from Device Context!";
+
+	bit = bitHolder.Extract();
+	reinterpret_cast<ID2D1DeviceContext*>(regRenderTarget.Get())->SetTarget(bit.Get());
+	TrecComPointer< ID2D1GdiInteropRenderTarget>::TrecComHolder gdiRenderHolder;
+	res = reinterpret_cast<ID2D1DeviceContext*>(regRenderTarget.Get())->QueryInterface(__uuidof(ID2D1GdiInteropRenderTarget), (void**)gdiRenderHolder.GetPointerAddress());
+	gdiRender = gdiRenderHolder.Extract();
+
+	return 0;
+}
+
+void Page::SetUpHwndRenderTarget()
+{
+	TrecComPointer<ID2D1Factory1> fact = instance->GetFactory();
+	if (!fact.Get())
+		throw L"Error! Factory Object MUST be initialized!";
+
+	D2D1_RENDER_TARGET_PROPERTIES props;
+	ZeroMemory(&props, sizeof(props));
+
+	props.type = D2D1_RENDER_TARGET_TYPE_DEFAULT;
+	props.pixelFormat = D2D1::PixelFormat();
+
+	props.pixelFormat.alphaMode = D2D1_ALPHA_MODE_PREMULTIPLIED;
+	props.dpiX = props.dpiY = 0.0f;
+	props.usage = D2D1_RENDER_TARGET_USAGE_NONE;
+	props.minLevel = D2D1_FEATURE_LEVEL_DEFAULT;
+
+	RECT area;
+
+	GetClientRect(windowHandle->GetWindowHandle(), &area);
+
+	D2D1_HWND_RENDER_TARGET_PROPERTIES hProps;
+	ZeroMemory(&hProps, sizeof(hProps));
+
+	hProps.hwnd = windowHandle->GetWindowHandle();
+	hProps.pixelSize = D2D1::SizeU(area.right - area.left,
+		area.bottom - area.top);
+
+
+
+	TrecComPointer<ID2D1HwndRenderTarget>::TrecComHolder renderHw;
+	HRESULT res = fact->CreateHwndRenderTarget(props, hProps, renderHw.GetPointerAddress());
+
+	if (FAILED(res))
+		throw L"Error! Failed to Create Window Render Target!";
+	regRenderTarget = TrecPointerKey::GetComPointer<ID2D1RenderTarget, ID2D1HwndRenderTarget>(renderHw);
+}
+
 
 Page::~Page()
 {
@@ -182,63 +278,14 @@ TrecPointer<Page> Page::Get3DPage(TrecPointer<TInstance> in, TrecPointer<TWindow
 
 
 	TrecComPointer<ID2D1Factory1> fact = in->GetFactory();
-	if (!fact.Get())
-		throw L"Error! Factory Object MUST be initialized!";
-
-	if (!engine.Get())
-		throw L"Error! ArenaEngine Object MUST be initialized for a 3D enabled Page";
-	//if (!eh.Get())
-	//	throw L"Error! Event Handler MUST be instantiated!";
-
-
-	TrecComPointer<IDXGISurface> surf = engine->GetSurface();
-	if (!surf.Get())
-		throw L"Error! Provided 3D Engine does not have a Surface to create a 2D Render Target with!";
-
-	TrecComPointer<IDXGIDevice> dev = engine->getDeviceD_U();
-
-	TrecComPointer<ID2D1Device>::TrecComHolder d2dDevHolder;
-
-	HRESULT res = fact->CreateDevice(dev.Get(), d2dDevHolder.GetPointerAddress());
-	if (FAILED(res))
-		throw L"Error! 2D Device Creation failed!";
-
-	TrecComPointer<ID2D1Device> d2dDev = d2dDevHolder.Extract();
-
-	TrecComPointer<ID2D1DeviceContext>::TrecComHolder contextRenderHolder;
-	res = d2dDev->CreateDeviceContext(D2D1_DEVICE_CONTEXT_OPTIONS_NONE, contextRenderHolder.GetPointerAddress());
-
-	if (FAILED(res))
-		throw L"ERROR! Failed to Generate 3D Compatiblie Render Target!";
-
-	D2D1_BITMAP_PROPERTIES1 bmp1;
-	bmp1.colorContext = nullptr;
-	bmp1.dpiX = bmp1.dpiY = 0;
-	bmp1.pixelFormat = D2D1::PixelFormat(
-		DXGI_FORMAT_B8G8R8A8_UNORM,
-		D2D1_ALPHA_MODE_IGNORE
-	);
-	bmp1.bitmapOptions = D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_GDI_COMPATIBLE
-		| D2D1_BITMAP_OPTIONS_CANNOT_DRAW;
 
 	TrecPointer<Page> ret = TrecPointerKey::GetNewSelfTrecPointer<Page>();
 	ret->fact = fact;
 	ret->windowHandle = window;
 	ret->deviceH = GetWindowDC(window->GetWindowHandle());
-	ret->regRenderTarget = TrecPointerKey::GetComPointer<ID2D1RenderTarget, ID2D1DeviceContext>(contextRenderHolder);
 	ret->instance = in;
 
-	TrecComPointer<ID2D1Bitmap1>::TrecComHolder bitHolder;
-	res = reinterpret_cast<ID2D1DeviceContext*>(ret->regRenderTarget.Get())->CreateBitmapFromDxgiSurface(surf.Get(), bmp1, bitHolder.GetPointerAddress());
-
-	if (FAILED(res))
-		throw L"ERROR! Could Not retrieve Bitmap from Device Context!";
-
-	ret->bit = bitHolder.Extract();
-	reinterpret_cast<ID2D1DeviceContext*>(ret->regRenderTarget.Get())->SetTarget(ret->bit.Get());
-	TrecComPointer< ID2D1GdiInteropRenderTarget>::TrecComHolder gdiRenderHolder;
-	res = reinterpret_cast<ID2D1DeviceContext*>(ret->regRenderTarget.Get())->QueryInterface(__uuidof(ID2D1GdiInteropRenderTarget), (void**)gdiRenderHolder.GetPointerAddress());
-	ret->gdiRender = gdiRenderHolder.Extract();
+	ret->SetUpDeviceContextTarget(engine);
 
 	/*
 	D2D1_RENDER_TARGET_PROPERTIES props;
@@ -489,6 +536,48 @@ bool Page::OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlags, messageOu
 	return returnable;
 }
 
+void Page::OnResize(RECT& newLoc, UINT nFlags, TrecPointer<TWindowEngine> engine)
+{
+	// Only Resize if basic resources are in order
+	if (!instance.Get() || !windowHandle.Get())
+		return;
+	// First, we need to update DirectX resources to adjust to the change
+
+	bool requireNewRenderTarget = false;
+
+	switch (rt_type)
+	{
+	case render_target_device_context:
+		if (!engine.Get())
+			return;
+		SetUpDeviceContextTarget(engine);
+		requireNewRenderTarget = true;
+		break;
+	case render_target_dc: // This is the easiest to do
+		if (!regRenderTarget.Get())
+			return;
+		reinterpret_cast<ID2D1DCRenderTarget*>(regRenderTarget.Get())->BindDC(GetDC(windowHandle->GetWindowHandle()), &newLoc);
+		break;
+	case render_target_hwnd:
+		if (!regRenderTarget.Get())return;
+		reinterpret_cast<ID2D1HwndRenderTarget*>(regRenderTarget.Get())->Resize(D2D1::SizeU(newLoc.right - newLoc.left, newLoc.bottom - newLoc.top));
+		break;
+	}
+
+	area = newLoc;
+	convertCRectToD2DRect(&area, &dRect);
+
+	if (rootControl.Get())
+	{
+		if(requireNewRenderTarget)
+			rootControl->SetNewRenderTarget(regRenderTarget);
+		rootControl->Resize(area);
+	}
+
+	if (miniHandler.Get())
+		miniHandler->OnResize(area);
+}
+
 void Page::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
 	if (!isContained(&point, &area))
@@ -575,6 +664,10 @@ bool Page::OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags, messageO
 	return false;
 }
 
+void Page::OnResize(RECT& newLoc, UINT nFlags, TDataArray<EventID_Cred>& eventAr)
+{
+}
+
 bool Page::OnDestroy()
 {
 	if(handler.Get())
@@ -592,6 +685,14 @@ void Page::SetSelf(TrecPointer<Page> s)
 TrecPointer<TInstance> Page::GetInstance()
 {
 	return instance;
+}
+
+void Page::Clean3D()
+{
+	bit.Delete();
+	gdiRender.Delete();
+	if (rt_type == render_target_device_context)
+		regRenderTarget.Delete();
 }
 
 void Page::SetMiniHandler(TrecPointer<MiniHandler> mh)
@@ -723,7 +824,7 @@ RECT Page::GetArea()
 	return area;
 }
 
-void Page::SetArea(RECT& loc)
+void Page::SetArea(const RECT& loc)
 {
 	area = loc;
 	convertCRectToD2DRect(&area, &dRect);

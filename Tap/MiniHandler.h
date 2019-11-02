@@ -33,6 +33,7 @@ public:
 	afx_msg void OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut)override;
 	afx_msg void OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)override;
 	afx_msg bool OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags, messageOutput* mOut)override;
+	afx_msg void OnResize(RECT newSize)override;
 
 	void SetSelf(TrecPointer<MiniHandler> s);
 

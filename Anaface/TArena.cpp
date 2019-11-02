@@ -467,7 +467,7 @@ void TArena::Resize(RECT r)
 		return;
 	viewport->TopLeftX = r.left;
 	viewport->TopLeftY = r.top;
-	viewport->Height = r.top - r.bottom;
+	viewport->Height = r.bottom - r.top;
 	viewport->Width = r.right - r.left;
 }
 

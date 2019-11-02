@@ -22,6 +22,7 @@ public:
 	afx_msg virtual void OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut);
 	afx_msg virtual void OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut);
 	afx_msg virtual bool OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags, messageOutput* mOut);
+	afx_msg virtual void OnResize(RECT newSize);
 
 	TDataArray<eventNameID>& GetEventNameList();
 

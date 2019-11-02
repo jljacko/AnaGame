@@ -27,6 +27,7 @@ public:
 	afx_msg void OnLButtonDblClk(UINT nFlags, TPoint point);
 	afx_msg void OnLButtonUp(UINT nFlags, TPoint point);
 	afx_msg bool OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlags);
+	afx_msg void OnWindowResize(UINT width, UINT height);
 	afx_msg virtual bool OnDestroy();
 
 	TrecPointer<Page> GetHandlePage(bool singleton);
@@ -46,6 +47,8 @@ public:
 	void CleanUp();
 
 	TrecPointer<TWindowEngine> GetWindowEngine();
+	TrecPointer<TArenaEngine> GetNewArenaEngine();
+	TrecPointer<TArenaEngine> GetNewArenaEngine(TString& name);
 
 protected:
 	HWND parent, currentWindow;
@@ -64,6 +67,8 @@ protected:
 	// Whether the Window should ignore user interactivity. Effectivley disables Windows at the AnaGame level without disabling them at the Windows level
 	bool locked;
 
+	UCHAR safeToDraw;
+
 	//
 	TrecPointerSoft<TWindow> self;
 	TrecPointer<Page> deletePage;
@@ -71,5 +76,6 @@ protected:
 
 	// 3D Resource
 	TrecPointer<TWindowEngine> d3dEngine;
+	TTrecPointerArray<TArenaEngine> engines;
 };
 

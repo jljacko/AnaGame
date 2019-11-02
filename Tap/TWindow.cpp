@@ -21,6 +21,7 @@ TWindow::TWindow(TString& name, TString& winClass, UINT style, HWND parent, int 
 	SetMapMode(dc, MM_LOENGLISH);
 
 	locked = false;
+	safeToDraw = 0;
 }
 
 TWindow::~TWindow()
@@ -163,7 +164,6 @@ void TWindow::Draw()
 			rt->EndDraw();
 		}
 
-
 	}
 }
 
@@ -271,6 +271,29 @@ bool TWindow::OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlags)
 	if(mOut == negative || mOut == negativeUpdate)
 		returnable = mainPage->OnChar(fromChar, nChar, nRepCnt, nFlags, &mOut);
 	return returnable;
+}
+
+void TWindow::OnWindowResize(UINT width, UINT height)
+{
+	if (!mainPage.Get())
+		return;
+
+	//safeToDraw = safeToDraw | 0b00000010;
+
+	RECT newLoc;
+	newLoc.top = newLoc.left = 0;
+	newLoc.bottom = height;
+	newLoc.right = width;
+
+	if (d3dEngine.Get())
+	{
+		mainPage->Clean3D();
+		d3dEngine->Resize();
+	}
+
+	mainPage->OnResize(newLoc, 0, d3dEngine);
+
+	//safeToDraw = safeToDraw & 0b11111101;
 }
 
 bool TWindow::OnDestroy()
@@ -427,6 +450,28 @@ void TWindow::CleanUp()
 TrecPointer<TWindowEngine> TWindow::GetWindowEngine()
 {
 	return d3dEngine;
+}
+
+TrecPointer<TArenaEngine> TWindow::GetNewArenaEngine()
+{
+	TrecPointer<TArenaEngine> ret;
+	if (!d3dEngine.Get())
+		return ret;
+
+	ret = TrecPointerKey::GetNewTrecPointer<TArenaEngine>(d3dEngine);
+	engines.push_back(ret);
+	return ret;
+}
+
+TrecPointer<TArenaEngine> TWindow::GetNewArenaEngine(TString& name)
+{
+	TrecPointer<TArenaEngine> ret;
+	if (!d3dEngine.Get())
+		return ret;
+	
+	ret = TrecPointerKey::GetNewTrecPointer<TArenaEngine>(d3dEngine, name);
+	engines.push_back(ret);
+	return ret;
 }
 
 HWND TWindow::GetWindowHandle()

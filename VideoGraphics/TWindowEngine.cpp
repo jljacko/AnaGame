@@ -35,6 +35,13 @@ TWindowEngine::~TWindowEngine()
 		shaders[Rust].ps.Delete();
 		shaders[Rust].vs.Delete();
 	}
+	swapper.Delete();
+	renderTarget.Delete();
+	contextDevice.Delete();
+	surface.Delete();
+	dxDev.Delete();
+	graphicsDevice.Delete();
+	
 	int f = 0;
 
 }
@@ -144,7 +151,7 @@ int TWindowEngine::Initialize()
 
 	TrecComPointer<IDXGISwapChain>::TrecComHolder sc;
 	results = dxFact->CreateSwapChain(graphicsDevice.Get(), &swapChainDescription, sc.GetPointerAddress());
-	swapper = sc.Extract();
+	
 
 	if (FAILED(results))
 	{
@@ -157,6 +164,7 @@ int TWindowEngine::Initialize()
 
 
 	}
+	swapper = sc.Extract();
 
 	ID3D11Texture2D* texture;
 
@@ -188,8 +196,8 @@ int TWindowEngine::Initialize()
 	}
 
 	// Create a DXGISurface so that Interoperability with Direct2D is simpler
-	TrecComPointer<IDXGISurface>::TrecComHolder surfaceHolder;
-	results = swapper->GetBuffer(0, __uuidof(IDXGISurface), (void**)surfaceHolder.GetPointerAddress());
+	TrecComPointer<IDXGISurface1>::TrecComHolder surfaceHolder;
+	results = swapper->GetBuffer(0, __uuidof(IDXGISurface1), (void**)surfaceHolder.GetPointerAddress());
 	surface = surfaceHolder.Extract();
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC stencilDesc;
@@ -223,6 +231,68 @@ int TWindowEngine::Initialize()
 	SetDefaultRasterization();
 	InitializeDefaultShaders();
 	return NO_ERROR;
+}
+
+void TWindowEngine::Resize()
+{
+	if (!swapper.Get() || !surface.Get() || !contextDevice.Get())
+		return;
+	RECT oldRect = Location;
+	if (!GetClientRect(window, &Location))
+		return;
+
+	UINT buffCount = 2;
+	UINT width = Location.right - Location.left;
+	UINT height = Location.bottom - Location.top;
+
+	DXGI_FORMAT NewFormat = DXGI_FORMAT_B8G8R8A8_UNORM;
+	UINT flags = DXGI_SWAP_CHAIN_FLAG_GDI_COMPATIBLE;
+
+	renderTarget.Delete();
+	surface.Delete();
+
+	contextDevice->ClearState();
+
+	//ReportLiveObjects();
+
+	HRESULT res = swapper->ResizeBuffers(buffCount, width, height, NewFormat, flags);
+	if (FAILED(res))
+		int e = 0;
+
+	ID3D11Texture2D* texture;
+
+	res = swapper->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&texture);
+	if (FAILED(res))
+	{
+		return ;
+	}
+
+
+	D3D11_RENDER_TARGET_VIEW_DESC rendDesc;
+	ZeroMemory(&rendDesc, sizeof(rendDesc));
+	//rendDesc.
+	rendDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+	rendDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+	rendDesc.Texture2D.MipSlice = 0;
+
+	TrecComPointer<ID3D11RenderTargetView>::TrecComHolder rt;
+	res = graphicsDevice->CreateRenderTargetView(texture, &rendDesc, rt.GetPointerAddress());
+	renderTarget = rt.Extract();
+
+
+
+	if (texture)
+		texture->Release();
+
+	if (FAILED(res))
+	{
+		return;
+	}
+
+	// Create a DXGISurface so that Interoperability with Direct2D is simpler
+	TrecComPointer<IDXGISurface1>::TrecComHolder surfaceHolder;
+	res = swapper->GetBuffer(0, __uuidof(IDXGISurface1), (void**)surfaceHolder.GetPointerAddress());
+	surface = surfaceHolder.Extract();
 }
 
 /*
@@ -280,7 +350,7 @@ TrecComPointer<IDXGIDevice> TWindowEngine::getDeviceD_U()
 	return dxDev;
 }
 
-TrecComPointer<IDXGISurface> TWindowEngine::GetSurface()
+TrecComPointer<IDXGISurface1> TWindowEngine::GetSurface()
 {
 	return surface;
 }
@@ -312,6 +382,15 @@ void TWindowEngine::FinalizeScene()
 {
 	if (swapper.Get())
 		swapper->Present(0, 0);
+}
+
+void TWindowEngine::ReportLiveObjects()
+{
+	if (!graphicsDevice.Get())return;
+	ID3D11Debug* debugger = nullptr;
+	graphicsDevice->QueryInterface(__uuidof(ID3D11Debug), (void**)&debugger);
+	if (debugger)
+		debugger->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
 }
 
 

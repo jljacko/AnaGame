@@ -18,6 +18,8 @@ public:
 	bool SetShader(int id);
 	bool SetShader(DefaultShader ds);
 
+	void SetNewWindowEngine(TrecPointer<TWindowEngine> wEngine);
+
 	void RenderScene(DirectX::XMMATRIX& proj, DirectX::XMMATRIX& cam, D3D11_VIEWPORT& viewPort);
 	void AddModel(TrecPointer<ArenaModel> ae);
 	void RemoveModel(TrecPointer<ArenaModel> ae);
@@ -29,7 +31,7 @@ public:
 	TrecComPointer<ID3D11RenderTargetView> getRederTarget();
 	TrecComPointer<ID3D11Device> getDeviceD();
 	TrecComPointer<IDXGIDevice> getDeviceD_U();
-	TrecComPointer<IDXGISurface> GetSurface();
+	TrecComPointer<IDXGISurface1> GetSurface();
 
 	int getBufferSize(DefaultShader shaderID);
 

@@ -242,7 +242,7 @@ bool ArenaApp::InitializeControls()
 
 
 		// Create the Arena Engine and Initialize the Explorer Controls
-		modelCollection = TrecPointerKey::GetNewTrecPointer<TArenaEngine>(window->GetWindowEngine(), arenaName);
+		modelCollection = window->GetNewArenaEngine(arenaName);
 
 		AnafaceUI* a_ui = dynamic_cast<AnafaceUI*>(explorerControl.Get());
 		assert(a_ui);

@@ -45,6 +45,10 @@ bool EventHandler::OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags, 
 	return false;
 }
 
+void EventHandler::OnResize(RECT newSize)
+{
+}
+
 TDataArray<eventNameID>& EventHandler::GetEventNameList()
 {
 	return events;

@@ -102,6 +102,9 @@ LRESULT TInstance::Proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_CHAR:
 		win->OnChar(true, wParam, lParam & 0x0000FFFF, 0);
 		break;
+	case WM_SIZE:
+		win->OnWindowResize(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+		break;
 	}
 
 	if (windowIndex != -1 && windowIndex < windowList.Size() && windowList[windowIndex].Get())

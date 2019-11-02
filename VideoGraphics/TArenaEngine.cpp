@@ -4,6 +4,9 @@
 TArenaEngine::TArenaEngine(TrecPointer<TWindowEngine> wEngine)
 {
 	windowEngine = wEngine;
+	ZeroMemory(&rasterizer, sizeof(rasterizer));
+	rasterizer.FillMode = D3D11_FILL_SOLID;
+	rasterizer.CullMode = D3D11_CULL_BACK;
 }
 
 TArenaEngine::TArenaEngine(TrecPointer<TWindowEngine> wEngine, const TString& name)
@@ -29,6 +32,13 @@ bool TArenaEngine::SetShader(int id)
 bool TArenaEngine::SetShader(DefaultShader ds)
 {
 	return windowEngine->assignShader(static_cast<UINT>(ds), camera, mvp, windowEngine->getDeviceD(), windowEngine->getDevice(), doMvp);
+}
+
+void TArenaEngine::SetNewWindowEngine(TrecPointer<TWindowEngine> wEngine)
+{
+	windowEngine = wEngine;
+
+	// To-Do: Create New Shaders to use the new resources
 }
 
 void TArenaEngine::RenderScene(DirectX::XMMATRIX& proj, DirectX::XMMATRIX& cam, D3D11_VIEWPORT& viewPort)
@@ -110,7 +120,7 @@ TrecComPointer<IDXGIDevice> TArenaEngine::getDeviceD_U()
 	return windowEngine->getDeviceD_U();
 }
 
-TrecComPointer<IDXGISurface> TArenaEngine::GetSurface()
+TrecComPointer<IDXGISurface1> TArenaEngine::GetSurface()
 {
 	return windowEngine->GetSurface();
 }

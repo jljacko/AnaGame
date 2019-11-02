@@ -34,16 +34,20 @@ public:
 	~TWindowEngine();
 	int Initialize();
 
+	void Resize();
+
 	// Direct3D Get Methods
 	TrecComPointer<ID3D11DeviceContext> getDevice();
 	TrecComPointer<IDXGISwapChain> getSwapChain();
 	TrecComPointer<ID3D11RenderTargetView> getRederTarget();
 	TrecComPointer<ID3D11Device> getDeviceD();
 	TrecComPointer<IDXGIDevice> getDeviceD_U();
-	TrecComPointer<IDXGISurface> GetSurface();
+	TrecComPointer<IDXGISurface1> GetSurface();
 
 	void PrepareScene(D2D1::ColorF color);
 	void FinalizeScene();
+
+	void ReportLiveObjects();
 
 protected:
 	
@@ -64,7 +68,7 @@ protected:
 	// Window Level Direct3D Resources
 	TrecComPointer<ID3D11Device> graphicsDevice;
 	TrecComPointer<IDXGIDevice> dxDev;
-	TrecComPointer<IDXGISurface> surface;
+	TrecComPointer<IDXGISurface1> surface;
 	TrecComPointer<ID3D11DeviceContext> contextDevice;
 	TrecComPointer<IDXGISwapChain> swapper;
 	TrecComPointer<ID3D11RenderTargetView> renderTarget;
