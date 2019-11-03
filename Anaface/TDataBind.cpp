@@ -15,6 +15,40 @@ TDataBind::~TDataBind()
 {
 }
 
+/*
+* Method: TControl - Resize
+* Purpose: Resizes the control upon the window being resized
+* Parameters: RECT r - the new location for the control
+*/
+void TDataBind::Resize(RECT r)
+{
+	location = r;
+	updateComponentLocation();
+	CheckScroll();
+
+	TControl* ele = nullptr;
+
+	if (children.Count() && (ele = children.ElementAt(0).Get()))
+	{
+		RECT loc;
+		if (this->isStack)
+		{
+			loc.left = location.left;
+			loc.right = location.right;
+			loc.top = location.top;
+			loc.bottom = loc.top + this->widthHeight;
+		}
+		else
+		{
+			loc.top = location.top;
+			loc.bottom = location.bottom;
+			loc.left = location.left;
+			loc.right = loc.left + this->widthHeight;
+		}
+		ele->Resize(loc);
+	}
+}
+
 void TDataBind::onDraw(TObject * obj)
 {
 	UINT r, c;

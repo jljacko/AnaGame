@@ -313,6 +313,9 @@ void ArenaModel::ProjectionGPU(bool gpu)
 void ArenaModel::Render(DirectX::XMMATRIX & proj, DirectX::XMMATRIX& camera)
 {	//GUARD_CODE;
 
+	if (!renderTarget.Get() && engine.Get())
+		renderTarget = engine->getRederTarget();
+
 	if (!context.Get() || !swapChain.Get() ||
 		!renderTarget.Get() || !device.Get())
 		return;
