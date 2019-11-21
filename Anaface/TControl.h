@@ -258,7 +258,7 @@ public:
 	TString getCaption();
 
 	// More Set Methods
-	void setCaption(TString& string);
+	void setCaption(const TString& string);
 
 	void setLocale(TString& loc);
 	void setFont(TString& f);
