@@ -2857,7 +2857,7 @@ void TControl::CheckScroll()
 
 	if (needH)
 	{
-		if (hScroll)
+		if (!hScroll)
 			hScroll = new TScrollBar(*this, so_horizontal);
 		hScroll->Refresh(location, area);
 	}

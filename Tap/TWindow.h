@@ -1,8 +1,8 @@
 #pragma once
-#include <TObject.h>
+#include <Drawer.h>
 #include "Page.h"
 #include <TWindowEngine.h>
-class _TAP_DLL TWindow :	public TObject
+class _TAP_DLL TWindow :	public Drawer
 {
 public:
 	TWindow(TString& name, TString& winClass, UINT style, HWND parent, int commandShow, TrecPointer<TInstance> ins);
@@ -16,7 +16,7 @@ public:
 	TString GetWinClass();
 	TString GetWinName();
 	// Action Listeners
-	void Draw();
+	void Draw() override;
 	void Draw(Page& draw);
 	HWND GetWindowHandle();
 

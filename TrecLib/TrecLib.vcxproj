@@ -159,6 +159,7 @@
   <ItemGroup>
     <ClInclude Include="AnagameDef.h" />
     <ClInclude Include="DirectoryInterface.h" />
+    <ClInclude Include="Drawer.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="HTML_Reader.h" />
     <ClInclude Include="Logger.h" />
@@ -183,6 +184,7 @@
   <ItemGroup>
     <ClCompile Include="DirectoryInterface.cpp" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="Drawer.cpp" />
     <ClCompile Include="HTML_Reader.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="ParseReader_.cpp" />
