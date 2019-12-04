@@ -30,7 +30,7 @@ TCheckBox::~TCheckBox()
 * Parameters: RECT r - the location for the check-box
 * Returns: bool - ignore
 */
-bool TCheckBox::onCreate(RECT r, TrecPointer<TWindowEngine> d3d)
+bool TCheckBox::onCreate(D2D1_RECT_F r, TrecPointer<TWindowEngine> d3d)
 {
 	TGadgetControl::onCreate(r,d3d);
 	if (text1.Get())

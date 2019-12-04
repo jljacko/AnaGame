@@ -50,7 +50,7 @@ int TGeometry::getWidth()
 	return 0;
 }
 
-void TGeometry::onCreate(RECT, bool)
+void TGeometry::onCreate(D2D1_RECT_F, bool)
 {
 }
 

@@ -9,7 +9,7 @@ public:
 	TCanvas(TrecComPointer<ID2D1RenderTarget> rt, TrecPointer<TArray<styleTable>> ta);
 	~TCanvas();
 
-	bool onCreate(RECT, TrecPointer<TWindowEngine> d3d)override;
+	bool onCreate(D2D1_RECT_F, TrecPointer<TWindowEngine> d3d)override;
 	void addGeoGroup(TrecPointer<GeoGroup>);
 	virtual UCHAR* GetAnaGameType()override;
 private:

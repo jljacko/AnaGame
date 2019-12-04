@@ -23,7 +23,7 @@ GeoGroup::~GeoGroup()
 	}
 }
 
-bool GeoGroup::onCreate(RECT r)
+bool GeoGroup::onCreate(D2D1_RECT_F r)
 {
 	loc = r;
 	TrecPointer<TString> valpoint = attributes.retrieveEntry(TString(L"|FillBrush"));

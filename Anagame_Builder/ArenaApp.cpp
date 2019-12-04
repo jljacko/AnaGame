@@ -138,8 +138,8 @@ ArenaApp::ArenaApp(TrecPointer<TControl> m, TrecPointer<TControl> o, TrecPointer
 
 	if (!m.Get() || !dynamic_cast<AnafaceUI*>(m.Get()))
 		return;
-	RECT rect = dynamic_cast<AnafaceUI*>(m.Get())->GetControlArea();
-	mainPage = window->GetPageByArea(rect);
+	D2D1_RECT_F rect = dynamic_cast<AnafaceUI*>(m.Get())->GetControlArea();
+	mainPage = window->GetPageByArea(convertD2DRectToRECT( rect));
 	TrecPointer<TFile> file = TrecPointerKey::GetNewTrecPointer<TFile>();
 	bool fileOpened = file->Open(fileBody, TFile::t_file_read | TFile::t_file_share_read | TFile::t_file_open_always);
 	if (!fileOpened)
@@ -163,7 +163,7 @@ ArenaApp::ArenaApp(TrecPointer<TControl> m, TrecPointer<TControl> o, TrecPointer
 	if (!o.Get() || !dynamic_cast<AnafaceUI*>(o.Get()))
 		return;
 	rect = dynamic_cast<AnafaceUI*>(o.Get())->GetControlArea();
-	outputPane = window->GetPageByArea(rect);
+	outputPane = window->GetPageByArea(convertD2DRectToRECT(rect));
 	fileOpened = file->Open(fileBody, TFile::t_file_read | TFile::t_file_share_read | TFile::t_file_open_always);
 	if (!fileOpened)
 		return;
@@ -184,7 +184,7 @@ ArenaApp::ArenaApp(TrecPointer<TControl> m, TrecPointer<TControl> o, TrecPointer
 	if (!e.Get() || !dynamic_cast<AnafaceUI*>(e.Get()))
 		return;
 	rect = dynamic_cast<AnafaceUI*>(e.Get())->GetControlArea();
-	explorerPane = window->GetPageByArea(rect);
+	explorerPane = window->GetPageByArea(convertD2DRectToRECT(rect));
 	fileOpened = file->Open(fileBody, TFile::t_file_read | TFile::t_file_share_read | TFile::t_file_open_always);
 	if (!fileOpened)
 		return;
@@ -360,7 +360,7 @@ RECT ArenaApp::Get3DArea()
 {
 	if (!arena)
 		return RECT{ 0,0,0,0 };
-	return arena->getLocation();
+	return convertD2DRectToRECT(arena->getLocation());
 }
 
 void ArenaApp::SetColor(D2D1_COLOR_F c)

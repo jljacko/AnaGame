@@ -100,11 +100,11 @@ public:
 	virtual void storeInTML(TFile* ar, int childLevel, bool ov = false) override;
 	virtual void storeInHTML(TFile* ar) override;
 
-	virtual bool onCreate(RECT, TrecPointer<TWindowEngine> d3d) override;
+	virtual bool onCreate(D2D1_RECT_F, TrecPointer<TWindowEngine> d3d) override;
 
 	virtual void onDraw(TObject* obj = nullptr) override;
 	UINT determineMinHeightNeeded()override;
-	void SetNewLocation(const RECT& r)override;
+	void SetNewLocation(const D2D1_RECT_F& r)override;
 
 	afx_msg virtual void OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr, TDataArray<TControl*>& clickedControl);
 	afx_msg bool OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlags, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
@@ -120,7 +120,7 @@ public:
 	void SetText(TString);
 	virtual UCHAR* GetAnaGameType()override;
 
-	void Resize(RECT r) override;
+	void Resize(D2D1_RECT_F r) override;
 	void setNumericText(int);
 	void setNumericText(float);
 

@@ -319,11 +319,11 @@ bool AnafaceUI::OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags, mes
 * Parameters: RECT container - the location the control will be stored
 * Returns: bool
 */
-bool AnafaceUI::onCreate(RECT container, TrecPointer<TWindowEngine> d3d)
+bool AnafaceUI::onCreate(D2D1_RECT_F container, TrecPointer<TWindowEngine> d3d)
 {
 	windowEngine = d3d;
 	TControl::onCreate(container,d3d);
-	RECT r;
+	D2D1_RECT_F r;
 	TrecPointer<TString> valpoint = attributes.retrieveEntry(TString(L"|TabHeight"));
 	if (valpoint.Get())
 	{
@@ -333,7 +333,7 @@ bool AnafaceUI::onCreate(RECT container, TrecPointer<TWindowEngine> d3d)
 		if (valpoint->ConvertToInt(&tabHeight))
 			tabHeight = 30;
 
-		r = RECT{ location.left, location.top, location.right, location.top + tabHeight };
+		r = D2D1_RECT_F{ location.left, location.top, location.right, location.top + tabHeight };
 		for (UINT C = 0; C < children.Count(); C++)
 		{
 			TControl* tcon = children.ElementAt(C).Get();
@@ -639,7 +639,7 @@ void AnafaceUI::AddNewTab(TString t)
 		if (indexAdd)
 		{
 			tabs->addChild(tc, indexAdd - 1, 0);
-			RECT tabLoc = tabs->getRawSectionLocation(0, indexAdd - 1);
+			D2D1_RECT_F tabLoc = tabs->getRawSectionLocation(0, indexAdd - 1);
 			tc->onCreate(tabLoc,windowEngine);
 		}
 	}
@@ -651,14 +651,14 @@ void AnafaceUI::AddNewTab(TString t)
 * Parameters: void
 * Returns: RECT - the location of the main body area
 */
-RECT AnafaceUI::GetControlArea()
+D2D1_RECT_F AnafaceUI::GetControlArea()
 {
-	RECT returnable = location;
+	D2D1_RECT_F returnable = location;
 	returnable.top += tabHeight;
 	return returnable;
 }
 
-void AnafaceUI::Resize(RECT r)
+void AnafaceUI::Resize(D2D1_RECT_F r)
 {
 	location = r;
 	r.top += tabHeight;
@@ -671,7 +671,7 @@ void AnafaceUI::Resize(RECT r)
 
 	if (tabs)
 	{
-		RECT tabLoc = location;
+		D2D1_RECT_F tabLoc = location;
 		tabLoc.bottom = tabLoc.top + tabHeight;
 		tabs->Resize(tabLoc);
 	}

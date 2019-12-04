@@ -24,7 +24,7 @@ void TScrollBar::onDraw(ID2D1RenderTarget* target)
 {
 	if (!target || !parent) return;
 
-	RECT location = parent->getLocation();
+	D2D1_RECT_F location = parent->getLocation();
 
 	ID2D1SolidColorBrush* brush = nullptr;
 	HRESULT res = target->CreateSolidColorBrush(body_box, &brush);
@@ -122,9 +122,9 @@ float TScrollBar::MovedContent(float degree)
 	return degree;
 }
 
-void TScrollBar::Refresh(RECT& location, RECT& area)
+void TScrollBar::Refresh(D2D1_RECT_F& location, D2D1_RECT_F& area)
 {
-	convertCRectToD2DRect(&location, &body_rect);
+	body_rect = location;
 
 	if (scrollAlignment == so_horizontal)
 	{

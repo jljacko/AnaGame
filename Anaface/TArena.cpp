@@ -50,7 +50,7 @@ TArena::~TArena()
 * Parameters: RECT r - the location on screen where arena is to show
 * Returns: bool - ignore
 */
-bool TArena::onCreate(RECT r, TrecPointer<TWindowEngine> d3d)
+bool TArena::onCreate(D2D1_RECT_F r, TrecPointer<TWindowEngine> d3d)
 {
 	TControl::onCreate(r,d3d);
 
@@ -254,7 +254,7 @@ UCHAR * TArena::GetAnaGameType()
 
 
 
-void TArena::Resize(RECT r)
+void TArena::Resize(D2D1_RECT_F r)
 {
 	TControl::Resize(r);
 	if (!viewport)

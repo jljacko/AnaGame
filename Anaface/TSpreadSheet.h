@@ -20,7 +20,7 @@ public:
 	TSpreadSheet(TrecComPointer<ID2D1RenderTarget>, TrecPointer<TArray<styleTable>> ta, HWND w);
 	~TSpreadSheet();
 
-	virtual bool onCreate(RECT, TrecPointer<TWindowEngine> d3d)override;
+	virtual bool onCreate(D2D1_RECT_F, TrecPointer<TWindowEngine> d3d)override;
 	virtual void onDraw(TObject* obj = nullptr) override;
 	virtual UCHAR* GetAnaGameType()override;
 

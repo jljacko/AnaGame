@@ -20,7 +20,7 @@ public:
 	TArena(TrecComPointer<ID2D1RenderTarget>, TrecPointer<TArray<styleTable>> ta, HWND h, CAMERA_TYPE lookTo = LOOK_TO);
 	~TArena();
 
-	bool onCreate(RECT, TrecPointer<TWindowEngine> d3d) override;
+	bool onCreate(D2D1_RECT_F, TrecPointer<TWindowEngine> d3d) override;
 	TrecPointer<TArenaEngine> getEngine();
 
 
@@ -28,7 +28,7 @@ public:
 
 	virtual UCHAR* GetAnaGameType()override;
 
-	void Resize(RECT r) override;
+	void Resize(D2D1_RECT_F r) override;
 
 
 };

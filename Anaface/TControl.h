@@ -150,12 +150,12 @@ public:
 	~TBorder();
 
 	// Various On Create Methods depending on the shape of the control
-	bool onCreate(RECT);
+	bool onCreate(D2D1_RECT_F);
 	bool onCreate(D2D1_ELLIPSE);
 	bool onCreate(D2D1_ROUNDED_RECT);
 
 	// Drawing Method
-	void onDraw(RECT& loc);
+	void onDraw(D2D1_RECT_F& loc);
 
 	// Handling Colors
 	// NOTE: For Compatibility between AnaGame for Windows and an eventual AnaGame for Unix,
@@ -228,14 +228,14 @@ public:
 	~TText();
 
 	// Creation Method, only a rect is needed as the text doesn't care for other shapes
-	int onCreate(RECT);
+	int onCreate(D2D1_RECT_F);
 
 	// Resets the layout in the event one of it's underlying attributes changes
 	void reCreateLayout();
 	void reCreateLayout(TString& str);
 
 	// Draw the Text
-	bool onDraw(RECT& loc, TObject* obj = nullptr);
+	bool onDraw(D2D1_RECT_F& loc, TObject* obj = nullptr);
 
 	// Handling Colors
 	// NOTE: For Compatibility between AnaGame for Windows and an eventual AnaGame for Unix,
@@ -328,12 +328,12 @@ public:
 	TContent(TrecPointer<TContent>&, TControl*);
 	~TContent();
 
-	bool onCreate(RECT);
+	bool onCreate(D2D1_RECT_F);
 	bool onCreate(D2D1_ELLIPSE);
 	bool onCreate(D2D1_ROUNDED_RECT);
 	void ShiftHorizontal(int degrees);
 	void ShiftVertical(int degrees);
-	void onDraw(RECT& loc);
+	void onDraw(D2D1_RECT_F& loc);
 	D2D1_COLOR_F getColor();
 	bool setOpaquency(float f);
 	void setColor(D2D1_COLOR_F);
@@ -429,17 +429,17 @@ public:
 	void setActive(bool act);
 	EventArgs getEventArgs();
 
-	virtual bool onCreate(RECT, TrecPointer<TWindowEngine> d3d);
-	virtual void Resize(RECT);
+	virtual bool onCreate(D2D1_RECT_F, TrecPointer<TWindowEngine> d3d);
+	virtual void Resize(D2D1_RECT_F);
 	bool setEventHandler(EventTarget& eh);
 	void updateArrayID(int aid);
 
 	virtual void onDraw(TObject* obj = nullptr);
-	RECT getLocation();
-	RECT getMargin();
+	D2D1_RECT_F getLocation();
+	D2D1_RECT_F getMargin();
 	TrecComPointer<ID2D1RenderTarget> getRenderTarget();
 	TrecPointer<TControl> getParent();
-	void setExternalBounds(RECT);
+	void setExternalBounds(D2D1_RECT_F);
 	bool getLayoutStatus();
 	void offsetLocation(TPoint);
 
@@ -453,7 +453,7 @@ public:
 	void setWidth(int w);
 	void setHeight(int h);
 
-	void setLocation(RECT r);
+	void setLocation(D2D1_RECT_F r);
 
 	void setMBottom(int b);
 	void setMTop(int t);
@@ -461,7 +461,7 @@ public:
 	void setMLeft(int l);
 
 	virtual UINT determineMinHeightNeeded();
-	virtual void SetNewLocation(const RECT& r);
+	virtual void SetNewLocation(const D2D1_RECT_F& r);
 	virtual void ShrinkHeight();
 
 	bool addAttribute(const TString&, TrecPointer<TString>);
@@ -494,7 +494,7 @@ protected:
 	bool boundsPreset;
 	TString className;
 	TString ID;
-	RECT location, margin;
+	D2D1_RECT_F location, margin;
 	TScrollBar *vScroll, *hScroll;
 	TrecComPointer<ID2D1Factory> factory;
 	TrecComPointer<ID2D1RenderTarget> renderTarget;
@@ -512,17 +512,17 @@ protected:
 	D2D1_ROUNDED_RECT roundedRect;
 	TShape shape;
 
-	bool onCreate(TMap<TString>*,RECT);
-	bool onCreate2(TMap<TString>*, RECT);
-	bool onCreate3(TMap<TString>*, RECT);
+	bool onCreate(TMap<TString>*, D2D1_RECT_F);
+	bool onCreate2(TMap<TString>*, D2D1_RECT_F);
+	bool onCreate3(TMap<TString>*, D2D1_RECT_F);
 
 	void updateComponentLocation();
 	void CheckScroll();
 
-	int generateImage(TrecPointer<TContent> tcon, TrecPointer<TString> p,RECT loc);
+	int generateImage(TrecPointer<TContent> tcon, TrecPointer<TString> p,D2D1_RECT_F& loc);
 
-	void checkMargin(RECT);
-	void checkHeightWidth(RECT);
+	void checkMargin(D2D1_RECT_F);
+	void checkHeightWidth(D2D1_RECT_F);
 	void generateSizeControl();
 	//void updateComponentLocations();
 
@@ -591,12 +591,28 @@ TString _ANAFACE_DLL convertD2DColorToString(D2D1_COLOR_F);
 TString _ANAFACE_DLL convertRectToString(RECT);
 
 /*
+* Function: convertRectToString
+* Purpose: Creates a string that represents a rectangle
+* Parameters: D2D1_RECT_F - the Rectangle to convert
+* Returns: CString - the Representation of a rectangle in string form
+*/
+TString _ANAFACE_DLL convertD2D1RectToString(D2D1_RECT_F);
+
+/*
 * Function: convertStringToRECT
 * Purpose: Determines the Rectangle to use
 * Parameters: TString* the String to read
 * Returns: RECT - the resulting rectangle (Zero Rect if string is invalid)
 */
 RECT _ANAFACE_DLL convertStringToRECT(TString*);
+
+/*
+* Function: convertStringToRect
+* Purpose: Determines the Rectangle to use
+* Parameters: TString* the String to read
+* Returns: D2D1_RECT_F - the resulting rectangle (Zero Rect if string is invalid)
+*/
+D2D1_RECT_F _ANAFACE_DLL convertStringToD2D1Rect(TString*);
 
 /*
 * Function: convertStringToD2DColor

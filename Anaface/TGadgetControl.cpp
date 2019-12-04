@@ -49,10 +49,10 @@ void TGadgetControl::storeInTML(TFile* ar, int childLevel, bool ov)
 /*
 * Method: TGadgetControl - onCreate
 * Purpose: To set up the Gadget Control
-* Parameters: RECT r - the location control will be
+* Parameters: D2D1_RECT_F r - the location control will be
 * Return: bool - false, ignore for now
 */
-bool TGadgetControl::onCreate(RECT r, TrecPointer<TWindowEngine> d3d)
+bool TGadgetControl::onCreate(D2D1_RECT_F r, TrecPointer<TWindowEngine> d3d)
 {
 	marginPriority = false;
 
@@ -129,7 +129,7 @@ void TGadgetControl::SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget> rt)
 	brush = brushRaw.Extract();
 }
 
-void TGadgetControl::Resize(RECT r)
+void TGadgetControl::Resize(D2D1_RECT_F r)
 {
 	TControl::Resize(r);
 	int height = location.bottom - location.top;

@@ -33,12 +33,12 @@ TControl::TControl(TrecComPointer<ID2D1RenderTarget> rt,TrecPointer<TArray<style
 	location.right = 0;
 	
 	boundsPreset = false;
-	location = RECT{ 0,0,0,0 };
+	location = D2D1_RECT_F{ 0.0f,0.0f,0.0f,0.0f };
 	mState = normal;
 	overrideParent = true;
 	marginPriority = true;
 	dimensions = NULL;
-	margin = RECT{ 0,0,0,0 };
+	margin = D2D1_RECT_F{ 0.0f,0.0f,0.0f,0.0f };
 	marginSet = false;
 	//PointerCase = TrecPointer<TControl>(this);
 	
@@ -194,12 +194,12 @@ TControl::TControl()
 	location.right = 0;
 	//parent = NULL;
 	boundsPreset = false;
-	location = RECT{ 0,0,0,0 };
+	location = D2D1_RECT_F{ 0.0f,0.0f,0.0f,0.0f };
 	mState = normal;
 	overrideParent = true;
 	marginPriority = true;
 	dimensions = NULL;
-	margin = RECT{ 0,0,0,0 };
+	margin = D2D1_RECT_F{ 0.0f,0.0f,0.0f,0.0f };
 	marginSet = false;
 	
 	isLayout = false;
@@ -379,7 +379,7 @@ void TControl::storeInTML(TFile * ar, int childLevel, bool overrideChildren)
 	if (marginSet)
 	{
 		appendable.Append(L"|Margin:");
-		appendable.Append(convertRectToString(margin));
+		appendable.Append(convertD2D1RectToString(margin));
 		ar->WriteString(appendable);
 		ar->WriteString(L"\n");
 		resetAttributeString(&appendable, childLevel + 1);
@@ -508,7 +508,7 @@ void TControl::storeInHTML(TFile * ar)
 * Returns: bool - success
 * Note: You Must call this on the Root Control before any control can be drawn on sreen
 */
-bool TControl::onCreate(RECT contain, TrecPointer<TWindowEngine> d3d)
+bool TControl::onCreate(D2D1_RECT_F contain, TrecPointer<TWindowEngine> d3d)
 {
 	/* Check the status of the scroll bars. By default, they are off.
 	 * If the default holds, then the location of the TControl will have
@@ -649,7 +649,7 @@ bool TControl::onCreate(RECT contain, TrecPointer<TWindowEngine> d3d)
 			{
 				valpoint->ConvertToFloat(&yRound);
 			}
-			convertCRectToD2DRect(&location, &(roundedRect.rect));
+			roundedRect.rect = location;
 			roundedRect.radiusX = xRound;
 			roundedRect.radiusY = yRound;
 		}
@@ -859,7 +859,7 @@ TrecPointer<styleTable> classy;
 				// return error code;
 			}
 
-			RECT chLoc = convertStringToRECT(valpoint.Get());
+			D2D1_RECT_F chLoc = convertStringToD2D1Rect(valpoint.Get());
 
 			
 			chLoc.left += location.left;
@@ -878,11 +878,12 @@ TrecPointer<styleTable> classy;
 
 	valpoint = attributes.retrieveEntry(TString(L"|FlyoutLocation"));
 	if (valpoint.Get() && flyout)
-		flyout->onCreate(convertStringToRECT(valpoint.Get()),d3d);
+		flyout->onCreate(convertStringToD2D1Rect(valpoint.Get()),d3d);
 
 	if (contextMenu)
-		contextMenu->onCreate(location,d3d);
-
+	{
+		contextMenu->onCreate(location, d3d);
+	}
 
 	updateComponentLocation();
 
@@ -897,8 +898,10 @@ TrecPointer<styleTable> classy;
 * Purpose: Resizes the control upon the window being resized
 * Parameters: RECT r - the new location for the control
 */
-void TControl::Resize(RECT r)
+void TControl::Resize(D2D1_RECT_F rr)
 {
+	D2D1_RECT_F r = rr;
+	
 	if (children.Count())
 	{
 		float w_ratio = (r.right - r.left) / (location.right - location.left);
@@ -919,7 +922,7 @@ void TControl::Resize(RECT r)
 		{
 			if (!children.ElementAt(rust).Get())
 				continue;
-			RECT curLoc = children.ElementAt(rust)->getLocation();
+			D2D1_RECT_F curLoc = children.ElementAt(rust)->getLocation();
 			TPoint curPoint = TPoint(curLoc.left - location.left, curLoc.top - location.top);
 			TPoint curSize = TPoint(curLoc.right - curLoc.left, curLoc.bottom - curLoc.top);
 			curLoc.top = curLoc.top - curPoint.y + curPoint.y * t_ratio;
@@ -1186,9 +1189,7 @@ void TControl::onDraw(TObject* obj)
 	if (vScroll || hScroll)
 	{
 		renderTarget->CreateLayer(&layer);
-		D2D1_RECT_F f_loc;
-		convertCRectToD2DRect(&location, &f_loc);
-		renderTarget->PushLayer(D2D1::LayerParameters(f_loc), layer);
+		renderTarget->PushLayer(D2D1::LayerParameters(location), layer);
 	}
 
 	if (mState == mouseLClick)
@@ -1252,9 +1253,9 @@ void TControl::onDraw(TObject* obj)
 * Method: TControl - getLocation
 * Purpose: Retrieves the current physical location on the RenderTarget of the control
 * Parameters: void
-* Returns: RECT - the location
+* Returns: D2D1_RECT_F - the location
 */
-RECT TControl::getLocation()
+D2D1_RECT_F TControl::getLocation()
 {
 	return location;
 }
@@ -1263,9 +1264,9 @@ RECT TControl::getLocation()
 * Method: TControl - getMargin
 * Purpose: Retrieves the space between the control's location and the area it was given
 * Parameters: void
-* Returns: RECT - the margin
+* Returns: D2D1_RECT_F - the margin
 */
-RECT TControl::getMargin()
+D2D1_RECT_F TControl::getMargin()
 {
 	return margin;
 }
@@ -1298,7 +1299,7 @@ TrecPointer<TControl> TControl::getParent()
 * Parameters:
 * Returns:
 */
-void TControl::setExternalBounds(RECT r)
+void TControl::setExternalBounds(D2D1_RECT_F r)
 {
 	location = r;
 	boundsPreset = true;
@@ -1519,7 +1520,7 @@ bool TControl::addChild(TrecPointer<TControl> tcon)
 * Parameters: RECT R - the new location
 * Returns: void
 */
-void TControl::setLocation(RECT r)
+void TControl::setLocation(D2D1_RECT_F r)
 {
 	location = r;
 }
@@ -1589,48 +1590,48 @@ UINT TControl::determineMinHeightNeeded()
 * Parameters:
 * Returns:
 */
-void TControl::SetNewLocation(const RECT & r)
+void TControl::SetNewLocation(const D2D1_RECT_F& r)
 {
 	location = r;
 
 	if (text1.Get())
 	{
-		text1->bounds = convertRECTToD2DRectF(r);
+		text1->bounds = r;
 		text1->reCreateLayout();
 	}
 	if (text2.Get())
 	{
-		text2->bounds = convertRECTToD2DRectF(r);
+		text2->bounds = r;
 		text2->reCreateLayout();
 	}
 	if (text3.Get())
 	{
-		text3->bounds = convertRECTToD2DRectF(r);
+		text3->bounds = r;
 		text3->reCreateLayout();
 	}
 	if (border1.Get())
 	{
-		border1->loci = convertRECTToD2DRectF(r);
+		border1->loci = r;
 	}
 	if (border2.Get())
 	{
-		border2->loci = convertRECTToD2DRectF(r);
+		border2->loci = r;
 	}
 	if (border3.Get())
 	{
-		border3->loci = convertRECTToD2DRectF(r);
+		border3->loci = r;
 	}
 	if (content1.Get())
 	{
-		content1->location = convertRECTToD2DRectF(r);
+		content1->location = r;
 	}
 	if (content2.Get())
 	{
-		content2->location = convertRECTToD2DRectF(r);
+		content2->location = r;
 	}
 	if (content3.Get())
 	{
-		content3->location = convertRECTToD2DRectF(r);
+		content3->location = r;
 	}
 }
 
@@ -1769,7 +1770,7 @@ void TControl::setWrapperPointer(TrecPointer<TControl> tcp)
 *				RECT loc - the location ot use
 * Returns: bool - false
 */
-bool TControl::onCreate(TMap<TString>* att, RECT loc)
+bool TControl::onCreate(TMap<TString>* att, D2D1_RECT_F loc)
 {
 	TrecPointer<TString> valpoint;	// 
 	
@@ -2040,7 +2041,7 @@ bool TControl::onCreate(TMap<TString>* att, RECT loc)
 *				RECT loc - the location ot use
 * Returns: bool - false
 */
-bool TControl::onCreate2(TMap<TString>* att, RECT loc)
+bool TControl::onCreate2(TMap<TString>* att, D2D1_RECT_F loc)
 {
 	TrecPointer<TString> valpoint;	// 
 
@@ -2409,7 +2410,7 @@ bool TControl::onCreate2(TMap<TString>* att, RECT loc)
 *				RECT loc - the location ot use
 * Returns: bool - false
 */
-bool TControl::onCreate3(TMap<TString>* att, RECT loc)
+bool TControl::onCreate3(TMap<TString>* att, D2D1_RECT_F loc)
 {
 	TrecPointer<TString> valpoint;	// 
 
@@ -2767,50 +2768,50 @@ void TControl::updateComponentLocation()
 	// Borders
 	if (border1.Get())
 	{
-		convertCRectToD2DRect(&location, &(border1->loci));
+		border1->loci = location;
 	}
 	if (border2.Get())
 	{
-		convertCRectToD2DRect(&location, &(border2->loci));
+		border2->loci = location;
 	}
 	if (border3.Get())
 	{
-		convertCRectToD2DRect(&location, &(border3->loci));
+		border3->loci = location;
 	}
 
 	// Content
 	if (text1.Get())
 	{
-		convertCRectToD2DRect(&location, &(text1->bounds));
+		text1->bounds = location;
 	}
 	if (text2.Get())
 	{
-		convertCRectToD2DRect(&location, &(text2->bounds));
+		text2->bounds = location;
 	}
 	if (text3.Get())
 	{
-		convertCRectToD2DRect(&location, &(text3->bounds));
+		text3->bounds = location;
 	}
 
 	// Content
 	if (content1.Get())
 	{
-		convertCRectToD2DRect(&location, &(content1->location));
+		content1->location = location;
 	}
 	if (content2.Get())
 	{
-		convertCRectToD2DRect(&location, &(content2->location));
+		content2->location = location;
 	}
 	if (content3.Get())
 	{
-		convertCRectToD2DRect(&location, &(content3->location));
+		content3->location = location;
 	}
 
 }
 
 void TControl::CheckScroll()
 {
-	RECT area = location;
+	D2D1_RECT_F area = location;
 
 	bool needV = false, needH = false;
 
@@ -2819,7 +2820,7 @@ void TControl::CheckScroll()
 		auto con = children.ElementAt(c).Get();
 		if (!con) continue;
 
-		RECT cLoc = con->getLocation();
+		D2D1_RECT_F cLoc = con->getLocation();
 
 		if (cLoc.bottom > area.bottom)
 		{
@@ -2879,7 +2880,7 @@ void TControl::CheckScroll()
 *				RECT loc - the location where the image should be
 * Returns: int - error (0 if successful)
 */
-int TControl::generateImage(TrecPointer<TContent> tcon, TrecPointer<TString> p, RECT loc)
+int TControl::generateImage(TrecPointer<TContent> tcon, TrecPointer<TString> p, D2D1_RECT_F& loc)
 {
 	if (!tcon.Get() || !(p.Get()))
 		return 1;
@@ -2993,13 +2994,13 @@ int TControl::generateImage(TrecPointer<TContent> tcon, TrecPointer<TString> p, 
 * Parameters: RECT contain - the location given to onCreate
 * Returns: void
 */
-void TControl::checkMargin(RECT contain)
+void TControl::checkMargin(D2D1_RECT_F contain)
 {
 	TrecPointer<TString> valpoint = attributes.retrieveEntry(TString(L"|Margin"));
 	//margin = RECT{ 0,0,0,0 };
 	if (valpoint.Get())
 	{
-		margin = convertStringToRECT(valpoint.Get());
+		margin = convertStringToD2D1Rect(valpoint.Get());
 		marginSet = true;
 	}
 	
@@ -3025,7 +3026,7 @@ void TControl::checkMargin(RECT contain)
 * Parameters: RECT r the location given to onCreate
 * Returns: void
 */
-void TControl::checkHeightWidth(RECT r)
+void TControl::checkHeightWidth(D2D1_RECT_F r)
 {
 	//
 
@@ -3749,7 +3750,7 @@ afx_msg void TControl::Builder_OnMouseMove(UINT flags, TPoint cp, TControl** mOu
 			if (point)
 			{
 				//const TControlHolder** hold = &PointerCase;
-				point->Builder_OnMouseMove(flags, cp, mOut, location, o);
+				//point->Builder_OnMouseMove(flags, cp, mOut, location, o);
 			}
 			if (*o == negative && *o == negativeUpdate) // then it is positive
 				return;
@@ -3765,8 +3766,8 @@ afx_msg void TControl::Builder_OnMouseMove(UINT flags, TPoint cp, TControl** mOu
 
 
 			location.left = cp.x;
-			if (location.left > location.right)
-				switchLongs(location.left, location.right);
+			//if (location.left > location.right)
+				//switchLongs(location.left, location.right);
 			*o = positiveOverrideUpdate;
 
 
@@ -3804,8 +3805,8 @@ afx_msg void TControl::Builder_OnMouseMove(UINT flags, TPoint cp, TControl** mOu
 			margin.right = abs(bounds.right - cp.x);
 
 			location.right = cp.x;
-			if (location.left > location.right)
-				switchLongs(location.left, location.right);
+			//if (location.left > location.right)
+				//switchLongs(location.left, location.right);
 			*o = positiveOverrideUpdate;
 
 			if (content1.Get())
@@ -3842,8 +3843,8 @@ afx_msg void TControl::Builder_OnMouseMove(UINT flags, TPoint cp, TControl** mOu
 
 
 			location.top = cp.y;
-			if (location.top > location.bottom)
-				switchLongs(location.top, location.bottom);
+			///if (location.top > location.bottom)
+				//switchLongs(location.top, location.bottom);
 
 			*o = positiveOverrideUpdate;
 
@@ -3879,8 +3880,8 @@ afx_msg void TControl::Builder_OnMouseMove(UINT flags, TPoint cp, TControl** mOu
 			margin.bottom = abs(bounds.bottom - cp.y);
 
 			location.bottom = cp.y;
-			if (location.top > location.bottom)
-				switchLongs(location.top, location.bottom);
+			//if (location.top > location.bottom)
+				//switchLongs(location.top, location.bottom);
 
 			*o = positiveOverrideUpdate;
 
@@ -4072,7 +4073,7 @@ TBorder::~TBorder()
 * Parameters: RECT location - the location the Border should draw on
 * Returns: bool - success
 */
-bool TBorder::onCreate(RECT location)
+bool TBorder::onCreate(D2D1_RECT_F location)
 {
 	if (!rt.Get())
 		return false;
@@ -4146,14 +4147,12 @@ bool TBorder::onCreate(D2D1_ROUNDED_RECT rr)
 * Parameters: void
 * Returns: void
 */
-void TBorder::onDraw(RECT& loc)
+void TBorder::onDraw(D2D1_RECT_F& f_loc)
 {
 	
 	//TrecPointer<TControl> cap = TrecPointer<TControl>(cap);
 	if (rt.Get() && brush.Get() && cap)
 	{
-		D2D1_RECT_F f_loc;
-		convertCRectToD2DRect(&loc, &f_loc);
 		bool drawRect = true;
 		//if (snip.left > loci.left || snip.top > loci.top ||
 			//snip.right < loci.right || snip.bottom < loci.bottom)
@@ -4581,7 +4580,7 @@ TText::~TText()
 * Parameters: RECT loc - the screen space to use
 * Returns: int success (0 means no error)
 */
-int TText::onCreate(RECT loc)
+int TText::onCreate(D2D1_RECT_F loc)
 {
 
 	if (rt.Get() == NULL)
@@ -4676,14 +4675,12 @@ void TText::reCreateLayout(TString & str)
 * Parameters: RECT r - the area to draw
 * Returns: bool success
 */
-bool TText::onDraw(RECT& loc, TObject* obj)
+bool TText::onDraw(D2D1_RECT_F& loc, TObject* obj)
 {
 	if (!penBrush.Get() || !rt.Get())
 		return false;
-	D2D1_RECT_F snipF = { 0.0f,0.0f,0.0f,0.0f };
-	convertCRectToD2DRect(&loc, &snipF);
-	if (bounds != snipF)
-		bounds = snipF;
+	if (bounds != loc)
+		bounds = loc;
 	// TString print;
 	if (obj && text.GetSize() > 0 && text.GetAt(0) == L'{' && text.GetAt(text.GetSize() - 1) == L'}')
 	{
@@ -4691,19 +4688,16 @@ bool TText::onDraw(RECT& loc, TObject* obj)
 		reCreateLayout(print);
 	}
 	
-	if (convertCRectToD2DRect(&loc, &snipF))
-	{
-		bounds = snipF;
+
+		bounds = loc;
 		if (fontLayout.Get())
 		{
-			fontLayout->SetMaxHeight(snipF.bottom - snipF.top);
-			fontLayout->SetMaxWidth(snipF.right - snipF.left);
-			rt->DrawTextLayout(D2D1::Point2F(snipF.left, snipF.top), fontLayout.Get(), penBrush.Get());
+			fontLayout->SetMaxHeight(loc.bottom - loc.top);
+			fontLayout->SetMaxWidth(loc.right - loc.left);
+			rt->DrawTextLayout(D2D1::Point2F(loc.left, loc.top), fontLayout.Get(), penBrush.Get());
 		}
 		
-	}
-	else
-		rt->DrawTextLayout(D2D1::Point2F(snipF.left, snipF.top), fontLayout.Get(), penBrush.Get());
+	
 	/*
 	rt->DrawTextW(text,
 		(UINT32)wcslen(text),
@@ -4750,8 +4744,7 @@ D2D1::ColorF TText::getColor()
 bool TText::setNewFont(TString& pFont)
 {
 	font.Set( pFont);
-	RECT r = convertD2DRectToRECT(bounds);
-	onCreate(r);
+	onCreate(bounds);
 	reCreateLayout();
 	return true;
 }
@@ -4765,8 +4758,7 @@ bool TText::setNewFont(TString& pFont)
 void TText::setNewFontSize(float fs)
 {
 	fontSize = abs(fs);
-	RECT r = convertD2DRectToRECT(bounds);
-	onCreate(r);
+	onCreate(bounds);
 	reCreateLayout();
 }
 
@@ -5310,7 +5302,7 @@ TContent::~TContent()
 *				RECT s - the snip, where the control can appear
 * Returns: bool - success (whether the resources are prepared)
 */
-bool TContent::onCreate(RECT l)
+bool TContent::onCreate(D2D1_RECT_F l)
 {
 
 	location.top = l.top;
@@ -5409,13 +5401,10 @@ void TContent::ShiftVertical(int degrees)
 * Parameters: void
 * Returns: void
 */
-void TContent::onDraw(RECT& loc)
+void TContent::onDraw(D2D1_RECT_F& f_snip)
 {
 	if (!rt.Get())
 		return;
-
-	D2D1_RECT_F f_snip;
-	convertCRectToD2DRect(&loc, &f_snip);
 
 	if (brush.Get())
 	{
@@ -5442,10 +5431,7 @@ void TContent::onDraw(RECT& loc)
 	}
 	if (image.Get() && bitmap.Get() && cropImage.Get())
 	{
-		D2D1_RECT_F f_loc;
-		convertCRectToD2DRect(&loc, &f_loc);
-
-			rt->DrawBitmap(image.Get(), f_snip);
+		rt->DrawBitmap(image.Get(), f_snip);
 	
 		//cropImage->CopyFromBitmap(NULL)
 		
@@ -6077,6 +6063,29 @@ TString convertRectToString(RECT sty)
 }
 
 /*
+* Function: convertRectToString
+* Purpose: Creates a string that represents a rectangle
+* Parameters: D2D1_RECT_F - the Rectangle to convert
+* Returns: CString - the Representation of a rectangle in string form
+*/
+TString _ANAFACE_DLL convertD2D1RectToString(D2D1_RECT_F sty)
+{
+	TString val;
+	val.Format(L"%f", sty.top);
+
+	TString comma(L",");
+
+	TString col(val + comma);
+	val.Format(L"%f", sty.left);
+	col.Set(col + val + comma);
+	val.Format(L"%f", sty.bottom);
+	col.Set(col + val + comma);
+	val.Format(L"%f", sty.right);
+	col.Set(col + val);
+	return col;
+}
+
+/*
 * Function: convertStringToRECT
 * Purpose: Determines the Rectangle to use
 * Parameters: TString* the String to read
@@ -6104,6 +6113,33 @@ RECT convertStringToRECT(TString* str)
 	res[1] = strSpl->at(1).ConvertToInt((int*)&returnable.left);
 	res[2] = strSpl->at(2).ConvertToInt((int*)&returnable.bottom);
 	res[3] = strSpl->at(3).ConvertToInt((int*)&returnable.right);
+	if (res[0] > 0 || res[1] > 0 || res[2] > 0 || res[3] > 0)
+		goto fallBack;
+	return returnable; LONG i;
+}
+
+D2D1_RECT_F convertStringToD2D1Rect(TString* str)
+{
+	D2D1_RECT_F returnable = D2D1_RECT_F{ 0,0,0,0 };
+	if (str == NULL)
+	{
+	fallBack:
+		returnable = D2D1_RECT_F{ 0,0,0,0 };
+		return returnable;
+	}
+
+	TrecPointer<TDataArray<TString>> strSpl = str->split(",");
+
+
+	int res[4] = { 0,0,0,0 };
+	if (strSpl.Get() == NULL || strSpl->Size() != 4)
+	{
+		goto fallBack;
+	}
+	res[0] = strSpl->at(0).ConvertToFloat(&returnable.top);
+	res[1] = strSpl->at(1).ConvertToFloat(&returnable.left);
+	res[2] = strSpl->at(2).ConvertToFloat(&returnable.bottom);
+	res[3] = strSpl->at(3).ConvertToFloat(&returnable.right);
 	if (res[0] > 0 || res[1] > 0 || res[2] > 0 || res[3] > 0)
 		goto fallBack;
 	return returnable; LONG i;

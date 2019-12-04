@@ -99,7 +99,7 @@ bool TLayout::setSpecialFunction(specialLayout sl)
 */
 bool TLayout::addColunm(int x, bool markDetected)
 {
-	RECT tempRect = RECT{ 0,0,0,0 };
+	D2D1_RECT_F tempRect = D2D1_RECT_F{ 0,0,0,0 };
 
 	bool AcceptMark = true;
 
@@ -130,7 +130,7 @@ bool TLayout::addColunm(int x, bool markDetected)
 			rows++;
 			updateRow = false;
 		}
-		RECT tempRect2 = RECT{ 0,0,0,0 };
+		D2D1_RECT_F tempRect2 = D2D1_RECT_F{ 0,0,0,0 };
 		tempRect.left = returnMinX(true);
 		tempRect.right = tempRect.left + x;
 		for (int c = 0; c < rows;c++)
@@ -187,7 +187,7 @@ bool TLayout::addColunm(int x, bool markDetected)
 */
 bool TLayout::addRow(int y, bool markDetected)
 {	
-	RECT tempRect = RECT{ 0,0,0,0 };
+	D2D1_RECT_F tempRect = D2D1_RECT_F{ 0,0,0,0 };
 
 	bool AcceptMark = true;
 
@@ -217,7 +217,7 @@ bool TLayout::addRow(int y, bool markDetected)
 			colunms++;
 			updateColumn = false;
 		}
-		RECT tempRect2 = RECT{ 0,0,0,0 };
+		D2D1_RECT_F tempRect2 = D2D1_RECT_F{ 0,0,0,0 };
 		tempRect.top = returnMinY(rows);
 		tempRect.bottom = tempRect.top + y;
 		for (int c = 0; c < colunms;c++)
@@ -351,7 +351,7 @@ bool TLayout::setGrid(TDataArray<int>& col, TDataArray<int>& row)
 	if (!col.Size() || !row.Size())
 		return false;
 
-	RECT tempRect;
+	D2D1_RECT_F tempRect;
 	tempRect.top = 0;
 	tempRect.left = 0;
 	tempRect.right = col[0];
@@ -503,7 +503,7 @@ void TLayout::storeInHTML(TFile * ar)
 * Parameters: RECT margin - the location the layout has to work with
 * Returns: bool - success
 */
-bool TLayout::onCreate(RECT margin, TrecPointer<TWindowEngine> d3d)
+bool TLayout::onCreate(D2D1_RECT_F margin, TrecPointer<TWindowEngine> d3d)
 {
 	//TContainer* tempCont = NULL;
 
@@ -744,32 +744,32 @@ int TLayout::returnMinY(bool newRow)
 * Method: TLayout - returnRectX
 * Purpose: Returns the location of the given of the column (and first row)
 * Parameters: int x - the column to look at
-* Returns: RECT - the location of that area
+* Returns: D2D1_RECT_F - the location of that area
 */
-RECT TLayout::returnRectX(int x)
+D2D1_RECT_F TLayout::returnRectX(int x)
 {
 	for (int c = 0; c < lChildren.Count(); c++)
 	{
 		if (lChildren.ElementAt(c)->x == x)
 			return lChildren.ElementAt(c)->contain->getLocation();
 	}
-	return RECT();
+	return D2D1_RECT_F();
 }
 
 /*
 * Method: TLayout - returnRectY
 * Purpose: Returns the location of the given of the row (and first column)
 * Parameters: int y - the row to look st
-* Returns: RECT the location of the area
+* Returns: D2D1_RECT_F the location of the area
 */
-RECT TLayout::returnRectY(int y)
+D2D1_RECT_F TLayout::returnRectY(int y)
 {
 	for (int c = 0; c < lChildren.Count(); c++)
 	{
 		if (lChildren.ElementAt(c)->y == y)
 			return lChildren.ElementAt(c)->contain->getLocation();
 	}
-	return RECT();
+	return D2D1_RECT_F();
 }
 
 /*
@@ -929,7 +929,7 @@ UINT TLayout::GetTotalSetCol()
 	return ret;
 }
 
-void TLayout::Resize(RECT r)
+void TLayout::Resize(D2D1_RECT_F r)
 {
 	UINT h_fix = GetTotalSetRow();
 	UINT w_fix = GetTotalSetCol();
@@ -1005,10 +1005,10 @@ void TLayout::Resize(RECT r)
 		containerControl cc = *(lChildren.ElementAt(Rust).Get());
 		if (!cc.contain.Get())
 			continue;
-		RECT loc = getRawSectionLocation(cc.y, cc.x);
+		D2D1_RECT_F loc = getRawSectionLocation(cc.y, cc.x);
 		if (cc.extend)
 		{
-			RECT loc2 = getRawSectionLocation(cc.y2, cc.x2);
+			D2D1_RECT_F loc2 = getRawSectionLocation(cc.y2, cc.x2);
 			loc.right = loc2.right;
 			loc.bottom = loc2.bottom;
 		}
@@ -1164,7 +1164,7 @@ UINT TLayout::determineMinHeightNeeded()
 * Parameters: RECT& r - the new location to occupy
 * Returns: void
 */
-void TLayout::SetNewLocation(const RECT & r)
+void TLayout::SetNewLocation(const D2D1_RECT_F& r)
 {
 	TControl::SetNewLocation(r);
 
@@ -1267,11 +1267,11 @@ int TLayout::getColumnNumber()
 * Purpose: Gets the Location of the section specified by the coordinates and permitted to any control occupied there
 * Parameters: int r - the row to look at
 *				int c - the column to look at
-* Returns: RECT - the location allocated to the specified location
+* Returns: D2D1_RECT_F - the location allocated to the specified location
 */
-RECT TLayout::getRawSectionLocation(int r, int c)
+D2D1_RECT_F TLayout::getRawSectionLocation(int r, int c)
 {
-	RECT returnable{ 0,0,0,0 };
+	D2D1_RECT_F returnable{ 0,0,0,0 };
 	if (r > rowLines.Size() || c > columnLines.Size())
 		return returnable;
 

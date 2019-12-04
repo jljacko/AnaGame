@@ -24,7 +24,7 @@ public:
 	TDropMenu(TrecComPointer<ID2D1RenderTarget>, TrecPointer<TArray<styleTable>> styles);
 	~TDropMenu();
 
-	bool onCreate(RECT l, TrecPointer<TWindowEngine> d3d) override;
+	bool onCreate(D2D1_RECT_F l, TrecPointer<TWindowEngine> d3d) override;
 	void onDraw(TObject* obj = nullptr) override;
 
 	virtual void SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget>) override;
@@ -33,7 +33,7 @@ public:
 	virtual UCHAR* GetAnaGameType()override;
 protected:
 	TrecPointer<DropMenuNode> rootNode;
-	void DrawNode(long& top,TrecPointer<DropMenuNode> node);
+	void DrawNode(float& top,TrecPointer<DropMenuNode> node);
 	UINT nodeHeight;
 	ID2D1SolidColorBrush* dotBrush;
 };

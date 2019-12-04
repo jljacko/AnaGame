@@ -38,7 +38,7 @@ public:
 
 	float MovedContent(float degree);
 
-	void Refresh(RECT& location, RECT& area);
+	void Refresh(D2D1_RECT_F& location, D2D1_RECT_F& area);
 
 private: // Static attributes, styles that should be shared across all Scroll Bars
 

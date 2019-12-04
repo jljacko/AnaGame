@@ -99,7 +99,7 @@ TComboBox::~TComboBox()
 * Parameters: RECT r - the Location the Basic Box would be in
 * Returns: bool
 */
-bool TComboBox::onCreate(RECT r, TrecPointer<TWindowEngine> d3d)
+bool TComboBox::onCreate(D2D1_RECT_F r, TrecPointer<TWindowEngine> d3d)
 {
 	TrecPointer<TString> valpoint = attributes.retrieveEntry(TString(L"|SubHeight"));
 	if (valpoint.Get() && !valpoint->ConvertToInt(&childHeight))
@@ -146,7 +146,7 @@ bool TComboBox::onCreate(RECT r, TrecPointer<TWindowEngine> d3d)
 	vertexPoint = D2D1::Point2F(midDx, DxLocation.bottom);
 
 
-	RECT entrybox = RECT{ 0,0,0,0 };
+	D2D1_RECT_F entrybox = D2D1_RECT_F{ 0,0,0,0 };
 	for (int c = 0; c < elements.Count(); c++)
 	{
 		tc = TrecPointerKey::GetNewSelfTrecPointer<TControl>(renderTarget, styles);
@@ -500,7 +500,7 @@ UCHAR * TComboBox::GetAnaGameType()
 	return nullptr;
 }
 
-void TComboBox::Resize(RECT r)
+void TComboBox::Resize(D2D1_RECT_F r)
 {
 	TGadgetControl::Resize(r);
 	leftpoint = D2D1::Point2F(DxLocation.left, DxLocation.top);
@@ -510,7 +510,7 @@ void TComboBox::Resize(RECT r)
 
 	vertexPoint = D2D1::Point2F(midDx, DxLocation.bottom);
 
-	RECT entrybox = RECT{ 0,0,0,0 };
+	D2D1_RECT_F entrybox = D2D1_RECT_F{ 0,0,0,0 };
 	for (int c = 0; c < children.Count(); c++)
 	{
 		TControl* tc = children.ElementAt(c).Get();

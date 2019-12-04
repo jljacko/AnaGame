@@ -63,7 +63,7 @@ public:
 	void storeInTML(TFile* ar, int childLevel,bool ov = false)override;
 	void storeInHTML(TFile* ar)override;
 
-	virtual bool onCreate(RECT, TrecPointer<TWindowEngine> d3d)override;
+	virtual bool onCreate(D2D1_RECT_F, TrecPointer<TWindowEngine> d3d)override;
 	virtual void onDraw(TObject* obj = nullptr) override;
 
 	int returnColumnsWidth(int x);
@@ -71,7 +71,7 @@ public:
 	int getColunmWidth(int x);
 	int getRowHeight(int y);
 	virtual UINT determineMinHeightNeeded()override;
-	void SetNewLocation(const RECT& r)override;
+	void SetNewLocation(const D2D1_RECT_F& r)override;
 	void ShrinkHeight()override;
 
 	void setNewColunmSize(int xLoc, int x);
@@ -80,7 +80,7 @@ public:
 	int getRowNumber();
 	int getColumnNumber();
 
-	RECT getRawSectionLocation(int r, int c);
+	D2D1_RECT_F getRawSectionLocation(int r, int c);
 
 	TrecPointer<TControl> GetLayoutChild(int x, int y);
 	orgLayout GetOrganization();
@@ -99,8 +99,8 @@ protected:
 	//bool showExpanded;
 	int returnMinX(bool newColumn);
 	int returnMinY(bool newRow);
-	RECT returnRectX(int);
-	RECT returnRectY(int);
+	D2D1_RECT_F returnRectX(int);
+	D2D1_RECT_F returnRectY(int);
 
 	//RECT returnRectInner(int x, int y);
 
@@ -119,7 +119,7 @@ protected:
 	UINT GetTotalSetRow();
 	UINT GetTotalFlexCol();
 	UINT GetTotalSetCol();
-	void Resize(RECT r)override;
+	void Resize(D2D1_RECT_F r)override;
 
 	bool updateRow, updateColumn;
 

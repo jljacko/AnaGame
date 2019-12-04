@@ -16,7 +16,7 @@ TSpreadSheet::~TSpreadSheet()
 {
 }
 
-bool TSpreadSheet::onCreate(RECT l, TrecPointer<TWindowEngine> d3d)
+bool TSpreadSheet::onCreate(D2D1_RECT_F l, TrecPointer<TWindowEngine> d3d)
 {
 	winEngine = d3d;
 

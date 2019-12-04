@@ -15,7 +15,7 @@ public:
 
 	TrecPointer<TControl> RemoveChild(UINT x, UINT y);
 
-	virtual bool onCreate(RECT, TrecPointer<TWindowEngine> d3d)override;
+	virtual bool onCreate(D2D1_RECT_F, TrecPointer<TWindowEngine> d3d)override;
 	virtual void onDraw(TObject* obj = nullptr) override;
 	virtual UCHAR* GetAnaGameType()override;
 };

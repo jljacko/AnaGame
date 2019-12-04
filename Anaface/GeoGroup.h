@@ -18,7 +18,7 @@ public:
 	GeoGroup(ID2D1RenderTarget* rt);
 	virtual ~GeoGroup();
 
-	bool onCreate(RECT);
+	bool onCreate(D2D1_RECT_F);
 	void onDraw();
 	bool addAttribute(WCHAR* attr, TrecPointer<TString> value);
 
@@ -40,6 +40,6 @@ private:
 	bool useRadial;
 	TrecComPointer<ID2D1GradientStopCollection> stopColl;
 	bool crunch;
-	RECT loc;
+	D2D1_RECT_F loc;
 };
 

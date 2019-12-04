@@ -20,7 +20,7 @@ TDataBind::~TDataBind()
 * Purpose: Resizes the control upon the window being resized
 * Parameters: RECT r - the new location for the control
 */
-void TDataBind::Resize(RECT r)
+void TDataBind::Resize(D2D1_RECT_F r)
 {
 	location = r;
 	updateComponentLocation();
@@ -30,7 +30,7 @@ void TDataBind::Resize(RECT r)
 
 	if (children.Count() && (ele = children.ElementAt(0).Get()))
 	{
-		RECT loc;
+		D2D1_RECT_F loc;
 		if (this->isStack)
 		{
 			loc.left = location.left;
@@ -57,14 +57,14 @@ void TDataBind::onDraw(TObject * obj)
 	TrecPointer<TControl> cont = children.ElementAt(0);
 	if (!cont.Get())
 		return;
-	RECT original = cont->getLocation();
+	D2D1_RECT_F original = cont->getLocation();
 
 
 	if (dataRaw)
 	{
 		for (UINT Rust = 0; Rust < dataRaw->Size(); Rust++)
 		{
-			RECT curLoc = cont->getLocation();
+			D2D1_RECT_F curLoc = cont->getLocation();
 			if (isStack)
 			{
 				if (curLoc.bottom > location.bottom)
@@ -95,7 +95,7 @@ void TDataBind::onDraw(TObject * obj)
 	{
 		for (UINT Rust = 0; Rust < dataWrap->Count(); Rust++)
 		{
-			RECT curLoc = cont->getLocation();
+			D2D1_RECT_F curLoc = cont->getLocation();
 			if (isStack)
 			{
 				if (curLoc.bottom > location.bottom)
@@ -149,9 +149,9 @@ void TDataBind::setData(TArrayBase* data)
 	dataWrap = data;
 }
 
-bool TDataBind::onCreate(RECT r, TrecPointer<TWindowEngine> d3d)
+bool TDataBind::onCreate(D2D1_RECT_F r, TrecPointer<TWindowEngine> d3d)
 {
-	RECT loc = r;
+	D2D1_RECT_F loc = r;
 	TrecPointer<TString> valpoint = attributes.retrieveEntry(TString(L"|ColumnWidth"));
 	if (valpoint.Get())
 	{
@@ -266,7 +266,7 @@ void TDataBind::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDat
 		TrecPointer<TControl> cont = children.ElementAt(0);
 		if (!cont.Get())
 			return;
-		RECT original = cont->getLocation();
+		D2D1_RECT_F original = cont->getLocation();
 
 		for (UINT Rust = 0; Rust < items && isContained(&point, &location); Rust++)
 		{

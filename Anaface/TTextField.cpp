@@ -247,7 +247,7 @@ void TTextField::storeInHTML(TFile * ar)
 * Parameters: RECT r - the location that the control would work in
 * Returns: bool - success (currently arbitrarily)
 */
-bool TTextField::onCreate(RECT r, TrecPointer<TWindowEngine> d3d)
+bool TTextField::onCreate(D2D1_RECT_F r, TrecPointer<TWindowEngine> d3d)
 {
 
 	TGadgetControl::onCreate(r, d3d);
@@ -493,7 +493,7 @@ UINT TTextField::determineMinHeightNeeded()
 * Parameters: RECT& r - the new location
 * Returns: void
 */
-void TTextField::SetNewLocation(const RECT & r)
+void TTextField::SetNewLocation(const D2D1_RECT_F& r)
 {
 	TControl::SetNewLocation(r);
 
@@ -860,7 +860,7 @@ UCHAR * TTextField::GetAnaGameType()
 	return nullptr;
 }
 
-void TTextField::Resize(RECT r)
+void TTextField::Resize(D2D1_RECT_F r)
 {
 	TGadgetControl::Resize(r);
 	topBut = DxLocation;

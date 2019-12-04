@@ -368,7 +368,7 @@ int Page::SetAnaface(TrecPointer<TFile> file, TrecPointer<EventHandler> eh)
 
 	rootControl = parser.getRootControl();
 	if (rootControl.Get())
-		rootControl->onCreate(area, windowHandle->GetWindowEngine());
+		rootControl->onCreate(convertRECTToD2DRectF( area), windowHandle->GetWindowEngine());
 	if(handler.Get())
 		handler->Initialize(TrecPointerKey::GetTrecPointerFromSoft<Page>(self));
 	return 0;
@@ -391,7 +391,7 @@ int Page::SetAnaface(TrecPointer<TFile> file, TDataArray<eventNameID>& id)
 
 	rootControl = parser.getRootControl();
 	if (rootControl.Get())
-		rootControl->onCreate(area, windowHandle->GetWindowEngine());
+		rootControl->onCreate(convertRECTToD2DRectF(area), windowHandle->GetWindowEngine());
 	if(handler.Get())
 		handler->Initialize(TrecPointerKey::GetTrecPointerFromSoft<Page>(self));
 	return 0;
@@ -571,7 +571,7 @@ void Page::OnResize(RECT& newLoc, UINT nFlags, TrecPointer<TWindowEngine> engine
 	{
 		if(requireNewRenderTarget)
 			rootControl->SetNewRenderTarget(regRenderTarget);
-		rootControl->Resize(area);
+		rootControl->Resize(convertRECTToD2DRectF(area));
 	}
 
 	if (miniHandler.Get())
@@ -804,7 +804,7 @@ TrecPointer<TArenaEngine> Page::GetArenaEngine()
 void Page::CreateLayout()
 {
 	if (rootControl.Get() && windowHandle.Get())
-		rootControl->onCreate(area, windowHandle->GetWindowEngine());
+		rootControl->onCreate(convertRECTToD2DRectF(area), windowHandle->GetWindowEngine());
 }
 
 void Page::Draw(TWindowEngine* twe)

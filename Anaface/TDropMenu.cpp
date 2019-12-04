@@ -25,10 +25,10 @@ TDropMenu::~TDropMenu()
 /*
 * Method: TDropMenu - onCreate
 * Purpose: Sets up the brush used to draw the nodes
-* Parameters: RECT l - the location on the menu
+* Parameters: D2D1_RECT_F l - the location on the menu
 * Returns: bool - true if renderTarget is set
 */
-bool TDropMenu::onCreate(RECT l, TrecPointer<TWindowEngine> d3d)
+bool TDropMenu::onCreate(D2D1_RECT_F l, TrecPointer<TWindowEngine> d3d)
 {
 	if (!renderTarget.Get())
 		return false;
@@ -94,15 +94,15 @@ UCHAR * TDropMenu::GetAnaGameType()
 /*
 * Method: TDropMenu - DrawNode
 * Purpose: Draws the node and any shown children it has
-* Parameters: long & top - the top of the node 
+* Parameters: float & top - the top of the node 
 *				TrecPointer<DropMenuNode> node - the Node to begin drawing
 * Returns: void
 */
-void TDropMenu::DrawNode(long & top, TrecPointer<DropMenuNode> node)
+void TDropMenu::DrawNode(float & top, TrecPointer<DropMenuNode> node)
 {
 	if (!node.Get() || !text1.Get() || !dotBrush)
 		return;
-	RECT curLoc = location;
+	D2D1_RECT_F curLoc = location;
 	curLoc.top = top;
 	curLoc.bottom = top + nodeHeight;
 	curLoc.left + 10;

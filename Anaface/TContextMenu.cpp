@@ -30,7 +30,7 @@ TContextMenu::~TContextMenu()
 * Parameters: RECT l - the location of the menu
 * Returns: bool - false
 */
-bool TContextMenu::onCreate(RECT l, TrecPointer<TWindowEngine> d3d)
+bool TContextMenu::onCreate(D2D1_RECT_F l, TrecPointer<TWindowEngine> d3d)
 {
 	winEngine = d3d;
 	TrecPointer<TString> valpoint = attributes.retrieveEntry(TString(L"|SubHeight"));
@@ -80,7 +80,7 @@ bool TContextMenu::addOption(TrecPointer<TString> c)
 	tc->addAttribute(TString(L"|Font"), TrecPointerKey::GetNewTrecPointer<TString>(L"TimesNewRoman"));
 	//TrecPointer<TContainer> tco = new TContainer();
 	//tco->setTControl(tc);
-	tc->onCreate(RECT{ location.left,0,location.right,childHeight }, winEngine);
+	tc->onCreate(D2D1_RECT_F{ location.left,0.0f,location.right,static_cast<float>(childHeight) }, winEngine);
 	children.Add(tc);
 	location.bottom = children.Count()*childHeight;
 

@@ -14,7 +14,7 @@ public:
 	TComboBox(TrecComPointer<ID2D1RenderTarget> rt, TrecPointer<TArray<styleTable>> ta);
 	~TComboBox();
 
-	bool onCreate(RECT, TrecPointer<TWindowEngine> d3d)override;
+	bool onCreate(D2D1_RECT_F, TrecPointer<TWindowEngine> d3d)override;
 	void onDraw(TObject* obj = nullptr) override;
 	void onDraw(ID2D1RenderTarget* rt);
 	void addElement(TString);
@@ -30,7 +30,7 @@ public:
 
 	virtual UCHAR* GetAnaGameType()override;
 
-	void Resize(RECT r) override;
+	void Resize(D2D1_RECT_F r) override;
 private:
 	bool showExtended;
 	bool prepShowExtended;

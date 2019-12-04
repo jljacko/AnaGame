@@ -120,7 +120,7 @@ TrecPointer<TControl> TLayoutEx::RemoveChild(UINT x, UINT y)
 	return ret;
 }
 
-bool TLayoutEx::onCreate(RECT r, TrecPointer<TWindowEngine> d3d)
+bool TLayoutEx::onCreate(D2D1_RECT_F r, TrecPointer<TWindowEngine> d3d)
 {
 	return TLayout::onCreate(r,d3d);
 }

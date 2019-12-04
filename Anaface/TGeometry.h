@@ -17,7 +17,7 @@ public:
 	virtual D2D1_POINT_2F getPoint(int);
 	virtual int getHeight();
 	virtual int getWidth();
-	virtual void onCreate(RECT, bool);
+	virtual void onCreate(D2D1_RECT_F, bool);
 	virtual bool getClosure();
 	virtual void onDraw(ID2D1Brush*,ID2D1RenderTarget*);
 	virtual void setFill(bool f);

@@ -338,14 +338,14 @@ void MiniHandler::OnResize(RECT newSize)
 {
 	if (mainPage.Get() && mainControl.Get())
 	{
-		mainPage->SetArea(mainControl->getLocation());
+		mainPage->SetArea(convertD2DRectToRECT( mainControl->getLocation()));
 	}
 
 	if (outputControl.Get() && outputPane.Get())
-		outputPane->SetArea(outputControl->getLocation());
+		outputPane->SetArea(convertD2DRectToRECT(outputControl->getLocation()));
 
 	if (explorerPane.Get() && explorerControl.Get())
-		explorerPane->SetArea(explorerControl->getLocation());
+		explorerPane->SetArea(convertD2DRectToRECT(explorerControl->getLocation()));
 }
 
 void MiniHandler::SetSelf(TrecPointer<MiniHandler> s)

@@ -39,7 +39,7 @@ TFlyout::~TFlyout()
 * Parameters: RECT r - the location of the Control
 * Returns: bool - false
 */
-bool TFlyout::onCreate(RECT r, TrecPointer<TWindowEngine> d3d)
+bool TFlyout::onCreate(D2D1_RECT_F r, TrecPointer<TWindowEngine> d3d)
 {
 	TrecPointer<TString> valpoint = attributes.retrieveEntry(TString(L"|Type"));
 
