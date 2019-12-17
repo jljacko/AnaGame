@@ -658,6 +658,15 @@ bool _ANAFACE_DLL isContained(const TPoint*, const RECT*);
 
 /*
 * Function: isContained
+* Purpose: Checks of a point is within a given MFC Rectangle
+* Parameters: const TPoint& - the point to check
+*				const RECT& - the rectangle to check
+* Returns: bool - whether the point is withing the bounds
+*/
+bool _ANAFACE_DLL isContained(const TPoint&, const RECT&);
+
+/*
+* Function: isContained
 * Purpose: Checks of a point is within a given Direct2D Rectangle
 * Parameters: const TPoint* - the point to check
 *				const D2D1_RECT_F* - the rectangle to check

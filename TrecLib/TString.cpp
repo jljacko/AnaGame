@@ -1377,6 +1377,7 @@ WCHAR ReturnWCharType(char c)
 
 TString formatSpecifiers(L"diuoxXfFeEgGaAcCsSpT");
 
+/*
 TString TString::GetFormattedString(const TString& format, va_list& data)
 {
 	WCHAR* formatedString = new WCHAR[format.capacity * 2 + 100];
@@ -1399,7 +1400,7 @@ TString TString::GetFormattedString(const TString& format, va_list& data)
 	delete[] formatedString;
 	
 	return ret;
-}
+}*/
 
 
 int TString::Compare(const TString& other) const

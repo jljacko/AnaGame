@@ -110,7 +110,7 @@ public:
 	void AppendChar(const WCHAR ch);
 	void Append(const TString&);
 
-	static TString GetFormattedString(const TString& format, va_list& data);
+	//static TString GetFormattedString(const TString& format, va_list& data);
 
 	int Compare(const TString& other)const ;
 	int Compare(const WCHAR* other)const;

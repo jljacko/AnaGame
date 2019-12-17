@@ -6222,6 +6222,19 @@ bool isContained(const TPoint* cp, const RECT* r)
 
 /*
 * Function: isContained
+* Purpose: Checks of a point is within a given MFC Rectangle
+* Parameters: const TPoint& - the point to check
+*				const RECT& - the rectangle to check
+* Returns: bool - whether the point is withing the bounds
+*/
+bool isContained(const TPoint& cp, const RECT& r)
+{
+	return cp.x > r.left&& cp.x < r.right &&
+		cp.y > r.top&& cp.y < r.bottom;
+}
+
+/*
+* Function: isContained
 * Purpose: Checks of a point is within a given Direct2D Rectangle
 * Parameters: const TPoint* - the point to check
 *				const D2D1_RECT_F* - the rectangle to check

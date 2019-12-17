@@ -57,7 +57,7 @@ public:
 
 	void CreateLayout();
 
-	void Draw(TWindowEngine* twe = nullptr);
+	virtual void Draw(TWindowEngine* twe = nullptr);
 
 	RECT GetArea();
 	void SetArea(const RECT& loc);
