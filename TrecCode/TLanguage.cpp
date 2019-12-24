@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "TLanguage.h"
+#include <stack>
 
 TrecPointer<TLanguage> TLanguage::getLanguage(TString& langName)
 {
@@ -19,8 +20,14 @@ UINT TLanguage::PreProcessFile(TrecPointer<TFile>& sourceFile)
 	return 0;
 }
 
+const std::map<TString, TString>& TLanguage::GetPrimitiveTypes()
+{
+	return primitiveTypeMap;
+}
+
 TLanguage::TLanguage()
 {
+	blockStartersAtBeginning = false;
 }
 
 TLanguage::~TLanguage()
@@ -158,6 +165,152 @@ bool TLanguage::RunCommentFilter(TrecPointer<TFile> file, TString& newFileName)
 	}
 	sourceFile->Close();
 
+	return true;
+}
+
+bool TLanguage::RunBlockFilter(TrecPointer<TFile> file, TString& newFileName)
+{
+	if (!file.Get() || !file->IsOpen())
+		return false;
+
+	if (blockType == lbt_curly)
+	{
+		newFileName = file->GetFileName();
+	}
+
+	if (blockType == lbt_indent)
+	{
+		TString sourceName = file->GetFileDirectory();
+		newFileName = file->GetFileName();
+
+		newFileName.Replace(TString(L"_NO_COM_"), TString(L"_RBLOCK_"));
+
+		TrecPointer<TFile> sourceFile = TrecPointerKey::GetNewTrecPointer<TFile>();
+
+		if (!sourceFile->Open(sourceName + newFileName, TFile::t_file_write | TFile::t_file_create_always))
+		{
+			return false;
+		}
+
+
+		TString line;
+		file->SeekToBegin();
+
+		std::stack<UINT> indentCount;
+		indentCount.push(0);
+		
+		WCHAR indent = L'\0';
+		while (file->ReadString(line))
+		{
+			line.TrimRight();
+			
+			if (line.GetSize() == 0)
+				continue;
+
+			if (indent == L'\0')
+			{
+				if (line[0] == L'\t')
+					indent = L'\t';
+				else if (line[0] == L'\s')
+					indent = L'\s';
+			}
+			UINT Rust;
+			for (Rust = 0; Rust < line.GetSize(); Rust++)
+			{
+				if (line[Rust] != indent)
+					break;
+			}
+
+			int loc = 0;
+
+			for (UINT C = 0; C < blockStarters.Size(); C++)
+			{
+				loc = line.FindOutOfQuotes(blockStarters[C]);
+				if (loc == -1)
+					continue;
+
+				if (loc + blockStarters[C].GetSize() == line.GetSize())
+				{
+					break;
+				}
+				loc = -1;
+			}
+
+			while (!indentCount.empty() && indentCount.top() > Rust)
+			{
+				TString nLine(L'}');
+				line.Set(nLine + line);
+				indentCount.pop();
+			}
+
+			if (Rust != indentCount.top())
+				return false;
+
+			if (loc != -1)
+			{
+				if(!blockStartersAtBeginning)
+					line.SubString(0, loc);
+				line.AppendChar(L'{');
+				indentCount.push(Rust);
+			}
+
+			sourceFile->WriteString(line);
+		}
+
+
+		sourceFile->Close();
+	}
+
+	if (blockType == lbt_indent)
+	{
+		TString sourceName = file->GetFileDirectory();
+		newFileName = file->GetFileName();
+
+		newFileName.Replace(TString(L"_NO_COM_"), TString(L"_RBLOCK_"));
+
+		TrecPointer<TFile> sourceFile = TrecPointerKey::GetNewTrecPointer<TFile>();
+
+		if (!sourceFile->Open(sourceName + newFileName, TFile::t_file_write | TFile::t_file_create_always))
+		{
+			return false;
+		}
+
+
+		TString line;
+		file->SeekToBegin();
+
+
+		while (file->ReadString(line))
+		{
+			for (UINT C = 0; C < blockStarters.Size(); C++)
+			{
+				int loc = line.FindOutOfQuotes(blockStarters[C]);
+				if (loc == -1)
+					continue;
+
+				if (blockStartersAtBeginning)
+					line.AppendChar(L'{');
+				else
+				{
+					line.Insert(loc + blockStarters[C].GetSize(), L'{');
+				}
+				break;
+			}
+
+
+			for (UINT C = 0; C < blockEnders.Size(); C++)
+			{
+				int loc = line.FindOutOfQuotes(blockStarters[C]);
+				if (loc == -1)
+					continue;
+
+				line.Insert(loc, L'}');
+			}
+
+			sourceFile->WriteString(line);
+		}
+		sourceFile->Close();
+	}
 	return true;
 }
 

@@ -11,6 +11,16 @@ int TPrimitiveType::GetByteSize()
 	return size;
 }
 
+code_type_cat TPrimitiveType::GetTypeCategory()
+{
+	return code_type_cat::code_type_cat_prim;
+}
+
+BYTE TPrimitiveType::GetType()
+{
+	return type;
+}
+
 TrecPointer<TTypeMetadata> TPrimitiveType::GetMetadata()
 {
 	return TrecPointer<TTypeMetadata>();

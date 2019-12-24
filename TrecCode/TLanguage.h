@@ -2,6 +2,7 @@
 
 #include <TObject.h>
 #include <TFile.h>
+#include <map>
 
 typedef enum LanguageDefaultStringEncoding
 {
@@ -82,6 +83,8 @@ public:
 
 	UINT PreProcessFile(TrecPointer<TFile>& sourceFile);
 
+	const std::map<TString, TString>& GetPrimitiveTypes();
+
 
 protected:
 	TLanguage();
@@ -89,6 +92,7 @@ protected:
 
 	// Preprocess Pipeline
 	bool RunCommentFilter(TrecPointer<TFile> file, TString& newFileName);
+	bool RunBlockFilter(TrecPointer<TFile> file, TString & newFileName);
 	void UpdateDoubIndex(TString& buff, UINT index, DoubIndex& sinCom, DoubIndex& newLine, DoubIndex& mulCom,
 		DoubIndex& mulComE, DoubIndex& sinStr, DoubIndex& mulStr);
 
@@ -110,6 +114,9 @@ protected:
 	TDataArray<TString> string, multiLineString;
 
 	LanguageBlockType blockType;					// How TrecCode know how a block is defined
+	TDataArray<TString> blockStarters;
+	bool blockStartersAtBeginning;
+	TDataArray<TString> blockEnders;
 	
 	// Information on how this language handles strings
 	LanguageDefaultStringEncoding defaultencoding;	// What String encoding to assume if the programmer doesn't mark it
@@ -126,5 +133,7 @@ protected:
 	LanguageInheritence inheritenceModel;
 	EnumImplementation enumModel;
 	UCHAR methodImplementation;
+
+	std::map<TString, TString> primitiveTypeMap;
 };
 

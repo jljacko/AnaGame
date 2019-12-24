@@ -24,7 +24,7 @@ class TEnvironment :
 	public TObject
 {
 public:
-	TEnvironment();
+	TEnvironment(TString& rootDirectory, TString& sourceDirectory, TString& resourceDirectory, TString& binDirectory);
 	~TEnvironment();
 
 	UINT SetUpEnv(TFile& props);
@@ -40,11 +40,13 @@ protected:
 	TString rootDirectory;		// Root directory of the project
 	TString rootSource;			// Root directory of the source files of the project
 	TString rootResources;		// Root directory of the resource files of the project
+	TString rootBin;			// Root directory of the bin files (output files)
 
 	TString targetExtensions;	// Extensions to target for compilation
 
 	CompileErrorHandling compileErrorHandling;
 	TargetAnagameMachine targetMachine;
+	TString endEnvironment;
 
 	TMap<TrecPointer<TLanguage>> languages;
 };

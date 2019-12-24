@@ -168,11 +168,17 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="Tap_dll.h" />
     <ClInclude Include="TByteCode.h" />
+    <ClInclude Include="TByteVirtualMachine.h" />
     <ClInclude Include="TDialog.h" />
     <ClInclude Include="TInstance.h" />
+    <ClInclude Include="TRegisterByteVirtualMachine.h" />
+    <ClInclude Include="TRegisterObjectVirtualMachine.h" />
+    <ClInclude Include="TStackByteVirtualMachine.h" />
+    <ClInclude Include="TStackObjectVirtualMachine.h" />
+    <ClInclude Include="TVirtualMachine.h" />
     <ClInclude Include="TWindow.h" />
     <ClInclude Include="EventHandler.h" />
-	<ClInclude Include="MiniHandler.h" />
+    <ClInclude Include="MiniHandler.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AlertDialog.cpp" />
@@ -187,11 +193,17 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="TByteVirtualMachine.cpp" />
     <ClCompile Include="TDialog.cpp" />
     <ClCompile Include="TInstance.cpp" />
+    <ClCompile Include="TRegisterByteVirtualMachine.cpp" />
+    <ClCompile Include="TRegisterObjectVirtualMachine.cpp" />
+    <ClCompile Include="TStackByteVirtualMachine.cpp" />
+    <ClCompile Include="TStackObjectVirtualMachine.cpp" />
+    <ClCompile Include="TVirtualMachine.cpp" />
     <ClCompile Include="TWindow.cpp" />
     <ClCompile Include="EventHandler.cpp" />
-	<ClCompile Include="MiniHandler.cpp" />
+    <ClCompile Include="MiniHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Machine.asm" />
