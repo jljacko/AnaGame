@@ -1,15 +1,121 @@
 #include "pch.h"
 #include "TLanguage.h"
 #include <stack>
+#include <DirectoryInterface.h>
+
+static TString languageFolder = GetDirectoryWithSlash(cd_Executable) + TString(L"Languages");
+TString tStringSemiColon(L";");
 
 TrecPointer<TLanguage> TLanguage::getLanguage(TString& langName)
 {
-	return TrecPointer<TLanguage>();
+	TString folderTarget = languageFolder + langName + L"\\";
+
+	TString langDef = folderTarget + TString(L"language.properties");
+	TFile langFile;
+
+
+	if (!langFile.Open(langDef, TFile::t_file_read))
+	{
+		return TrecPointer<TLanguage>();
+	}
+
+
+
+	TDataArray<TString> lines;
+	TString lineString;
+	while (langFile.ReadString(lineString))
+	{
+		lines.push_back(lineString);
+	}
+
+	TMap<TString> maps;
+	for (UINT Rust = 0; Rust < lines.Size(); Rust++)
+	{
+		auto sections = lines[Rust].split(L":");
+		if (!sections.Get() || sections->Size() < 2)
+			continue;
+
+		TString value = sections->at(1);
+		for (UINT c = 2; c < sections->Size(); c++)
+		{
+			value.Append(L":");
+			value.Append(sections->at(c));
+		}
+
+		if (!value.GetSize())
+			continue;
+
+		if (value.GetAt(0) == L'\"')
+			value.Set(value.SubString(1));
+
+		if (!value.GetSize())
+			continue;
+
+		if (value.GetAt(value.GetSize() - 1) == L'\"')
+			value.Set(value.SubString(0, value.GetSize() - 1));
+
+
+		maps.addEntry(sections->at(0), TrecPointerKey::GetNewTrecPointer<TString>(value));
+	}
+
+
+	return getLanguage(maps, TrecPointerKey::GetNewTrecPointer<TLanguage>(langName, TString()));
 }
 
 TrecPointer<TLanguage> TLanguage::getLanguage(TString& langName, TString& langVersion)
 {
-	return TrecPointer<TLanguage>();
+	TString folderTarget = languageFolder + langName + L"\\" + langVersion + L"\\";
+
+	TString langDef = folderTarget + TString(L"language.properties");
+	TFile langFile;
+
+
+	if (!langFile.Open(langDef, TFile::t_file_read))
+	{
+		return TrecPointer<TLanguage>();
+	}
+
+
+
+	TDataArray<TString> lines;
+	TString lineString;
+	while (langFile.ReadString(lineString))
+	{
+		lines.push_back(lineString);
+	}
+
+	TMap<TString> maps;
+	for (UINT Rust = 0; Rust < lines.Size(); Rust++)
+	{
+		auto sections = lines[Rust].split(L":");
+		if (!sections.Get() || sections->Size() < 2)
+			continue;
+
+		TString value = sections->at(1);
+		for (UINT c = 2; c < sections->Size(); c++)
+		{
+			value.Append(L":");
+			value.Append(sections->at(c));
+		}
+
+		if (!value.GetSize())
+			continue;
+
+		if (value.GetAt(0) == L'\"')
+			value.Set(value.SubString(1));
+
+		if (!value.GetSize())
+			continue;
+
+		if (value.GetAt(value.GetSize() - 1) == L'\"')
+			value.Set(value.SubString(0, value.GetSize() - 1));
+
+
+		maps.addEntry(sections->at(0), TrecPointerKey::GetNewTrecPointer<TString>(value));
+	}
+
+
+	return getLanguage(maps, TrecPointerKey::GetNewTrecPointer<TLanguage>(langName, langVersion));
 }
 
 UINT TLanguage::PreProcessFile(TrecPointer<TFile>& sourceFile)
@@ -17,6 +123,17 @@ UINT TLanguage::PreProcessFile(TrecPointer<TFile>& sourceFile)
 	TString nextFile;
 	if (!RunCommentFilter(sourceFile, nextFile))
 		return 1;
+
+	// Comment Filter reports no issues, Proceed to run the Block filter pipeline so that blocks
+	// Consist of Curly Brackets rather than indentatins (python) or key words
+	sourceFile->Close();
+	if(!sourceFile->Open(nextFile, TFile::t_file_open_always | TFile::t_file_read)) return 2;
+
+	if (!RunBlockFilter(sourceFile, nextFile))
+		return 3;
+
+	// If Block Filter passes, proceed to the next step
+
 	return 0;
 }
 
@@ -25,9 +142,217 @@ const std::map<TString, TString>& TLanguage::GetPrimitiveTypes()
 	return primitiveTypeMap;
 }
 
-TLanguage::TLanguage()
+TrecPointer<TLanguage> TLanguage::getLanguage(TMap<TString>& langProps, TrecPointer<TLanguage> lang)
+{
+	// first deduce how single line comments are recognized
+	TrecPointer<TString> val = langProps.retrieveEntry(TString(L"Single-Line Comment Start"));
+	if (val.Get())
+	{
+		lang->singleComment = *val->split(tStringSemiColon).Get();
+	}
+
+	val = langProps.retrieveEntry(TString(L"Multi-line Comment Start"));
+	if (val.Get())
+	{
+		lang->startComment = *val->split(tStringSemiColon).Get();
+	}
+
+	val = langProps.retrieveEntry(TString(L"Multi-line Comment End"));
+	if (val.Get())
+	{
+		lang->endComment = *val->split(tStringSemiColon).Get();
+	}
+
+	val = langProps.retrieveEntry(TString(L"Single-Line String Tokens"));
+	if (val.Get())
+	{
+		lang->string = *val->split(tStringSemiColon).Get();
+	}
+
+	val = langProps.retrieveEntry(TString(L"Multi-Line String Tokens"));
+	if (val.Get())
+	{
+		lang->multiLineString = *val->split(tStringSemiColon).Get();
+	}
+
+	val = langProps.retrieveEntry(TString(L"Default String Encoding"));
+	lang->defaultencoding = (val.Get() && !val->Compare(L"Ascii")) ? ldse_acsii : ldse_unicode;
+
+	if(lang->defaultencoding == ldse_acsii)
+		val = langProps.retrieveEntry(TString(L"Unicode Marker"));
+	else
+		val = langProps.retrieveEntry(TString(L"ACSII Marker"));
+
+	if (val.Get())
+		lang->switchMarker.Set(val.Get());
+
+	// Aftre String Encoding
+	val = langProps.retrieveEntry(TString(L"Block Type"));
+	if (!val.Get())
+		lang->blockType = lbt_curly;
+	else
+	{
+		val->Trim();
+		if (!val->Compare(L"Indent"))
+			lang->blockType = lbt_indent;
+		else if (!val->Compare(L"Tokens"))
+			lang->blockType = lbt_tokens;
+		else
+			lang->blockType = lbt_curly;
+	}
+
+	val = langProps.retrieveEntry(TString(L"External File Access"));
+	lang->externalFileName = val.Get() && !val->Compare(L"Filename");
+
+	val = langProps.retrieveEntry(TString(L"Require Module Header"));
+	
+	if (val.Get())
+	{
+		auto reqModuleHeaders = val->split(tStringSemiColon);
+		for (UINT Rust = 0; Rust < reqModuleHeaders->Size(); Rust++)
+		{
+			if (!reqModuleHeaders->at(Rust).Compare(L"Yes"))
+				lang->requireModHeader = rmh_yes;
+			else if (!reqModuleHeaders->at(Rust).Compare(L"No"))
+				lang->requireModHeader = rmh_yes;
+			else if (!reqModuleHeaders->at(Rust).Compare(L"NoinDefault"))
+				lang->requireModHeader = rmh_yes;
+			else if (!reqModuleHeaders->at(Rust).Compare(L"First"))
+				lang->moduleHeaderFirst = true;
+			else if (!reqModuleHeaders->at(Rust).Compare(L"Block"))
+				lang->supportModuleBlock = true;
+			else if (!reqModuleHeaders->at(Rust).Compare(L"UseForPublic"))
+				lang->useForPublic = true;
+			
+		}
+	}
+
+	val = langProps.retrieveEntry(TString(L"Inheritance"));
+	if (!val.Get())
+		lang->inheritenceModel = li_not_supported;
+	else
+	{
+		val->Trim();
+		if (!val->Compare(L"Multiple"))
+			lang->inheritenceModel = li_mulitple;
+		else if (!val->Compare(L"MultipleInterface"))
+			lang->inheritenceModel = li_multiple_interface;
+		else if (!val->Compare(L"Single"))
+			lang->inheritenceModel = li_single;
+		else
+			lang->inheritenceModel = li_not_supported;
+	}
+
+	val = langProps.retrieveEntry(TString(L"Enum Implementation"));
+	if (!val.Get())
+		lang->enumModel = ei_not_supported;
+	else
+	{
+		val->Trim();
+		if (!val->Compare(L"Primitive"))
+			lang->enumModel = ei_primitive;
+		else if (!val->Compare(L"Class"))
+			lang->enumModel = ei_class;
+		else if (!val->Compare(L"LabelledUnion "))
+			lang->enumModel = ei_labelledUnion;
+		else
+			lang->enumModel = ei_not_supported;
+	}
+
+	val = langProps.retrieveEntry(TString(L"Method Implementation"));
+	if (val.Get())
+	{
+		auto reqModuleHeaders = val->split(tStringSemiColon);
+		for (UINT Rust = 0; Rust < reqModuleHeaders->Size(); Rust++)
+		{
+			if (!reqModuleHeaders->at(Rust).Compare(L"Inline"))
+				lang->methodImplementation += 0x01;
+			else if (!reqModuleHeaders->at(Rust).Compare(L"Block"))
+				lang->methodImplementation += 0x02;
+			else if (!reqModuleHeaders->at(Rust).Compare(L"DefaultVirtual"))
+				lang->methodImplementation += 0x04;
+			else if (!reqModuleHeaders->at(Rust).Compare(L"RequireSelfParam"))
+				lang->methodImplementation += 0x08;
+		}
+	}
+
+	// Go through Primitive types supported by the language and get their aliases for the Environment to process
+
+	// Signed Integers
+	val = langProps.retrieveEntry(TString(L"s8"));
+	if (val.Get())
+		lang->primitiveTypeMap.insert(TString(L"s8"), *val.Get());
+
+	val = langProps.retrieveEntry(TString(L"s16"));
+	if (val.Get())
+		lang->primitiveTypeMap.insert(TString(L"s16"), *val.Get());
+
+	val = langProps.retrieveEntry(TString(L"s32"));
+	if (val.Get())
+		lang->primitiveTypeMap.insert(TString(L"s32"), *val.Get());
+
+	val = langProps.retrieveEntry(TString(L"s64"));
+	if (val.Get())
+		lang->primitiveTypeMap.insert(TString(L"s64"), *val.Get());
+
+	// Unsigned Integers
+	val = langProps.retrieveEntry(TString(L"u8"));
+	if (val.Get())
+		lang->primitiveTypeMap.insert(TString(L"u8"), *val.Get());
+
+	val = langProps.retrieveEntry(TString(L"u16"));
+	if (val.Get())
+		lang->primitiveTypeMap.insert(TString(L"u16"), *val.Get());
+
+	val = langProps.retrieveEntry(TString(L"u32"));
+	if (val.Get())
+		lang->primitiveTypeMap.insert(TString(L"u32"), *val.Get());
+
+	val = langProps.retrieveEntry(TString(L"u64"));
+	if (val.Get())
+		lang->primitiveTypeMap.insert(TString(L"u64"), *val.Get());
+
+	// Floating Point types
+	val = langProps.retrieveEntry(TString(L"f32"));
+	if (val.Get())
+		lang->primitiveTypeMap.insert(TString(L"f32"), *val.Get());
+
+	val = langProps.retrieveEntry(TString(L"f64"));
+	if (val.Get())
+		lang->primitiveTypeMap.insert(TString(L"f64"), *val.Get());
+
+	val = langProps.retrieveEntry(TString(L"f96"));
+	if (val.Get())
+		lang->primitiveTypeMap.insert(TString(L"f96"), *val.Get());
+
+	// char types
+	val = langProps.retrieveEntry(TString(L"c8"));
+	if (val.Get())
+		lang->primitiveTypeMap.insert(TString(L"c8"), *val.Get());
+
+	val = langProps.retrieveEntry(TString(L"c16"));
+	if (val.Get())
+		lang->primitiveTypeMap.insert(TString(L"c16"), *val.Get());
+
+	val = langProps.retrieveEntry(TString(L"c32"));
+	if (val.Get())
+		lang->primitiveTypeMap.insert(TString(L"c32"), *val.Get());
+
+	// Boolean
+	val = langProps.retrieveEntry(TString(L"b"));
+	if (val.Get())
+		lang->primitiveTypeMap.insert(TString(L"b"), *val.Get());
+
+	return TrecPointer<TLanguage>();
+}
+
+TLanguage::TLanguage(TString& name, TString& version)
 {
 	blockStartersAtBeginning = false;
+	this->language.Set(name);
+	this->version.Set(version);
+	moduleHeaderFirst = supportModuleBlock = useForPublic = false;
+	methodImplementation = 0;
 }
 
 TLanguage::~TLanguage()

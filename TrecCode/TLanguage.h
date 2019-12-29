@@ -3,6 +3,7 @@
 #include <TObject.h>
 #include <TFile.h>
 #include <map>
+#include <TMap.h>
 
 typedef enum LanguageDefaultStringEncoding
 {
@@ -36,7 +37,8 @@ typedef enum EnumImplementation
 {
 	ei_primitive,
 	ei_class,
-	ei_labelledUnion
+	ei_labelledUnion,
+	ei_not_supported
 };
 
 // Message that running code can send back to the interpretor to know when it is time to stop, restart from the beginning, or some other action
@@ -87,7 +89,10 @@ public:
 
 
 protected:
-	TLanguage();
+	static TrecPointer<TLanguage> getLanguage(TMap<TString>& langProps, TrecPointer<TLanguage> lang);
+
+
+	TLanguage(TString& name, TString& version);
 	~TLanguage();
 
 	// Preprocess Pipeline
