@@ -72,7 +72,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\John Jacko\Source\Repos\AnaGame\TrecCode;..\TrecLib;..\VideoGraphics;..\Anaface;..\Tap;$(IncludePath)</IncludePath>
+    <IncludePath>..\TrecCode;..\TrecLib;..\VideoGraphics;..\Anaface;..\Tap;$(IncludePath)</IncludePath>
     <LibraryPath>..\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
