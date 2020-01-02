@@ -152,6 +152,15 @@ void SourceCodeApp::HandleEvents(TDataArray<EventID_Cred>&)
 {
 }
 
+void SourceCodeApp::ProcessFile(TrecPointer<TEnvironment> env)
+{
+	if (!env.Get()) return;
+
+	TrecPointer<TFile> curFile = TrecPointerKey::GetNewTrecPointer<TFile>(filePath, TFile::t_file_read);
+
+	env->PreProcessSingleFile(curFile);
+}
+
 void SourceCodeApp::PrepLanguage(TFile& sourceCode)
 {
 }
@@ -160,4 +169,15 @@ void SourceCodeApp::OnSave(TFile& file)
 {
 	if (!file.IsOpen() || !code) return;
 	file.WriteString(code->GetText());
+}
+
+void SourceCodeApp::OnLoad(TFile& file)
+{
+	TString buffer, appBuffer;
+	while (file.ReadString(buffer, static_cast<UINT>(100)))
+	{
+		appBuffer.Append(buffer);
+	}
+
+	lines->SetText(appBuffer);
 }

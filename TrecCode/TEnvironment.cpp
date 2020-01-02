@@ -3,6 +3,69 @@
 #include <TMap.h>
 #include <DirectoryInterface.h>
 
+static bool languagesMapped = false;
+
+// Holds list of Languages and their file extensions
+static TDataArray<LangNames> languageList;
+
+void TEnvironment::SetUpLanguageExtensionMapping()
+{
+	if (languagesMapped)
+		return;
+
+	TString languageFolder = GetDirectoryWithSlash(cd_Executable) + TString(L"Languages");
+
+	if (languageList.Size())
+		return;
+
+	TFile languageLister;
+
+	languageLister.Open(languageFolder + TString(L"\\languages.properties"), TFile::t_file_read);
+
+	if (!languageLister.IsOpen())
+	{
+		//char errorBuf[100];
+		//ex.GetErrorMessage((LPTSTR)errorBuf, 99);
+		return;
+	}
+	TString line;
+	while (languageLister.ReadString(line))
+	{
+		line.Trim();
+		TrecPointer<TDataArray<TString>> sep = line.split(TString(L":"));
+
+		if (sep->Size() != 2)
+			continue;
+		LangNames ln;
+		ln.language = sep->at(0);
+		sep = sep->at(1).split(TString(L";"));
+
+		for (UINT rust = 0; rust < sep->Size(); rust++)
+		{
+			if (!sep->at(rust).GetSize())
+				continue;
+			sep->at(rust).Trim();
+			ln.fileExtensions.push_back(sep->at(rust));
+		}
+		languageList.push_back(ln);
+	}
+
+	languageLister.Close();
+}
+
+TString retrieveLanguageByExtension(TString ext)
+{
+	for (UINT c = 0; c < languageList.Size(); c++)
+	{
+		for (UINT Rust = 0; Rust < languageList[c].fileExtensions.Size(); Rust++)
+		{
+			if (languageList[c].fileExtensions[Rust] == ext)
+				return languageList[c].language;
+		}
+	}
+	return TString();
+}
+
 TEnvironment::TEnvironment(TString& rootDirectory, TString& sourceDirectory, TString& resourceDirectory, TString& binDirectory)
 {
 	this->rootDirectory.Set(rootDirectory);
@@ -72,7 +135,7 @@ UINT TEnvironment::SetUpEnv(TFile& props)
 	// Now set up Primitive types that each detected language offers
 	for (UINT C = 0; C < languages.count(); C++)
 	{
-		TrecPointer<TLanguage> language = *languages.GetEntryAt(C).Get()->object.Get();
+		TrecPointer<TLanguage> language = languages.GetEntryAt(C).Get()->object;
 		if (!language.Get())
 			continue;
 
@@ -101,4 +164,42 @@ void TEnvironment::Log()
 
 void TEnvironment::Run()
 {
+}
+
+void TEnvironment::PreProcessSingleFile(TrecPointer<TFile> file)
+{
+	if (!file.Get() || !file->IsOpen())
+		return;
+
+	TString fileExt(file->GetFileExtension());
+
+	TrecPointer<TLanguage> lang = languages.retrieveEntry(fileExt);
+
+	if (!lang.Get())
+	{
+		SetUpLanguageExtensionMapping();
+
+		TString langName(retrieveLanguageByExtension(fileExt));
+		if (!langName.GetSize())
+			return;
+
+		auto language = TLanguage::getLanguage(langName);
+		if (!language.Get())
+			return;
+
+		for (UINT C = 0; C < languageList.Size(); C++)
+		{
+			if (languageList[C].language.Compare(langName))
+				continue;
+			for (UINT Rust = 0; Rust < languageList[C].fileExtensions.Size(); Rust++)
+			{
+				languages.addEntry(languageList[C].fileExtensions[Rust], language);
+			}
+			break;
+		}
+
+		lang = language;
+	}
+
+	lang->PreProcessFile(file);
 }

@@ -4,6 +4,7 @@
 #include <TFile.h>
 #include <map>
 #include <TMap.h>
+#include "TrecCode.h"
 
 typedef enum LanguageDefaultStringEncoding
 {

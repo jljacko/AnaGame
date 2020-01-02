@@ -19,6 +19,16 @@ typedef enum TargetAnagameMachine
 	tam_binary_stack
 }TargetAnagameMachine;
 
+/* struct LangNames
+ * Purpose: holds the name of a Programming language and the file extensions associated with them
+ */
+class _TREC_CODE_DLL LangNames : public TObject
+{
+public:
+	TString language;
+	TDataArray<TString> fileExtensions;
+};
+
 
 class TEnvironment :
 	public TObject
@@ -36,7 +46,12 @@ public:
 
 	void Run();
 
+	void PreProcessSingleFile(TrecPointer<TFile> file);
+
 protected:
+
+	void SetUpLanguageExtensionMapping();
+
 	TString rootDirectory;		// Root directory of the project
 	TString rootSource;			// Root directory of the source files of the project
 	TString rootResources;		// Root directory of the resource files of the project
@@ -48,6 +63,6 @@ protected:
 	TargetAnagameMachine targetMachine;
 	TString endEnvironment;
 
-	TMap<TrecPointer<TLanguage>> languages;
+	TMap<TLanguage> languages;
 };
 

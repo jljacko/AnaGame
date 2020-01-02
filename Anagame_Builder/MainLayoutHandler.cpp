@@ -326,8 +326,17 @@ void MainLayoutHandler::OnNewCodeFile(TControl* tc, EventArgs ea)
 
 void MainLayoutHandler::OnImportCode(TControl* tc, EventArgs ea)
 {
+	currentDocument = TrecPointerKey::GetNewSelfTrecPointerAlt<MiniHandler, SourceCodeApp>(body, outputPanel, classUI, app);
+	ActiveDocuments.push_back(currentDocument);
+	currentDocument->InitializeControls();
+
+	currentDocument->OnLoad();
+	currentDocument->OnShow();
 }
 
 void MainLayoutHandler::OnProcessCode(TControl* tc, EventArgs ea)
 {
+	SourceCodeApp* sca = dynamic_cast<SourceCodeApp*>(currentDocument.Get());
+	if (sca)
+		sca->ProcessFile(environment);
 }
