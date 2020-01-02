@@ -3,6 +3,7 @@
 #include <TFile.h>
 #include <TMap.h>
 #include "TLanguage.h"
+#include <TType.h>
 
 typedef enum CompileErrorHandling
 {
@@ -18,6 +19,13 @@ typedef enum TargetAnagameMachine
 	tam_binary_register,
 	tam_binary_stack
 }TargetAnagameMachine;
+
+typedef struct Variable
+{
+	TString name;
+	TrecPointer<TType> type;
+	UINT location;
+}Variable;
 
 /* struct LangNames
  * Purpose: holds the name of a Programming language and the file extensions associated with them
@@ -64,5 +72,7 @@ protected:
 	TString endEnvironment;
 
 	TMap<TLanguage> languages;
+
+	TDataArray<Variable> globalVariables;
 };
 
