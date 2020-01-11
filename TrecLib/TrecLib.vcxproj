@@ -178,6 +178,7 @@
     <ClInclude Include="TPoint.h" />
     <ClInclude Include="TrecLib.h" />
     <ClInclude Include="TrecReference.h" />
+    <ClInclude Include="TShell.h" />
     <ClInclude Include="TString.h" />
     <ClInclude Include="TTrecPointerArray.h" />
   </ItemGroup>
@@ -203,6 +204,7 @@
     <ClCompile Include="TObject.cpp" />
     <ClCompile Include="TPoint.cpp" />
     <ClCompile Include="TrecLib.cpp" />
+    <ClCompile Include="TShell.cpp" />
     <ClCompile Include="TString.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
