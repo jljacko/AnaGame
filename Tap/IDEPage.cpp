@@ -248,7 +248,7 @@ void IDEPage::MouseMoveBody(TPoint& diff)
 		dynamic_cast<IDEPage*>(upperRight.Get())->MoveBorder(diff.x, page_move_mode_left);
 		MoveBorder(diff.x, moveMode);
 		break;
-	default:
+	//default:
 		
 	}
 }

@@ -120,6 +120,11 @@ bool TShell::CheckProcess()
 	return false;
 }
 
+TString TShell::GetWorkingDirectory()
+{
+	return workingDirectory;
+}
+
 
 void TShell::Process_pwd(TString& command)
 {

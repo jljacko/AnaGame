@@ -125,7 +125,7 @@ public:
 	void setNumericText(float);
 
 	void AddColorEffect(D2D1_COLOR_F col, UINT start, UINT length);
-private:
+protected:
 	bool isPassword, offerPasswordPeek;
 	bool isEditable;
 	TString text;

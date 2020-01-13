@@ -12,10 +12,11 @@ typedef enum page_move_mode
 	page_move_mode_right
 }page_move_mode;
 
-class IDEPage :
+class _TAP_DLL IDEPage :
 	public Page
 {
 	friend class TIdeWindow;
+	friend class TrecPointerKey;
 protected:
 	IDEPage(ide_page_type type, UINT barSpace);
 

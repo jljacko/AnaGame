@@ -3,7 +3,7 @@
 #include "TString.h"
 #include "TFile.h"
 
-class TShell :
+class _TREC_LIB_DLL TShell :
 	public TObject
 {
 public:
@@ -17,6 +17,8 @@ public:
 	void TerminateProcess();
 
 	bool CheckProcess();
+
+	TString GetWorkingDirectory();
 
 private:
 	void Process_pwd(TString& command);

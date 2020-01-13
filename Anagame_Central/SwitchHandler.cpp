@@ -284,7 +284,7 @@ void SwitchHandler::OnSelectRows(TControl* tc, EventArgs ea)
 	// changeControl.Delete();
 	changeControl = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TLayout>(rtb, TrecPointer<TArray<styleTable>>());
 	TLayout* rootLayout = dynamic_cast<TLayout*>(changeControl.Get());
-	RECT tLoc = this->rootLayout->getRawSectionLocation(0,1);
+	D2D1_RECT_F tLoc = this->rootLayout->getRawSectionLocation(0,1);
 
 
 	rootLayout->setLocation(tLoc);
@@ -538,8 +538,8 @@ void SwitchHandler::OnSelectLayers(TControl* tc, EventArgs ea)
 	TLayout* childLayout = dynamic_cast<TLayout*>(childControl2.Get());
 	childLayout->setLayout(grid);
 
-	RECT tLoc;
-	RECT area = this->rootLayout->getRawSectionLocation(0, 1);
+	D2D1_RECT_F tLoc;
+	D2D1_RECT_F area = this->rootLayout->getRawSectionLocation(0, 1);
 
 	tLoc.top = area.top + 310;
 	tLoc.bottom = area.bottom - 10;

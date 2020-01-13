@@ -82,6 +82,9 @@ void TTextField::InputChar(wchar_t cha, int times)
 {
 	if (!onFocus) // hopefully this is true, but just in case
 		return;
+
+	int curCaretLoc = caretLoc;
+
 	for (int c = 0; c < times; c++)
 	{
 		switch (cha)
@@ -529,9 +532,15 @@ afx_msg void TTextField::OnLButtonDown(UINT nFlags, TPoint point, messageOutput*
 
 	text1->fontLayout->HitTestPoint(point.x, point.y, &trailing, &isInside, &metrics);
 
-	if (isInside)
+	if (isInside && isContained(&point, &location))
 	{
+		if (onFocus)
+			DestroyCaret();
+
 		CreateCaret(windowHandle, NULL, 1, metrics.height);
+
+
+
 		if (trailing)
 		{
 			caretLoc = metrics.textPosition+ 1;
@@ -557,9 +566,49 @@ afx_msg void TTextField::OnLButtonDown(UINT nFlags, TPoint point, messageOutput*
 	}
 	else
 	{
-		if(onFocus)
-		DestroyCaret();
-		onFocus = false;
+		if (onFocus)
+		{
+			DestroyCaret();
+			onFocus = false;
+		}
+		else if (isContained(&point, &location) && !text.GetSize() && text1.Get())
+		{
+			// Here, he need to have the caret but we don't have a string to place it against
+			// Need to make educated guess on where it should go
+			TPoint caretPoint;
+			switch (text1->getHorizontalAlignment())
+			{
+			case DWRITE_TEXT_ALIGNMENT_CENTER:
+				caretPoint.x = (location.left + location.right) / 2.0f;
+				break;
+			case DWRITE_TEXT_ALIGNMENT_JUSTIFIED:
+			case DWRITE_TEXT_ALIGNMENT_LEADING:
+				caretPoint.x = location.left + 1;
+				break;
+			case DWRITE_TEXT_ALIGNMENT_TRAILING:
+				caretPoint.x = location.right - 1;
+			default:
+				break;
+			}
+
+			switch (text1->getVerticalAlignment())
+			{
+			case DWRITE_PARAGRAPH_ALIGNMENT_NEAR:
+				caretPoint.y = location.top;
+				break;
+			case DWRITE_PARAGRAPH_ALIGNMENT_CENTER:
+				caretPoint.y = (location.top + (location.bottom - metrics.height)) / 2.0f;
+				break;
+			case DWRITE_PARAGRAPH_ALIGNMENT_FAR:
+				caretPoint.y = (location.bottom - metrics.height);
+			}
+
+			if (onFocus)
+				DestroyCaret();
+			CreateCaret(windowHandle, nullptr, 1, metrics.height);
+			SetCaretPos(caretPoint.x, caretPoint.y);
+			ShowCaret(windowHandle);
+		}
 	}
 
 parentCall:
