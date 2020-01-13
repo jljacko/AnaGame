@@ -75,6 +75,30 @@ typedef struct ColorEffect
 	D2D1_COLOR_F color;
 };
 
+class TextHighlighter
+{
+public:
+	TextHighlighter(TrecComPointer<ID2D1RenderTarget>);
+
+	void SetLayout(TrecComPointer<IDWriteTextLayout> l);
+	void SetFirstPosition(UINT);
+	void SetSecondPosition(UINT);
+
+	bool Reset(UINT location);
+	void ResetUp(UINT location);
+	bool IsActive();
+private:
+	
+	UINT beginningPosition, endingPosition;
+	bool beginningIsInitial;
+
+	bool isActive;
+
+	TrecComPointer<ID2D1RenderTarget> renderer;
+	TrecComPointer<ID2D1SolidColorBrush> brush;
+	TrecComPointer<IDWriteTextLayout> layout;
+};
+
 
 /*
 * Class: TTextField
@@ -108,6 +132,7 @@ public:
 
 	afx_msg virtual void OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr, TDataArray<TControl*>& clickedControl);
 	afx_msg bool OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlags, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
+	afx_msg virtual void OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
 	afx_msg void OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
 
 	void AppendBoldText(const TString& t);
@@ -126,6 +151,9 @@ public:
 
 	void AddColorEffect(D2D1_COLOR_F col, UINT start, UINT length);
 protected:
+	TextHighlighter highlighter;
+
+
 	bool isPassword, offerPasswordPeek;
 	bool isEditable;
 	TString text;

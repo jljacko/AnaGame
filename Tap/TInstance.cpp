@@ -97,10 +97,14 @@ LRESULT TInstance::Proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		win->OnRButtonUp(wParam, TPoint(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
 		break;
 	case WM_NCMOUSEMOVE:
+	case WM_MOUSEMOVE:
 		win->OnMouseMove(wParam, TPoint(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
 		break;
 	case WM_CHAR:
 		win->OnChar(true, wParam, lParam & 0x0000FFFF, 0);
+		break;
+	case WM_KEYDOWN:
+		win->OnChar(false, wParam, lParam & 0x0000FFFF, 0);
 		break;
 	case WM_SIZE:
 		win->OnWindowResize(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));

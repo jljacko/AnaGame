@@ -1,5 +1,6 @@
 
 #include "TTextField.h"
+#include <atltrace.h>
 
 // Allows Anaface to keep track of where the caret is
 TDataArray<TTextField*> TextList;
@@ -19,7 +20,9 @@ TDataArray<TTextField*> TextList;
 *				HWND winHand - the handle to the window so Windows Caret Support is possible
 * Returns: void
 */
-TTextField::TTextField(TrecComPointer<ID2D1RenderTarget> rt, TrecPointer<TArray<styleTable>> st, HWND winHand) :TGadgetControl(rt,st,false)
+TTextField::TTextField(TrecComPointer<ID2D1RenderTarget> rt, TrecPointer<TArray<styleTable>> st, HWND winHand) :
+	TGadgetControl(rt,st,false),
+	highlighter(rt)
 {
 	isTextControl = drawNumBoxes = true;
 	bool notFound = true;
@@ -111,6 +114,14 @@ void TTextField::InputChar(wchar_t cha, int times)
 			if (cha == L'o')
 				goto def;
 			text.Insert(caretLoc++, L'/');
+			break;
+		case VK_DELETE:
+			if (text.GetSize() > 0)
+			{
+
+				text.Delete(caretLoc, 1);
+
+			}
 			break;
 		default:
 		def:
@@ -450,6 +461,7 @@ void TTextField::onDraw(TObject* obj)
 			
 		}
 		text1->reCreateLayout();
+		highlighter.SetLayout(text1->fontLayout);
 	}
 	else if (isPassword && showPassword) 
 	{
@@ -525,12 +537,13 @@ void TTextField::SetNewLocation(const D2D1_RECT_F& r)
 afx_msg void TTextField::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr, TDataArray<TControl*>& clickedControl)
 {
 	resetArgs();
+	
 	BOOL trailing = false, isInside = false;
 	DWRITE_HIT_TEST_METRICS metrics;
 	if (!isEditable)
 		goto parentCall;
 
-	text1->fontLayout->HitTestPoint(point.x, point.y, &trailing, &isInside, &metrics);
+	text1->fontLayout->HitTestPoint(point.x - location.left, point.y - location.top, &trailing, &isInside, &metrics);
 
 	if (isInside && isContained(&point, &location))
 	{
@@ -544,16 +557,18 @@ afx_msg void TTextField::OnLButtonDown(UINT nFlags, TPoint point, messageOutput*
 		if (trailing)
 		{
 			caretLoc = metrics.textPosition+ 1;
-			SetCaretPos(metrics.left + metrics.width, metrics.top);
+			SetCaretPos(metrics.left + metrics.width + location.left, metrics.top + location.top);
 		}
 		else
 		{
 			caretLoc = metrics.textPosition;
-			SetCaretPos(metrics.left, metrics.top);
+			SetCaretPos(metrics.left + location.left, metrics.top + location.top);
 		}
 
 		ShowCaret(windowHandle);
-
+		clickedControl.push_back(this);
+		if(highlighter.Reset(caretLoc))
+			highlighter.SetFirstPosition(caretLoc);
 		
 		TTextField* feild = nullptr;
 		for (int c = 0; c < TextList.Size(); c++)
@@ -608,6 +623,8 @@ afx_msg void TTextField::OnLButtonDown(UINT nFlags, TPoint point, messageOutput*
 			CreateCaret(windowHandle, nullptr, 1, metrics.height);
 			SetCaretPos(caretPoint.x, caretPoint.y);
 			ShowCaret(windowHandle);
+			clickedControl.push_back(this);
+			// highlighter.SetFirstPosition(caretLoc);
 		}
 	}
 
@@ -761,9 +778,50 @@ bool TTextField::OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags, me
 		{
 			args.text.Set(text1->text);
 			text1->reCreateLayout();
+			highlighter.SetLayout(text1->fontLayout);
 		}
 	}
 	return onFocus;
+}
+
+void TTextField::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+{
+	ATLTRACE(L"TEXT FILED ONMOVEMOUSECALLED\n");
+	TControl::OnMouseMove(nFlags, point, mOut, eventAr);
+
+	if (isContained(&point, &location))
+	{
+		ATLTRACE(L"CHECKING HILIGHTER STATUS\n");
+		if (highlighter.IsActive())
+		{
+			ATLTRACE(L"HILIGHTER STATUS IS GO GO GO!\n");
+			BOOL trailing = false, isInside = false;
+			DWRITE_HIT_TEST_METRICS metrics;
+
+			text1->fontLayout->HitTestPoint(point.x - location.left, point.y - location.top, &trailing, &isInside, &metrics);
+			HideCaret(windowHandle);
+
+			UINT locCarLoc = 0;
+			if (trailing)
+			{
+				locCarLoc = metrics.textPosition + 1;
+				SetCaretPos(metrics.left + metrics.width + location.left, metrics.top + location.top);
+			}
+			else
+			{
+				locCarLoc = metrics.textPosition;
+				SetCaretPos(metrics.left + location.left, metrics.top + location.top);
+			}
+
+			highlighter.SetSecondPosition(caretLoc = locCarLoc);
+
+			ShowCaret(windowHandle);
+			if (*mOut == positiveContinue)
+				*mOut = positiveContinueUpdate;
+			else if (*mOut == positiveOverride)
+				*mOut = positiveOverrideUpdate;
+		}
+	}
 }
 
 /*
@@ -782,6 +840,25 @@ void TTextField::OnLButtonUp(UINT nFlags, TPoint point, messageOutput * mOut, TD
 		*mOut = positiveOverrideUpdate;
 	}
 	showPassword = false;
+
+	BOOL trailing = false, isInside = false;
+	DWRITE_HIT_TEST_METRICS metrics;
+
+	text1->fontLayout->HitTestPoint(point.x - location.left, point.y - location.top, &trailing, &isInside, &metrics);
+	
+	UINT locCarLoc = 0;
+	if (trailing)
+	{
+		locCarLoc = metrics.textPosition + 1;
+		
+	}
+	else
+	{
+		locCarLoc = metrics.textPosition;
+		
+	}
+	if (isInside)
+		highlighter.ResetUp(locCarLoc);
 }
 
 /*
@@ -1127,6 +1204,8 @@ void TTextField::updateTextString()
 		layout->SetFontStyle(details[c].style, details[c].range);
 		layout->SetFontWeight(details[c].weight, details[c].range);
 	}
+
+	highlighter.SetLayout(text1->fontLayout);
 }
 
 /*
@@ -1754,4 +1833,101 @@ void incrimentControl::operator=(float f)
 {
 	type = t_float;
 	value.f = f;
+}
+
+TextHighlighter::TextHighlighter(TrecComPointer<ID2D1RenderTarget> rt)
+{
+	if (!rt.Get())
+		throw L"Error! Need Render Target To Be active!";
+
+	renderer = rt;
+	isActive = false;
+
+	TrecComPointer<ID2D1SolidColorBrush>::TrecComHolder brushHolder;
+	renderer->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Aqua), brushHolder.GetPointerAddress());
+	brush = brushHolder.Extract();
+}
+
+void TextHighlighter::SetLayout(TrecComPointer<IDWriteTextLayout> l)
+{
+	layout = l;
+	assert(layout.Get());
+}
+
+void TextHighlighter::SetFirstPosition(UINT f)
+{
+	beginningPosition = f;
+	beginningIsInitial = true;
+	isActive = true;
+	ATLTRACE(L"HIGHLIGHTER PREPARED\n");
+}
+
+void TextHighlighter::SetSecondPosition(UINT s)
+{
+	if (isActive && layout.Get())
+	{
+		layout->SetDrawingEffect(nullptr, DWRITE_TEXT_RANGE{ beginningPosition, endingPosition - beginningPosition });
+		isActive = false;
+	}
+
+	if (beginningIsInitial)
+	{
+		if (beginningPosition > s)
+		{
+			beginningIsInitial = false;
+			endingPosition = beginningPosition;
+			beginningPosition = s;
+		}
+		else
+			endingPosition = s;
+		
+	}
+	else
+	{
+		if (endingPosition < s)
+		{
+			beginningIsInitial = true;
+			beginningPosition = endingPosition;
+			endingPosition = s;
+		}
+		else
+			beginningPosition = s;
+	}
+	ATLTRACE(L"HIGHLIGHTER MODIFIED\n");
+	layout->SetDrawingEffect(brush.Get(), DWRITE_TEXT_RANGE{ beginningPosition, endingPosition - beginningPosition });
+	isActive = true;
+}
+
+
+bool TextHighlighter::Reset(UINT cLocation)
+{
+
+	if (cLocation > beginningPosition&& cLocation < endingPosition)
+		return false;
+	if (layout.Get())
+	{
+		layout->SetDrawingEffect(nullptr, DWRITE_TEXT_RANGE{ beginningPosition, endingPosition - beginningPosition });
+		
+	}
+	isActive = false;
+	ATLTRACE(L"HIGHLIGHTER RESET\n");
+	return true;
+}
+
+void TextHighlighter::ResetUp(UINT cLocation)
+{
+	if (cLocation == ((beginningIsInitial) ? beginningPosition : endingPosition))
+	{
+		if (layout.Get())
+		{
+			layout->SetDrawingEffect(nullptr, DWRITE_TEXT_RANGE{ beginningPosition, endingPosition - beginningPosition });
+		}
+		
+	}
+	isActive = false;
+}
+
+bool TextHighlighter::IsActive()
+{
+	return isActive;
 }
