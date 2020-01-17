@@ -131,9 +131,9 @@ public:
 	void SetNewLocation(const D2D1_RECT_F& r)override;
 
 	afx_msg virtual void OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr, TDataArray<TControl*>& clickedControl);
-	afx_msg bool OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlags, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
+	afx_msg virtual bool OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlags, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
 	afx_msg virtual void OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
-	afx_msg void OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
+	afx_msg virtual void OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
 
 	void AppendBoldText(const TString& t);
 	void AppendItalicText(const TString& t);
@@ -152,6 +152,8 @@ public:
 	void AddColorEffect(D2D1_COLOR_F col, UINT start, UINT length);
 protected:
 	TextHighlighter highlighter;
+
+	static void RemoveFocus();
 
 
 	bool isPassword, offerPasswordPeek;
@@ -177,7 +179,7 @@ protected:
 
 	void setToZero();
 
-	void InputChar(wchar_t, int);
+	virtual void InputChar(wchar_t, int);
 	void updateTextString();
 	void moveCaretLeft(POINT point);
 	void moveCaretRight(POINT point);

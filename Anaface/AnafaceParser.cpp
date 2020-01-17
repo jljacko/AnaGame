@@ -208,6 +208,11 @@ bool AnafaceParser::Obj(TString* va)
 		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TFlyout>(renderer, classList);// TrecPointer<TControl>((new TFlyout(renderer, classList)));
 		addToTree(currentObj);
 	}
+	else if (!v.Compare(L"TTerminal") || !v.Compare(L"TCommandPrompt") || !v.Compare(L"TPrompt"))
+	{
+		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TPromptControl>(renderer, classList, windowHandle);
+		addToTree(currentObj);
+	}
 	else if (v.Compare(L"List") == 0)
 	{
 		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TLayout>(renderer, classList);// TrecPointer<TControl>((new TLayout(renderer, classList)));

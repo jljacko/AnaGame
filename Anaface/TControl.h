@@ -217,6 +217,7 @@ class _ANAFACE_DLL TText
 	friend class TText;
 	friend class TControl;
 	friend class TTextField;
+	friend class TPromptControl;
 	friend class TCheckBox;
 	friend class TRadioButton;
 //	friend class TComboBox;

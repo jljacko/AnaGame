@@ -66,6 +66,9 @@
     <ClInclude Include="IDEPage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TerminalHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -108,6 +111,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="IDEPage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TerminalHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

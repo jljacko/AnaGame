@@ -3,7 +3,7 @@
 #include <atltrace.h>
 
 // Allows Anaface to keep track of where the caret is
-TDataArray<TTextField*> TextList;
+static TDataArray<TTextField*> TextList;
 
 /*
 * Method:
@@ -1178,6 +1178,17 @@ void TTextField::AddColorEffect(D2D1_COLOR_F col, UINT start, UINT length)
 	{
 		colors.push_back(ce);
 		layout->SetDrawingEffect(ce.colBrush, DWRITE_TEXT_RANGE{ start, length });
+	}
+}
+
+void TTextField::RemoveFocus()
+{
+	TTextField* feild = nullptr;
+	for (int c = 0; c < TextList.Size(); c++)
+	{
+		feild = TextList[c];
+		if (feild)
+			feild->onFocus = false;
 	}
 }
 
