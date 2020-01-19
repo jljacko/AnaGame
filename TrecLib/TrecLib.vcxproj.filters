@@ -87,6 +87,18 @@
     <ClInclude Include="TShell.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TObjectNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TFileShell.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TDirectory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TFileNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -141,6 +153,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TShell.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TObjectNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TFileShell.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TDirectory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TFileNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

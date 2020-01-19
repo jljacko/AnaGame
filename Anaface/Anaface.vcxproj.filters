@@ -126,6 +126,9 @@
     <ClInclude Include="TPromptControl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TTreeDataBind.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -234,6 +237,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TPromptControl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TTreeDataBind.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

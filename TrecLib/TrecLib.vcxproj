@@ -170,11 +170,15 @@
     <ClInclude Include="TArrayBase.h" />
     <ClInclude Include="TDataArray.h" />
     <ClInclude Include="TDataArrayBase.h" />
+    <ClInclude Include="TDirectory.h" />
     <ClInclude Include="TFile.h" />
+    <ClInclude Include="TFileNode.h" />
+    <ClInclude Include="TFileShell.h" />
     <ClInclude Include="TMap.h" />
     <ClInclude Include="TMapBase.h" />
     <ClInclude Include="TML_Reader_.h" />
     <ClInclude Include="TObject.h" />
+    <ClInclude Include="TObjectNode.h" />
     <ClInclude Include="TPoint.h" />
     <ClInclude Include="TrecLib.h" />
     <ClInclude Include="TrecReference.h" />
@@ -198,10 +202,14 @@
     </ClCompile>
     <ClCompile Include="TArrayBase.cpp" />
     <ClCompile Include="TDataArrayBase.cpp" />
+    <ClCompile Include="TDirectory.cpp" />
     <ClCompile Include="TFile.cpp" />
+    <ClCompile Include="TFileNode.cpp" />
+    <ClCompile Include="TFileShell.cpp" />
     <ClCompile Include="TMapBase.cpp" />
     <ClCompile Include="TML_Reader_.cpp" />
     <ClCompile Include="TObject.cpp" />
+    <ClCompile Include="TObjectNode.cpp" />
     <ClCompile Include="TPoint.cpp" />
     <ClCompile Include="TrecLib.cpp" />
     <ClCompile Include="TShell.cpp" />

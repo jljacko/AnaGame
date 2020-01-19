@@ -117,6 +117,85 @@ public:
 	}
 };
 
+template<class t, class u> class TrecSubPointer
+{
+	friend class TrecPointerKey;
+	// friend class TrecPointer<t>;
+protected:
+	TrecBoxPointer<t>* pointer;
+
+	TrecSubPointer(u* raw)
+	{
+		if(raw)
+			throw L"Error! TrecPointers must be initialized with a pointer, not NULL!";
+		t* baseRaw = dynamic_cast<t*>(raw);
+		if (!baseRaw)
+			throw L"Error! U type must be a subclass of T type!";
+		pointer = new TrecBoxPointer<t>(baseRaw);
+	}
+
+public:
+	TrecSubPointer()
+	{
+		pointer = nullptr;
+	}
+
+	TrecSubPointer(const TrecSubPointer<t,u>& copy)
+	{
+		pointer = copy.pointer;
+		if (pointer)
+			pointer->Increment();
+	}
+
+	~TrecSubPointer()
+	{
+		Nullify();
+	}
+
+	void Nullify()
+	{
+		if (pointer)
+			pointer->Decrement();
+		pointer = nullptr;
+	}
+
+	void operator=(const TrecSubPointer<t,u>& other)
+	{
+		// First, make sure that the other TrecPointer isn't pointing to the same reference.
+		// If it is, we don't want to decrement the reference lest it become 0 (and self-destructs)
+		if (other.pointer == pointer)
+			return;
+
+		if (pointer)
+			pointer->Decrement();
+
+		pointer = other.pointer;
+
+		if (pointer)
+			pointer->Increment();
+	}
+
+	u* Get()
+	{
+		if (!pointer) return nullptr;
+		return dynamic_cast<u*>(pointer->Get());
+	}
+
+	t* GetBase()
+	{
+		if (!pointer) return nullptr;
+		return pointer->Get();
+	}
+
+	void Delete()
+	{
+		if (!pointer) return;
+		pointer->Delete();
+		pointer->Decrement();
+		pointer = nullptr;
+	}
+};
+
 template<class t> class TrecPointer
 {
 	friend class TrecPointerKey;
@@ -410,6 +489,39 @@ public:
 			throw L"Error! Attempted to assign incompatible type!";
 		}
 		TrecPointer<t> ret(raw_t);
+		return ret;
+	}
+
+	template <class t, class u> static TrecPointer<t> GetTrecPointerFromSub(TrecSubPointer<t, u>& sub)
+	{
+		TrecPointer<t> ret();
+		ret.pointer = sub.pointer;
+		if (ret.pointer && ret.pointer.Get())
+			ret.pointer->Increment();
+		return ret;
+	}
+
+	template <class t, class u> static TrecSubPointer<t, u> GetTrecSubPointerFromTrec(TrecPointer<t>& tPointer)
+	{
+		TrecSubPointer<t, u> ret();
+		ret.pointer = tPointer.pointer;
+		if (ret.pointer && ret.pointer.Get())
+			ret.pointer->Increment();
+		return ret;
+	}
+
+	template <class t, class u, class...types> static TrecSubPointer<t, u> GetNewTrecSubPointer(types&& ... args)
+	{
+		u* raw = new u(args...);
+		TrecSubPointer<t, u> ret(raw);
+		return ret;
+	}
+
+	template <class t, class u, class...types> static TrecSubPointer<t, u> GetNewSelfTrecSubPointer(types&& ... args)
+	{
+		u* raw = new u(args...);
+		TrecSubPointer<t, u> ret(raw);
+		ret->SetSelf(GetTrecPointerFromSub<t>(ret));
 		return ret;
 	}
 
