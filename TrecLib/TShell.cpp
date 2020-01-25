@@ -1,6 +1,12 @@
 #include "TShell.h"
 #include "DirectoryInterface.h"
 
+/*
+* Method: (TShell) (Constructor) 
+* Purpose: Creates the Shell, with the Home directory as the initial working directory
+* Parameters: void
+* Returns: void
+*/
 TShell::TShell()
 {
 	workingDirectory.Set(GetDirectoryWithSlash(cd_Documents));
@@ -10,10 +16,22 @@ TShell::TShell()
 	RtlZeroMemory(&processInfo, sizeof(processInfo));
 }
 
+/*
+* Method: (TShell) (Destructor)
+* Purpose: Standard Destructor
+* Parameters: void
+* Returns: void
+*/
 TShell::~TShell()
 {
 }
 
+/*
+* Method: TShell - SubmitCommand
+* Purpose: Allows applications to submit commands for processing
+* Parameters: TString& command - the command to run
+* Returns:
+*/
 void TShell::SubmitCommand(TString& command)
 {
 	// First check to see if a Process is already running from a previous command.
@@ -57,6 +75,14 @@ void TShell::SubmitCommand(TString& command)
 	}
 }
 
+/*
+* Method: TShell - Get Output
+* Purpose: Retrieves the output for Interface UIs that manage a shell session
+* Parameters: void
+* Returns: TString - the output produced
+*
+* Note: If output is returned, don't squander it as the object will delete it's own record.
+*/
 TString TShell::GetOutput()
 {
 	if (processInfo.hProcess)
@@ -76,6 +102,12 @@ TString TShell::GetOutput()
 	return ret;
 }
 
+/*
+* Method: TShell - GetError
+* Purpose: Retrieves Error information from a running process
+* Parameters: void
+* Returns: TString - Error Output
+*/
 TString TShell::GetError()
 {
 	if (processInfo.hProcess)
@@ -95,6 +127,12 @@ TString TShell::GetError()
 	return ret;
 }
 
+/*
+* Method: TShell - TerminateProcess
+* Purpose: Terminates any running process under the objects control
+* Parameters: void
+* Returns: void
+*/
 void TShell::TerminateProcess()
 {
 	if (processInfo.hProcess)
@@ -104,6 +142,12 @@ void TShell::TerminateProcess()
 	}
 }
 
+/*
+* Method: TShell - CheckProcess
+* Purpose: Reports whether there is an active process running under the shell
+* Parameters: void
+* Returns: bool - whether there is a process running under this process
+*/
 bool TShell::CheckProcess()
 {
 	if (processInfo.hProcess)
@@ -120,17 +164,34 @@ bool TShell::CheckProcess()
 	return false;
 }
 
+/*
+* Method: TShell - GetWorkingDirectory
+* Purpose: Reports the working directory of the Shell
+* Parameters: void
+* Returns: TString - the working directory of the Shell
+*/
 TString TShell::GetWorkingDirectory()
 {
 	return workingDirectory;
 }
 
-
+/*
+* Method: TShell - Process_pwd
+* Purpose: processes the pwd command
+* Parameters: TString& command - parameters for the command
+* Returns: void
+*/
 void TShell::Process_pwd(TString& command)
 {
 	output.Set(workingDirectory);
 }
 
+/*
+* Method: TShell - Process_cd
+* Purpose: processes the cd command
+* Parameters: TString& command - parameters for the command
+* Returns: void
+*/
 void TShell::Process_cd(TString& command)
 {
 	// If cd is alone, set to Home Directory
@@ -143,6 +204,14 @@ void TShell::Process_cd(TString& command)
 }
 
 
+/*
+* Method: TShell - ProcessBackgroundProcess
+* Purpose: Starts a process in the background
+* Parameters: TString& command - parameters for the command
+* Returns: void
+*
+* Note: this should be called if the user has an ampersend in the command as it is a sign that the process should be detatched from the prompt
+*/
 void TShell::ProcessBackgroundProcess(TString& command)
 {
 	SECURITY_ATTRIBUTES security;
@@ -183,6 +252,12 @@ void TShell::ProcessBackgroundProcess(TString& command)
 	
 }
 
+/*
+* Method: TShell - ProcessFrontCommand
+* Purpose: Starts a process in the forefront
+* Parameters: TString& command - parameters for the command
+* Returns: void
+*/
 void TShell::ProcessFrontCommand(TString& command)
 {
 	STARTUPINFOW start;

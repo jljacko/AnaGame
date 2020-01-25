@@ -1,6 +1,11 @@
 #pragma once
 #include "TControl.h"
 #include <TObjectNode.h>
+
+/*
+ * class TTreeDataBind
+ * Purpose: Support for depicting a tree-based system on Anaface
+ */
 class TTreeDataBind :
 	public TControl
 {

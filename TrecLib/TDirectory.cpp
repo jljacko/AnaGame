@@ -1,16 +1,33 @@
 #include "TDirectory.h"
 
-
+/*
+* Method: (TDirectory) (Constructor)
+* Purpose: Creates the TDirectory (by creating the TFileShell)
+* Parameters: TString& path - path of the directory
+* Returns: void
+*/
 TDirectory::TDirectory(TString& path) : TFileShell(path)
 {
 
 }
 
+/*
+* Method: TDirectory - IsDirectory
+* Purpose: Reports whether this object represents a directory as opposed to a regular file
+* Parameters: void
+* Returns: bool - true as this is a directory (overrides the TFileShell method that returns false)
+*/
 bool TDirectory::IsDirectory()
 {
 	return true;
 }
 
+/*
+* Method: TDirectory - GetFileListing
+* Purpose: Retrieves the list of Files held in the directory
+* Parameters: void
+* Returns: TDataArray<TrecPointer<TFileShell>> - List of Directories
+*/
 TDataArray<TrecPointer<TFileShell>> TDirectory::GetFileListing()
 {
 	TDataArray<TrecPointer<TFileShell>> ret;
@@ -42,6 +59,12 @@ TDataArray<TrecPointer<TFileShell>> TDirectory::GetFileListing()
 	return ret;
 }
 
+/*
+* Method: TDirectory - GetFileListing
+* Purpose: Retrieves the list of Files held in the directory
+* Parameters: TDataArray<TrecPointer<TFileShell>>& files - reference that holds the results
+* Returns: void
+*/
 void TDirectory::GetFileListing(TDataArray<TrecPointer<TFileShell>>& files)
 {
 	files.RemoveAll();

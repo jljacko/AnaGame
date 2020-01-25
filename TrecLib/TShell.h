@@ -3,6 +3,10 @@
 #include "TString.h"
 #include "TFile.h"
 
+/*
+ * class TShell
+ * Purpose: provides support for command-line functionality in Anagame
+ */
 class _TREC_LIB_DLL TShell :
 	public TObject
 {

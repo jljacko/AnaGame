@@ -1,5 +1,10 @@
 #pragma once
 #include "TFileShell.h"
+
+/*
+ * class TDirectory
+ * Purpose: Represents a Folder in the file system
+ */
 class _TREC_LIB_DLL TDirectory :
 	public TFileShell
 {

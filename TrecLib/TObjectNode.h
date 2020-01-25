@@ -1,6 +1,11 @@
 #pragma once
 #include "TObject.h"
 #include "TrecReference.h"
+
+/*
+ * class TObjectNode
+ * Purpose: Provides an Interface for which Trees of ny type of Object can be formed
+ */
 class _TREC_LIB_DLL TObjectNode :
 	public TObject
 {
