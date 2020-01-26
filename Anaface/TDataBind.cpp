@@ -1,5 +1,5 @@
 #include "TDataBind.h"
-
+#include "TScrollerControl.h"
 
 
 TDataBind::TDataBind(TrecComPointer<ID2D1RenderTarget> rt, TrecPointer<TArray<styleTable>> ta): TControl(rt, ta)
@@ -22,6 +22,25 @@ TDataBind::~TDataBind()
 */
 void TDataBind::Resize(D2D1_RECT_F r)
 {
+	// First Check to see if we need a new scroll control
+	D2D1_RECT_F tempLoc = this->getLocation();
+	if ((tempLoc.bottom - tempLoc.top > r.bottom - r.top) ||
+		(tempLoc.right - tempLoc.left > r.right - r.left))
+	{
+		if (parent.Get())
+		{
+			TrecPointer<TControl> scrollControl = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TScrollerControl>(renderTarget, styles);
+			scrollControl->onCreate(r, TrecPointer<TWindowEngine>());
+			dynamic_cast<TScrollerControl*>(scrollControl.Get())->SetChildControl(TrecPointerKey::GetTrecPointerFromSoft<TControl>(tThis));
+			TrecPointerKey::GetTrecPointerFromSoft<TControl>(parent)->SwitchChildControl(tThis, scrollControl);
+			location.left = r.left;
+			location.top = r.top;
+		}
+		return;
+	}
+
+
+	// We do not, so proceed
 	location = r;
 	updateComponentLocation();
 	CheckScroll();
@@ -47,6 +66,34 @@ void TDataBind::Resize(D2D1_RECT_F r)
 		}
 		ele->Resize(loc);
 	}
+}
+
+D2D1_RECT_F TDataBind::getLocation()
+{
+	D2D1_RECT_F returnable = location;
+
+	UINT objects = 0;
+	if (dataRaw)
+		objects = dataRaw->Size();
+	else if (dataWrap)
+		objects = dataWrap->Count();
+	else return returnable;
+
+	TControl* ele = nullptr;
+	if (children.Count() && (ele = children.ElementAt(0).Get()))
+	{
+		D2D1_RECT_F cLoc = ele->getLocation();
+		if (this->isStack)
+		{
+			returnable.bottom = returnable.top + (cLoc.bottom - cLoc.top) * objects;
+		}
+		else
+		{
+			returnable.right = returnable.left + (cLoc.right - cLoc.left) * objects;
+		}
+	}
+
+	return returnable;
 }
 
 void TDataBind::onDraw(TObject * obj)

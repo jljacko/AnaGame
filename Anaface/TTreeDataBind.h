@@ -21,7 +21,7 @@ public:
 	afx_msg virtual void OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr) override;
 
 	void SetNode(TrecPointer<TObjectNode> newNode);
-
+	D2D1_RECT_F getLocation()override;
 protected:
 	TrecPointer<TObjectNode> mainNode;
 };

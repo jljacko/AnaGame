@@ -122,7 +122,7 @@ float TScrollBar::MovedContent(float degree)
 	return degree;
 }
 
-void TScrollBar::Refresh(D2D1_RECT_F& location, D2D1_RECT_F& area)
+void TScrollBar::Refresh(const D2D1_RECT_F& location, const D2D1_RECT_F& area)
 {
 	body_rect = location;
 
@@ -171,4 +171,9 @@ void TScrollBar::EstablishScrollColors()
 	middle_box_click = D2D1::ColorF(0x00000099);
 	end_box = D2D1::ColorF(0x00000066);
 	pointer = &value;
+}
+
+UINT GetScrollbarBoxSize()
+{
+	return BOX_SIZE;
 }

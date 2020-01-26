@@ -15,11 +15,14 @@ public:
 	afx_msg virtual void OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr) override;
 	afx_msg virtual void OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr) override;
 	void Resize(D2D1_RECT_F r);
+
+	D2D1_RECT_F getLocation()override;
 protected:
 	TDataArrayBase* dataRaw;
 	TArrayBase* dataWrap;
 	bool isStack;
 	UINT widthHeight;
 	TPoint mouseMovePoint;
+	bool isScrolling;
 };
 

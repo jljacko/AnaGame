@@ -49,3 +49,8 @@ void TTreeDataBind::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, 
 void TTreeDataBind::SetNode(TrecPointer<TObjectNode> newNode)
 {
 }
+
+D2D1_RECT_F TTreeDataBind::getLocation()
+{
+	return D2D1_RECT_F();
+}

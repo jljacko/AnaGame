@@ -931,6 +931,35 @@ UINT TLayout::GetTotalSetCol()
 
 void TLayout::Resize(D2D1_RECT_F r)
 {
+	if (SetScrollControlOnMinSize(r))
+	{
+		float difHeight = location.top - r.top;
+		location.bottom -= difHeight;
+		location.top -= difHeight;
+		float difWidth = location.left - r.left;
+		location.left -= difWidth;
+		location.right -= difWidth;
+
+		for (UINT Rust = 0; Rust < lChildren.Count(); Rust++)
+		{
+			if (!lChildren.ElementAt(Rust).Get())
+				continue;
+			containerControl cc = *(lChildren.ElementAt(Rust).Get());
+			if (!cc.contain.Get())
+				continue;
+			D2D1_RECT_F loc = getRawSectionLocation(cc.y, cc.x);
+			if (cc.extend)
+			{
+				D2D1_RECT_F loc2 = getRawSectionLocation(cc.y2, cc.x2);
+				loc.right = loc2.right;
+				loc.bottom = loc2.bottom;
+			}
+
+			cc.contain->Resize(loc);
+		}
+
+		return;
+	}
 	UINT h_fix = GetTotalSetRow();
 	UINT w_fix = GetTotalSetCol();
 	UINT h_flex = GetTotalFlexRow();
@@ -1389,4 +1418,17 @@ void TLayout::SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget> rt)
 		renderTarget->CreateSolidColorBrush(internalColor, solBrush.GetPointerAddress());
 		internalBrush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1SolidColorBrush>(solBrush);
 	}
+}
+
+void TLayout::SwitchChildControl(TrecPointerSoft<TControl> curControl, TrecPointer<TControl> newControl)
+{
+	for (UINT Rust = 0; Rust < lChildren.Count(); Rust++)
+	{
+		if (lChildren.ElementAt(Rust).Get() && lChildren.ElementAt(Rust)->contain.Get() == curControl.Get())
+		{
+			lChildren.ElementAt(Rust)->contain = newControl;
+			return;
+		}
+	}
+	TControl::SwitchChildControl(curControl, newControl);
 }

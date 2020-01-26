@@ -436,7 +436,7 @@ public:
 	void updateArrayID(int aid);
 
 	virtual void onDraw(TObject* obj = nullptr);
-	D2D1_RECT_F getLocation();
+	virtual D2D1_RECT_F getLocation();
 	D2D1_RECT_F getMargin();
 	TrecComPointer<ID2D1RenderTarget> getRenderTarget();
 	TrecPointer<TControl> getParent();
@@ -454,7 +454,7 @@ public:
 	void setWidth(int w);
 	void setHeight(int h);
 
-	void setLocation(D2D1_RECT_F r);
+	virtual void setLocation(D2D1_RECT_F r);
 
 	void setMBottom(int b);
 	void setMTop(int t);
@@ -491,6 +491,10 @@ public:
 
 protected:
 	//CMap<CString, CString, CString, CString> styles;
+
+	bool SetScrollControlOnMinSize(D2D1_RECT_F l);
+	virtual void SwitchChildControl(TrecPointerSoft<TControl> curControl, TrecPointer<TControl> newControl);
+
 	bool resistFocusRemoval;
 	bool boundsPreset;
 	TString className;

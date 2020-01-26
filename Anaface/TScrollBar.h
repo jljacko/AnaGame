@@ -38,7 +38,7 @@ public:
 
 	float MovedContent(float degree);
 
-	void Refresh(D2D1_RECT_F& location, D2D1_RECT_F& area);
+	void Refresh(const D2D1_RECT_F& location, const D2D1_RECT_F& area);
 
 private: // Static attributes, styles that should be shared across all Scroll Bars
 
@@ -52,3 +52,5 @@ private: // Static attributes, styles that should be shared across all Scroll Ba
 	float diff1, diff2, widthFactor;
 	ScrollOrient scrollAlignment;
 };
+
+UINT GetScrollbarBoxSize();
