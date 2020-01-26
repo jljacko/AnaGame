@@ -16,6 +16,9 @@
 
 #include <TWindowEngine.h>
 
+
+#include <TControlComponent.h>
+
 //#define _TREC_LIB_DLL __declspec(dllimport)
 #include <TMap.h>
 
@@ -139,7 +142,7 @@ typedef enum BrushMarker
  * Class TBorder
  * Purpose: Draws the Border of a Given TControl
  */
-class _ANAFACE_DLL TBorder
+class _ANAFACE_DLL TBorder : public TControlComponent
 {
 	friend class TControl;
 	friend class TBorder;
@@ -160,8 +163,7 @@ public:
 	// Handling Colors
 	// NOTE: For Compatibility between AnaGame for Windows and an eventual AnaGame for Unix,
 	//	Parameters and Return values should be replaced with a cross-platform structure 
-	void setColor(D2D1::ColorF cf);
-	D2D1::ColorF getColor();
+
 
 	// Methods for handling Opaquency. Note, there is no getOpaquency() method as it is handled by the getColored method 
 	void setThickness(float f);
@@ -172,6 +174,14 @@ public:
 	RECT getLocation();
 	void ShiftHorizontal(int degrees);
 	void ShiftVertical(int degrees);
+
+	// Inherited From TControlComponent
+	virtual void SetColor(D2D1_COLOR_F& color)override;
+	virtual D2D1_COLOR_F GetColor() override;
+	virtual void SetColor2(D2D1_COLOR_F& color) override;
+	virtual D2D1_COLOR_F GetColor2() override;
+	virtual D2D1_RECT_F GetLocation() override;
+	virtual void SetLocation(D2D1_RECT_F& loc) override;
 private:
 	//CMap<CString, CString, CString, CString> styles;
 
@@ -183,8 +193,8 @@ private:
 	TrecComPointer <ID2D1SolidColorBrush> BuilderFocusBrush;						// Used by the Builder to Highlight Controls under editing
 	float thickness = 1.0f;											// Thickness
 	TString style;													// Holds a special style, NOTE: Feature not Implemented
-	D2D1::ColorF color = D2D1::ColorF(D2D1::ColorF::Black, 1.0);	// The Color of the Border
-	D2D1::ColorF color2 = D2D1::ColorF(D2D1::ColorF::Black, 1.0);	// The Second color used by multi color styles of the Control
+	D2D1_COLOR_F color = D2D1::ColorF(D2D1::ColorF::Black, 1.0);	// The Color of the Border
+	D2D1_COLOR_F color2 = D2D1::ColorF(D2D1::ColorF::Black, 1.0);	// The Second color used by multi color styles of the Control
 	TrecComPointer<ID2D1RenderTarget> rt;											// Pointer to the Render Target to Draw to
 	TrecComPointer<ID2D1BitmapBrush> bitBrush;										// In the event that an image is part of the Border
 	TrecComPointer<ID2D1Bitmap> image;												// the Image of the above structure
@@ -212,7 +222,7 @@ private:
  * Purpose: Handles the Text in a TControl. Note, Normally the text would be static, but extensions of the 
  *	TControl Class might add additional dynamic functionality using this structure
  */
-class _ANAFACE_DLL TText
+class _ANAFACE_DLL TText :public TControlComponent
 {
 	friend class TText;
 	friend class TControl;
@@ -241,8 +251,6 @@ public:
 	// Handling Colors
 	// NOTE: For Compatibility between AnaGame for Windows and an eventual AnaGame for Unix,
 	//	Parameters and Return values should be replaced with a cross-platform structure 
-	void setColor(D2D1::ColorF);
-	D2D1::ColorF getColor();
 
 	// Setter methods
 	bool setNewFont(TString&);
@@ -274,6 +282,14 @@ public:
 	void ShiftHorizontal(int degrees);
 	void ShiftVertical(int degrees);
 
+	// Inherited From TControlComponent
+	virtual void SetColor(D2D1_COLOR_F& color)override;
+	virtual D2D1_COLOR_F GetColor() override;
+	virtual void SetColor2(D2D1_COLOR_F& color) override;
+	virtual D2D1_COLOR_F GetColor2() override;
+	virtual D2D1_RECT_F GetLocation() override;
+	virtual void SetLocation(D2D1_RECT_F& loc) override;
+
 private:
 	//CMap<CString, CString, CString, CString> styles;
 	TrecComPointer<ID2D1RenderTarget> rt;								// Render Target to focus on
@@ -298,12 +314,12 @@ private:
 	float fontSize = 12;
 	TString locale;
 	TString font;
-	D2D1::ColorF color = D2D1::ColorF(D2D1::ColorF::Black, 1.0);
+	D2D1_COLOR_F color = D2D1::ColorF(D2D1::ColorF::Black, 1.0);
 	int storeInTML(TFile* ar, int childLevel,messageState);
 	TControl* cap;
 
 	bool secondColor;
-	D2D1::ColorF color2 = D2D1::ColorF(D2D1::ColorF::Black, 1.0);
+	D2D1_COLOR_F color2 = D2D1::ColorF(D2D1::ColorF::Black, 1.0);
 	D2D1_LINEAR_GRADIENT_BRUSH_PROPERTIES linearProp;
 	D2D1_RADIAL_GRADIENT_BRUSH_PROPERTIES radialProp;
 	D2D1_GRADIENT_STOP gradients[2];
@@ -319,7 +335,7 @@ private:
 };
 
 
-class _ANAFACE_DLL TContent
+class _ANAFACE_DLL TContent :public TControlComponent
 {
 	friend class TControl;
 	friend class TGadgetControl;
@@ -335,9 +351,9 @@ public:
 	void ShiftHorizontal(int degrees);
 	void ShiftVertical(int degrees);
 	void onDraw(D2D1_RECT_F& loc);
-	D2D1_COLOR_F getColor();
+
 	bool setOpaquency(float f);
-	void setColor(D2D1_COLOR_F);
+
 	RECT getLocation();
 
 	void SetRadialImage(TDataArray<D2D1_COLOR_F>& colors);
@@ -345,6 +361,14 @@ public:
 
 	void SetRadialImage(TDataArray<D2D1_GRADIENT_STOP>& colors);
 	void SetLinearImage(TDataArray<D2D1_GRADIENT_STOP>& colors);
+
+	// Inherited From TControlComponent
+	virtual void SetColor(D2D1_COLOR_F& color)override;
+	virtual D2D1_COLOR_F GetColor() override;
+	virtual void SetColor2(D2D1_COLOR_F& color) override;
+	virtual D2D1_COLOR_F GetColor2() override;
+	virtual D2D1_RECT_F GetLocation() override;
+	virtual void SetLocation(D2D1_RECT_F& loc) override;
 
 private:
 	TrecComPointer<ID2D1GradientStopCollection> getStopCollection(TDataArray<D2D1_COLOR_F>& colors);
@@ -370,7 +394,7 @@ private:
 	TControl* cap;
 	TShape shape;
 	bool secondColor;
-	D2D1::ColorF color2 = D2D1::ColorF(D2D1::ColorF::Black, 1.0);
+	D2D1_COLOR_F color2 = D2D1::ColorF(D2D1::ColorF::Black, 1.0);
 
 	D2D1_LINEAR_GRADIENT_BRUSH_PROPERTIES linearProp;
 	D2D1_RADIAL_GRADIENT_BRUSH_PROPERTIES radialProp;

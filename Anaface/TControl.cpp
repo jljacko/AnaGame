@@ -4224,33 +4224,6 @@ void TBorder::onDraw(D2D1_RECT_F& f_loc)
 	}
 }
 
-/*
-* Method: TBorder - setColor
-* Purpose: Allows the color of the border to change even after creation
-* Parameters: D2D1::ColorF cf -  the color to set the border to
-* Returns: void
-*/
-void TBorder::setColor(D2D1::ColorF cf)
-{
-	color = cf;
-	if (brush.Get())
-	{
-		ID2D1SolidColorBrush* sb = dynamic_cast<ID2D1SolidColorBrush*>(brush.Get());
-		if(sb)
-			sb->SetColor(cf);
-	}
-}
-
-/*
-* Method: TBorder - getColor
-* Purpose: Allows outside software to check the current color of the border
-* Parameters: void
-* Returns: D2D1::ColorF - the current color
-*/
-D2D1::ColorF TBorder::getColor()
-{
-	return color;
-}
 
 /*
 * Method: TBorder - setThickness
@@ -4320,6 +4293,56 @@ void TBorder::ShiftVertical(int degrees)
 {
 	loci.top += degrees;
 	loci.bottom += degrees;
+}
+
+/*
+* Method: TBorder - SetColor
+* Purpose: Allows the color of the border to change even after creation
+* Parameters: D2D1_COLOR_F& cf -  the color to set the border to
+* Returns: void
+*/
+void TBorder::SetColor(D2D1_COLOR_F& cf)
+{
+	color = cf;
+	if (brush.Get())
+	{
+		ID2D1SolidColorBrush* sb = dynamic_cast<ID2D1SolidColorBrush*>(brush.Get());
+		if (sb)
+			sb->SetColor(cf);
+	}
+}
+
+D2D1_COLOR_F TBorder::GetColor()
+{
+	return color;
+}
+
+void TBorder::SetColor2(D2D1_COLOR_F& cf)
+{
+	color2 = cf;
+	if (brush.Get())
+	{
+		ID2D1LinearGradientBrush* lb = nullptr;
+		ID2D1RadialGradientBrush* rb = nullptr;
+
+	}
+}
+
+D2D1_COLOR_F TBorder::GetColor2()
+{
+	return color2;
+}
+
+D2D1_RECT_F TBorder::GetLocation()
+{
+	return loci;
+}
+
+void TBorder::SetLocation(D2D1_RECT_F& loc)
+{
+	loci = loc;
+	if (cap)
+		cap->setLocation(loc);
 }
 
 void TBorder::SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget> rt)
@@ -4707,33 +4730,6 @@ bool TText::onDraw(D2D1_RECT_F& loc, TObject* obj)
 	return true;
 }
 
-/*
-* Method: TText - setColor
-* Purpose: Updates the color of the text after the initial creation
-* Parameters: D2D1::ColorF cf - the color to set the text to
-* Returns: void
-*/
-void TText::setColor(D2D1::ColorF cf)
-{
-	color = cf;
-	if (penBrush.Get())
-	{
-		ID2D1SolidColorBrush* sb = dynamic_cast<ID2D1SolidColorBrush*>(penBrush.Get());
-		if (sb)
-			sb->SetColor(cf);
-	}
-}
-
-/*
-* Method: TText - getColor
-* Purpose: Retrieves the current color of the text
-* Parameters: void
-* Returns: D2D1::ColorF - the current color of the Text
-*/
-D2D1::ColorF TText::getColor()
-{
-	return color;
-}
 
 /*
 * Method: TText - setNewFont
@@ -4973,6 +4969,44 @@ void TText::ShiftVertical(int degrees)
 {
 	bounds.top += degrees;
 	bounds.bottom += degrees;
+}
+
+void TText::SetColor(D2D1_COLOR_F& cf)
+{
+	color = cf;
+	if (penBrush.Get())
+	{
+		ID2D1SolidColorBrush* sb = dynamic_cast<ID2D1SolidColorBrush*>(penBrush.Get());
+		if (sb)
+			sb->SetColor(cf);
+	}
+}
+
+D2D1_COLOR_F TText::GetColor()
+{
+	return color;
+}
+
+void TText::SetColor2(D2D1_COLOR_F& color)
+{
+	color2 = color;
+}
+
+D2D1_COLOR_F TText::GetColor2()
+{
+	return color2;
+}
+
+D2D1_RECT_F TText::GetLocation()
+{
+	return bounds;
+}
+
+void TText::SetLocation(D2D1_RECT_F& loc)
+{
+	bounds = loc;
+	if (cap)
+		cap->setLocation(loc);
 }
 
 void TText::SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget> rt)
@@ -5440,16 +5474,6 @@ void TContent::onDraw(D2D1_RECT_F& f_snip)
 	}
 }
 
-/*
-* Method: TContent - getColor
-* Purpose: returieves the current color of the content
-* Parameters: void
-* Returns: D2D1::ColorF - the current color
-*/
-D2D1_COLOR_F TContent::getColor()
-{
-	return color;
-}
 
 /*
 * Method: TContent - setOpaquency
@@ -5465,22 +5489,7 @@ bool TContent::setOpaquency(float f)
 	return true;
 }
 
-/*
-* Method: TContent - setColor
-* Purpose: Updates the color of the content after creation
-* Parameters: D2D1::ColorF cf - the new color
-* Returns: void 
-*/
-void TContent::setColor(D2D1_COLOR_F cf)
-{
-	color = cf;
-	if (brush.Get())
-	{
-		ID2D1SolidColorBrush* sb = dynamic_cast<ID2D1SolidColorBrush*>(brush.Get());
-		if (sb)
-			sb->SetColor(cf);
-	}
-}
+
 
 /*
 * Method: TContent - getLocation
@@ -5559,6 +5568,44 @@ void TContent::SetLinearImage(TDataArray<D2D1_GRADIENT_STOP>& colors)
 		D2D1::Point2F(location.right, location.bottom)),
 		gradStop.Get(), linBrush.GetPointerAddress());
 	brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1LinearGradientBrush>(linBrush);
+}
+
+void TContent::SetColor(D2D1_COLOR_F& cf)
+{
+	color = cf;
+	if (brush.Get())
+	{
+		ID2D1SolidColorBrush* sb = dynamic_cast<ID2D1SolidColorBrush*>(brush.Get());
+		if (sb)
+			sb->SetColor(cf);
+	}
+}
+
+D2D1_COLOR_F TContent::GetColor()
+{
+	return color;
+}
+
+void TContent::SetColor2(D2D1_COLOR_F& color)
+{
+	color2 = color;
+}
+
+D2D1_COLOR_F TContent::GetColor2()
+{
+	return color2;
+}
+
+D2D1_RECT_F TContent::GetLocation()
+{
+	return location;
+}
+
+void TContent::SetLocation(D2D1_RECT_F& loc)
+{
+	location = loc;
+	if (cap)
+		cap->setLocation(loc);
 }
 
 TrecComPointer<ID2D1GradientStopCollection> TContent::getStopCollection(TDataArray<D2D1_COLOR_F>& colors)
