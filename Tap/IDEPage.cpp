@@ -210,6 +210,11 @@ void IDEPage::SetLink(TrecPointer<Page> p, ide_page_type t)
 	}
 }
 
+TString IDEPage::GetName()
+{
+	return name;
+}
+
 void IDEPage::MouseMoveBody(TPoint& diff)
 {
 	TPoint before = diff;

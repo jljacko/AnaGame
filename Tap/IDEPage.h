@@ -31,6 +31,8 @@ public:
 	void SetSelf(TrecPointer<Page>);
 	void SetLink(TrecPointer<Page> p, ide_page_type t);
 
+	TString GetName();
+
 protected:
 
 	TrecPointerSoft<Page> body;
@@ -41,12 +43,17 @@ protected:
 	TrecPointerSoft<Page> upperLeft;
 	TrecPointerSoft<Page> lowerLeft;
 
+	TDataArray<TrecPointer<Page>> pages;
+	TrecPointer<Page> currentPage;
+
 	ide_page_type type;
 	UINT barSpace;
 	page_move_mode moveMode;
 
 	bool draw;
 	TPoint curPoint;
+
+	TString name;
 
 
 private:

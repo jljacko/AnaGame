@@ -9,7 +9,8 @@ typedef enum ide_page_type
 	ide_page_type_upper_right,
 	ide_page_type_lower_right,
 	ide_page_type_upper_left,
-	ide_page_type_lower_left
+	ide_page_type_lower_left,
+	ide_page_type_drag
 }ide_page_type;
 
 class IDEPage;
