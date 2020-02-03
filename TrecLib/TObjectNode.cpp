@@ -45,3 +45,10 @@ void TObjectNode::SetParent(TrecPointerSoft<TObjectNode> p)
 {
 	parentNode = p;
 }
+
+void TObjectNode::SetSelf(TrecPointer<TObjectNode> s)
+{
+	if (s.Get() != this)
+		throw L"Error! Pointer needs to reference 'this' object!";
+	self = TrecPointerKey::GetSoftPointerFromTrec<TObjectNode>(s);
+}

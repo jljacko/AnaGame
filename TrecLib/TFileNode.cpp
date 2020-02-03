@@ -38,6 +38,43 @@ bool TFileNode::IsExtendable()
 	return data->IsDirectory();
 }
 
+bool TFileNode::IsExtended()
+{
+	return files.Size();
+}
+
+TrecPointer<TObjectNode> TFileNode::GetNodeAt(UINT target, UINT current)
+{
+	if (target == current)
+		return TrecPointerKey::GetTrecPointerFromSoft<TObjectNode>(self);
+
+	if(target < current)
+		return TrecPointer<TObjectNode>();
+
+	UINT diff = target - current++;
+
+	for (UINT rust = 0; rust < files.Size(); rust++)
+	{
+		if (files[rust]->TotalChildren() < diff)
+		{
+			diff -= files[rust]->TotalChildren();
+			current += files[rust]->TotalChildren();
+		}
+		else return files[rust]->GetNodeAt(target, current);
+	}
+	return TrecPointer<TObjectNode>();
+}
+
+UINT TFileNode::TotalChildren()
+{
+	UINT ret = 0;
+	for (UINT rust = 0; rust < files.Size(); rust++)
+	{
+		ret += files[rust]->TotalChildren() + 1;
+	}
+	return ret;
+}
+
 /*
 * Method: TFileNode - Initialize
 * Purpose: Supposed to initialize the node tree
@@ -82,7 +119,7 @@ void TFileNode::Extend()
 			TrecPointer<TFileShell> f = shellFiles[Rust];
 			if (f.Get())
 			{
-				TrecPointer<TObjectNode> n = TrecPointerKey::GetNewTrecPointerAlt<TObjectNode, TFileNode>(level + 1);
+				TrecPointer<TObjectNode> n = TrecPointerKey::GetNewSelfTrecPointerAlt<TObjectNode, TFileNode>(level + 1);
 				files.push_back(n);
 				dynamic_cast<TFileNode*>(n.Get())->SetFile(f);
 			}

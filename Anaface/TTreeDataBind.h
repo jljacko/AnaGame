@@ -24,5 +24,8 @@ public:
 	D2D1_RECT_F getLocation()override;
 protected:
 	TrecPointer<TObjectNode> mainNode;
+
+	bool isNodeSelected, isTickSelected;
+	UINT nodeSelected;
 };
 
