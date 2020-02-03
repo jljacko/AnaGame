@@ -21,9 +21,9 @@ public:
 	HWND GetWindowHandle();
 
 	afx_msg void OnRButtonUp(UINT nFlags, TPoint point);
-	afx_msg void OnLButtonDown(UINT nFlags, TPoint point);
+	afx_msg virtual void OnLButtonDown(UINT nFlags, TPoint point);
 	afx_msg void OnRButtonDown(UINT nFlags, TPoint);
-	afx_msg void OnMouseMove(UINT nFlags, TPoint point);
+	afx_msg virtual void OnMouseMove(UINT nFlags, TPoint point);
 	afx_msg void OnLButtonDblClk(UINT nFlags, TPoint point);
 	afx_msg virtual void OnLButtonUp(UINT nFlags, TPoint point);
 	afx_msg bool OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlags);

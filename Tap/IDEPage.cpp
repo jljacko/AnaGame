@@ -5,7 +5,7 @@ IDEPage::IDEPage(ide_page_type type, UINT barSpace)
 	this->type = type;
 	this->barSpace = barSpace;
 
-	moveMode = page_move_mode_normal;
+	moveMode = type == ide_page_type_drag ? page_move_mode_drag : page_move_mode_normal;
 	curPoint.x = curPoint.y = 0.0f;
 	draw = true;
 }
@@ -51,6 +51,18 @@ void IDEPage::MoveBorder(float& magnitude, page_move_mode mode)
 		draw = false;
 	else
 		draw = true;
+
+	RECT topBorder = area;
+	topBorder.top = topBorder.top + barSpace;
+
+	if (currentPage.Get())
+	{
+		for (UINT Rust = 0; Rust < pages.Size(); Rust++)
+			if (pages[Rust].Get())
+				pages[Rust]->SetArea(topBorder);
+	}
+	else if (rootControl.Get())
+		rootControl->Resize(convertRECTToD2DRectF(topBorder));
 }
 
 void IDEPage::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
@@ -60,6 +72,15 @@ void IDEPage::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDat
 		RECT topBorder = area;
 		topBorder.bottom = topBorder.top + barSpace;
 		curPoint = point;
+
+
+		if (moveMode == page_move_mode_drag)
+			goto regular_click_mode;
+
+
+		
+
+
 		if (isContained(point, topBorder))
 		{
 			moveMode = page_move_mode_top;
@@ -92,6 +113,7 @@ void IDEPage::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDat
 			return;
 		}
 
+		regular_click_mode:
 		Page::OnLButtonDown(nFlags, point, mOut, eventAr);
 	}
 }
@@ -145,7 +167,13 @@ void IDEPage::Draw(TrecComPointer<ID2D1SolidColorBrush> color, TWindowEngine* tw
 
 	if (color.Get())
 		regRenderTarget->FillRectangle(convertRECTToD2DRectF(topBorder), color.Get());
-	Page::Draw(twe);
+	if (type != ide_page_type_drag)
+	{
+		if (dynamic_cast<IDEPage*>(currentPage.Get()))
+			dynamic_cast<IDEPage*>(currentPage.Get())->Draw(color, twe);
+	}
+	else
+		Page::Draw(twe);
 	if (color.Get())
 		regRenderTarget->DrawRectangle(convertRECTToD2DRectF(area), color.Get(), 1.5F);
 }
@@ -213,6 +241,22 @@ void IDEPage::SetLink(TrecPointer<Page> p, ide_page_type t)
 TString IDEPage::GetName()
 {
 	return name;
+}
+
+void IDEPage::SetNewParentPage(TrecPointer<Page> p)
+{
+}
+
+void IDEPage::AddNewPage(TrecPointer<IDEPageHolder> pageHolder)
+{
+}
+
+void IDEPage::AddNewPage(TrecPointer<TInstance> ins, TrecPointer<TWindow> win, TString name)
+{
+}
+
+void IDEPage::RemovePage(TrecPointer<IDEPageHolder> pageHolder)
+{
 }
 
 void IDEPage::MouseMoveBody(TPoint& diff)
@@ -535,4 +579,61 @@ void IDEPage::MouseMoveLowerLeft(TPoint& diff)
 		MoveBorder(diff.y, moveMode);
 		break;
 	}
+}
+
+IDEPageHolder::IDEPageHolder(TString name, TrecComPointer<ID2D1RenderTarget> rt, UINT barSpace, TrecPointer<EventHandler> handler, TrecPointer<TWindow> win, D2D1_RECT_F initLoc)
+{
+	text = TrecPointerKey::GetNewTrecPointer<TText>(rt);
+	text->setColor(D2D1::ColorF::Black);
+	text->setNewFontSize(12.0f);
+	text->setCaption(name);
+	text->setNewHorizontalAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
+	text->setNewVerticalAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+	text->onCreate(initLoc);
+	bool w;
+	float minWidth = text->GetMinWidth(w);
+	if (w)
+	{
+		initLoc.right = initLoc.left + minWidth;
+		text->setNewLocation(convertD2DRectToRECT(initLoc));
+	}
+	location = initLoc;
+
+	page = TrecPointerKey::GetNewSelfTrecSubPointer<Page, IDEPage>(ide_page_type_drag, 0);
+	page->SetHandler(handler);
+}
+
+TrecPointer<Page> IDEPageHolder::GetBasePage()
+{
+	return TrecPointer<Page>();
+}
+
+TrecSubPointer<Page, IDEPage> IDEPageHolder::GetPage()
+{
+	return TrecSubPointer<Page, IDEPage>();
+}
+
+TString IDEPageHolder::GetName()
+{
+	return TString();
+}
+
+D2D1_RECT_F IDEPageHolder::Draw()
+{
+	return D2D1_RECT_F();
+}
+
+void IDEPageHolder::ResetRenderer(TrecComPointer<ID2D1RenderTarget> rt)
+{
+}
+
+void IDEPageHolder::Move(TPoint& moveBy)
+{
+	location.bottom += moveBy.y;
+	location.top += moveBy.y;
+	location.left += moveBy.x;
+	location.right += moveBy.x;
+
+	if (text.Get())
+		text->setNewLocation(convertD2DRectToRECT(location));
 }

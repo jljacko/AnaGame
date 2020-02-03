@@ -4851,6 +4851,20 @@ TString TText::getCaption()
 }
 
 /*
+ * Method: TText - GetMinWidth
+ * Purpose: Retirvees the minimum width needed before DirectWrtie has to add emergency breaks in line
+ * Parameters: bool& worked - whether the value returned is truely the reported value
+ * Return: float - the min width needed. If inspection fails, this represents the width currently used
+ */
+float TText::GetMinWidth(bool& worked)
+{
+	float ret = 0.0f;
+	if(!(worked = (fontLayout.Get() && SUCCEEDED(fontLayout->DetermineMinWidth(&ret)))))
+		ret = bounds.right - bounds.left;
+	return ret;
+}
+
+/*
 * Method: TText - setCaption
 * Purpose: Updates the text with a new caption
 * Parameters: TString& string - the new Caption to use

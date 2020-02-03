@@ -51,3 +51,15 @@ void TIdeWindow::OnLButtonUp(UINT nFlags, TPoint point)
 	dynamic_cast<IDEPage*>(lowerLeft.Get())->OnLButtonUp();
 	TWindow::OnLButtonUp(nFlags, point);
 }
+
+void TIdeWindow::OnMouseMove(UINT nFlags, TPoint point)
+{
+}
+
+void TIdeWindow::OnLButtonDown(UINT nFlags, TPoint point)
+{
+}
+
+void TIdeWindow::AddNewPage(anagame_page pageType, TString name, TString tmlLoc, TrecPointer<EventHandler> handler)
+{
+}

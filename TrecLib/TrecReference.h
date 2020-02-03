@@ -175,6 +175,12 @@ public:
 			pointer->Increment();
 	}
 
+	u* operator->()
+	{
+		if (!pointer) return nullptr;
+		return dynamic_cast<u*>(pointer->Get());
+	}
+
 	u* Get()
 	{
 		if (!pointer) return nullptr;

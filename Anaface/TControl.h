@@ -258,6 +258,8 @@ public:
 	TString getFont();
 	TString getCaption();
 
+	float GetMinWidth(bool& worked);
+
 	// More Set Methods
 	void setCaption(const TString& string);
 

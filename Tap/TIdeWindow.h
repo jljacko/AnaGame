@@ -13,6 +13,17 @@ typedef enum ide_page_type
 	ide_page_type_drag
 }ide_page_type;
 
+
+typedef enum anagame_page
+{
+	anagame_page_custom,
+	anagame_page_file_node,
+	anagame_page_command_prompt,
+	anagame_page_code_explorer,
+	anagame_page_object_explorer,
+	anagame_page_code_file
+};
+
 class IDEPage;
 
 
@@ -23,7 +34,10 @@ public:
 	TIdeWindow(TString& name, TString& winClass, UINT style, HWND parent, int commandShow, TrecPointer<TInstance> ins, UINT mainViewSpace, UINT pageBarSpace);
 	virtual int PrepareWindow()override;
 	void OnLButtonUp(UINT nFlags, TPoint point);
+	void OnMouseMove(UINT nFlags, TPoint point)override;
+	void OnLButtonDown(UINT nFlags, TPoint point)override;
 
+	void AddNewPage(anagame_page pageType, TString name, TString tmlLoc, TrecPointer<EventHandler> handler);
 
 protected:
 	UINT pageBarSpace;
