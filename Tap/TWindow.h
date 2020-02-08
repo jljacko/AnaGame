@@ -10,7 +10,7 @@ public:
 
 	virtual int PrepareWindow();
 
-	int CompileView(TString& file, TrecPointer<EventHandler> eh);
+	virtual int CompileView(TString& file, TrecPointer<EventHandler> eh);
 
 	bool MovePageToTop(TrecPointer<Page> p);
 	TString GetWinClass();
@@ -49,6 +49,8 @@ public:
 	TrecPointer<TWindowEngine> GetWindowEngine();
 	TrecPointer<TArenaEngine> GetNewArenaEngine();
 	TrecPointer<TArenaEngine> GetNewArenaEngine(TString& name);
+
+	TrecComPointer<ID2D1RenderTarget> GetRenderTarget();
 
 protected:
 	HWND parent, currentWindow;

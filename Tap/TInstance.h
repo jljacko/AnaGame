@@ -11,6 +11,12 @@ public:
 	int messageStack;
 };
 
+typedef enum t_window_type
+{
+	t_window_type_plain,
+	t_window_type_ide
+}t_window_type;
+
 class _TAP_DLL TInstance : public TObject
 {
 	friend class TWindow;
@@ -20,7 +26,7 @@ public:
 
 	LRESULT Proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
-	int SetMainWindow(WNDCLASSEXW& wcex, TString& file, TrecPointer<EventHandler> eh);
+	int SetMainWindow(WNDCLASSEXW& wcex, TString& file, TrecPointer<EventHandler> eh, t_window_type winType = t_window_type_plain);
 
 	TrecPointer<TWindow> GetWindowByName(TString&);
 

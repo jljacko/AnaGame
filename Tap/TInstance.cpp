@@ -1,6 +1,7 @@
 #include "TInstance.h"
 #include <windowsx.h>
 #include "TDialog.h"
+#include "TIdeWindow.h"
 
 
 static TString dialogClassName(L"TDialog");
@@ -120,7 +121,7 @@ LRESULT TInstance::Proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
-int TInstance::SetMainWindow(WNDCLASSEXW& wcex, TString& file, TrecPointer<EventHandler> eh)
+int TInstance::SetMainWindow(WNDCLASSEXW& wcex, TString& file, TrecPointer<EventHandler> eh, t_window_type winType)
 {
 	WORD regResult = RegisterClassExW(&wcex);
 	if (!regResult)
@@ -128,8 +129,17 @@ int TInstance::SetMainWindow(WNDCLASSEXW& wcex, TString& file, TrecPointer<Event
 		int err = GetLastError();
 		return 1;
 	}
-	mainWindow = TrecPointerKey::GetNewSelfTrecPointer<TWindow>(mainWindowName, mainWindowClass, mainStyle, mainWindowHandle, command, 
-		TrecPointerKey::GetTrecPointerFromSoft(self));
+	switch (winType)
+	{
+	case t_window_type_ide:
+		mainWindow = TrecPointerKey::GetNewSelfTrecPointerAlt<TWindow, TIdeWindow>(mainWindowName, mainWindowClass, mainStyle, mainWindowHandle, command,
+			TrecPointerKey::GetTrecPointerFromSoft(self), 150, 30);
+		break;
+	case t_window_type_plain:
+		mainWindow = TrecPointerKey::GetNewSelfTrecPointer<TWindow>(mainWindowName, mainWindowClass, mainStyle, mainWindowHandle, command, 
+			TrecPointerKey::GetTrecPointerFromSoft(self));
+	}
+	
 
 	mainWindow->PrepareWindow();
 	return mainWindow->CompileView(file, eh);

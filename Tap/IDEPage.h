@@ -24,7 +24,9 @@ public:
 
 	TString GetName();
 
-	D2D1_RECT_F Draw();
+	D2D1_RECT_F GetLocation();
+	D2D1_RECT_F SetLocation(const D2D1_RECT_F& newLoc);
+	void Draw();
 	void ResetRenderer(TrecComPointer<ID2D1RenderTarget> rt);
 	void Move(TPoint& moveBy);
 
@@ -41,6 +43,9 @@ class _TAP_DLL IDEPage :
 	friend class TrecPointerKey;
 protected:
 	IDEPage(ide_page_type type, UINT barSpace);
+
+	void SetResources(TrecPointer<TInstance> in, TrecComPointer<ID2D1RenderTarget> render, TrecPointer<TWindow> window);
+	void SetResources(TrecPointer<TInstance> in, TrecComPointer<ID2D1RenderTarget> render, TrecPointer<TWindow> window, TrecPointer<TWindowEngine> engine);
 
 	void MoveBorder(float& magnitude, page_move_mode mode);
 
@@ -60,7 +65,7 @@ public:
 
 	// Methods for Parent Pages
 	void AddNewPage(TrecPointer<IDEPageHolder> pageHolder);
-	void AddNewPage(TrecPointer<TInstance> ins, TrecPointer<TWindow> win, TString name);
+	void AddNewPage(TrecPointer<TInstance> ins, TrecPointer<TWindow> win, TString name, TrecPointer<EventHandler> h);
 	void RemovePage(TrecPointer<IDEPageHolder> pageHolder);
 
 protected:
@@ -73,7 +78,7 @@ protected:
 	TrecPointerSoft<Page> upperLeft;
 	TrecPointerSoft<Page> lowerLeft;
 
-	TDataArray<TrecPointer<Page>> pages;
+	TDataArray<TrecPointer<IDEPageHolder>> pages;
 	TrecPointer<Page> currentPage;
 
 	ide_page_type type;

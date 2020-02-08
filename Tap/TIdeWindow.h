@@ -37,7 +37,9 @@ public:
 	void OnMouseMove(UINT nFlags, TPoint point)override;
 	void OnLButtonDown(UINT nFlags, TPoint point)override;
 
-	void AddNewPage(anagame_page pageType, TString name, TString tmlLoc, TrecPointer<EventHandler> handler);
+	void AddNewPage(anagame_page pageType, TString name, TString tmlLoc, TrecPointer<EventHandler> handler, bool pageTypeStrict = false);
+
+	int CompileView(TString& file, TrecPointer<EventHandler> eh)override;
 
 protected:
 	UINT pageBarSpace;

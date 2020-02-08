@@ -1,4 +1,5 @@
 #include "IDEPage.h"
+#include "TInstance.h"
 
 IDEPage::IDEPage(ide_page_type type, UINT barSpace)
 {
@@ -8,6 +9,33 @@ IDEPage::IDEPage(ide_page_type type, UINT barSpace)
 	moveMode = type == ide_page_type_drag ? page_move_mode_drag : page_move_mode_normal;
 	curPoint.x = curPoint.y = 0.0f;
 	draw = true;
+
+
+
+}
+
+void IDEPage::SetResources(TrecPointer<TInstance> in, TrecComPointer<ID2D1RenderTarget> render, TrecPointer<TWindow> window)
+{
+	this->windowHandle = window;
+	instance = in;
+	fact = in->GetFactory();
+
+	deviceH = GetWindowDC(window->GetWindowHandle());
+	instance = in;
+	regRenderTarget = render;
+
+	TrecComPointer<ID2D1SolidColorBrush>::TrecComHolder paintHolder;
+	regRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White), paintHolder.GetPointerAddress());
+	clearBursh = paintHolder.Extract();
+	rt_type = render_target_hwnd;
+}
+
+void IDEPage::SetResources(TrecPointer<TInstance> in, TrecComPointer<ID2D1RenderTarget> render, TrecPointer<TWindow> window, TrecPointer<TWindowEngine> engine)
+{
+	SetResources(in, render, window, engine);
+	
+	if(engine.Get())
+	rt_type = render_target_device_context;
 }
 
 void IDEPage::MoveBorder(float& magnitude, page_move_mode mode)
@@ -58,8 +86,8 @@ void IDEPage::MoveBorder(float& magnitude, page_move_mode mode)
 	if (currentPage.Get())
 	{
 		for (UINT Rust = 0; Rust < pages.Size(); Rust++)
-			if (pages[Rust].Get())
-				pages[Rust]->SetArea(topBorder);
+			if (pages[Rust].Get() && pages[Rust]->GetPage().Get())
+				pages[Rust]->GetPage()->SetArea(topBorder);
 	}
 	else if (rootControl.Get())
 		rootControl->Resize(convertRECTToD2DRectF(topBorder));
@@ -245,18 +273,107 @@ TString IDEPage::GetName()
 
 void IDEPage::SetNewParentPage(TrecPointer<Page> p)
 {
+	currentPage = p;
 }
 
 void IDEPage::AddNewPage(TrecPointer<IDEPageHolder> pageHolder)
 {
+	if (!pageHolder.Get() || !pageHolder->GetPage().Get()) return;
+	for (UINT c = 0; c < pages.Size(); c++)
+	{
+		if (pages[c].Get() == pageHolder.Get())
+		{
+			return;
+		}
+	}
+
+	D2D1_RECT_F loc{ 0.0f,0.0f,0.0f,0.0f };
+	if (pages.Size())
+	{
+		loc = pages[pages.Size() - 1]->GetLocation();
+		if (loc.right > 0.0f)
+		{
+			D2D1_RECT_F l = pageHolder->GetLocation();
+			float leftBounds = loc.right + (l.right - l.left);
+			if (leftBounds > area.right)
+				loc.bottom = loc.left = loc.right = loc.top = 0.0f;
+			else
+			{
+				loc.left = loc.right;
+				loc.right = area.right;
+			}
+		}
+		else 
+			loc.bottom = loc.left = loc.right = loc.top = 0.0f;
+	}
+	else
+	{
+		loc = convertRECTToD2DRectF(area);
+		loc.bottom = loc.top + barSpace;
+	}
+
+	pageHolder->SetLocation(loc);
+	pages.push_back(pageHolder);
+
+	loc = convertRECTToD2DRectF(area);
+	loc.top += barSpace;
+	pageHolder->GetPage()->SetArea(convertD2DRectToRECT(loc));
 }
 
-void IDEPage::AddNewPage(TrecPointer<TInstance> ins, TrecPointer<TWindow> win, TString name)
+void IDEPage::AddNewPage(TrecPointer<TInstance> ins, TrecPointer<TWindow> win, TString name, TrecPointer<EventHandler> h)
 {
+	TrecSubPointer<Page, IDEPage> newPage = TrecPointerKey::GetNewSelfTrecSubPointer<Page, IDEPage>(ide_page_type_drag, 0);
+
+	newPage->SetResources(ins, regRenderTarget, win, win->GetWindowEngine());
+	RECT curArea = area;
+	curArea.top += barSpace;
+	newPage->SetArea(curArea);
+
+	curArea = area;
+	curArea.bottom = curArea.top + barSpace;
+
+
+	for (UINT c = pages.Size() - 1; c < -1; c--)
+	{
+		if (pages[c].Get() && pages[c]->GetLocation().right)
+		{
+			curArea.left = pages[c]->GetLocation().right;
+			break;
+		}
+	}
+	
+
+	TrecPointer<IDEPageHolder> newHolder = TrecPointerKey::GetNewTrecPointer<IDEPageHolder>(name, regRenderTarget, barSpace, h, win, convertRECTToD2DRectF(curArea));
+	pages.push_back(newHolder);
 }
 
 void IDEPage::RemovePage(TrecPointer<IDEPageHolder> pageHolder)
 {
+	int index = -1;
+	for (UINT C = 0; C < pages.Size(); C++)
+	{
+		if (pageHolder.Get() == pages[C].Get())
+		{
+			index = C;
+			break;
+		}
+	}
+
+	if (index == -1)
+		return;
+
+	D2D1_RECT_F holdLoc = pageHolder->GetLocation();
+	float width = holdLoc.right - holdLoc.left;
+
+	for (UINT i = index + 1; i < pages.Size(); i++)
+	{
+		holdLoc = pages[i]->GetLocation();
+		holdLoc.left -= width;
+		holdLoc.right -= width;
+		pages[i]->SetLocation(holdLoc);
+	}
+
+	pages.RemoveAt(index);
 }
 
 void IDEPage::MouseMoveBody(TPoint& diff)
@@ -583,7 +700,7 @@ void IDEPage::MouseMoveLowerLeft(TPoint& diff)
 
 IDEPageHolder::IDEPageHolder(TString name, TrecComPointer<ID2D1RenderTarget> rt, UINT barSpace, TrecPointer<EventHandler> handler, TrecPointer<TWindow> win, D2D1_RECT_F initLoc)
 {
-	text = TrecPointerKey::GetNewTrecPointer<TText>(rt);
+	text = TrecPointerKey::GetNewTrecPointer<TText>(rt, nullptr);
 	text->setColor(D2D1::ColorF::Black);
 	text->setNewFontSize(12.0f);
 	text->setCaption(name);
@@ -605,26 +722,54 @@ IDEPageHolder::IDEPageHolder(TString name, TrecComPointer<ID2D1RenderTarget> rt,
 
 TrecPointer<Page> IDEPageHolder::GetBasePage()
 {
-	return TrecPointer<Page>();
+	return TrecPointerKey::GetTrecPointerFromSub<Page, IDEPage>(page);
 }
 
 TrecSubPointer<Page, IDEPage> IDEPageHolder::GetPage()
 {
-	return TrecSubPointer<Page, IDEPage>();
+	return page;
 }
 
 TString IDEPageHolder::GetName()
 {
+	if(!text.Get())
 	return TString();
+	return text->getCaption();
 }
 
-D2D1_RECT_F IDEPageHolder::Draw()
+D2D1_RECT_F IDEPageHolder::GetLocation()
 {
-	return D2D1_RECT_F();
+	return location;
+}
+
+D2D1_RECT_F IDEPageHolder::SetLocation(const D2D1_RECT_F& newLoc)
+{
+	location = newLoc;
+	if (text.Get())
+	{
+		text->setNewLocation(convertD2DRectToRECT( newLoc));
+		bool w;
+		float width = text->GetMinWidth(w);
+		location.right = location.left + width;
+
+		text->setNewLocation(convertD2DRectToRECT(location));
+
+	}
+	return location;
+}
+
+void IDEPageHolder::Draw()
+{
+	if (text.Get())
+		text->onDraw(location);
 }
 
 void IDEPageHolder::ResetRenderer(TrecComPointer<ID2D1RenderTarget> rt)
 {
+	if (text.Get())
+	{
+		text->SetNewRenderTarget(rt);
+	}
 }
 
 void IDEPageHolder::Move(TPoint& moveBy)

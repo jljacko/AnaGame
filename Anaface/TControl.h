@@ -275,14 +275,15 @@ public:
 	RECT getLocation();
 	void ShiftHorizontal(int degrees);
 	void ShiftVertical(int degrees);
-
+	
+	void SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget>);
 private:
 	//CMap<CString, CString, CString, CString> styles;
 	TrecComPointer<ID2D1RenderTarget> rt;								// Render Target to focus on
 	TrecComPointer<IDWriteFactory> writeFact;// Direct Write Factory
 	
-	void SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget>);
-	void ResetBrush();
+void ResetBrush();
+	
 	
 	D2D1_RECT_F bounds;									// Location of the text
 	TString text;										// Text stored

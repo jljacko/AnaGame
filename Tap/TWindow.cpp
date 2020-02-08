@@ -474,6 +474,11 @@ TrecPointer<TArenaEngine> TWindow::GetNewArenaEngine(TString& name)
 	return ret;
 }
 
+TrecComPointer<ID2D1RenderTarget> TWindow::GetRenderTarget()
+{
+	return TrecComPointer<ID2D1RenderTarget>();
+}
+
 HWND TWindow::GetWindowHandle()
 {
 	return currentWindow;

@@ -500,18 +500,18 @@ public:
 
 	template <class t, class u> static TrecPointer<t> GetTrecPointerFromSub(TrecSubPointer<t, u>& sub)
 	{
-		TrecPointer<t> ret();
+		TrecPointer<t> ret;
 		ret.pointer = sub.pointer;
-		if (ret.pointer && ret.pointer.Get())
+		if (ret.pointer && ret.pointer)
 			ret.pointer->Increment();
 		return ret;
 	}
 
 	template <class t, class u> static TrecSubPointer<t, u> GetTrecSubPointerFromTrec(TrecPointer<t>& tPointer)
 	{
-		TrecSubPointer<t, u> ret();
+		TrecSubPointer<t, u> ret;
 		ret.pointer = tPointer.pointer;
-		if (ret.pointer && ret.pointer.Get())
+		if (ret.pointer && ret.pointer)
 			ret.pointer->Increment();
 		return ret;
 	}
