@@ -20,3 +20,5 @@
 #include "TrueTag.h"
 #include "VarTag.h"
 #include "ConditionalBlockTag.h"
+#include "BlockTag.h"
+#include "ProcedureBlockTag.h"

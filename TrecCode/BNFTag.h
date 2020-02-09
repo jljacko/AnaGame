@@ -71,6 +71,8 @@ public:
 
 	TString GetTageName();
 
+	static int GetIndexOfTag(TString& name, TDataArray<BNFTag*>& tags);
+
 protected:
 	TString name;
 	TString rawSyntax;
@@ -91,3 +93,4 @@ TDataArray<BNFTag*>* setUpTagList(TFile& file, BlockType bt);
 
 UINT CompileIntLanguage(TDataArray<BNFTag*>& tags);
 
+bool getVariablesBooleanValue(intVariable& var);

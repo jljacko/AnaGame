@@ -4,6 +4,9 @@
 # Folders left over from MFC
 *+mfc/
 
+*_mfc/
+*_mfc/*
+
 # User-specific files
 *.suo
 *.user

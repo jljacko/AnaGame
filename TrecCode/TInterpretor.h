@@ -7,6 +7,7 @@
 #include "TrecCode.h"
 
 class IntLanguage; // Declare a class called IntLanguage, the source file can use it's actual speficiations
+class TagCheck;
 
 // Message that running code can send back to the interpretor to know when it is time to stop, restart from the beginning, or some other action
 typedef enum InterpretorMessage
@@ -73,9 +74,9 @@ public:
 	void setLine(UINT line);
 	intVariable* GetVariable(TString& name);
 
-	UINT Run();
-	UINT Run(TInterpretor* t); // Should be called On Interpretors assigned control blocks
-	UINT Run(TInterpretor* t, VariableList& parameters); // Should be called on Interpretors assigned to functions and methods
+	TagCheck Run();
+	TagCheck Run(TInterpretor* t); // Should be called On Interpretors assigned control blocks
+	TagCheck Run(TInterpretor* t, VariableList& parameters); // Should be called on Interpretors assigned to functions and methods
 
 
 protected:

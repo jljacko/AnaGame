@@ -102,6 +102,9 @@
     <ClCompile Include="BlockTag.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ProcedureBlockTag.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="TrecCode.def">
@@ -203,6 +206,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BlockTag.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ProcedureBlockTag.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
