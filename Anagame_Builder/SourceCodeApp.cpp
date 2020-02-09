@@ -1,5 +1,6 @@
 #include "SourceCodeApp.h"
 #include <DirectoryInterface.h>
+#include <TFileNode.h>
 
 SourceCodeApp::SourceCodeApp(TrecPointer<TControl> m, TrecPointer<TControl> o, TrecPointer<TControl> e, TrecPointer<TInstance> r): MiniHandler(m, o, e, r)
 {
@@ -42,22 +43,37 @@ SourceCodeApp::SourceCodeApp(TrecPointer<TControl> m, TrecPointer<TControl> o, T
 	dynamic_cast<AnafaceUI*>(m.Get())->addControl(mainControl, TString());
 
 
+	// Set up the Bar Page
 	if (!o.Get() || !dynamic_cast<AnafaceUI*>(o.Get()))
 		return;
 	rect = dynamic_cast<AnafaceUI*>(o.Get())->GetControlArea();
 	outputPane = window->GetPageByArea(convertD2DRectToRECT(rect));
 
+
+	// Set up the Panel Page
 	if (!e.Get() || !dynamic_cast<AnafaceUI*>(e.Get()))
 		return;
 	rect = dynamic_cast<AnafaceUI*>(e.Get())->GetControlArea();
 	explorerPane = window->GetPageByArea(convertD2DRectToRECT(rect));
+
+	explorerControl = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TTreeDataBind>(explorerPane->GetRenderTarget(), TrecPointer<TArray<styleTable>>());
+
+	explorerControl->onCreate(rect, window->GetWindowEngine());
+
+	TrecPointer<TObjectNode> node = TrecPointerKey::GetNewSelfTrecPointerAlt<TObjectNode, TFileNode>(0);
+	TrecPointer<TFileShell> rootFile = TFileShell::GetFileInfo(GetDirectory(cd_Documents));
+	dynamic_cast<TFileNode*>(node.Get())->SetFile(rootFile);
+	dynamic_cast<TTreeDataBind*>(explorerControl.Get())->SetNode(node);
+	dynamic_cast<AnafaceUI*>(e.Get())->addControl(explorerControl, TString());
+	
+
 }
 
 SourceCodeApp::~SourceCodeApp()
 {
 	mainControl.Delete();
 	//outputControl.Delete();
-	//explorerControl.Delete();
+	explorerControl.Delete();
 }
 
 bool SourceCodeApp::InitializeControls()

@@ -6,7 +6,7 @@
 * Parameters: TString& path - path of the directory
 * Returns: void
 */
-TDirectory::TDirectory(TString& path) : TFileShell(path)
+TDirectory::TDirectory(const TString& path) : TFileShell(path)
 {
 
 }

@@ -53,7 +53,7 @@ public:
 	short ConvertToLong(long long*);
 	short ConvertToFloat(float*);
 
-	TrecPointer<typename TDataArray<TString>> split(TString, bool checkBackSlash = false);
+	TrecPointer<TDataArray<TString>> split(TString, bool checkBackSlash = false);
 	WCHAR* GetBufferCopy()const ;
 
 	const WCHAR* GetConstantBuffer() const;

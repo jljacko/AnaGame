@@ -13,6 +13,7 @@
 #include "TCanvas.h"
 #include "TImage.h"
 #include "TPromptControl.h"
+#include "TTreeDataBind.h"
 
 class AnafaceUI;
 typedef struct _ANAFACE_DLL auiHold {

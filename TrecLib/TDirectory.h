@@ -10,7 +10,7 @@ class _TREC_LIB_DLL TDirectory :
 {
 	friend class TrecPointerKey;
 protected:
-	TDirectory(TString& path);
+	TDirectory(const TString& path);
 public:
 	bool IsDirectory()override;
 

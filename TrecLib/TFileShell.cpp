@@ -65,7 +65,7 @@ TString TFileShell::GetName()
 * Note: If the file does not exist, the pointer will be null. If the file is a directory,
 *	the pointer will contain a TDirectory (which extends the TFileShell)
 */
-TrecPointer<TFileShell> TFileShell::GetFileInfo(TString& path)
+TrecPointer<TFileShell> TFileShell::GetFileInfo(const TString& path)
 {
 	DWORD ftyp = GetFileAttributesW(path.GetConstantBuffer());
 
@@ -175,7 +175,7 @@ bool TFileShell::IsReadOnly()
 	return  fileInfo.dwFileAttributes & FILE_ATTRIBUTE_READONLY;
 }
 
-TFileShell::TFileShell(TString& path)
+TFileShell::TFileShell(const TString& path)
 {
 	if (GetFileAttributesExW(path.GetConstantBuffer(), GET_FILEEX_INFO_LEVELS::GetFileExInfoStandard, &this->fileInfo))
 		this->path.Set(path);
