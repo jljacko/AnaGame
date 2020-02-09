@@ -3,7 +3,7 @@
 Animation::Animation(animation_phase ap)
 {
 	phase = ap;
-	millisecondRefresh = 0;
+	millisecondRefresh = millisecondLength = millisecondStoryLength = 0;
 	done = false;
 }
 
@@ -30,4 +30,14 @@ UINT Animation::GetMillisecondLength()
 void Animation::SetMillisecondLength(UINT ml)
 {
 	millisecondLength = ml;
+}
+
+UINT Animation::GetMillisecondStoryLength()
+{
+	return millisecondStoryLength;
+}
+
+void Animation::SetMillisecindStoryLength(UINT msl)
+{
+	millisecondStoryLength = msl;
 }

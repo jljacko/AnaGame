@@ -2,6 +2,7 @@
 #include <Drawer.h>
 #include "Page.h"
 #include <TWindowEngine.h>
+#include "TAnimationManager.h"
 class _TAP_DLL TWindow :	public Drawer
 {
 public:
@@ -77,5 +78,7 @@ protected:
 	// 3D Resource
 	TrecPointer<TWindowEngine> d3dEngine;
 	TTrecPointerArray<TArenaEngine> engines;
+
+	TAnimationManager animationCentral;
 };
 

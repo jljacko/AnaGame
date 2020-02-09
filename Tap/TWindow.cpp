@@ -47,7 +47,7 @@ int TWindow::PrepareWindow()
 	ShowWindow(currentWindow, command);
 	UpdateWindow(currentWindow);
 
-
+	animationCentral.SetWindow(TrecPointerKey::GetTrecPointerFromSoft<TWindow>(self));
 
 	return 0;
 }

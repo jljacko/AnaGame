@@ -46,14 +46,17 @@ public:
 	void SetMillisecondRefresh(UINT mr);
 	UINT GetMillisecondLength();
 	void SetMillisecondLength(UINT ml);
+	UINT GetMillisecondStoryLength();
+	void SetMillisecindStoryLength(UINT msl);
 	virtual bool Update(float progress) = 0;
 	virtual void SetAnimationValue(float value, animation_value_type type) = 0;
 
-	virtual void SetComponent(TrecPointer<TControlComponent> comp) = 0;
+	virtual void SetComponent(TrecComPointer<ID2D1Brush> comp) = 0;
 
 protected:
 	UINT millisecondRefresh;
 	UINT millisecondLength;
+	UINT millisecondStoryLength;
 	animation_phase phase;
 	bool done;
 };
