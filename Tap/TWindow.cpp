@@ -22,6 +22,8 @@ TWindow::TWindow(TString& name, TString& winClass, UINT style, HWND parent, int 
 
 	locked = false;
 	safeToDraw = 0;
+
+	
 }
 
 TWindow::~TWindow()

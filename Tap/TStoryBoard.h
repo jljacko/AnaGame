@@ -2,7 +2,9 @@
 #include "TObject.h"
 #include <Animation.h>
 #include <TTrecPointerArray.h>
-#include "TWindow.h"
+
+
+class TWindow;
 
 class ThreadData
 {

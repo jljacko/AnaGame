@@ -1,4 +1,5 @@
 #include "TStoryBoard.h"
+#include "TWindow.h"
 
 DWORD __stdcall ProcessAnimations(LPVOID param)
 {
@@ -80,7 +81,7 @@ void TStoryBoard::SetPersistant()
 bool TStoryBoard::Run()
 {
 	if (threadData.animationThread)
-		return;
+		return false;
 
 	threadData.animationThread = CreateThread(nullptr,
 		0,

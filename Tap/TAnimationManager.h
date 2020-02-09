@@ -1,12 +1,12 @@
 #pragma once
 #include <TObject.h>
 
-#include "TWindow.h"
+
 #include "TStoryBoard.h"
 #include <TMap.h>
+class TWindow;
 
-class TAnimationManager :
-	public TObject
+class TAnimationManager :public TObject
 {
 public:
 	TAnimationManager();
