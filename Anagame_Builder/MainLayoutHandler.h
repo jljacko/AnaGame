@@ -1,6 +1,7 @@
 #pragma once
 #include <EventHandler.h>
 #include <MiniHandler.h>
+#include <TEnvironment.h>
 
 class MainLayoutHandler;
 
@@ -73,6 +74,8 @@ protected:
 	void OnNewCodeFile(TControl* tc, EventArgs ea);
 	void OnImportCode(TControl* tc, EventArgs ea);
 	void OnProcessCode(TControl* tc, EventArgs ea);
+
+	TrecPointer<TEnvironment> environment;
 
 
 	/// Now to host the various mini apps that the user g=could launch on the builder

@@ -78,6 +78,7 @@
     <ClInclude Include="TPoint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="TTrecPointerArray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -97,8 +98,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TFileNode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+=======
     <ClInclude Include="TType.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -109,6 +109,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TAttribute.h">
+>>>>>>> TrecCode_2
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -161,6 +162,7 @@
     <ClCompile Include="TPoint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="Drawer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -177,8 +179,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TFileNode.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+=======
     <ClCompile Include="TType.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -189,6 +190,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TAttribute.cpp">
+>>>>>>> TrecCode_2
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

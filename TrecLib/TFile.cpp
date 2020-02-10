@@ -49,7 +49,7 @@ TFile::~TFile()
 *			CFileException * pError - Error information
 * Returns: BOOL - success or failure to open file
 */
-bool TFile::Open(TString& lpszFileName, UINT nOpenFlags)
+bool TFile::Open(const TString& lpszFileName, UINT nOpenFlags)
 {
 	fileEncode = fet_unknown;
 

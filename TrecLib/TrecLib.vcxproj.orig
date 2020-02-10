@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -20,9 +20,9 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
-    <ProjectGuid>{EC4DD89F-71E2-439D-817F-81EBC5A578E9}</ProjectGuid>
+    <ProjectGuid>{D51F30ED-A597-4CB8-9BEB-7EC42AECE350}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>TrecCode</RootNamespace>
+    <RootNamespace>TrecLib</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -72,8 +72,6 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>..\Tap;..\Anaface;..\VideoGraphics;..\TrecLib;$(IncludePath)</IncludePath>
-    <LibraryPath>..\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -86,28 +84,29 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;TRECCODE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;TRECLIB_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <TreatWarningAsError>false</TreatWarningAsError>
+      <AdditionalOptions>/IGNORE:C6386 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>TrecLib.lib;VideoGraphics.lib;Anaface.lib;Tap.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;TRECCODE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;TRECLIB_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -125,7 +124,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;TRECCODE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;TRECLIB_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -145,7 +144,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;TRECCODE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;TRECLIB_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -158,24 +157,74 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AnagameDef.h" />
+    <ClInclude Include="DirectoryInterface.h" />
+    <ClInclude Include="Drawer.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="HTML_Reader.h" />
+    <ClInclude Include="Logger.h" />
+    <ClInclude Include="ParseReader_.h" />
+    <ClInclude Include="Parser_.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="TEnvironment.h" />
-    <ClInclude Include="TLanguage.h" />
-    <ClInclude Include="TrecCode.h" />
-    <ClInclude Include="TTypeList.h" />
+    <ClInclude Include="TArray.h" />
+    <ClInclude Include="TArrayBase.h" />
+    <ClInclude Include="TAttribute.h" />
+    <ClInclude Include="TDataArray.h" />
+    <ClInclude Include="TDataArrayBase.h" />
+    <ClInclude Include="TDirectory.h" />
+    <ClInclude Include="TFile.h" />
+    <ClInclude Include="TFileNode.h" />
+    <ClInclude Include="TFileShell.h" />
+    <ClInclude Include="TMap.h" />
+    <ClInclude Include="TMapBase.h" />
+    <ClInclude Include="TML_Reader_.h" />
+    <ClInclude Include="TObject.h" />
+    <ClInclude Include="TObjectNode.h" />
+    <ClInclude Include="TPoint.h" />
+    <ClInclude Include="TPrimitiveType.h" />
+    <ClInclude Include="TrecLib.h" />
+    <ClInclude Include="TrecReference.h" />
+    <ClInclude Include="TShell.h" />
+    <ClInclude Include="TString.h" />
+<<<<<<< HEAD
+    <ClInclude Include="TTrecPointerArray.h" />
+=======
+    <ClInclude Include="TType.h" />
+    <ClInclude Include="TTypeMetadata.h" />
+>>>>>>> TrecCode_2
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="DirectoryInterface.cpp" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="Drawer.cpp" />
+    <ClCompile Include="HTML_Reader.cpp" />
+    <ClCompile Include="Logger.cpp" />
+    <ClCompile Include="ParseReader_.cpp" />
+    <ClCompile Include="Parser_.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="TEnvironment.cpp" />
-    <ClCompile Include="TLanguage.cpp" />
-    <ClCompile Include="TTypeList.cpp" />
+    <ClCompile Include="TArrayBase.cpp" />
+    <ClCompile Include="TAttribute.cpp" />
+    <ClCompile Include="TDataArrayBase.cpp" />
+    <ClCompile Include="TDirectory.cpp" />
+    <ClCompile Include="TFile.cpp" />
+    <ClCompile Include="TFileNode.cpp" />
+    <ClCompile Include="TFileShell.cpp" />
+    <ClCompile Include="TMapBase.cpp" />
+    <ClCompile Include="TML_Reader_.cpp" />
+    <ClCompile Include="TObject.cpp" />
+    <ClCompile Include="TObjectNode.cpp" />
+    <ClCompile Include="TPoint.cpp" />
+    <ClCompile Include="TPrimitiveType.cpp" />
+    <ClCompile Include="TrecLib.cpp" />
+    <ClCompile Include="TShell.cpp" />
+    <ClCompile Include="TString.cpp" />
+    <ClCompile Include="TType.cpp" />
+    <ClCompile Include="TTypeMetadata.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
