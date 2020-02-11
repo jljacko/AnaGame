@@ -47,13 +47,8 @@ TString TFileShell::GetName()
 	int slashLoc = path.FindLastOneOf(TString(L"/\\"));
 	if (slashLoc == -1)
 		return path;
-	TString cutPath(path);
-	while (slashLoc == cutPath.GetSize() - 1)
-	{
-		cutPath.Set(cutPath.SubString(0, slashLoc));
-		slashLoc = cutPath.FindLastOneOf(TString(L"/\\"));
-	}
-	return cutPath;
+
+	return path.SubString(slashLoc+1);
 }
 
 /*
@@ -180,8 +175,6 @@ TFileShell::TFileShell(const TString& path)
 	if (GetFileAttributesExW(path.GetConstantBuffer(), GET_FILEEX_INFO_LEVELS::GetFileExInfoStandard, &this->fileInfo))
 		this->path.Set(path);
 
-	if (this->path.GetSize() && (this->path[this->path.GetSize() - 1] != L'\\' && this->path[this->path.GetSize() - 1] != L'/') && (this->fileInfo.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
-		this->path.AppendChar(L'\\');
 
 	deleted = false;
 }

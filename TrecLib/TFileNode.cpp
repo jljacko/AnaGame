@@ -51,16 +51,17 @@ TrecPointer<TObjectNode> TFileNode::GetNodeAt(UINT target, UINT current)
 	if(target < current)
 		return TrecPointer<TObjectNode>();
 
-	UINT diff = target - current++;
+	TrecPointer<TObjectNode> ret;
+
+	current++;
 
 	for (UINT rust = 0; rust < files.Size(); rust++)
 	{
-		if (files[rust]->TotalChildren() < diff)
-		{
-			diff -= files[rust]->TotalChildren();
-			current += files[rust]->TotalChildren();
-		}
-		else return files[rust]->GetNodeAt(target, current);
+		ret = files[rust]->GetNodeAt(target, current);
+		if (ret.Get())
+			return ret;
+
+		current += files[rust]->TotalChildren() + 1;
 	}
 	return TrecPointer<TObjectNode>();
 }
@@ -151,6 +152,11 @@ TrecPointer<TObjectNode> TFileNode::GetChildNodes(UINT index)
 void TFileNode::DropChildNodes()
 {
 	files.RemoveAll();
+}
+
+TString TFileNode::getVariableValueStr(const TString& varName)
+{
+	return GetContent();
 }
 
 /*

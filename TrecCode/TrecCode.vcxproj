@@ -86,7 +86,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
@@ -163,7 +163,6 @@
     <ClInclude Include="TEnvironment.h" />
     <ClInclude Include="TLanguage.h" />
     <ClInclude Include="TrecCode.h" />
-    <ClInclude Include="TTypeList.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
@@ -175,7 +174,6 @@
     </ClCompile>
     <ClCompile Include="TEnvironment.cpp" />
     <ClCompile Include="TLanguage.cpp" />
-    <ClCompile Include="TTypeList.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -137,7 +137,7 @@ UINT TLanguage::PreProcessFile(TrecPointer<TFile>& sourceFile)
 	return 0;
 }
 
-const std::map<TString, TString>& TLanguage::GetPrimitiveTypes()
+const TMap<TString>& TLanguage::GetPrimitiveTypes()
 {
 	return primitiveTypeMap;
 }
@@ -281,67 +281,67 @@ TrecPointer<TLanguage> TLanguage::getLanguage(TMap<TString>& langProps, TrecPoin
 	// Signed Integers
 	val = langProps.retrieveEntry(TString(L"s8"));
 	if (val.Get())
-		lang->primitiveTypeMap.insert(TString(L"s8"), *val.Get());
+		lang->primitiveTypeMap.addEntry(TString(L"s8"), val);
 
 	val = langProps.retrieveEntry(TString(L"s16"));
 	if (val.Get())
-		lang->primitiveTypeMap.insert(TString(L"s16"), *val.Get());
+		lang->primitiveTypeMap.addEntry(TString(L"s16"), val);
 
 	val = langProps.retrieveEntry(TString(L"s32"));
 	if (val.Get())
-		lang->primitiveTypeMap.insert(TString(L"s32"), *val.Get());
+		lang->primitiveTypeMap.addEntry(TString(L"s32"), val);
 
 	val = langProps.retrieveEntry(TString(L"s64"));
 	if (val.Get())
-		lang->primitiveTypeMap.insert(TString(L"s64"), *val.Get());
+		lang->primitiveTypeMap.addEntry(TString(L"s64"), val);
 
 	// Unsigned Integers
 	val = langProps.retrieveEntry(TString(L"u8"));
 	if (val.Get())
-		lang->primitiveTypeMap.insert(TString(L"u8"), *val.Get());
+		lang->primitiveTypeMap.addEntry(TString(L"u8"), val);
 
 	val = langProps.retrieveEntry(TString(L"u16"));
 	if (val.Get())
-		lang->primitiveTypeMap.insert(TString(L"u16"), *val.Get());
+		lang->primitiveTypeMap.addEntry(TString(L"u16"), val);
 
 	val = langProps.retrieveEntry(TString(L"u32"));
 	if (val.Get())
-		lang->primitiveTypeMap.insert(TString(L"u32"), *val.Get());
+		lang->primitiveTypeMap.addEntry(TString(L"u32"), val);
 
 	val = langProps.retrieveEntry(TString(L"u64"));
 	if (val.Get())
-		lang->primitiveTypeMap.insert(TString(L"u64"), *val.Get());
+		lang->primitiveTypeMap.addEntry(TString(L"u64"), val);
 
 	// Floating Point types
 	val = langProps.retrieveEntry(TString(L"f32"));
 	if (val.Get())
-		lang->primitiveTypeMap.insert(TString(L"f32"), *val.Get());
+		lang->primitiveTypeMap.addEntry(TString(L"f32"), val);
 
 	val = langProps.retrieveEntry(TString(L"f64"));
 	if (val.Get())
-		lang->primitiveTypeMap.insert(TString(L"f64"), *val.Get());
+		lang->primitiveTypeMap.addEntry(TString(L"f64"), val);
 
 	val = langProps.retrieveEntry(TString(L"f96"));
 	if (val.Get())
-		lang->primitiveTypeMap.insert(TString(L"f96"), *val.Get());
+		lang->primitiveTypeMap.addEntry(TString(L"f96"), val);
 
 	// char types
 	val = langProps.retrieveEntry(TString(L"c8"));
 	if (val.Get())
-		lang->primitiveTypeMap.insert(TString(L"c8"), *val.Get());
+		lang->primitiveTypeMap.addEntry(TString(L"c8"), val);
 
 	val = langProps.retrieveEntry(TString(L"c16"));
 	if (val.Get())
-		lang->primitiveTypeMap.insert(TString(L"c16"), *val.Get());
+		lang->primitiveTypeMap.addEntry(TString(L"c16"), val);
 
 	val = langProps.retrieveEntry(TString(L"c32"));
 	if (val.Get())
-		lang->primitiveTypeMap.insert(TString(L"c32"), *val.Get());
+		lang->primitiveTypeMap.addEntry(TString(L"c32"), val);
 
 	// Boolean
 	val = langProps.retrieveEntry(TString(L"b"));
 	if (val.Get())
-		lang->primitiveTypeMap.insert(TString(L"b"), *val.Get());
+		lang->primitiveTypeMap.addEntry(TString(L"b"), val);
 
 	return TrecPointer<TLanguage>();
 }

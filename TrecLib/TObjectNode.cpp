@@ -1,5 +1,5 @@
 #include "TObjectNode.h"
-
+#include "TString.h"
 
 /*
 * Method: (TObjectNode) (Constructor)
@@ -51,4 +51,9 @@ void TObjectNode::SetSelf(TrecPointer<TObjectNode> s)
 	if (s.Get() != this)
 		throw L"Error! Pointer needs to reference 'this' object!";
 	self = TrecPointerKey::GetSoftPointerFromTrec<TObjectNode>(s);
+}
+
+TString TObjectNode::getVariableValueStr(const TString& varName)
+{
+	return TString(L"{}");
 }

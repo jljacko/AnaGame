@@ -80,13 +80,15 @@ typedef struct DoubIndex
 class TLanguage :
 	public TObject
 {
-public:
+	friend class TrecPointerKey;
+public:	
+	~TLanguage();
 	static TrecPointer<TLanguage> getLanguage(TString& langName);
 	static TrecPointer<TLanguage> getLanguage(TString& langName, TString& langVersion);
 
 	UINT PreProcessFile(TrecPointer<TFile>& sourceFile);
 
-	const std::map<TString, TString>& GetPrimitiveTypes();
+	const TMap<TString>& GetPrimitiveTypes();
 
 
 protected:
@@ -94,7 +96,7 @@ protected:
 
 
 	TLanguage(TString& name, TString& version);
-	~TLanguage();
+
 
 	// Preprocess Pipeline
 	bool RunCommentFilter(TrecPointer<TFile> file, TString& newFileName);
@@ -140,6 +142,6 @@ protected:
 	EnumImplementation enumModel;
 	UCHAR methodImplementation;
 
-	std::map<TString, TString> primitiveTypeMap;
+	TMap<TString> primitiveTypeMap;
 };
 

@@ -139,12 +139,8 @@ UINT TEnvironment::SetUpEnv(TFile& props)
 		if (!language.Get())
 			continue;
 
-		std::map<TString, TString> pTypes = language->GetPrimitiveTypes();
+		TMap<TString> pTypes = language->GetPrimitiveTypes();
 
-		for (auto it = pTypes.begin(); it != pTypes.end(); it++)
-		{
-			it->first;
-		}
 	}
 
 	return 0;

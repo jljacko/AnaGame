@@ -71,7 +71,9 @@ void TDirectory::GetFileListing(TDataArray<TrecPointer<TFileShell>>& files)
 	HANDLE fileBrowser = 0;
 	WIN32_FIND_DATAW data;
 
-	fileBrowser = FindFirstFileExW(path.GetConstantBuffer(),
+	TString searchPath(path + L"\\*");
+
+	fileBrowser = FindFirstFileExW(searchPath.GetConstantBuffer(),
 		FindExInfoStandard,
 		&data,
 		FindExSearchNameMatch,
@@ -79,15 +81,22 @@ void TDirectory::GetFileListing(TDataArray<TrecPointer<TFileShell>>& files)
 		0);
 
 	if (fileBrowser == INVALID_HANDLE_VALUE)
+	{
+		int e = GetLastError();
 		return;
+	}
+		
 
 	TString newPath;
 
 	do
 	{
-		newPath.Set(this->path + data.cFileName);
+		if (!this->GetName().Compare(data.cFileName))
+			continue;
+		newPath.Set(this->path + L"\\" + data.cFileName);
 		files.push_back(TFileShell::GetFileInfo(newPath));
 	} while (FindNextFileW(fileBrowser, &data));
+	int e = GetLastError();
 
 	FindClose(fileBrowser);
 	fileBrowser = 0;

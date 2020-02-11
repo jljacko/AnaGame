@@ -6,7 +6,7 @@
  * class TTreeDataBind
  * Purpose: Support for depicting a tree-based system on Anaface
  */
-class TTreeDataBind :
+class _ANAFACE_DLL TTreeDataBind :
 	public TControl
 {
 public:

@@ -29,6 +29,8 @@ public:
 	void SetParent(TrecPointerSoft<TObjectNode> p);
 	void SetSelf(TrecPointer<TObjectNode> s);
 
+	virtual TString getVariableValueStr(const TString& varName)override;
+
 protected:
 	UINT level;
 	TrecPointerSoft<TObjectNode> parentNode;

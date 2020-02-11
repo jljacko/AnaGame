@@ -38,7 +38,7 @@ public:
 };
 
 
-class TEnvironment :
+class _TREC_CODE_DLL TEnvironment :
 	public TObject
 {
 public:

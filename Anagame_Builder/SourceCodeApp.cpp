@@ -58,6 +58,11 @@ SourceCodeApp::SourceCodeApp(TrecPointer<TControl> m, TrecPointer<TControl> o, T
 
 	explorerControl = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TTreeDataBind>(explorerPane->GetRenderTarget(), TrecPointer<TArray<styleTable>>());
 
+	TrecPointer<TControl> nodeControl = TrecPointerKey::GetNewSelfTrecPointer<TControl>(explorerPane->GetRenderTarget(), TrecPointer<TArray<styleTable>>());
+	nodeControl->addAttribute(TString(L"|FontSize"), TrecPointerKey::GetNewTrecPointer<TString>(L"12"));
+	explorerControl->addAttribute(TString(L"|ContainerLoc"), TrecPointerKey::GetNewTrecPointer<TString>(L"0,0,30,100"));
+	nodeControl->addAttribute(TString(L"|Caption"), TrecPointerKey::GetNewTrecPointer<TString>(L"{}"));
+	explorerControl->addChild(nodeControl);
 	explorerControl->onCreate(rect, window->GetWindowEngine());
 
 	TrecPointer<TObjectNode> node = TrecPointerKey::GetNewSelfTrecPointerAlt<TObjectNode, TFileNode>(0);

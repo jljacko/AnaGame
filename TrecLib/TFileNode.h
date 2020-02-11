@@ -24,6 +24,8 @@ public:
 	virtual TrecPointer<TObjectNode> GetChildNodes(UINT index) override;
 	virtual void DropChildNodes() override;
 
+	virtual TString getVariableValueStr(const TString& varName)override;
+
 	void SetFile(TrecPointer<TFileShell>& d);
 protected:
 	TrecPointer<TFileShell> data;

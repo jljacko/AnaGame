@@ -67,7 +67,7 @@ void TTreeDataBind::onDraw(TObject* obj)
 				{
 					sink->BeginFigure(D2D1::Point2F(triLoc.left, triLoc.bottom), D2D1_FIGURE_BEGIN_FILLED);
 					points[0] = D2D1::Point2F(triLoc.left, triLoc.top);
-					points[1] = D2D1::Point2F(triLoc.right, triLoc.bottom + triLoc.bottom / 2.0f);
+					points[1] = D2D1::Point2F(triLoc.right, (triLoc.top + triLoc.bottom) / 2.0f);
 				}
 				sink->AddLines(points, ARRAYSIZE(points));
 				sink->EndFigure(D2D1_FIGURE_END_CLOSED);
@@ -102,6 +102,14 @@ void TTreeDataBind::onDraw(TObject* obj)
 
 		curNode = mainNode->GetNodeAt(c + 1, 0);
 	}
+
+	if (outerBrush)outerBrush->Release();
+	outerBrush = nullptr;
+	if (innerBrush)innerBrush->Release();
+	innerBrush = nullptr;
+
+	if (fact) fact->Release();
+	fact = nullptr;
 }
 
 UCHAR* TTreeDataBind::GetAnaGameType()
@@ -125,7 +133,7 @@ void TTreeDataBind::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut
 
 			UINT targetNode = static_cast<UINT>(dist) / 30;
 
-			TrecPointer<TObjectNode> tNode = mainNode->GetNodeAt(0, targetNode);
+			TrecPointer<TObjectNode> tNode = mainNode->GetNodeAt(targetNode, 0);
 
 			if (tNode.Get())
 			{
@@ -141,7 +149,7 @@ void TTreeDataBind::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut
 
 				if (isContained(&point, &triLoc))
 				{
-					isTickSelected = false;
+					isTickSelected = true;
 					
 				}
 				clickedButtons.push_back(this);
@@ -164,7 +172,7 @@ void TTreeDataBind::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, 
 
 			UINT targetNode = static_cast<UINT>(dist) / 30;
 
-			TrecPointer<TObjectNode> tNode = mainNode->GetNodeAt(0, targetNode);
+			TrecPointer<TObjectNode> tNode = mainNode->GetNodeAt(targetNode, 0);
 
 			if (tNode.Get())
 			{

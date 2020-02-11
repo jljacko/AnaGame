@@ -20,7 +20,7 @@ typedef enum CentralDirectories
 	cd_User			// 8
 }CentralDirectories;
 
-void  ForgeDirectory(TString& dir);
+void _TREC_LIB_DLL ForgeDirectory(TString& dir);
 
 
 /*
