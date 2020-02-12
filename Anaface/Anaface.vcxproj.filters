@@ -129,6 +129,12 @@
     <ClInclude Include="TTreeDataBind.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ColorAnimation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TransitionAnimation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -240,6 +246,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TTreeDataBind.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorAnimation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TransitionAnimation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

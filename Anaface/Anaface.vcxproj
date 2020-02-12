@@ -164,6 +164,7 @@
     <ClInclude Include="Anaface.h" />
     <ClInclude Include="AnafaceParser.h" />
     <ClInclude Include="AnafaceUI.h" />
+    <ClInclude Include="ColorAnimation.h" />
     <ClInclude Include="ControlTypeSafety.h" />
     <ClInclude Include="EventTarget.h" />
     <ClInclude Include="framework.h" />
@@ -193,6 +194,7 @@
     <ClInclude Include="TPathGeometry.h" />
     <ClInclude Include="TPromptControl.h" />
     <ClInclude Include="TRadioButton.h" />
+    <ClInclude Include="TransitionAnimation.h" />
     <ClInclude Include="TRectangleGeometry.h" />
     <ClInclude Include="TScrollBar.h" />
     <ClInclude Include="TSliderControl.h" />
@@ -203,6 +205,7 @@
   <ItemGroup>
     <ClCompile Include="AnafaceParser.cpp" />
     <ClCompile Include="AnafaceUI.cpp" />
+    <ClCompile Include="ColorAnimation.cpp" />
     <ClCompile Include="ControlTypeSafety.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="EventTarget.cpp" />
@@ -237,6 +240,7 @@
     <ClCompile Include="TPathGeometry.cpp" />
     <ClCompile Include="TPromptControl.cpp" />
     <ClCompile Include="TRadioButton.cpp" />
+    <ClCompile Include="TransitionAnimation.cpp" />
     <ClCompile Include="TRectangleGeometry.cpp" />
     <ClCompile Include="TScrollBar.cpp" />
     <ClCompile Include="TSliderControl.cpp" />

@@ -48,16 +48,22 @@ public:
 	void SetMillisecondLength(UINT ml);
 	UINT GetMillisecondStoryLength();
 	void SetMillisecindStoryLength(UINT msl);
+	void SetReverse(bool rev);
+	bool GetReverse();
+	virtual void Prepare() = 0;
 	virtual bool Update(float progress) = 0;
 	virtual void SetAnimationValue(float value, animation_value_type type) = 0;
 
 	virtual void SetComponent(TrecComPointer<ID2D1Brush> comp) = 0;
+
+	virtual TString GetAnimationType() = 0;
 
 protected:
 	UINT millisecondRefresh;
 	UINT millisecondLength;
 	UINT millisecondStoryLength;
 	animation_phase phase;
-	bool done;
+	bool done, reverse;
 };
 
+float _TREC_LIB_DLL GetFloatBetween(float value1, float value2, float progress);
