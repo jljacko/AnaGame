@@ -55,8 +55,7 @@ public:
 	afx_msg void OnLButtonUp();
 
 	void Draw(TrecComPointer<ID2D1SolidColorBrush> color, TWindowEngine* twe = nullptr);
-	void SetSelf(TrecPointer<Page>);
-	void SetLink(TrecPointer<Page> p, ide_page_type t);
+	void SetLink(TrecSubPointer<Page, IDEPage> p, ide_page_type t);
 
 
 	// Methods for the Drag version of the Page
@@ -70,13 +69,13 @@ public:
 
 protected:
 
-	TrecPointerSoft<Page> body;
-	TrecPointerSoft<Page> basicConsole;
-	TrecPointerSoft<Page> deepConsole;
-	TrecPointerSoft<Page> upperRight;
-	TrecPointerSoft<Page> lowerRight;
-	TrecPointerSoft<Page> upperLeft;
-	TrecPointerSoft<Page> lowerLeft;
+	TrecSubPointer<Page, IDEPage> body;
+	TrecSubPointer<Page, IDEPage> basicConsole;
+	TrecSubPointer<Page, IDEPage> deepConsole;
+	TrecSubPointer<Page, IDEPage> upperRight;
+	TrecSubPointer<Page, IDEPage> lowerRight;
+	TrecSubPointer<Page, IDEPage> upperLeft;
+	TrecSubPointer<Page, IDEPage> lowerLeft;
 
 	TDataArray<TrecPointer<IDEPageHolder>> pages;
 	TrecPointer<Page> currentPage;

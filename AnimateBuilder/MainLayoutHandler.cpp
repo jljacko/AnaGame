@@ -152,13 +152,9 @@ void MainLayoutHandler::Initialize(TrecPointer<Page> page)
 
 	rootControl = page->GetRootControl();
 
-	TLayout* rootLayout = dynamic_cast<TLayout*>(rootControl.Get());
-
-	assert(rootLayout);
 
 	// Setting up the main Ribbon
-	ribbon = rootLayout->GetLayoutChild(0, 0);
-	AnafaceUI* rib = dynamic_cast<AnafaceUI*>(ribbon.Get());
+	AnafaceUI* rib = dynamic_cast<AnafaceUI*>(rootControl.Get());
 	assert(rib);
 
 	// First Tab in ribbon
@@ -171,15 +167,6 @@ void MainLayoutHandler::Initialize(TrecPointer<Page> page)
 	solutionName = subLayout->GetLayoutChild(0, 0);
 	assert(dynamic_cast<TTextField*>(solutionName.Get()));
 
-	// Rest of Layout
-	subLayout = dynamic_cast<TLayout*>(rootLayout->GetLayoutChild(0, 1).Get());
-	assert(subLayout);							// SubLayout should now be a Grid
-	classUI = subLayout->GetLayoutChild(0, 0);
-	body = subLayout->GetLayoutChild(1, 0);
-	outputPanel = subLayout->GetLayoutChild(0, 1);
-	assert(dynamic_cast<AnafaceUI*>(classUI.Get()));
-	assert(dynamic_cast<AnafaceUI*>(body.Get()));
-	assert(dynamic_cast<AnafaceUI*>(outputPanel.Get()));
 
 	// Set up the Arena Tab
 	ribbon4 = rib->GetChildAt(3);
@@ -213,14 +200,14 @@ void MainLayoutHandler::HandleEvents(TDataArray<EventID_Cred>& eventAr)
 
 		int ea_id = ea.methodID;
 
-		if (ea_id > -1 && ea_id < calls.Size())
+		/*if (ea_id > -1 && ea_id < calls.Size())
 		{
 			(this->*calls[ea_id])(cont, ea);
 		}
 		else if (ea_id == -1 && ea.control == body.Get() && ea.eventType == On_sel_change)
 		{
 			OnSwitchTab(cont, ea);
-		}
+		}*/
 		cont->resetArgs();
 	}
 }
@@ -276,7 +263,7 @@ void MainLayoutHandler::OnPrint(TControl* tc, EventArgs ea)
 
 void MainLayoutHandler::OnNewArena(TControl* tc, EventArgs ea)
 {
-	TString dialog(L"Enter a name for your Arena!");
+	/*TString dialog(L"Enter a name for your Arena!");
 	TString arenaName(ActivateNameDialog(instance, page->GetWindowHandle()->GetWindowHandle(), dialog));
 
 	if (!arenaName.GetSize())
@@ -289,7 +276,7 @@ void MainLayoutHandler::OnNewArena(TControl* tc, EventArgs ea)
 	if (arenaStack1.Get())
 		arenaStack1->setActive(true);
 	if (arenaStack3.Get())
-		arenaStack3->setActive(true);
+		arenaStack3->setActive(true);*/
 }
 
 void MainLayoutHandler::OnUpdateClearColor(TControl* tc, EventArgs ea)
@@ -322,10 +309,10 @@ void MainLayoutHandler::OnNewModel(TControl* tc, EventArgs ea)
 
 void MainLayoutHandler::OnNewCodeFile(TControl* tc, EventArgs ea)
 {
-	currentDocument = TrecPointerKey::GetNewSelfTrecPointerAlt<MiniHandler, SourceCodeApp>(body, outputPanel, classUI, app);
+	/*currentDocument = TrecPointerKey::GetNewSelfTrecPointerAlt<MiniHandler, SourceCodeApp>(body, outputPanel, classUI, app);
 	ActiveDocuments.push_back(currentDocument);
 	currentDocument->InitializeControls();
-	currentDocument->OnShow();
+	currentDocument->OnShow();*/
 }
 
 void MainLayoutHandler::OnImportCode(TControl* tc, EventArgs ea)

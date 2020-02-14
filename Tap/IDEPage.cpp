@@ -111,13 +111,13 @@ void IDEPage::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDat
 
 		if (isContained(point, topBorder))
 		{
-			moveMode = page_move_mode_top;
+			//moveMode = page_move_mode_top;
 			// To-Do: Set Cursor
 
 			return;
 		}
 
-		if (area.bottom - point.y < 0.5)
+		if (area.bottom - point.y < 1.5)
 		{
 			moveMode = page_move_mode_bottom;
 			// To-Do: Set Cursor
@@ -125,7 +125,7 @@ void IDEPage::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDat
 			return;
 		}
 
-		if (area.right - point.x < 0.5)
+		if (area.right - point.x < 1.5)
 		{
 			moveMode = page_move_mode_right;
 			// To-Do: Set Cursor
@@ -133,7 +133,7 @@ void IDEPage::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDat
 			return;
 		}
 
-		if (point.x - area.left < 0.5)
+		if (point.x - area.left < 1.5)
 		{
 			moveMode = page_move_mode_left;
 			// To-Do: Set Cursor
@@ -151,7 +151,10 @@ void IDEPage::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataA
 	if (moveMode == page_move_mode_normal)
 		return Page::OnMouseMove(nFlags, point, mOut, eventAr);
 
-	TPoint diff(point.x - curPoint.x, curPoint.y - point.y);
+	
+
+	TPoint diff(static_cast<int>(point.x) - static_cast<int>(curPoint.x),
+		static_cast<int>(curPoint.y) - static_cast<int>(point.y));
 
 	switch (type)
 	{
@@ -180,6 +183,7 @@ void IDEPage::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataA
 
 	curPoint.x = point.x;
 	curPoint.y = point.y;
+	*mOut = positiveOverrideUpdate;
 }
 
 void IDEPage::OnLButtonUp()
@@ -206,61 +210,31 @@ void IDEPage::Draw(TrecComPointer<ID2D1SolidColorBrush> color, TWindowEngine* tw
 		regRenderTarget->DrawRectangle(convertRECTToD2DRectF(area), color.Get(), 1.5F);
 }
 
-void IDEPage::SetSelf(TrecPointer<Page> self)
-{
-	if (self.Get() != this)
-		throw L"Error! Self needs to actually be self!";
-	switch (type)
-	{
-	case ide_page_type_body:
-		body = TrecPointerKey::GetSoftPointerFromTrec<Page>(self);
-		break;
-	case ide_page_type_basic_console:
-		basicConsole = TrecPointerKey::GetSoftPointerFromTrec<Page>(self);
-		break;
-	case ide_page_type_deep_console:
-		deepConsole = TrecPointerKey::GetSoftPointerFromTrec<Page>(self);
-		break;
-	case ide_page_type_upper_right:
-		upperRight = TrecPointerKey::GetSoftPointerFromTrec<Page>(self);
-		break;
-	case ide_page_type_lower_right:
-		lowerRight = TrecPointerKey::GetSoftPointerFromTrec<Page>(self);
-		break;
-	case ide_page_type_upper_left:
-		upperLeft = TrecPointerKey::GetSoftPointerFromTrec<Page>(self);
-		break;
-	case ide_page_type_lower_left:
-		lowerLeft = TrecPointerKey::GetSoftPointerFromTrec<Page>(self);
-		break;
 
-	}
-}
-
-void IDEPage::SetLink(TrecPointer<Page> p, ide_page_type t)
+void IDEPage::SetLink(TrecSubPointer<Page, IDEPage> p, ide_page_type t)
 {
 	switch (t)
 	{
 	case ide_page_type_body:
-		body = TrecPointerKey::GetSoftPointerFromTrec<Page>(p);
+		body = p;
 		break;
 	case ide_page_type_basic_console:
-		basicConsole = TrecPointerKey::GetSoftPointerFromTrec<Page>(p);
+		basicConsole = p;
 		break;
 	case ide_page_type_deep_console:
-		deepConsole = TrecPointerKey::GetSoftPointerFromTrec<Page>(p);
+		deepConsole = p;
 		break;
 	case ide_page_type_upper_right:
-		upperRight = TrecPointerKey::GetSoftPointerFromTrec<Page>(p);
+		upperRight = p;
 		break;
 	case ide_page_type_lower_right:
-		lowerRight = TrecPointerKey::GetSoftPointerFromTrec<Page>(p);
+		lowerRight = p;
 		break;
 	case ide_page_type_upper_left:
-		upperLeft = TrecPointerKey::GetSoftPointerFromTrec<Page>(p);
+		upperLeft = p;
 		break;
 	case ide_page_type_lower_left:
-		lowerLeft = TrecPointerKey::GetSoftPointerFromTrec<Page>(p);
+		lowerLeft = p;
 		break;
 
 	}

@@ -45,13 +45,15 @@ protected:
 	UINT pageBarSpace;
 	UINT mainViewSpace;
 
-	TrecPointer<Page> body;
-	TrecPointer<Page> basicConsole;
-	TrecPointer<Page> deepConsole;
-	TrecPointer<Page> upperRight;
-	TrecPointer<Page> lowerRight;
-	TrecPointer<Page> upperLeft;
-	TrecPointer<Page> lowerLeft;
+	virtual void DrawOtherPages()override;
+
+	TrecSubPointer<Page, IDEPage> body;
+	TrecSubPointer<Page, IDEPage> basicConsole;
+	TrecSubPointer<Page, IDEPage> deepConsole;
+	TrecSubPointer<Page, IDEPage> upperRight;
+	TrecSubPointer<Page, IDEPage> lowerRight;
+	TrecSubPointer<Page, IDEPage> upperLeft;
+	TrecSubPointer<Page, IDEPage> lowerLeft;
 
 	TrecComPointer<ID2D1SolidColorBrush> panelbrush;
 };

@@ -16,7 +16,7 @@ public:
 	TString GetWinClass();
 	TString GetWinName();
 	// Action Listeners
-	void Draw() override;
+	virtual void Draw() override;
 	void Draw(Page& draw);
 	HWND GetWindowHandle();
 
@@ -53,6 +53,10 @@ public:
 	TrecComPointer<ID2D1RenderTarget> GetRenderTarget();
 
 protected:
+
+	// Draw Other pages that are special to the Window
+	virtual void DrawOtherPages();
+
 	HWND parent, currentWindow;
 	TrecPointer<TInstance> windowInstance;
 	int command;

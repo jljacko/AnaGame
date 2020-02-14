@@ -133,6 +133,8 @@ void TWindow::Draw()
 			d3d->PrepareScene(D2D1::ColorF(D2D1::ColorF::Wheat));
 
 			mainPage->Draw();
+			DrawOtherPages();
+
 			HDC contDC = 0;
 			ID2D1GdiInteropRenderTarget* gdiRender = mainPage->GetGDIRenderTarget().Get();
 			if (gdiRender && SUCCEEDED(gdiRender->GetDC(D2D1_DC_INITIALIZE_MODE_COPY, &contDC)))
@@ -161,6 +163,7 @@ void TWindow::Draw()
 			rt->BeginDraw();
 			rt->Clear(D2D1::ColorF(D2D1::ColorF::White));
 			mainPage->Draw(d3d);
+			DrawOtherPages();
 			rt->EndDraw();
 		}
 
@@ -477,6 +480,10 @@ TrecPointer<TArenaEngine> TWindow::GetNewArenaEngine(TString& name)
 TrecComPointer<ID2D1RenderTarget> TWindow::GetRenderTarget()
 {
 	return TrecComPointer<ID2D1RenderTarget>();
+}
+
+void TWindow::DrawOtherPages()
+{
 }
 
 HWND TWindow::GetWindowHandle()

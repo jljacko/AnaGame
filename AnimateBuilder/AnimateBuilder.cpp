@@ -91,40 +91,19 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    switch (message)
+    if (message == WM_GETMINMAXINFO)
     {
-    case WM_COMMAND:
-        {
-            int wmId = LOWORD(wParam);
-            // Parse the menu selections:
-            switch (wmId)
-            {
-            case IDM_ABOUT:
-                DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
-                break;
-            case IDM_EXIT:
-                DestroyWindow(hWnd);
-                break;
-            default:
-                return DefWindowProc(hWnd, message, wParam, lParam);
-            }
-        }
-        break;
-    case WM_PAINT:
-        {
-            PAINTSTRUCT ps;
-            HDC hdc = BeginPaint(hWnd, &ps);
-            // TODO: Add any drawing code that uses hdc here...
-            EndPaint(hWnd, &ps);
-        }
-        break;
-    case WM_DESTROY:
-        PostQuitMessage(0);
-        break;
-    default:
-        return DefWindowProc(hWnd, message, wParam, lParam);
+        PMINMAXINFO info = reinterpret_cast<LPMINMAXINFO>(lParam);
+
+        info->ptMinTrackSize.x = 600;
+        info->ptMinTrackSize.y = 450;
+        return 0;
     }
-    return 0;
+
+    if (mainInstance.Get())
+        return mainInstance->Proc(hWnd, message, wParam, lParam);
+
+    return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
 // Message handler for about box.

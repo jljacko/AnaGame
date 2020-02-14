@@ -70,6 +70,7 @@ bool AnafaceParser::Obj(TString* va)
 	positionSet = false;
 
 	TString v(va);
+	v.Trim();
 
 	TrecPointer<TDataArray<TString>> strings;
 

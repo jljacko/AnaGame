@@ -37,9 +37,6 @@ protected:
 	D2D1_COLOR_F backColor;
 
 	TrecPointer<TControl> ribbon;					// AnafaceUI
-	TrecPointer<TControl> body;						// AnafaceUI
-	TrecPointer<TControl> classUI;					// AnafaceUI
-	TrecPointer<TControl> outputPanel;				// AnafaceUI
 
 	// The first Ribbon Panel
 	TrecPointer<TControl> ribbon1;					// TLayout

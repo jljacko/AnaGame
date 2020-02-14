@@ -126,7 +126,7 @@ protected:
 
 	TrecSubPointer(u* raw)
 	{
-		if(raw)
+		if(!raw)
 			throw L"Error! TrecPointers must be initialized with a pointer, not NULL!";
 		t* baseRaw = dynamic_cast<t*>(raw);
 		if (!baseRaw)

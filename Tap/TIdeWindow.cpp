@@ -3,6 +3,7 @@
 #include "TInstance.h"
 
 #include <TFileShell.h>
+#include <atltrace.h>
 
 
 TIdeWindow::TIdeWindow(TString& name, TString& winClass, UINT style, HWND parent, int commandShow, 
@@ -17,7 +18,7 @@ int TIdeWindow::PrepareWindow()
 {
 	//body = TrecPointerKey::GetNewSelfTrecPointerAlt<Page, IDEPage>(ide_page_type_body, pageBarSpace);
 	
-	TrecPointer<Page>* pages[] = {
+	TrecSubPointer<Page, IDEPage>* pages[] = {
 		&body,
 		&basicConsole,
 		&deepConsole,
@@ -29,7 +30,7 @@ int TIdeWindow::PrepareWindow()
 
 	for (UINT c = 0; c < ARRAYSIZE(pages); c++)
 	{
-		*pages[c] = TrecPointerKey::GetNewSelfTrecPointerAlt<Page, IDEPage>(static_cast<ide_page_type>(c), pageBarSpace);
+		*pages[c] = TrecPointerKey::GetNewSelfTrecSubPointer<Page, IDEPage>(static_cast<ide_page_type>(c), pageBarSpace);
 	}
 
 	for (UINT c = 0; c < ARRAYSIZE(pages); c++)
@@ -58,11 +59,120 @@ void TIdeWindow::OnLButtonUp(UINT nFlags, TPoint point)
 }
 
 void TIdeWindow::OnMouseMove(UINT nFlags, TPoint point)
-{
+{ 
+	if (locked) return;
+	messageOutput output = negative;
+	if (isContained(point, mainPage->GetArea()))
+	{
+		mainPage->OnMouseMove(nFlags, point, &output);
+		goto finish;
+	}
+
+	if (isContained(point, body->GetArea()))
+	{
+		body.GetBase()->OnMouseMove(nFlags, point, &output);
+		goto finish;
+	}
+
+	if (isContained(point, upperLeft->GetArea()))
+	{
+		upperLeft.GetBase()->OnMouseMove(nFlags, point, &output);
+		goto finish;
+	}
+
+	if (isContained(point, upperRight->GetArea()))
+	{
+		upperRight.GetBase()->OnMouseMove(nFlags, point, &output);
+		goto finish;
+	}
+
+	if (isContained(point, lowerLeft->GetArea()))
+	{
+		lowerLeft.GetBase()->OnMouseMove(nFlags, point, &output);
+		goto finish;
+	}
+
+	if (isContained(point, lowerRight->GetArea()))
+	{
+		lowerRight.GetBase()->OnMouseMove(nFlags, point, &output);
+		goto finish;
+	}
+
+	if (isContained(point, basicConsole->GetArea()))
+	{
+		basicConsole.GetBase()->OnMouseMove(nFlags, point, &output);
+		goto finish;
+	}
+
+	if (isContained(point, deepConsole->GetArea()))
+	{
+		deepConsole.GetBase()->OnMouseMove(nFlags, point, &output);
+		goto finish;
+	}
+
+	ATLTRACE("Not one Page intercepted Mouse Move!\n");
+
+finish:
+	if (output == positiveContinueUpdate || output == positiveOverrideUpdate || output == negativeUpdate)
+		Draw();
 }
 
 void TIdeWindow::OnLButtonDown(UINT nFlags, TPoint point)
 {
+	if (locked) return;
+	messageOutput output = negative;
+	if (isContained(point, mainPage->GetArea()))
+	{
+		mainPage->OnLButtonDown(nFlags, point, &output);
+		goto finish;
+	}
+
+	if (isContained(point, body->GetArea()))
+	{
+		body.GetBase()->OnLButtonDown(nFlags, point, &output);
+		goto finish;
+	}
+
+	if (isContained(point, upperLeft->GetArea()))
+	{
+		upperLeft.GetBase()->OnLButtonDown(nFlags, point, &output);
+		goto finish;
+	}
+
+	if (isContained(point, upperRight->GetArea()))
+	{
+		upperRight.GetBase()->OnLButtonDown(nFlags, point, &output);
+		goto finish;
+	}
+
+	if (isContained(point, lowerLeft->GetArea()))
+	{
+		lowerLeft.GetBase()->OnLButtonDown(nFlags, point, &output);
+		goto finish;
+	}
+
+	if (isContained(point, lowerRight->GetArea()))
+	{
+		lowerRight.GetBase()->OnLButtonDown(nFlags, point, &output);
+		goto finish;
+	}
+
+	if (isContained(point, basicConsole->GetArea()))
+	{
+		basicConsole.GetBase()->OnLButtonDown(nFlags, point, &output);
+		goto finish;
+	}
+
+	if (isContained(point, deepConsole->GetArea()))
+	{
+		deepConsole.GetBase()->OnLButtonDown(nFlags, point, &output);
+		goto finish;
+	}
+	ATLTRACE("Not one Page intercepted L Button Down!\n");
+
+finish:
+	if (output == positiveContinueUpdate || output == positiveOverrideUpdate || output == negativeUpdate)
+		Draw();
 }
 
 void TIdeWindow::AddNewPage(anagame_page pageType, TString name, TString tmlLoc, TrecPointer<EventHandler> handler, bool pageTypeStrict)
@@ -147,11 +257,11 @@ int TIdeWindow::CompileView(TString& file, TrecPointer<EventHandler> eh)
 	int height = curArea.bottom - curArea.top;
 
 	left.right = width / 5;
-	right.left = width / 5;
+	right.left = width - (width / 5);
 	middle.left = left.right;
 	middle.right = right.left;
 
-	bottom.top = height / 3 + mainViewSpace;
+	bottom.top = height * 2 / 3 + mainViewSpace;
 
 	left.bottom = right.bottom = middle.bottom = bottom.top;
 
@@ -163,7 +273,32 @@ int TIdeWindow::CompileView(TString& file, TrecPointer<EventHandler> eh)
 	lowerRight->SetArea({ 0,0,0,0 });
 	deepConsole->SetArea(bottom);
 
+	TrecComPointer<ID2D1RenderTarget> rt = mainPage->GetRenderTarget();
+
+	TrecComPointer<ID2D1SolidColorBrush>::TrecComHolder panelBrushHolder;
+	rt->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::BlueViolet), panelBrushHolder.GetPointerAddress());
+	panelbrush = panelBrushHolder.Extract();
+
+	body->SetResources(windowInstance, rt, TrecPointerKey::GetTrecPointerFromSoft<TWindow>(self));
+	upperLeft->SetResources(windowInstance, rt, TrecPointerKey::GetTrecPointerFromSoft<TWindow>(self));
+	upperRight->SetResources(windowInstance, rt, TrecPointerKey::GetTrecPointerFromSoft<TWindow>(self));
+	basicConsole->SetResources(windowInstance, rt, TrecPointerKey::GetTrecPointerFromSoft<TWindow>(self));
+	lowerLeft->SetResources(windowInstance, rt, TrecPointerKey::GetTrecPointerFromSoft<TWindow>(self));
+	lowerRight->SetResources(windowInstance, rt, TrecPointerKey::GetTrecPointerFromSoft<TWindow>(self));
+	deepConsole->SetResources(windowInstance, rt, TrecPointerKey::GetTrecPointerFromSoft<TWindow>(self));
+
 	Draw();
 
 	return 0;
+}
+
+void TIdeWindow::DrawOtherPages()
+{
+	if (body.Get())dynamic_cast<IDEPage*>(body.Get())->Draw(panelbrush, d3dEngine.Get());
+	if (basicConsole.Get())dynamic_cast<IDEPage*>(basicConsole.Get())->Draw(panelbrush, d3dEngine.Get());
+	if (deepConsole.Get())dynamic_cast<IDEPage*>(deepConsole.Get())->Draw(panelbrush, d3dEngine.Get());
+	if (upperLeft.Get())dynamic_cast<IDEPage*>(upperLeft.Get())->Draw(panelbrush, d3dEngine.Get());
+	if (upperRight.Get())dynamic_cast<IDEPage*>(upperRight.Get())->Draw(panelbrush, d3dEngine.Get());
+	if (lowerLeft.Get()) dynamic_cast<IDEPage*>(lowerLeft.Get())->Draw(panelbrush, d3dEngine.Get());
+	if (lowerRight.Get())dynamic_cast<IDEPage*>(lowerRight.Get())->Draw(panelbrush, d3dEngine.Get());
 }
