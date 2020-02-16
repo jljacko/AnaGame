@@ -3,6 +3,8 @@
 #include <Logger.h>
 #include <wincodec.h>
 
+#define RADIAN_DEGREE_RATIO 57.2957795
+
 /*
 * Method:
 * Purpose:
@@ -56,6 +58,8 @@ TControl::TControl(TrecComPointer<ID2D1RenderTarget> rt,TrecPointer<TArray<style
 
 	//eventList = new TDataArray<EventTypeID>();
 	contextMenu = nullptr;
+
+	controlTransform = D2D1::IdentityMatrix();
 	
 
 	TString logMessage;
@@ -164,6 +168,8 @@ TControl::TControl(TControl & rCont)
 
 	eventList = rCont.eventList;
 
+	controlTransform = D2D1::IdentityMatrix();
+
 	TString logMessage;
 	logMessage.Format(L"CREATE %p TControl(TControl&)", this);
 
@@ -211,6 +217,8 @@ TControl::TControl()
 	shape = T_Rect;
 	fixHeight = fixWidth = false;
 	rightBorder = leftBorder = topBorder = bottomBorder = onFocus = onClickFocus = false;
+
+	controlTransform = D2D1::IdentityMatrix();
 
 	//eventList = new TDataArray<EventTypeID>();
 	TString logMessage;
@@ -1192,6 +1200,20 @@ void TControl::onDraw(TObject* obj)
 		renderTarget->PushLayer(D2D1::LayerParameters(location), layer);
 	}
 
+	D2D1_MATRIX_3X2_F curTransform;
+	renderTarget->GetTransform(&curTransform);
+
+	if (rotation)
+	{
+		D2D1_POINT_2F point{
+			(location.left + location.right) / 2.0f,
+			(location.bottom + location.top) / 2.0f
+		};
+
+		renderTarget->SetTransform(curTransform * D2D1::Matrix3x2F::Rotation(rotation, point));
+	}
+
+
 	if (mState == mouseLClick)
 	{
 		if (content3.Get())
@@ -1241,6 +1263,12 @@ void TControl::onDraw(TObject* obj)
 	{
 		children.ElementAt(c)->onDraw(obj);
 	}
+
+	if (rotation)
+	{
+		renderTarget->SetTransform(curTransform);
+	}
+
 	if (layer)
 	{
 		renderTarget->PopLayer();
@@ -1571,6 +1599,18 @@ void TControl::setMLeft(int l)
 {
 	margin.left = l;
 	marginSet = true;
+}
+
+void TControl::RotateDegrees(float degrees)
+{
+	if (degrees < 0.0f)
+		degrees += 360.0f;
+	rotation = degrees;
+}
+
+void TControl::RotateRadians(float radians)
+{
+	RotateDegrees(radians * RADIAN_DEGREE_RATIO);
 }
 
 /*

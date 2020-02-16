@@ -485,6 +485,9 @@ public:
 	void setMRight(int r);
 	void setMLeft(int l);
 
+	void RotateDegrees(float degrees);
+	void RotateRadians(float radians);
+
 	virtual UINT determineMinHeightNeeded();
 	virtual void SetNewLocation(const D2D1_RECT_F& r);
 	virtual void ShrinkHeight();
@@ -536,6 +539,9 @@ protected:
 	D2D1_ELLIPSE ellipse;
 	D2D1_ROUNDED_RECT roundedRect;
 	TShape shape;
+
+	D2D1_MATRIX_3X2_F controlTransform;
+	float rotation;
 
 	bool onCreate(TMap<TString>*, D2D1_RECT_F);
 	bool onCreate2(TMap<TString>*, D2D1_RECT_F);
