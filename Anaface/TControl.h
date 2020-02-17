@@ -22,6 +22,8 @@
 //#define _TREC_LIB_DLL __declspec(dllimport)
 #include <TMap.h>
 
+#define RADIAN_DEGREE_RATIO 57.2957795
+
 #define afx_msg
 
 class TControl;

@@ -25,6 +25,8 @@ typedef enum animation_value_type
 	animation_value_type_blue,
 	animation_value_type_alpha,
 	animation_value_type_degree,
+	animation_value_type_rotate_start,
+	animation_value_type_rotate_end,
 	animation_value_type_radian,
 	animation_value_type_direction,
 	animation_value_type_frame,

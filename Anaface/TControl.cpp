@@ -3,7 +3,7 @@
 #include <Logger.h>
 #include <wincodec.h>
 
-#define RADIAN_DEGREE_RATIO 57.2957795
+
 
 /*
 * Method:

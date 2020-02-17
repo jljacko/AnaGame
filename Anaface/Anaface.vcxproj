@@ -173,6 +173,7 @@
     <ClInclude Include="Parser.h" />
     <ClInclude Include="ParseReader.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="RotateAnimation.h" />
     <ClInclude Include="SSGenerator.h" />
     <ClInclude Include="TArena.h" />
     <ClInclude Include="TCanvas.h" />
@@ -219,6 +220,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="RotateAnimation.cpp" />
     <ClCompile Include="SSGenerator.cpp" />
     <ClCompile Include="TArena.cpp" />
     <ClCompile Include="TCanvas.cpp" />
