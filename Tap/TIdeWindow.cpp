@@ -235,7 +235,7 @@ int TIdeWindow::CompileView(TString& file, TrecPointer<EventHandler> eh)
 
 	mainPage = Page::GetWindowPage(windowInstance, TrecPointerKey::GetTrecPointerFromSoft<TWindow>(self), eh);
 
-	RECT curArea = mainPage->GetArea();
+	D2D1_RECT_F curArea = mainPage->GetArea();
 	curArea.bottom = curArea.top + this->mainViewSpace;
 
 	mainPage->SetArea(curArea);
@@ -244,14 +244,16 @@ int TIdeWindow::CompileView(TString& file, TrecPointer<EventHandler> eh)
 		return 2;
 
 	mainPage->SetAnaface(aFile, eh);
-
-	GetClientRect(GetWindowHandle(), &curArea);
+	RECT lArea;
+	GetClientRect(GetWindowHandle(), &lArea);
+	curArea = convertRECTToD2DRectF(lArea);
 	curArea.top += this->mainViewSpace;
 
-	RECT left = curArea;
-	RECT middle = curArea;
-	RECT right = curArea;
-	RECT bottom = curArea;
+
+	D2D1_RECT_F left = curArea;
+	D2D1_RECT_F middle = curArea;
+	D2D1_RECT_F right = curArea;
+	D2D1_RECT_F bottom = curArea;
 
 	int width = curArea.right - curArea.left;
 	int height = curArea.bottom - curArea.top;

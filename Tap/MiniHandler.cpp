@@ -334,18 +334,18 @@ cont3:
 	return false;
 }
 
-void MiniHandler::OnResize(RECT newSize)
+void MiniHandler::OnResize(D2D1_RECT_F newSize)
 {
 	if (mainPage.Get() && mainControl.Get())
 	{
-		mainPage->SetArea(convertD2DRectToRECT( mainControl->getLocation()));
+		mainPage->SetArea(mainControl->getLocation());
 	}
 
 	if (outputControl.Get() && outputPane.Get())
-		outputPane->SetArea(convertD2DRectToRECT(outputControl->getLocation()));
+		outputPane->SetArea(outputControl->getLocation());
 
 	if (explorerPane.Get() && explorerControl.Get())
-		explorerPane->SetArea(convertD2DRectToRECT(explorerControl->getLocation()));
+		explorerPane->SetArea(explorerControl->getLocation());
 }
 
 void MiniHandler::SetSelf(TrecPointer<MiniHandler> s)

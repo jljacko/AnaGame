@@ -2,6 +2,10 @@
 #include <Drawer.h>
 #include "Page.h"
 #include <TWindowEngine.h>
+#include <TControl.h>
+
+bool IsD2D1RectEqual(const D2D1_RECT_F& r1, const  D2D1_RECT_F& r2, float difference);
+
 class _TAP_DLL TWindow :	public Drawer
 {
 public:
@@ -40,7 +44,7 @@ public:
 
 	void SetSelf(TrecPointer<TWindow> win);
 
-	TrecPointer<Page> GetPageByArea(RECT r);
+	TrecPointer<Page> GetPageByArea(D2D1_RECT_F r);
 	TrecPointer<TInstance> GetInstance();
 
 	bool SetUp3D();

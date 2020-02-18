@@ -32,7 +32,7 @@ void IDEPage::SetResources(TrecPointer<TInstance> in, TrecComPointer<ID2D1Render
 
 void IDEPage::SetResources(TrecPointer<TInstance> in, TrecComPointer<ID2D1RenderTarget> render, TrecPointer<TWindow> window, TrecPointer<TWindowEngine> engine)
 {
-	SetResources(in, render, window, engine);
+	SetResources(in, render, window);
 	
 	if(engine.Get())
 	rt_type = render_target_device_context;
@@ -80,7 +80,7 @@ void IDEPage::MoveBorder(float& magnitude, page_move_mode mode)
 	else
 		draw = true;
 
-	RECT topBorder = area;
+	D2D1_RECT_F topBorder = area;
 	topBorder.top = topBorder.top + barSpace;
 
 	if (currentPage.Get())
@@ -90,14 +90,14 @@ void IDEPage::MoveBorder(float& magnitude, page_move_mode mode)
 				pages[Rust]->GetPage()->SetArea(topBorder);
 	}
 	else if (rootControl.Get())
-		rootControl->Resize(convertRECTToD2DRectF(topBorder));
+		rootControl->Resize(topBorder);
 }
 
 void IDEPage::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
 	if (isContained(point, area))
 	{
-		RECT topBorder = area;
+		D2D1_RECT_F topBorder = area;
 		topBorder.bottom = topBorder.top + barSpace;
 		curPoint = point;
 
@@ -194,11 +194,11 @@ void IDEPage::OnLButtonUp()
 
 void IDEPage::Draw(TrecComPointer<ID2D1SolidColorBrush> color, TWindowEngine* twe)
 {
-	RECT topBorder = area;
+	D2D1_RECT_F topBorder = area;
 	topBorder.bottom = topBorder.top + barSpace;
 
 	if (color.Get())
-		regRenderTarget->FillRectangle(convertRECTToD2DRectF(topBorder), color.Get());
+		regRenderTarget->FillRectangle(topBorder, color.Get());
 	if (type != ide_page_type_drag)
 	{
 		if (dynamic_cast<IDEPage*>(currentPage.Get()))
@@ -207,7 +207,7 @@ void IDEPage::Draw(TrecComPointer<ID2D1SolidColorBrush> color, TWindowEngine* tw
 	else
 		Page::Draw(twe);
 	if (color.Get())
-		regRenderTarget->DrawRectangle(convertRECTToD2DRectF(area), color.Get(), 1.5F);
+		regRenderTarget->DrawRectangle(area, color.Get(), 1.5F);
 }
 
 
@@ -282,16 +282,16 @@ void IDEPage::AddNewPage(TrecPointer<IDEPageHolder> pageHolder)
 	}
 	else
 	{
-		loc = convertRECTToD2DRectF(area);
+		loc = area;
 		loc.bottom = loc.top + barSpace;
 	}
 
 	pageHolder->SetLocation(loc);
 	pages.push_back(pageHolder);
 
-	loc = convertRECTToD2DRectF(area);
+	loc = area;
 	loc.top += barSpace;
-	pageHolder->GetPage()->SetArea(convertD2DRectToRECT(loc));
+	pageHolder->GetPage()->SetArea(loc);
 }
 
 void IDEPage::AddNewPage(TrecPointer<TInstance> ins, TrecPointer<TWindow> win, TString name, TrecPointer<EventHandler> h)
@@ -299,7 +299,7 @@ void IDEPage::AddNewPage(TrecPointer<TInstance> ins, TrecPointer<TWindow> win, T
 	TrecSubPointer<Page, IDEPage> newPage = TrecPointerKey::GetNewSelfTrecSubPointer<Page, IDEPage>(ide_page_type_drag, 0);
 
 	newPage->SetResources(ins, regRenderTarget, win, win->GetWindowEngine());
-	RECT curArea = area;
+	D2D1_RECT_F curArea = area;
 	curArea.top += barSpace;
 	newPage->SetArea(curArea);
 
@@ -317,7 +317,7 @@ void IDEPage::AddNewPage(TrecPointer<TInstance> ins, TrecPointer<TWindow> win, T
 	}
 	
 
-	TrecPointer<IDEPageHolder> newHolder = TrecPointerKey::GetNewTrecPointer<IDEPageHolder>(name, regRenderTarget, barSpace, h, win, convertRECTToD2DRectF(curArea));
+	TrecPointer<IDEPageHolder> newHolder = TrecPointerKey::GetNewTrecPointer<IDEPageHolder>(name, regRenderTarget, barSpace, h, win, curArea);
 	pages.push_back(newHolder);
 }
 
@@ -354,7 +354,7 @@ void IDEPage::MouseMoveBody(TPoint& diff)
 {
 	TPoint before = diff;
 	float yDiff = 0.0f, xDiff = 0.0f;
-	RECT curRect = { 0,0,0,0 };
+	D2D1_RECT_F curRect = { 0,0,0,0 };
 	switch (moveMode)
 	{
 	case page_move_mode_bottom:
@@ -426,7 +426,7 @@ void IDEPage::MouseMoveDeepConsole(TPoint& diff)
 {
 	if (moveMode == page_move_mode_top)
 	{
-		RECT curRect = { 0,0,0,0 };
+		D2D1_RECT_F curRect = { 0,0,0,0 };
 		float yDiff = diff.y;
 
 		// First, tackle the basic console and the body if necessary
@@ -476,7 +476,7 @@ void IDEPage::MouseMoveUpperRight(TPoint& diff)
 {
 	TPoint before = diff;
 	float yDiff = 0.0f, xDiff = 0.0f;
-	RECT curRect = { 0,0,0,0 };
+	D2D1_RECT_F curRect = { 0,0,0,0 };
 	switch (moveMode)
 	{
 	case page_move_mode_bottom:
@@ -530,7 +530,7 @@ void IDEPage::MouseMoveLowerRight(TPoint& diff)
 {
 	TPoint before = diff;
 	float yDiff = 0.0f, xDiff = 0.0f;
-	RECT curRect = { 0,0,0,0 };
+	D2D1_RECT_F curRect = { 0,0,0,0 };
 	switch (moveMode)
 	{
 	case page_move_mode_top:
@@ -576,7 +576,7 @@ void IDEPage::MouseMoveUpperLeft(TPoint& diff)
 {
 	TPoint before = diff;
 	float yDiff = 0.0f, xDiff = 0.0f;
-	RECT curRect = { 0,0,0,0 };
+	D2D1_RECT_F curRect = { 0,0,0,0 };
 	switch (moveMode)
 	{
 	case page_move_mode_bottom:
@@ -630,7 +630,7 @@ void IDEPage::MouseMoveLowerLeft(TPoint& diff)
 {
 	TPoint before = diff;
 	float yDiff = 0.0f, xDiff = 0.0f;
-	RECT curRect = { 0,0,0,0 };
+	D2D1_RECT_F curRect = { 0,0,0,0 };
 	switch (moveMode)
 	{
 	case page_move_mode_top:

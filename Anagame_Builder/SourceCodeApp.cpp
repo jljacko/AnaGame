@@ -27,7 +27,7 @@ SourceCodeApp::SourceCodeApp(TrecPointer<TControl> m, TrecPointer<TControl> o, T
 	if (!m.Get() || !dynamic_cast<AnafaceUI*>(m.Get()))
 		return;
 	D2D1_RECT_F rect = dynamic_cast<AnafaceUI*>(m.Get())->GetControlArea();
-	mainPage = window->GetPageByArea(convertD2DRectToRECT(rect));
+	mainPage = window->GetPageByArea(rect);
 
 	TrecPointer<TFile> file = TrecPointerKey::GetNewTrecPointer<TFile>();
 	bool fileOpened = file->Open(fileBody, TFile::t_file_read | TFile::t_file_share_read | TFile::t_file_open_always);
@@ -45,12 +45,12 @@ SourceCodeApp::SourceCodeApp(TrecPointer<TControl> m, TrecPointer<TControl> o, T
 	if (!o.Get() || !dynamic_cast<AnafaceUI*>(o.Get()))
 		return;
 	rect = dynamic_cast<AnafaceUI*>(o.Get())->GetControlArea();
-	outputPane = window->GetPageByArea(convertD2DRectToRECT(rect));
+	outputPane = window->GetPageByArea(rect);
 
 	if (!e.Get() || !dynamic_cast<AnafaceUI*>(e.Get()))
 		return;
 	rect = dynamic_cast<AnafaceUI*>(e.Get())->GetControlArea();
-	explorerPane = window->GetPageByArea(convertD2DRectToRECT(rect));
+	explorerPane = window->GetPageByArea(rect);
 }
 
 SourceCodeApp::~SourceCodeApp()

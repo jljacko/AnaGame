@@ -680,6 +680,15 @@ bool _ANAFACE_DLL isContained(const TPoint*, const D2D1_RECT_F*);
 
 /*
 * Function: isContained
+* Purpose: Checks of a point is within a given Direct2D Rectangle
+* Parameters: const TPoint& - the point to check
+*				const D2D1_RECT_F& - the rectangle to check
+* Returns: bool - whether the point is withing the bounds
+*/
+bool _ANAFACE_DLL isContained(const TPoint&, const D2D1_RECT_F&);
+
+/*
+* Function: isContained
 * Purpose: Checks if a point is in a certain ellipse
 * Parameters: const TPoint* - the point to check
 *				const D2D1_ELLIPSE* - the ellipse to check
@@ -745,8 +754,10 @@ bool _ANAFACE_DLL isSnipZero(const D2D1_RECT_F& snip);
 */
 void zeroSnip(RECT& snip);
 
-bool operator==(D2D1_RECT_F& op1, D2D1_RECT_F& op2);
+bool _ANAFACE_DLL operator==(D2D1_RECT_F& op1, D2D1_RECT_F& op2);
 
 bool operator!=(D2D1_RECT_F& op1, D2D1_RECT_F& op2);
 
 //void DrawArc(const D2D1_ELLIPSE& e, const D2D1_RECT_F& loc, const D2D1_RECT_F& snip, const D2D1_COLOR_F color);
+
+//bool _ANAFACE_DLL IsD2D1RectEqual(const D2D1_RECT_F& r1,const  D2D1_RECT_F& r2, float difference_);

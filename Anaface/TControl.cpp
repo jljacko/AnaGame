@@ -6179,7 +6179,6 @@ D2D1::ColorF convertStringToD2DColor(TString *str)
 	TrecPointer<TDataArray<TString>> strSpl = str->split(",");
 
 	
-	
 	res[0] = strSpl->at(0).ConvertToFloat(&rgba[0]);
 	res[1] = strSpl->at(1).ConvertToFloat(&rgba[1]);
 	res[2] = strSpl->at(2).ConvertToFloat(&rgba[2]);
@@ -6260,6 +6259,19 @@ bool isContained(const TPoint* cp, const D2D1_RECT_F* r)
 		return false;
 	return cp->x > r->left && cp->x < r->right &&
 		cp->y > r->top && cp->y < r->bottom;
+}
+
+/*
+* Function: isContained
+* Purpose: Checks of a point is within a given Direct2D Rectangle
+* Parameters: const TPoint& - the point to check
+*				const D2D1_RECT_F& - the rectangle to check
+* Returns: bool - whether the point is withing the bounds
+*/
+bool isContained(const TPoint& cp, const D2D1_RECT_F& r)
+{
+	return cp.x > r.left&& cp.x < r.right &&
+		cp.y > r.top&& cp.y < r.bottom;
 }
 
 /*
@@ -6390,6 +6402,8 @@ bool operator!=(D2D1_RECT_F & op1, D2D1_RECT_F & op2)
 	return op1.bottom != op2.bottom || op1.left != op2.left
 		|| op1.right != op2.right || op1.top != op2.top;
 }
+
+
 
 
 /*

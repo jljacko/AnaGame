@@ -1,6 +1,16 @@
 #include "TWindow.h"
 #include "TInstance.h"
 
+bool IsD2D1RectEqual(const D2D1_RECT_F& r1, const  D2D1_RECT_F& r2, float difference)
+{
+	difference = abs(difference);
+	return (abs(r1.bottom - r2.bottom) <= difference) &&
+		(abs(r1.left - r2.left) <= difference) &&
+		(abs(r1.right - r2.right) <= difference) &&
+		(abs(r1.top - r2.top) <= difference);
+}
+
+
 TWindow::TWindow(TString& name, TString& winClass, UINT style, HWND parent, int commandShow, TrecPointer<TInstance> ins)
 {
 	currentWindow = CreateWindowW(winClass.GetConstantBuffer(),
@@ -144,7 +154,7 @@ void TWindow::Draw()
 				SetDCBrushColor(windDC, RGB(0, 0, 0));
 
 				
-				RECT loc = mainPage->GetArea();
+				D2D1_RECT_F loc = mainPage->GetArea();
 
 				int width = loc.right - loc.left, height = loc.bottom - loc.top;
 
@@ -283,7 +293,7 @@ void TWindow::OnWindowResize(UINT width, UINT height)
 
 	//safeToDraw = safeToDraw | 0b00000010;
 
-	RECT newLoc;
+	D2D1_RECT_F newLoc;
 	newLoc.top = newLoc.left = 0;
 	newLoc.bottom = height;
 	newLoc.right = width;
@@ -311,7 +321,7 @@ TrecPointer<Page> TWindow::GetHandlePage(bool singleton)
 	if (singleton && handlePage.Get())
 		return handlePage;
 
-	TrecPointer<Page> ret = Page::Get2DPage(windowInstance, TrecPointerKey::GetTrecPointerFromSoft<TWindow>(self), TrecPointer<EventHandler>());
+	TrecPointer<Page> ret = Page::GetWindowPage(windowInstance, TrecPointerKey::GetTrecPointerFromSoft<TWindow>(self), TrecPointer<EventHandler>());
 
 	if (!ret.Get())
 		return ret;
@@ -399,11 +409,11 @@ void TWindow::SetSelf(TrecPointer<TWindow> win)
 	this->self = TrecPointerKey::GetSoftPointerFromTrec<TWindow>(win);
 }
 
-TrecPointer<Page> TWindow::GetPageByArea(RECT r)
+TrecPointer<Page> TWindow::GetPageByArea(D2D1_RECT_F r)
 {
 	for (UINT Rust = 0; Rust < pages.Size(); Rust++)
 	{
-		if (pages[Rust].Get() && pages[Rust]->GetArea() == r)
+		if (pages[Rust].Get() && IsD2D1RectEqual(pages[Rust]->GetArea(), r, 1.0f))
 			return pages[Rust];
 	}
 	TrecPointer<Page> ret = Page::GetSmallPage(mainPage, r);
