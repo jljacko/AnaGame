@@ -254,7 +254,7 @@ UCHAR * TArena::GetAnaGameType()
 
 
 
-void TArena::Resize(D2D1_RECT_F r)
+void TArena::Resize(D2D1_RECT_F& r)
 {
 	TControl::Resize(r);
 	if (!viewport)

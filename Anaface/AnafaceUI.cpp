@@ -457,6 +457,8 @@ int AnafaceUI::addControl(TrecPointer<TControl> control, TString tabName)
 
 		AddNewTab(tabName);
 
+		control->setParent(TrecPointerKey::GetTrecPointerFromSoft<TControl>(tThis));
+
 
 		return children.Count() - 1;
 	}
@@ -658,7 +660,7 @@ D2D1_RECT_F AnafaceUI::GetControlArea()
 	return returnable;
 }
 
-void AnafaceUI::Resize(D2D1_RECT_F r)
+void AnafaceUI::Resize(D2D1_RECT_F& r)
 {
 	location = r;
 	r.top += tabHeight;

@@ -571,7 +571,8 @@ void Page::OnResize(RECT& newLoc, UINT nFlags, TrecPointer<TWindowEngine> engine
 	{
 		if(requireNewRenderTarget)
 			rootControl->SetNewRenderTarget(regRenderTarget);
-		rootControl->Resize(convertRECTToD2DRectF(area));
+		D2D1_RECT_F d2dArea = convertRECTToD2DRectF(area);
+		rootControl->Resize(d2dArea);
 	}
 
 	if (miniHandler.Get())

@@ -63,6 +63,7 @@ SourceCodeApp::SourceCodeApp(TrecPointer<TControl> m, TrecPointer<TControl> o, T
 	explorerControl->addAttribute(TString(L"|ContainerLoc"), TrecPointerKey::GetNewTrecPointer<TString>(L"0,0,30,100"));
 	nodeControl->addAttribute(TString(L"|Caption"), TrecPointerKey::GetNewTrecPointer<TString>(L"{}"));
 	explorerControl->addChild(nodeControl);
+
 	explorerControl->onCreate(rect, window->GetWindowEngine());
 
 	TrecPointer<TObjectNode> node = TrecPointerKey::GetNewSelfTrecPointerAlt<TObjectNode, TFileNode>(0);

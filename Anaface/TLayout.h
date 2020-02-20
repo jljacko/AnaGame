@@ -121,7 +121,7 @@ protected:
 	UINT GetTotalSetRow();
 	UINT GetTotalFlexCol();
 	UINT GetTotalSetCol();
-	void Resize(D2D1_RECT_F r)override;
+	void Resize(D2D1_RECT_F& r)override;
 
 	bool updateRow, updateColumn;
 

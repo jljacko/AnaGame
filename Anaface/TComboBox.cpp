@@ -500,7 +500,7 @@ UCHAR * TComboBox::GetAnaGameType()
 	return nullptr;
 }
 
-void TComboBox::Resize(D2D1_RECT_F r)
+void TComboBox::Resize(D2D1_RECT_F& r)
 {
 	TGadgetControl::Resize(r);
 	leftpoint = D2D1::Point2F(DxLocation.left, DxLocation.top);

@@ -71,7 +71,7 @@ public:
 
 	D2D1_RECT_F GetControlArea();
 
-	void Resize(D2D1_RECT_F r)override;
+	void Resize(D2D1_RECT_F& r)override;
 
 private:
 	TrecPointer<TControl> currentControl;

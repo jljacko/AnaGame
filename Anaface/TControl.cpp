@@ -899,7 +899,7 @@ TrecPointer<styleTable> classy;
 * Purpose: Resizes the control upon the window being resized
 * Parameters: RECT r - the new location for the control
 */
-void TControl::Resize(D2D1_RECT_F rr)
+void TControl::Resize(D2D1_RECT_F& rr)
 {
 	D2D1_RECT_F r = rr;
 
@@ -1210,8 +1210,8 @@ void TControl::SwitchChildControl(TrecPointerSoft<TControl> curControl, TrecPoin
 	{
 		if (children.ElementAt(Rust).Get() == curControl.Get())
 		{
-			children.ElementAt(Rust) = newControl;
-			return;
+			children.setAt(Rust, newControl);
+			break;
 		}
 	}
 }

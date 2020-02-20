@@ -28,7 +28,7 @@ public:
 
 	virtual UCHAR* GetAnaGameType()override;
 
-	void Resize(D2D1_RECT_F r) override;
+	void Resize(D2D1_RECT_F& r) override;
 
 
 };

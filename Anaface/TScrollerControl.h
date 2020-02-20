@@ -9,7 +9,7 @@ public:
 
 	void SetChildControl(TrecPointer<TControl> cont);
 
-	virtual void Resize(D2D1_RECT_F)override;
+	virtual void Resize(D2D1_RECT_F&)override;
 
 protected:
 	TrecPointer<TControl> childControl;

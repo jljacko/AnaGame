@@ -986,7 +986,7 @@ UCHAR * TTextField::GetAnaGameType()
 	return nullptr;
 }
 
-void TTextField::Resize(D2D1_RECT_F r)
+void TTextField::Resize(D2D1_RECT_F& r)
 {
 	TGadgetControl::Resize(r);
 	topBut = DxLocation;

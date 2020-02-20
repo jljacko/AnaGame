@@ -186,7 +186,7 @@ UCHAR * TRadioButton::GetAnaGameType()
 	return nullptr;
 }
 
-void TRadioButton::Resize(D2D1_RECT_F r)
+void TRadioButton::Resize(D2D1_RECT_F& r)
 {
 	TGadgetControl::Resize(r);
 	ellBut.point = D2D1::Point2F((DxLocation.right + DxLocation.left) / 2, (DxLocation.top + DxLocation.bottom) / 2);

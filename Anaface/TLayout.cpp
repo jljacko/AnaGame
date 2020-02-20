@@ -929,7 +929,7 @@ UINT TLayout::GetTotalSetCol()
 	return ret;
 }
 
-void TLayout::Resize(D2D1_RECT_F r)
+void TLayout::Resize(D2D1_RECT_F& r)
 {
 	if (SetScrollControlOnMinSize(r))
 	{

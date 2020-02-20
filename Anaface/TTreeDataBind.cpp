@@ -1,4 +1,5 @@
 #include "TTreeDataBind.h"
+#include "TScrollerControl.h"
 #include <d2d1.h>
 
 TTreeDataBind::TTreeDataBind(TrecComPointer<ID2D1RenderTarget> rt, TrecPointer<TArray<styleTable>> ta): TControl(rt, ta)
@@ -193,6 +194,7 @@ void TTreeDataBind::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, 
 					else if(tNode->IsExtendable())
 					{
 						tNode->Extend();
+						Resize(location);
 					}
 				}
 			}
@@ -219,4 +221,58 @@ D2D1_RECT_F TTreeDataBind::getLocation()
 	if (mainNode.Get())
 		ret.bottom = ret.top + 30 * (mainNode->TotalChildren() + 1);
 	return ret;
+}
+
+/*
+* Method: TControl - Resize
+* Purpose: Resizes the control upon the window being resized
+* Parameters: RECT r - the new location for the control
+*/
+void TTreeDataBind::Resize(D2D1_RECT_F& r)
+{
+	// First Check to see if we need a new scroll control
+	D2D1_RECT_F tempLoc = this->getLocation();
+	if ((tempLoc.bottom - tempLoc.top > r.bottom - r.top) ||
+		(tempLoc.right - tempLoc.left > r.right - r.left))
+	{
+		if (parent.Get())
+		{
+			TrecPointer<TControl> scrollControl = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TScrollerControl>(renderTarget, styles);
+			scrollControl->onCreate(r, TrecPointer<TWindowEngine>());
+			dynamic_cast<TScrollerControl*>(scrollControl.Get())->SetChildControl(TrecPointerKey::GetTrecPointerFromSoft<TControl>(tThis));
+			TrecPointerKey::GetTrecPointerFromSoft<TControl>(parent)->SwitchChildControl(tThis, scrollControl);
+			location.left = r.left;
+			location.top = r.top;
+		}
+		return;
+	}
+
+
+	// We do not, so proceed
+	location = r;
+	updateComponentLocation();
+	CheckScroll();
+/*
+	TControl* ele = nullptr;
+
+	
+	if (children.Count() && (ele = children.ElementAt(0).Get()))
+	{
+		D2D1_RECT_F loc;
+		if (this->isStack)
+		{
+			loc.left = location.left;
+			loc.right = location.right;
+			loc.top = location.top;
+			loc.bottom = loc.top + this->widthHeight;
+		}
+		else
+		{
+			loc.top = location.top;
+			loc.bottom = location.bottom;
+			loc.left = location.left;
+			loc.right = loc.left + this->widthHeight;
+		}
+		ele->Resize(loc);
+	}*/
 }

@@ -20,7 +20,7 @@ TDataBind::~TDataBind()
 * Purpose: Resizes the control upon the window being resized
 * Parameters: RECT r - the new location for the control
 */
-void TDataBind::Resize(D2D1_RECT_F r)
+void TDataBind::Resize(D2D1_RECT_F& r)
 {
 	// First Check to see if we need a new scroll control
 	D2D1_RECT_F tempLoc = this->getLocation();

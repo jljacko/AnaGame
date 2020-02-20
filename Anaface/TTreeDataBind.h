@@ -22,6 +22,7 @@ public:
 
 	void SetNode(TrecPointer<TObjectNode> newNode);
 	D2D1_RECT_F getLocation()override;
+	void Resize(D2D1_RECT_F& r)override;
 protected:
 	TrecPointer<TObjectNode> mainNode;
 
