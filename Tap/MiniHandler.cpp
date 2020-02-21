@@ -129,12 +129,12 @@ TString MiniHandler::GetFilePath()
 
 void MiniHandler::Draw()
 {
-	if (mainPage.Get())
-		mainPage->Draw();
-	if (outputPane.Get())
-		outputPane->Draw();
-	if (explorerPane.Get())
-		explorerPane->Draw();
+	//if (mainPage.Get())
+	//	mainPage->Draw();
+	//if (outputPane.Get())
+	//	outputPane->Draw();
+	//if (explorerPane.Get())
+	//	explorerPane->Draw();
 }
 
 void MiniHandler::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)

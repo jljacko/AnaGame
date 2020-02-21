@@ -32,7 +32,7 @@ public:
 
 	void onDraw(ID2D1RenderTarget* target);
 
-	virtual void OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut);
+	virtual bool OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut);
 	virtual void OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut);
 	virtual void OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut);
 

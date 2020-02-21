@@ -22,7 +22,7 @@ TScrollBar::~TScrollBar()
 
 void TScrollBar::onDraw(ID2D1RenderTarget* target)
 {
-	if (!target || !parent) return;
+	if (!target || !parent || !(widthFactor < 1.0f)) return;
 
 	D2D1_RECT_F location = parent->getLocation();
 
@@ -67,7 +67,7 @@ void TScrollBar::onDraw(ID2D1RenderTarget* target)
 	brush->Release();
 }
 
-void TScrollBar::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
+bool TScrollBar::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
 {
 	if (isContained(&point, &body_rect))
 	{
@@ -77,6 +77,8 @@ void TScrollBar::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
 	}
 	else
 		onFocus = false;
+
+	return onFocus;
 }
 
 void TScrollBar::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)

@@ -27,12 +27,13 @@ void TDataBind::Resize(D2D1_RECT_F& r)
 	if ((tempLoc.bottom - tempLoc.top > r.bottom - r.top) ||
 		(tempLoc.right - tempLoc.left > r.right - r.left))
 	{
-		if (parent.Get())
+		if (parent.Get() && !dynamic_cast<TScrollerControl*>(parent.Get()))
 		{
 			TrecPointer<TControl> scrollControl = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TScrollerControl>(renderTarget, styles);
 			scrollControl->onCreate(r, TrecPointer<TWindowEngine>());
 			dynamic_cast<TScrollerControl*>(scrollControl.Get())->SetChildControl(TrecPointerKey::GetTrecPointerFromSoft<TControl>(tThis));
 			TrecPointerKey::GetTrecPointerFromSoft<TControl>(parent)->SwitchChildControl(tThis, scrollControl);
+			parent = TrecPointerKey::GetSoftPointerFromTrec<TControl>(scrollControl);
 			location.left = r.left;
 			location.top = r.top;
 		}

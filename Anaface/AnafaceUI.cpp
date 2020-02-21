@@ -66,6 +66,14 @@ void AnafaceUI::SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget> rt)
 	
 }
 
+void AnafaceUI::SwitchChildControl(TrecPointerSoft<TControl> curControl, TrecPointer<TControl> newControl)
+{
+	if (curControl.Get() == currentControl.Get())
+		currentControl = newControl;
+
+	TControl::SwitchChildControl(curControl, newControl);
+}
+
 /*
 int AnafaceUI::loadFromTML(CArchive * ar)
 {
@@ -560,7 +568,7 @@ void AnafaceUI::onDraw(TObject* obj)
 	*/
 	if (tabs)
 		tabs->onDraw(obj);
-	if (currentControl.Get() && proceed)
+	if (currentControl.Get())
 		currentControl->onDraw(obj);
 }
 

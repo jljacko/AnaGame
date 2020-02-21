@@ -54,6 +54,8 @@ public:
 
 	virtual void SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget> rt);
 
+	virtual void SwitchChildControl(TrecPointerSoft<TControl> curControl, TrecPointer<TControl> newControl)override;
+
 	// afx_msg virtual void OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
 //	int loadFromTML(CArchive* ar);
 	bool onCreate(D2D1_RECT_F, TrecPointer<TWindowEngine> d3d)override;
