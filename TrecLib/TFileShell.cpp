@@ -47,13 +47,8 @@ TString TFileShell::GetName()
 	int slashLoc = path.FindLastOneOf(TString(L"/\\"));
 	if (slashLoc == -1)
 		return path;
-	TString cutPath(path);
-	while (slashLoc == cutPath.GetSize() - 1)
-	{
-		cutPath.Set(cutPath.SubString(0, slashLoc));
-		slashLoc = cutPath.FindLastOneOf(TString(L"/\\"));
-	}
-	return cutPath;
+
+	return path.SubString(slashLoc+1);
 }
 
 /*
@@ -65,7 +60,7 @@ TString TFileShell::GetName()
 * Note: If the file does not exist, the pointer will be null. If the file is a directory,
 *	the pointer will contain a TDirectory (which extends the TFileShell)
 */
-TrecPointer<TFileShell> TFileShell::GetFileInfo(TString& path)
+TrecPointer<TFileShell> TFileShell::GetFileInfo(const TString& path)
 {
 	DWORD ftyp = GetFileAttributesW(path.GetConstantBuffer());
 
@@ -175,13 +170,11 @@ bool TFileShell::IsReadOnly()
 	return  fileInfo.dwFileAttributes & FILE_ATTRIBUTE_READONLY;
 }
 
-TFileShell::TFileShell(TString& path)
+TFileShell::TFileShell(const TString& path)
 {
 	if (GetFileAttributesExW(path.GetConstantBuffer(), GET_FILEEX_INFO_LEVELS::GetFileExInfoStandard, &this->fileInfo))
 		this->path.Set(path);
 
-	if (this->path.GetSize() && (this->path[this->path.GetSize() - 1] != L'\\' && this->path[this->path.GetSize() - 1] != L'/') && (this->fileInfo.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
-		this->path.AppendChar(L'\\');
 
 	deleted = false;
 }

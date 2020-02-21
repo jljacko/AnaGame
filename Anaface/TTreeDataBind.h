@@ -6,7 +6,7 @@
  * class TTreeDataBind
  * Purpose: Support for depicting a tree-based system on Anaface
  */
-class TTreeDataBind :
+class _ANAFACE_DLL TTreeDataBind :
 	public TControl
 {
 public:
@@ -21,8 +21,12 @@ public:
 	afx_msg virtual void OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr) override;
 
 	void SetNode(TrecPointer<TObjectNode> newNode);
-
+	D2D1_RECT_F getLocation()override;
+	void Resize(D2D1_RECT_F& r)override;
 protected:
 	TrecPointer<TObjectNode> mainNode;
+
+	bool isNodeSelected, isTickSelected;
+	UINT nodeSelected;
 };
 

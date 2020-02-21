@@ -71,6 +71,34 @@ void MiniHandler::OnSave()
 	saver.Close();
 }
 
+void MiniHandler::OnLoad()
+{
+	OPENFILENAMEW fileInfo;
+	ZeroMemory(&fileInfo, sizeof(fileInfo));
+
+	TString initialSearch(GetDirectory(cd_Documents));
+
+	fileInfo.lStructSize = sizeof(OPENFILENAMEW);
+	fileInfo.hwndOwner = this->window->GetWindowHandle();
+	fileInfo.hInstance = this->window->GetInstance()->GetInstanceHandle();
+	fileInfo.lpstrFilter = nullptr;
+	fileInfo.lpstrInitialDir = initialSearch.GetConstantBuffer();
+	fileInfo.lpstrFile = new WCHAR[255];
+	fileInfo.nMaxFile = 230;
+
+	bool gotName = false;
+	if (gotName = GetOpenFileNameW(&fileInfo))
+	{
+		filePath.Set(fileInfo.lpstrFile);
+	}
+
+	TFile saver(filePath, TFile::t_file_write | TFile::t_file_create_always);
+	if (!saver.IsOpen()) return;
+
+	OnLoad(saver);
+	saver.Close();
+}
+
 void MiniHandler::OnShow()
 {
 	if (mainPage.Get())
@@ -101,12 +129,12 @@ TString MiniHandler::GetFilePath()
 
 void MiniHandler::Draw()
 {
-	if (mainPage.Get())
-		mainPage->Draw();
-	if (outputPane.Get())
-		outputPane->Draw();
-	if (explorerPane.Get())
-		explorerPane->Draw();
+	//if (mainPage.Get())
+	//	mainPage->Draw();
+	//if (outputPane.Get())
+	//	outputPane->Draw();
+	//if (explorerPane.Get())
+	//	explorerPane->Draw();
 }
 
 void MiniHandler::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
@@ -356,6 +384,10 @@ void MiniHandler::SetSelf(TrecPointer<MiniHandler> s)
 }
 
 void MiniHandler::OnSave(TFile&)
+{
+}
+
+void MiniHandler::OnLoad(TFile&)
 {
 }
 

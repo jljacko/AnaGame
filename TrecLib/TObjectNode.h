@@ -15,7 +15,11 @@ public:
 
 	virtual TString GetContent() = 0;
 	virtual bool IsExtendable() = 0;
+	virtual bool IsExtended() = 0;
 	virtual bool Initialize() = 0;
+	virtual TrecPointer<TObjectNode> GetNodeAt(UINT target, UINT current) =0;
+	virtual UINT TotalChildren() = 0;
+
 	virtual bool Initialize(TString& value) = 0;
 	virtual void Extend() = 0;
 	virtual TrecPointer<TObjectNode> GetChildNodes(UINT) = 0;
@@ -23,9 +27,13 @@ public:
 	UINT GetLevel();
 
 	void SetParent(TrecPointerSoft<TObjectNode> p);
+	void SetSelf(TrecPointer<TObjectNode> s);
+
+	virtual TString getVariableValueStr(const TString& varName)override;
 
 protected:
 	UINT level;
 	TrecPointerSoft<TObjectNode> parentNode;
+	TrecPointerSoft<TObjectNode> self;
 };
 

@@ -66,6 +66,14 @@ void AnafaceUI::SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget> rt)
 	
 }
 
+void AnafaceUI::SwitchChildControl(TrecPointerSoft<TControl> curControl, TrecPointer<TControl> newControl)
+{
+	if (curControl.Get() == currentControl.Get())
+		currentControl = newControl;
+
+	TControl::SwitchChildControl(curControl, newControl);
+}
+
 /*
 int AnafaceUI::loadFromTML(CArchive * ar)
 {
@@ -457,6 +465,8 @@ int AnafaceUI::addControl(TrecPointer<TControl> control, TString tabName)
 
 		AddNewTab(tabName);
 
+		control->setParent(TrecPointerKey::GetTrecPointerFromSoft<TControl>(tThis));
+
 
 		return children.Count() - 1;
 	}
@@ -558,7 +568,7 @@ void AnafaceUI::onDraw(TObject* obj)
 	*/
 	if (tabs)
 		tabs->onDraw(obj);
-	if (currentControl.Get() && proceed)
+	if (currentControl.Get())
 		currentControl->onDraw(obj);
 }
 
@@ -658,7 +668,7 @@ D2D1_RECT_F AnafaceUI::GetControlArea()
 	return returnable;
 }
 
-void AnafaceUI::Resize(D2D1_RECT_F r)
+void AnafaceUI::Resize(D2D1_RECT_F& r)
 {
 	location = r;
 	r.top += tabHeight;

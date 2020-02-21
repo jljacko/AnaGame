@@ -19,6 +19,7 @@ public:
 
 	virtual RECT Get3DArea();
 	virtual void OnSave();
+	virtual void OnLoad();
 
 	virtual void OnShow();
 	virtual void onHide();
@@ -40,6 +41,7 @@ public:
 protected:
 
 	virtual void OnSave(TFile&);
+	virtual void OnLoad(TFile&);
 
 	TrecPointer<TControl> mainUI, outputUI, explorerUI;
 	TrecPointer<Page> mainPage, outputPane, explorerPane;

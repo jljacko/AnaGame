@@ -1,6 +1,6 @@
 #pragma once
 #include <MiniHandler.h>
-
+#include <TEnvironment.h>
 class SourceCodeApp;
 
 typedef void (SourceCodeApp::* SCBuilderEvents)(TControl* tc, EventArgs ea);
@@ -23,10 +23,13 @@ public:
 	UINT ProcessIntLanguage();
 	void HandleEvents(TDataArray<EventID_Cred>&)override;
 
+	void ProcessFile(TrecPointer<TEnvironment> env);
+
 protected:
 	void PrepLanguage(TFile& sourceCode);
 
 	void OnSave(TFile& file)override;
+	void OnLoad(TFile& file)override;
 
 	// Interpretors, incase code needs to be run or compiled
 	// TInterpretor* interpret;

@@ -91,6 +91,8 @@ public:
 
 protected:
 	TArray<containerControl> lChildren;   // used to organize children more easily than regular TControl
+
+	void SwitchChildControl(TrecPointerSoft<TControl> curControl, TrecPointer<TControl> newControl)override;
 	//RECT expand; // if combobox
 	int colunms, rows;
 	orgLayout organization;
@@ -119,7 +121,7 @@ protected:
 	UINT GetTotalSetRow();
 	UINT GetTotalFlexCol();
 	UINT GetTotalSetCol();
-	void Resize(D2D1_RECT_F r)override;
+	void Resize(D2D1_RECT_F& r)override;
 
 	bool updateRow, updateColumn;
 

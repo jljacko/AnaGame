@@ -2,6 +2,7 @@
 #include "AnafaceUI.h"
 #include <Logger.h>
 #include <wincodec.h>
+#include "TScrollerControl.h"
 
 /*
 * Method:
@@ -898,9 +899,21 @@ TrecPointer<styleTable> classy;
 * Purpose: Resizes the control upon the window being resized
 * Parameters: RECT r - the new location for the control
 */
-void TControl::Resize(D2D1_RECT_F rr)
+void TControl::Resize(D2D1_RECT_F& rr)
 {
 	D2D1_RECT_F r = rr;
+
+	if (SetScrollControlOnMinSize(rr))
+	{
+		float difHeight = location.top - rr.top;
+		location.bottom -= difHeight;
+		location.top -= difHeight;
+		float difWidth = location.left - rr.left;
+		location.left -= difWidth;
+		location.right -= difWidth;
+		
+		return;
+	}
 	
 	if (children.Count())
 	{
@@ -1168,6 +1181,39 @@ UCHAR * TControl::GetAnaGameType()
 void TControl::SetNormalMouseState()
 {
 	mState = normal;
+}
+
+bool TControl::SetScrollControlOnMinSize(D2D1_RECT_F l)
+{
+	if (dimensions)
+	{
+		bool h = dimensions->minHeight > static_cast<int>(l.bottom - l.top);
+		bool w = dimensions->minWidth > static_cast<int>(l.right - l.left);
+		if (h || w)
+		{
+			if (parent.Get())
+			{
+				TrecPointer<TControl> scrollControl = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TScrollerControl>(renderTarget, styles);
+				scrollControl->onCreate(l, TrecPointer<TWindowEngine>());
+				dynamic_cast<TScrollerControl*>(scrollControl.Get())->SetChildControl(TrecPointerKey::GetTrecPointerFromSoft<TControl>(tThis));
+				TrecPointerKey::GetTrecPointerFromSoft<TControl>(parent)->SwitchChildControl(tThis, scrollControl);
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+void TControl::SwitchChildControl(TrecPointerSoft<TControl> curControl, TrecPointer<TControl> newControl)
+{
+	for (UINT Rust = 0; Rust < children.Count(); Rust++)
+	{
+		if (children.ElementAt(Rust).Get() == curControl.Get())
+		{
+			children.setAt(Rust, newControl);
+			break;
+		}
+	}
 }
 
 /*

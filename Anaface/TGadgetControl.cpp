@@ -129,7 +129,7 @@ void TGadgetControl::SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget> rt)
 	brush = brushRaw.Extract();
 }
 
-void TGadgetControl::Resize(D2D1_RECT_F r)
+void TGadgetControl::Resize(D2D1_RECT_F& r)
 {
 	TControl::Resize(r);
 	int height = location.bottom - location.top;

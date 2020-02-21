@@ -13,6 +13,7 @@
 #include "TCanvas.h"
 #include "TImage.h"
 #include "TPromptControl.h"
+#include "TTreeDataBind.h"
 
 class AnafaceUI;
 typedef struct _ANAFACE_DLL auiHold {
@@ -53,6 +54,8 @@ public:
 
 	virtual void SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget> rt);
 
+	virtual void SwitchChildControl(TrecPointerSoft<TControl> curControl, TrecPointer<TControl> newControl)override;
+
 	// afx_msg virtual void OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
 //	int loadFromTML(CArchive* ar);
 	bool onCreate(D2D1_RECT_F, TrecPointer<TWindowEngine> d3d)override;
@@ -70,7 +73,7 @@ public:
 
 	D2D1_RECT_F GetControlArea();
 
-	void Resize(D2D1_RECT_F r)override;
+	void Resize(D2D1_RECT_F& r)override;
 
 private:
 	TrecPointer<TControl> currentControl;

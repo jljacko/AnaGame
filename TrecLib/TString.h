@@ -53,7 +53,7 @@ public:
 	short ConvertToLong(long long*);
 	short ConvertToFloat(float*);
 
-	TrecPointer<typename TDataArray<TString>> split(TString, bool checkBackSlash = false);
+	TrecPointer<TDataArray<TString>> split(TString, bool checkBackSlash = false);
 	WCHAR* GetBufferCopy()const ;
 
 	const WCHAR* GetConstantBuffer() const;
@@ -62,7 +62,7 @@ public:
 
 	bool ConvertToColor(D2D1_COLOR_F& color, ColorFormat& cf);
 
-	int FindOutOfQuotes(TString& subString, int start = 0);
+	int FindOutOfQuotes(const TString& subString, int start = 0);
 
 	// Set Methods, to be used in place of Assignment operators to avoid C26444 Warnings
 	void Set(const TString& s);

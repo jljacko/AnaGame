@@ -695,7 +695,7 @@ bool TString::ConvertToColor(D2D1_COLOR_F & color, ColorFormat& cf)
 	return false;
 }
 
-int TString::FindOutOfQuotes(TString& subString, int start)
+int TString::FindOutOfQuotes(const TString& subString, int start)
 {
 	TDataArray<int> possibleIndeces;
 	while (start != -1) 

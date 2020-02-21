@@ -18,7 +18,7 @@ public:
 	TString GetPath();
 	TString GetName();
 
-	TrecPointer<TFileShell> static GetFileInfo(TString& path);
+	TrecPointer<TFileShell> static GetFileInfo(const TString& path);
 
 	FILETIME GetCreationDate();
 	FILETIME GetLastAccessed();
@@ -32,7 +32,7 @@ public:
 	bool IsReadOnly();
 
 protected:
-	TFileShell(TString& path);
+	TFileShell(const TString& path);
 
 	void Refresh();
 

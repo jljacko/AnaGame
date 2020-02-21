@@ -20,7 +20,7 @@ public:
 
 	virtual void SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget>);
 
-	void Resize(D2D1_RECT_F r) override;
+	void Resize(D2D1_RECT_F& r) override;
 protected:
 	int bSize;
 	RECT checker;

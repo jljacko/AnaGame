@@ -15,11 +15,16 @@ public:
 
 	TString GetContent() override;
 	bool IsExtendable() override;
+	virtual bool IsExtended();
+	virtual TrecPointer<TObjectNode> GetNodeAt(UINT target, UINT current);
+	virtual UINT TotalChildren();
 	virtual bool Initialize() override;
 	virtual bool Initialize(TString& value) override;
 	virtual void Extend() override;
 	virtual TrecPointer<TObjectNode> GetChildNodes(UINT index) override;
 	virtual void DropChildNodes() override;
+
+	virtual TString getVariableValueStr(const TString& varName)override;
 
 	void SetFile(TrecPointer<TFileShell>& d);
 protected:
