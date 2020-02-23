@@ -679,7 +679,7 @@ void IDEPage::MouseMoveLowerLeft(TPoint& diff)
 IDEPageHolder::IDEPageHolder(TString name, TrecComPointer<ID2D1RenderTarget> rt, UINT barSpace, TrecPointer<EventHandler> handler, TrecPointer<TWindow> win, D2D1_RECT_F initLoc)
 {
 	text = TrecPointerKey::GetNewTrecPointer<TText>(rt, nullptr);
-	text->setColor(D2D1::ColorF::Black);
+	text->SetColor(D2D1::ColorF(D2D1::ColorF::Black));
 	text->setNewFontSize(12.0f);
 	text->setCaption(name);
 	text->setNewHorizontalAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);

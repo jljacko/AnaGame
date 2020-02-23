@@ -6,7 +6,7 @@
 #include <TMap.h>
 class TWindow;
 
-class TAnimationManager :public TObject
+class _TAP_DLL TAnimationManager :public TObject
 {
 public:
 	TAnimationManager();

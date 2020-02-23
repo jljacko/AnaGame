@@ -4387,7 +4387,7 @@ void TBorder::ShiftVertical(int degrees)
 * Parameters: D2D1_COLOR_F& cf -  the color to set the border to
 * Returns: void
 */
-void TBorder::SetColor(D2D1_COLOR_F& cf)
+void TBorder::SetColor(const D2D1_COLOR_F& cf)
 {
 	color = cf;
 	if (brush.Get())
@@ -4403,7 +4403,7 @@ D2D1_COLOR_F TBorder::GetColor()
 	return color;
 }
 
-void TBorder::SetColor2(D2D1_COLOR_F& cf)
+void TBorder::SetColor2(const D2D1_COLOR_F& cf)
 {
 	color2 = cf;
 	if (brush.Get())
@@ -4424,7 +4424,7 @@ D2D1_RECT_F TBorder::GetLocation()
 	return loci;
 }
 
-void TBorder::SetLocation(D2D1_RECT_F& loc)
+void TBorder::SetLocation(const D2D1_RECT_F& loc)
 {
 	loci = loc;
 	if (cap)
@@ -5071,7 +5071,7 @@ void TText::ShiftVertical(int degrees)
 	bounds.bottom += degrees;
 }
 
-void TText::SetColor(D2D1_COLOR_F& cf)
+void TText::SetColor(const D2D1_COLOR_F& cf)
 {
 	color = cf;
 	if (penBrush.Get())
@@ -5087,7 +5087,7 @@ D2D1_COLOR_F TText::GetColor()
 	return color;
 }
 
-void TText::SetColor2(D2D1_COLOR_F& color)
+void TText::SetColor2(const D2D1_COLOR_F& color)
 {
 	color2 = color;
 }
@@ -5102,7 +5102,7 @@ D2D1_RECT_F TText::GetLocation()
 	return bounds;
 }
 
-void TText::SetLocation(D2D1_RECT_F& loc)
+void TText::SetLocation(const D2D1_RECT_F& loc)
 {
 	bounds = loc;
 	if (cap)
@@ -5670,7 +5670,7 @@ void TContent::SetLinearImage(TDataArray<D2D1_GRADIENT_STOP>& colors)
 	brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1LinearGradientBrush>(linBrush);
 }
 
-void TContent::SetColor(D2D1_COLOR_F& cf)
+void TContent::SetColor(const D2D1_COLOR_F& cf)
 {
 	color = cf;
 	if (brush.Get())
@@ -5686,7 +5686,7 @@ D2D1_COLOR_F TContent::GetColor()
 	return color;
 }
 
-void TContent::SetColor2(D2D1_COLOR_F& color)
+void TContent::SetColor2(const D2D1_COLOR_F& color)
 {
 	color2 = color;
 }
@@ -5701,7 +5701,7 @@ D2D1_RECT_F TContent::GetLocation()
 	return location;
 }
 
-void TContent::SetLocation(D2D1_RECT_F& loc)
+void TContent::SetLocation(const D2D1_RECT_F& loc)
 {
 	location = loc;
 	if (cap)

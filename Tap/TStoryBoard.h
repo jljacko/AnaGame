@@ -2,7 +2,7 @@
 #include "TObject.h"
 #include <Animation.h>
 #include <TTrecPointerArray.h>
-
+#include "Tap_dll.h"
 
 class TWindow;
 
@@ -17,7 +17,7 @@ public:
 	
 };
 
-class TStoryBoard :
+class _TAP_DLL TStoryBoard :
 	public TObject
 {
 public:

@@ -178,12 +178,12 @@ public:
 	void ShiftVertical(int degrees);
 
 	// Inherited From TControlComponent
-	virtual void SetColor(D2D1_COLOR_F& color)override;
+	virtual void SetColor(const D2D1_COLOR_F& color)override;
 	virtual D2D1_COLOR_F GetColor() override;
-	virtual void SetColor2(D2D1_COLOR_F& color) override;
+	virtual void SetColor2(const D2D1_COLOR_F& color) override;
 	virtual D2D1_COLOR_F GetColor2() override;
 	virtual D2D1_RECT_F GetLocation() override;
-	virtual void SetLocation(D2D1_RECT_F& loc) override;
+	virtual void SetLocation(const D2D1_RECT_F& loc) override;
 private:
 	//CMap<CString, CString, CString, CString> styles;
 
@@ -289,12 +289,12 @@ public:
 	void SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget>);
 
 	// Inherited From TControlComponent
-	virtual void SetColor(D2D1_COLOR_F& color)override;
+	virtual void SetColor(const D2D1_COLOR_F& color)override;
 	virtual D2D1_COLOR_F GetColor() override;
-	virtual void SetColor2(D2D1_COLOR_F& color) override;
+	virtual void SetColor2(const D2D1_COLOR_F& color) override;
 	virtual D2D1_COLOR_F GetColor2() override;
 	virtual D2D1_RECT_F GetLocation() override;
-	virtual void SetLocation(D2D1_RECT_F& loc) override;
+	virtual void SetLocation(const D2D1_RECT_F& loc) override;
 
 private:
 	//CMap<CString, CString, CString, CString> styles;
@@ -369,12 +369,12 @@ public:
 	void SetLinearImage(TDataArray<D2D1_GRADIENT_STOP>& colors);
 
 	// Inherited From TControlComponent
-	virtual void SetColor(D2D1_COLOR_F& color)override;
+	virtual void SetColor(const D2D1_COLOR_F& color)override;
 	virtual D2D1_COLOR_F GetColor() override;
-	virtual void SetColor2(D2D1_COLOR_F& color) override;
+	virtual void SetColor2(const D2D1_COLOR_F& color) override;
 	virtual D2D1_COLOR_F GetColor2() override;
 	virtual D2D1_RECT_F GetLocation() override;
-	virtual void SetLocation(D2D1_RECT_F& loc) override;
+	virtual void SetLocation(const D2D1_RECT_F& loc) override;
 
 private:
 	TrecComPointer<ID2D1GradientStopCollection> getStopCollection(TDataArray<D2D1_COLOR_F>& colors);
