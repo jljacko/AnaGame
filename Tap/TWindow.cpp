@@ -32,6 +32,8 @@ TWindow::TWindow(TString& name, TString& winClass, UINT style, HWND parent, int 
 
 	locked = false;
 	safeToDraw = 0;
+
+	
 }
 
 TWindow::~TWindow()
@@ -57,7 +59,7 @@ int TWindow::PrepareWindow()
 	ShowWindow(currentWindow, command);
 	UpdateWindow(currentWindow);
 
-
+	animationCentral.SetWindow(TrecPointerKey::GetTrecPointerFromSoft<TWindow>(self));
 
 	return 0;
 }

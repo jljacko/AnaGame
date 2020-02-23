@@ -5,7 +5,7 @@
 * Class TArray
 * Holds references to objects (Not meant to store straight foward data in a row)
 */
-template <typename T>class _TREC_LIB_DLL TTrecPointerArray : public TDataArrayBase
+template <typename T>class TTrecPointerArray : public TDataArrayBase
 {
 private:
 	TrecPointer<T>* array;

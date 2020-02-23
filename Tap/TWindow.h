@@ -5,6 +5,8 @@
 #include <TControl.h>
 
 bool IsD2D1RectEqual(const D2D1_RECT_F& r1, const  D2D1_RECT_F& r2, float difference);
+#include "TAnimationManager.h"
+
 
 class _TAP_DLL TWindow :	public Drawer
 {
@@ -87,5 +89,7 @@ protected:
 	// 3D Resource
 	TrecPointer<TWindowEngine> d3dEngine;
 	TTrecPointerArray<TArenaEngine> engines;
+
+	TAnimationManager animationCentral;
 };
 

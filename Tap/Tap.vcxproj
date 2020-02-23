@@ -170,6 +170,7 @@
     <ClInclude Include="Page.h" />
     <ClInclude Include="ParseReader.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="TAnimationManager.h" />
     <ClInclude Include="Tap_dll.h" />
     <ClInclude Include="TByteCode.h" />
     <ClInclude Include="TByteVirtualMachine.h" />
@@ -182,6 +183,7 @@
     <ClInclude Include="TStackByteVirtualMachine.h" />
     <ClInclude Include="TStackObjectVirtualMachine.h" />
     <ClInclude Include="TVirtualMachine.h" />
+    <ClInclude Include="TStoryBoard.h" />
     <ClInclude Include="TWindow.h" />
     <ClInclude Include="EventHandler.h" />
     <ClInclude Include="MiniHandler.h" />
@@ -201,6 +203,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="TByteVirtualMachine.cpp" />
+    <ClCompile Include="TAnimationManager.cpp" />
     <ClCompile Include="TDialog.cpp" />
     <ClCompile Include="TerminalHandler.cpp" />
     <ClCompile Include="TIdeWindow.cpp" />
@@ -210,6 +213,7 @@
     <ClCompile Include="TStackByteVirtualMachine.cpp" />
     <ClCompile Include="TStackObjectVirtualMachine.cpp" />
     <ClCompile Include="TVirtualMachine.cpp" />
+    <ClCompile Include="TStoryBoard.cpp" />
     <ClCompile Include="TWindow.cpp" />
     <ClCompile Include="EventHandler.cpp" />
     <ClCompile Include="MiniHandler.cpp" />

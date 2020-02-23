@@ -368,7 +368,7 @@ void ArenaApp::SetColor(D2D1_COLOR_F c)
 	if (!arena)
 		return;
 	if (arena->getContent(1).Get())
-		arena->getContent(1)->setColor(c);
+		arena->getContent(1)->SetColor(c);
 }
 
 void ArenaApp::HandleEvents(TDataArray<EventID_Cred>& cred)
