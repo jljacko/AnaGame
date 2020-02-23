@@ -37,7 +37,7 @@ public:
 	void OnMouseMove(UINT nFlags, TPoint point)override;
 	void OnLButtonDown(UINT nFlags, TPoint point)override;
 
-	void AddNewPage(anagame_page pageType, TString name, TString tmlLoc, TrecPointer<EventHandler> handler, bool pageTypeStrict = false);
+	void AddNewPage(anagame_page pageType, ide_page_type pageLoc, TString name, TString tmlLoc, TrecPointer<EventHandler> handler, bool pageTypeStrict = false);
 
 	int CompileView(TString& file, TrecPointer<EventHandler> eh)override;
 
@@ -54,6 +54,8 @@ protected:
 	TrecSubPointer<Page, IDEPage> lowerRight;
 	TrecSubPointer<Page, IDEPage> upperLeft;
 	TrecSubPointer<Page, IDEPage> lowerLeft;
+
+	TrecSubPointer<Page, IDEPage> focusPage;
 
 	TrecComPointer<ID2D1SolidColorBrush> panelbrush;
 };

@@ -261,6 +261,11 @@ bool AnafaceParser::Obj(TString* va)
 		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TDataBind>(renderer, classList);// TrecPointer<TControl>((new TDataBind(renderer, classList)));
 		addToTree(currentObj);
 	}
+	else if (!v.Compare(L"TTreeDataBind"))
+	{
+		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TTreeDataBind>(renderer, classList);
+		addToTree(currentObj);
+	}
 	else if (!v.Compare(L"Class"))
 	{
 	currentStyle = TrecPointerKey::GetNewTrecPointer<styleTable>(); //  new styleTable();

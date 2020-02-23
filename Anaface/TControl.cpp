@@ -6303,8 +6303,8 @@ bool isContained(const TPoint* cp, const D2D1_RECT_F* r)
 {
 	if (!cp || !r)
 		return false;
-	return cp->x > r->left && cp->x < r->right &&
-		cp->y > r->top && cp->y < r->bottom;
+	return cp->x >= r->left && cp->x <= r->right &&
+		cp->y >= r->top && cp->y <= r->bottom;
 }
 
 /*
@@ -6316,8 +6316,8 @@ bool isContained(const TPoint* cp, const D2D1_RECT_F* r)
 */
 bool isContained(const TPoint& cp, const D2D1_RECT_F& r)
 {
-	return cp.x > r.left&& cp.x < r.right &&
-		cp.y > r.top&& cp.y < r.bottom;
+	return cp.x >= r.left&& cp.x <= r.right &&
+		cp.y >= r.top&& cp.y <= r.bottom;
 }
 
 /*

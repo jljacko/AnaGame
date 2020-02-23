@@ -40,6 +40,8 @@ void IDEPage::SetResources(TrecPointer<TInstance> in, TrecComPointer<ID2D1Render
 
 void IDEPage::MoveBorder(float& magnitude, page_move_mode mode)
 {
+	if (isSnipZero(area))
+		return;
 	switch (mode)
 	{
 	case page_move_mode_bottom:
@@ -294,7 +296,7 @@ void IDEPage::AddNewPage(TrecPointer<IDEPageHolder> pageHolder)
 	pageHolder->GetPage()->SetArea(loc);
 }
 
-void IDEPage::AddNewPage(TrecPointer<TInstance> ins, TrecPointer<TWindow> win, TString name, TrecPointer<EventHandler> h)
+TrecPointer<Page> IDEPage::AddNewPage(TrecPointer<TInstance> ins, TrecPointer<TWindow> win, TString name, TrecPointer<EventHandler> h)
 {
 	TrecSubPointer<Page, IDEPage> newPage = TrecPointerKey::GetNewSelfTrecSubPointer<Page, IDEPage>(ide_page_type_drag, 0);
 
@@ -307,7 +309,7 @@ void IDEPage::AddNewPage(TrecPointer<TInstance> ins, TrecPointer<TWindow> win, T
 	curArea.bottom = curArea.top + barSpace;
 
 
-	for (UINT c = pages.Size() - 1; c < -1; c--)
+	for (UINT c = pages.Size() - 1; c > -1; c--)
 	{
 		if (pages[c].Get() && pages[c]->GetLocation().right)
 		{
@@ -318,7 +320,9 @@ void IDEPage::AddNewPage(TrecPointer<TInstance> ins, TrecPointer<TWindow> win, T
 	
 
 	TrecPointer<IDEPageHolder> newHolder = TrecPointerKey::GetNewTrecPointer<IDEPageHolder>(name, regRenderTarget, barSpace, h, win, curArea);
+	newHolder->SetPage(newPage);
 	pages.push_back(newHolder);
+	return newHolder->GetBasePage();
 }
 
 void IDEPage::RemovePage(TrecPointer<IDEPageHolder> pageHolder)
@@ -755,4 +759,9 @@ void IDEPageHolder::Move(TPoint& moveBy)
 
 	if (text.Get())
 		text->setNewLocation(convertD2DRectToRECT(location));
+}
+
+void IDEPageHolder::SetPage(TrecSubPointer<Page, IDEPage> p)
+{
+	page = p;
 }

@@ -31,6 +31,7 @@ public:
 	void Move(TPoint& moveBy);
 
 protected:
+	void SetPage(TrecSubPointer<Page, IDEPage> p);
 	TrecSubPointer<Page, IDEPage> page;
 	TrecPointer<TText> text;
 	D2D1_RECT_F location;
@@ -64,7 +65,7 @@ public:
 
 	// Methods for Parent Pages
 	void AddNewPage(TrecPointer<IDEPageHolder> pageHolder);
-	void AddNewPage(TrecPointer<TInstance> ins, TrecPointer<TWindow> win, TString name, TrecPointer<EventHandler> h);
+	TrecPointer<Page> AddNewPage(TrecPointer<TInstance> ins, TrecPointer<TWindow> win, TString name, TrecPointer<EventHandler> h);
 	void RemovePage(TrecPointer<IDEPageHolder> pageHolder);
 
 protected:

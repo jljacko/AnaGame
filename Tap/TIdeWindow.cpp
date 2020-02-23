@@ -4,6 +4,7 @@
 
 #include <TFileShell.h>
 #include <atltrace.h>
+#include <DirectoryInterface.h>
 
 
 TIdeWindow::TIdeWindow(TString& name, TString& winClass, UINT style, HWND parent, int commandShow, 
@@ -56,6 +57,8 @@ void TIdeWindow::OnLButtonUp(UINT nFlags, TPoint point)
 	dynamic_cast<IDEPage*>(upperLeft.Get())->OnLButtonUp();
 	dynamic_cast<IDEPage*>(lowerLeft.Get())->OnLButtonUp();
 	TWindow::OnLButtonUp(nFlags, point);
+	ATLTRACE(L"IDE Window On Button Up called!\n");
+	focusPage.Nullify();
 }
 
 void TIdeWindow::OnMouseMove(UINT nFlags, TPoint point)
@@ -112,6 +115,14 @@ void TIdeWindow::OnMouseMove(UINT nFlags, TPoint point)
 
 	ATLTRACE("Not one Page intercepted Mouse Move!\n");
 
+	if (focusPage.Get())
+	{
+		focusPage.GetBase()->OnMouseMove(nFlags, point, &output);
+		ATLTRACE("Focus Page intercepted Mouse Move!\n");
+	}
+
+	
+
 finish:
 	if (output == positiveContinueUpdate || output == positiveOverrideUpdate || output == negativeUpdate)
 		Draw();
@@ -130,42 +141,49 @@ void TIdeWindow::OnLButtonDown(UINT nFlags, TPoint point)
 	if (isContained(point, body->GetArea()))
 	{
 		body.GetBase()->OnLButtonDown(nFlags, point, &output);
+		focusPage = body;
 		goto finish;
 	}
 
 	if (isContained(point, upperLeft->GetArea()))
 	{
 		upperLeft.GetBase()->OnLButtonDown(nFlags, point, &output);
+		focusPage = upperLeft;
 		goto finish;
 	}
 
 	if (isContained(point, upperRight->GetArea()))
 	{
 		upperRight.GetBase()->OnLButtonDown(nFlags, point, &output);
+		focusPage = upperRight;
 		goto finish;
 	}
 
 	if (isContained(point, lowerLeft->GetArea()))
 	{
 		lowerLeft.GetBase()->OnLButtonDown(nFlags, point, &output);
+		focusPage = lowerLeft;
 		goto finish;
 	}
 
 	if (isContained(point, lowerRight->GetArea()))
 	{
 		lowerRight.GetBase()->OnLButtonDown(nFlags, point, &output);
+		focusPage = lowerRight;
 		goto finish;
 	}
 
 	if (isContained(point, basicConsole->GetArea()))
 	{
 		basicConsole.GetBase()->OnLButtonDown(nFlags, point, &output);
+		focusPage = basicConsole;
 		goto finish;
 	}
 
 	if (isContained(point, deepConsole->GetArea()))
 	{
 		deepConsole.GetBase()->OnLButtonDown(nFlags, point, &output);
+		focusPage = deepConsole;
 		goto finish;
 	}
 	ATLTRACE("Not one Page intercepted L Button Down!\n");
@@ -175,13 +193,13 @@ finish:
 		Draw();
 }
 
-void TIdeWindow::AddNewPage(anagame_page pageType, TString name, TString tmlLoc, TrecPointer<EventHandler> handler, bool pageTypeStrict)
+void TIdeWindow::AddNewPage(anagame_page pageType, ide_page_type pageLoc, TString name, TString tmlLoc, TrecPointer<EventHandler> handler, bool pageTypeStrict)
 {
 	if (!mainPage.Get())
 		return;
 
 	TrecPointer<EventHandler> pageHandler;
-	TFile uiFile;
+	TrecPointer<TFile> uiFile = TrecPointerKey::GetNewTrecPointer<TFile>();
 	TrecPointer<TFileShell> fileShell;
 
 
@@ -194,10 +212,12 @@ void TIdeWindow::AddNewPage(anagame_page pageType, TString name, TString tmlLoc,
 
 		break;
 	case anagame_page_command_prompt:
-
+		uiFile->Open(GetDirectoryWithSlash(cd_Executable) + L"Resources\\IDEPrompt.tml", TFile::t_file_read | TFile::t_file_share_read | TFile::t_file_open_always);
+		fileShell = TFileShell::GetFileInfo(tmlLoc);
 		break;
 	case anagame_page_file_node:
-
+		uiFile->Open(GetDirectoryWithSlash(cd_Executable) + L"Resources\\FileBrowser.tml", TFile::t_file_read | TFile::t_file_share_read | TFile::t_file_open_always);
+		fileShell = TFileShell::GetFileInfo(tmlLoc);
 		break;
 	case anagame_page_object_explorer:
 
@@ -206,11 +226,11 @@ void TIdeWindow::AddNewPage(anagame_page pageType, TString name, TString tmlLoc,
 		if (!handler.Get())
 			return;
 		pageHandler = handler;
-		uiFile.Open(tmlLoc, TFile::t_file_read | TFile::t_file_share_read | TFile::t_file_open_always);
+		uiFile->Open(tmlLoc, TFile::t_file_read | TFile::t_file_share_read | TFile::t_file_open_always);
 
 	}
 
-	if (!uiFile.IsOpen())
+	if (!uiFile->IsOpen())
 		return;
 
 	if (!pageHandler.Get())
@@ -218,6 +238,35 @@ void TIdeWindow::AddNewPage(anagame_page pageType, TString name, TString tmlLoc,
 
 	if (!name.GetSize())
 		return;
+
+
+	TrecSubPointer<Page, IDEPage> targetPage = body;
+	switch (pageLoc)
+	{
+	case ide_page_type_basic_console:
+		targetPage = basicConsole;
+		break;
+	case ide_page_type_deep_console:
+		targetPage = deepConsole;
+		break;
+	case ide_page_type_lower_left:
+		targetPage = lowerLeft;
+		break;
+	case ide_page_type_lower_right:
+		targetPage = lowerRight;
+		break;
+	case ide_page_type_upper_left:
+		targetPage = upperLeft;
+		break;
+	case ide_page_type_upper_right:
+		targetPage = upperRight;
+	}
+
+	TrecPointer<Page> newPage = targetPage->AddNewPage(windowInstance, TrecPointerKey::GetTrecPointerFromSoft<TWindow>(self), name, pageHandler);
+
+	newPage->SetAnaface(uiFile, pageHandler);
+
+	uiFile->Close();
 }
 
 int TIdeWindow::CompileView(TString& file, TrecPointer<EventHandler> eh)
