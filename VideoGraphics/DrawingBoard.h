@@ -5,6 +5,7 @@
 #include <Drawer.h>
 #include "TWindowEngine.h"
 #include "TBrush.h"
+#include "TBitmapBrush.h"
 
 class TWindow;
 
@@ -19,6 +20,7 @@ public:
 	TrecPointer<TBrush> GetBrush(const TColor& col);
 	TrecPointer<TBrush> GetBrush(const TGradientStopCollection& coll, const POINT_2D& p1, const POINT_2D& p2, float x, float y);
 	TrecPointer<TBrush> GetBrush(const TGradientStopCollection& coll, const POINT_2D& p1, const POINT_2D& p2);
+	TrecSubPointer<TBrush, TBitmapBrush> GetBrush(TrecPointer<TFileShell> picture, RECT_2D& loc);
 
 
 	TrecComPointer<ID2D1RenderTarget> GetRenderer();

@@ -180,6 +180,11 @@ TrecPointer<TBrush> DrawingBoard::GetBrush(const TGradientStopCollection& coll, 
 	return TrecPointerKey::GetNewTrecPointer<TBrush>(coll, TrecPointerKey::GetTrecPointerFromSoft<DrawingBoard>(self), p1, p2);
 }
 
+TrecSubPointer<TBrush, TBitmapBrush> DrawingBoard::GetBrush(TrecPointer<TFileShell> picture, RECT_2D& loc)
+{
+	return TrecPointerKey::GetNewTrecSubPointer<TBrush, TBitmapBrush>(picture, TrecPointerKey::GetTrecPointerFromSoft<DrawingBoard>(self), loc);
+}
+
 TrecComPointer<ID2D1RenderTarget> DrawingBoard::GetRenderer()
 {
 	return renderer;
