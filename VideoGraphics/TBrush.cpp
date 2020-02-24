@@ -167,7 +167,7 @@ TBrush::TBrush(const TGradientStopCollection& coll, TrecPointer<DrawingBoard> rt
 
 bool TBrush::Refresh()
 {
-	if (!currentRenderer.Get() || !board.Get())
+	if (!currentRenderer.Get() || !board.Get() || !brush.Get())
 		return false;
 
 	if (currentRenderer.Get() == board->GetRenderer().Get())

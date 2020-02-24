@@ -165,6 +165,21 @@ void DrawingBoard::Set3D(TrecPointer<TWindowEngine> engine)
 	is3D = true;
 }
 
+TrecPointer<TBrush> DrawingBoard::GetBrush(const TColor& col)
+{
+	return TrecPointerKey::GetNewTrecPointer<TBrush>(col, TrecPointerKey::GetTrecPointerFromSoft<DrawingBoard>(self));
+}
+
+TrecPointer<TBrush> DrawingBoard::GetBrush(const TGradientStopCollection& coll, const POINT_2D& p1, const POINT_2D& p2, float x, float y)
+{
+	return TrecPointerKey::GetNewTrecPointer<TBrush>(coll, TrecPointerKey::GetTrecPointerFromSoft<DrawingBoard>(self), p1, p2, x, y);
+}
+
+TrecPointer<TBrush> DrawingBoard::GetBrush(const TGradientStopCollection& coll, const POINT_2D& p1, const POINT_2D& p2)
+{
+	return TrecPointerKey::GetNewTrecPointer<TBrush>(coll, TrecPointerKey::GetTrecPointerFromSoft<DrawingBoard>(self), p1, p2);
+}
+
 TrecComPointer<ID2D1RenderTarget> DrawingBoard::GetRenderer()
 {
 	return renderer;

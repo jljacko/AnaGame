@@ -4,6 +4,7 @@
 #include <TrecReference.h>
 #include <Drawer.h>
 #include "TWindowEngine.h"
+#include "TBrush.h"
 
 class TWindow;
 
@@ -15,7 +16,9 @@ public:
 
 	void Set3D(TrecPointer<TWindowEngine> engine);
 
-
+	TrecPointer<TBrush> GetBrush(const TColor& col);
+	TrecPointer<TBrush> GetBrush(const TGradientStopCollection& coll, const POINT_2D& p1, const POINT_2D& p2, float x, float y);
+	TrecPointer<TBrush> GetBrush(const TGradientStopCollection& coll, const POINT_2D& p1, const POINT_2D& p2);
 
 
 	TrecComPointer<ID2D1RenderTarget> GetRenderer();
