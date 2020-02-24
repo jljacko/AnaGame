@@ -12,3 +12,5 @@
 #define GRADIENT_STOP_2D D2D1_GRADIENT_STOP
 
 #define POINT_2D D2D1_POINT_2F
+
+#define SAFE_RELEASE(x)  if(x) x->Release(); x = nullptr;

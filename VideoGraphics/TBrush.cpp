@@ -89,6 +89,10 @@ brush_type TBrush::GetBrushType()
 	return brushType;
 }
 
+TBrush::~TBrush()
+{
+}
+
 TBrush::TBrush(const TColor& col, TrecPointer<DrawingBoard> rt)
 {
 	if (!rt.Get())
@@ -163,6 +167,18 @@ TBrush::TBrush(const TGradientStopCollection& coll, TrecPointer<DrawingBoard> rt
 	stopColl->Release();
 	stopColl = nullptr;
 	brushType = brush_type_linear;
+}
+
+TBrush::TBrush(TrecPointer<DrawingBoard> rt)
+{
+	if (!rt.Get())
+		throw L"ERROR! Needed Render Target to Not Be Null";
+
+	currentRenderer = rt->GetRenderer();
+	if (!currentRenderer.Get())
+		throw L"Error! Drawing Board had a NULL Render Target";
+
+	board = rt;
 }
 
 bool TBrush::Refresh()

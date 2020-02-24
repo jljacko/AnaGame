@@ -60,6 +60,9 @@
     <ClInclude Include="TGeometry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TBitmapBrush.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -102,6 +105,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TGeometry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TBitmapBrush.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

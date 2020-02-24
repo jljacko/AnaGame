@@ -36,6 +36,8 @@ public:
 
 	brush_type GetBrushType();
 
+	virtual ~TBrush();
+
 protected:
 	brush_type brushType;
 
@@ -43,8 +45,10 @@ protected:
 	TBrush(const TGradientStopCollection& coll, TrecPointer<DrawingBoard> rt, const POINT_2D& p1, const POINT_2D& p2, float x, float y);
 	TBrush(const TGradientStopCollection& coll, TrecPointer<DrawingBoard> rt, const POINT_2D& p1, const POINT_2D& p2);
 
+	TBrush(TrecPointer<DrawingBoard> rt);
+
 	bool Refresh();
-	void RefreshBrush();
+	virtual void RefreshBrush();
 
 
 	TrecComPointer<ID2D1Brush> brush;
