@@ -24,7 +24,7 @@ public:
 	// Action Listeners
 	virtual void Draw() override;
 	void Draw(Page& draw);
-	HWND GetWindowHandle();
+	
 
 	afx_msg void OnRButtonUp(UINT nFlags, TPoint point);
 	afx_msg virtual void OnLButtonDown(UINT nFlags, TPoint point);
@@ -63,13 +63,13 @@ protected:
 	// Draw Other pages that are special to the Window
 	virtual void DrawOtherPages();
 
-	HWND parent, currentWindow;
+	
 	TrecPointer<TInstance> windowInstance;
 	int command;
 	TrecPointer<Page> mainPage;
 	TDataArray<TrecPointer<Page>> pages;
 	TString name, winClass;
-	TrecComPointer<ID2D1Factory1> directFactory;
+	
 
 	TMap<Page> keyPages; // Used when multiple objects might want to access the same page by ID
 

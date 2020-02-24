@@ -73,12 +73,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>..\..\DirectXTex\DirectXTex;..\TrecLib;$(IncludePath)</IncludePath>
-    <LibraryPath>../../DirectXTex\DirectXTex\Bin\Desktop_2017_Win10\Win32\Debug;../Debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>..\..\DirectXTex\DirectXTex\Bin\Desktop_2019_Win10\Win32\Debug;../Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>..\..\DirectXTex\DirectXTex;..\TrecLib;$(IncludePath)</IncludePath>
-    <LibraryPath>..\..\DirectXTex\DirectXTex\Bin\Desktop_2017_Win10\Win32\Debug;..\Debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\Users\jljac\Source\Repos\DirectXTex\DirectXTex\Bin\Desktop_2019_Win10\Win32\Debug;..\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -117,7 +117,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>TrecLib.lib;d3d11.lib;evr.lib;mf.lib;mfplay.lib;mfreadwrite.lib;mfuuid.lib;mfplat.lib;dxva2.lib;Strmiids.lib;D3DCompiler.lib;DirectXTex.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>TrecLib.lib;d2d1.lib;d3d11.lib;evr.lib;mf.lib;mfplay.lib;mfreadwrite.lib;mfuuid.lib;mfplat.lib;dxva2.lib;Strmiids.lib;D3DCompiler.lib;DirectXTex.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -162,10 +162,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ArenaModel.h" />
+    <ClInclude Include="DrawingBoard.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Structure2D.h" />
     <ClInclude Include="TArenaEngine.h" />
+    <ClInclude Include="TBrush.h" />
     <ClInclude Include="TCamera.h" />
+    <ClInclude Include="TColor.h" />
+    <ClInclude Include="TGeometry.h" />
+    <ClInclude Include="TGradientStop.h" />
+    <ClInclude Include="TGradientStopCollection.h" />
     <ClInclude Include="TShaderHost.h" />
     <ClInclude Include="TShaderParser.h" />
     <ClInclude Include="TWindowEngine.h" />
@@ -173,6 +180,7 @@
   <ItemGroup>
     <ClCompile Include="ArenaModel.cpp" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="DrawingBoard.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -180,7 +188,12 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="TArenaEngine.cpp" />
+    <ClCompile Include="TBrush.cpp" />
     <ClCompile Include="TCamera.cpp" />
+    <ClCompile Include="TColor.cpp" />
+    <ClCompile Include="TGeometry.cpp" />
+    <ClCompile Include="TGradientStop.cpp" />
+    <ClCompile Include="TGradientStopCollection.cpp" />
     <ClCompile Include="TShaderHost.cpp" />
     <ClCompile Include="TShaderParser.cpp" />
     <ClCompile Include="TWindowEngine.cpp" />

@@ -1,5 +1,7 @@
 #pragma once
 #include "TObject.h"
+#include "TrecReference.h"
+#include <d2d1_1.h>
 
 /*
  * class Drawer
@@ -10,5 +12,11 @@ class _TREC_LIB_DLL Drawer :
 {
 public:
 	virtual void Draw()=0;
+    HWND GetWindowHandle();
+    TrecComPointer<ID2D1Factory1> GetFactory();
+
+protected:
+    TrecComPointer<ID2D1Factory1> directFactory;
+    HWND parent, currentWindow;
 };
 

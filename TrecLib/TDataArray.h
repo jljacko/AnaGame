@@ -1,6 +1,6 @@
 #pragma once
 
-#include "TString.h"
+
 #include "TDataArrayBase.h"
 
 #include <vector>
@@ -43,7 +43,7 @@ public:
 	* Parameters: void
 	* Returns: T* data address in memory
 	*/
-	T* data()
+	T* data() const
 	{
 		return array;
 	}
@@ -57,7 +57,7 @@ public:
 	T& operator[](size_t c)
 	{
 		if (c >= size)
-			throw new TString(L"IndexOutOfBounds");
+			throw L"IndexOutOfBounds";
 		return array[c];
 	}
 
@@ -91,7 +91,7 @@ public:
 	T& at(UINT c)
 	{
 		if (c >= size)
-			throw new TString(L"IndexOutOfBounds");
+			throw L"IndexOutOfBounds";
 		return array[c];
 	}
 
@@ -180,7 +180,7 @@ public:
 	T RemoveAt(UINT c)
 	{
 		if (c >= size)
-			throw new TString(L"IndexOutOfBounds");
+			throw L"IndexOutOfBounds";
 		T returnable = array[c];
 
 		for (; c < size - 1; c++)
@@ -243,14 +243,14 @@ public:
 	T* operator[](size_t c)
 	{
 		if (c >= size)
-			throw new TString(L"IndexOutOfBounds");
+			throw L"IndexOutOfBounds";
 		return array[c];
 	}
 
 	bool setAt(T* obj, size_t c)
 	{
 		if (c >= size)
-			throw new TString(L"IndexOutOfBounds");
+			throw L"IndexOutOfBounds";
 		array[c] = obj;
 	}
 
@@ -284,7 +284,7 @@ public:
 	T* at(UINT c)
 	{
 		if (c >= size)
-			throw new TString(L"IndexOutOfBounds");
+			throw L"IndexOutOfBounds";
 		return array[c];
 	}
 
@@ -388,7 +388,7 @@ public:
 	T* RemoveAt(UINT c)
 	{
 		if (c >= size)
-			throw new TString(L"IndexOutOfBounds");
+			throw L"IndexOutOfBounds";
 		T* returnable = array[c];
 
 		for (; c < size - 1; c++)

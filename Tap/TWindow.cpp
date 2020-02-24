@@ -498,7 +498,4 @@ void TWindow::DrawOtherPages()
 {
 }
 
-HWND TWindow::GetWindowHandle()
-{
-	return currentWindow;
-}
+
