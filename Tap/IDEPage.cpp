@@ -1,7 +1,7 @@
 #include "IDEPage.h"
 #include "TInstance.h"
 
-IDEPage::IDEPage(ide_page_type type, UINT barSpace)
+IDEPage::IDEPage(ide_page_type type, UINT barSpace, TrecPointer<DrawingBoard> board): Page(board)
 {
 	this->type = type;
 	this->barSpace = barSpace;
@@ -14,28 +14,22 @@ IDEPage::IDEPage(ide_page_type type, UINT barSpace)
 
 }
 
-void IDEPage::SetResources(TrecPointer<TInstance> in, TrecComPointer<ID2D1RenderTarget> render, TrecPointer<TWindow> window)
+void IDEPage::SetResources(TrecPointer<TInstance> in, TrecPointer<TWindow> window)
 {
 	this->windowHandle = window;
 	instance = in;
-	fact = in->GetFactory();
+
 
 	deviceH = GetWindowDC(window->GetWindowHandle());
 	instance = in;
-	regRenderTarget = render;
 
-	TrecComPointer<ID2D1SolidColorBrush>::TrecComHolder paintHolder;
-	regRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White), paintHolder.GetPointerAddress());
-	clearBursh = paintHolder.Extract();
-	rt_type = render_target_hwnd;
+
+	
 }
 
-void IDEPage::SetResources(TrecPointer<TInstance> in, TrecComPointer<ID2D1RenderTarget> render, TrecPointer<TWindow> window, TrecPointer<TWindowEngine> engine)
+void IDEPage::SetResources(TrecPointer<TInstance> in, TrecPointer<TWindow> window, TrecPointer<TWindowEngine> engine)
 {
-	SetResources(in, render, window);
-	
-	if(engine.Get())
-	rt_type = render_target_device_context;
+	SetResources(in, window);
 }
 
 void IDEPage::MoveBorder(float& magnitude, page_move_mode mode)
@@ -194,13 +188,13 @@ void IDEPage::OnLButtonUp()
 	moveMode = page_move_mode_normal;
 }
 
-void IDEPage::Draw(TrecComPointer<ID2D1SolidColorBrush> color, TWindowEngine* twe)
+void IDEPage::Draw(TrecPointer<TBrush> color, TWindowEngine* twe)
 {
 	D2D1_RECT_F topBorder = area;
 	topBorder.bottom = topBorder.top + barSpace;
 
 	if (color.Get())
-		regRenderTarget->FillRectangle(topBorder, color.Get());
+		color->FillRectangle(topBorder);
 	if (type != ide_page_type_drag)
 	{
 		if (dynamic_cast<IDEPage*>(currentPage.Get()))
@@ -209,7 +203,7 @@ void IDEPage::Draw(TrecComPointer<ID2D1SolidColorBrush> color, TWindowEngine* tw
 	else
 		Page::Draw(twe);
 	if (color.Get())
-		regRenderTarget->DrawRectangle(area, color.Get(), 1.5F);
+		color->DrawRectangle(area, 1.5F);
 }
 
 
@@ -298,9 +292,9 @@ void IDEPage::AddNewPage(TrecPointer<IDEPageHolder> pageHolder)
 
 TrecPointer<Page> IDEPage::AddNewPage(TrecPointer<TInstance> ins, TrecPointer<TWindow> win, TString name, TrecPointer<EventHandler> h)
 {
-	TrecSubPointer<Page, IDEPage> newPage = TrecPointerKey::GetNewSelfTrecSubPointer<Page, IDEPage>(ide_page_type_drag, 0);
+	TrecSubPointer<Page, IDEPage> newPage = TrecPointerKey::GetNewSelfTrecSubPointer<Page, IDEPage>(ide_page_type_drag, 0, this->drawingBoard);
 
-	newPage->SetResources(ins, regRenderTarget, win, win->GetWindowEngine());
+	newPage->SetResources(ins, win, win->GetWindowEngine());
 	D2D1_RECT_F curArea = area;
 	curArea.top += barSpace;
 	newPage->SetArea(curArea);
@@ -319,7 +313,7 @@ TrecPointer<Page> IDEPage::AddNewPage(TrecPointer<TInstance> ins, TrecPointer<TW
 	}
 	
 
-	TrecPointer<IDEPageHolder> newHolder = TrecPointerKey::GetNewTrecPointer<IDEPageHolder>(name, regRenderTarget, barSpace, h, win, curArea);
+	TrecPointer<IDEPageHolder> newHolder = TrecPointerKey::GetNewTrecPointer<IDEPageHolder>(name, drawingBoard, barSpace, h, win, curArea);
 	newHolder->SetPage(newPage);
 	pages.push_back(newHolder);
 	return newHolder->GetBasePage();
@@ -676,9 +670,9 @@ void IDEPage::MouseMoveLowerLeft(TPoint& diff)
 	}
 }
 
-IDEPageHolder::IDEPageHolder(TString name, TrecComPointer<ID2D1RenderTarget> rt, UINT barSpace, TrecPointer<EventHandler> handler, TrecPointer<TWindow> win, D2D1_RECT_F initLoc)
+IDEPageHolder::IDEPageHolder(TString name, TrecPointer<DrawingBoard> rt, UINT barSpace, TrecPointer<EventHandler> handler, TrecPointer<TWindow> win, D2D1_RECT_F initLoc)
 {
-	text = TrecPointerKey::GetNewTrecPointer<TText>(rt, nullptr);
+	text = TrecPointerKey::GetNewTrecPointer<TText>(rt->GetRenderer(), nullptr);
 	text->SetColor(D2D1::ColorF(D2D1::ColorF::Black));
 	text->setNewFontSize(12.0f);
 	text->setCaption(name);
@@ -694,7 +688,7 @@ IDEPageHolder::IDEPageHolder(TString name, TrecComPointer<ID2D1RenderTarget> rt,
 	}
 	location = initLoc;
 
-	page = TrecPointerKey::GetNewSelfTrecSubPointer<Page, IDEPage>(ide_page_type_drag, 0);
+	page = TrecPointerKey::GetNewSelfTrecSubPointer<Page, IDEPage>(ide_page_type_drag, 0, rt);
 	page->SetHandler(handler);
 }
 

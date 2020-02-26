@@ -32,7 +32,8 @@ TWindow::TWindow(TString& name, TString& winClass, UINT style, HWND parent, int 
 
 	locked = false;
 	safeToDraw = 0;
-
+	directFactory = windowInstance->GetFactory();
+	drawingBoard = TrecPointerKey::GetNewSelfTrecPointer<DrawingBoard>(directFactory, currentWindow);
 	
 }
 
@@ -75,7 +76,6 @@ int TWindow::CompileView(TString& file, TrecPointer<EventHandler> eh)
 	if (!aFile.Get() || !aFile->IsOpen())
 		return 1;
 
-	directFactory = windowInstance->GetFactory();
 
 	mainPage = Page::GetWindowPage(windowInstance, TrecPointerKey::GetTrecPointerFromSoft<TWindow>(self), eh);
 
@@ -133,12 +133,13 @@ void TWindow::Draw()
 {
 	if (mainPage.Get())
 	{
-		TrecComPointer<ID2D1RenderTarget> rt = mainPage->GetRenderTarget();
+		TrecComPointer<ID2D1RenderTarget> rt = drawingBoard->GetRenderer();
 		
 		TWindowEngine* d3d = d3dEngine.Get();
 		if (!rt.Get()) return;
 
-		if (mainPage->GetType() == render_target_device_context && d3d)
+		TrecComPointer<ID2D1GdiInteropRenderTarget> gdi = drawingBoard->GetGdiRenderer();
+		if (gdi.Get()  && d3d)
 		{
 			rt->BeginDraw();
 			//rt->Clear(D2D1::ColorF(D2D1::ColorF::White));
@@ -148,8 +149,8 @@ void TWindow::Draw()
 			DrawOtherPages();
 
 			HDC contDC = 0;
-			ID2D1GdiInteropRenderTarget* gdiRender = mainPage->GetGDIRenderTarget().Get();
-			if (gdiRender && SUCCEEDED(gdiRender->GetDC(D2D1_DC_INITIALIZE_MODE_COPY, &contDC)))
+			
+			if (SUCCEEDED(gdi->GetDC(D2D1_DC_INITIALIZE_MODE_COPY, &contDC)))
 			{
 				HDC windDC = GetDC(currentWindow);
 				SelectObject(windDC, GetStockObject(DC_BRUSH));
@@ -164,7 +165,7 @@ void TWindow::Draw()
 				int err = 0;
 				if (!BitBlt(windDC, 0, 0, width, height, contDC, 0, 0, SRCCOPY))
 					err = GetLastError();
-				gdiRender->ReleaseDC(nullptr);
+				gdi->ReleaseDC(nullptr);
 				d3d->FinalizeScene();
 				
 			}
@@ -302,7 +303,7 @@ void TWindow::OnWindowResize(UINT width, UINT height)
 
 	if (d3dEngine.Get())
 	{
-		mainPage->Clean3D();
+		
 		d3dEngine->Resize();
 	}
 
@@ -418,7 +419,7 @@ TrecPointer<Page> TWindow::GetPageByArea(D2D1_RECT_F r)
 		if (pages[Rust].Get() && IsD2D1RectEqual(pages[Rust]->GetArea(), r, 1.0f))
 			return pages[Rust];
 	}
-	TrecPointer<Page> ret = Page::GetSmallPage(mainPage, r);
+	TrecPointer<Page> ret = Page::GetSmallPage(windowInstance, TrecPointerKey::GetTrecPointerFromSoft<TWindow>(self), r);
 	pages.push_back(ret);
 	return ret;
 }
@@ -435,25 +436,21 @@ bool TWindow::SetUp3D()
 
 	d3dEngine = TrecPointerKey::GetNewTrecPointer<TWindowEngine>(currentWindow, windowInstance->GetInstanceHandle());
 
-	if (d3dEngine->Initialize())
+	if (d3dEngine->Initialize() || !drawingBoard.Get())
 	{
 		d3dEngine.Delete();
 		return false;
 	}
 
-	TrecPointer<Page> newPage = Page::Get3DPage(windowInstance, d3dEngine, TrecPointer<EventHandler>(), TrecPointerKey::GetTrecPointerFromSoft<TWindow>(self));
+	drawingBoard->Set3D(d3dEngine);
 
-	if (newPage.Get())
+	if (drawingBoard->GetGdiRenderer().Get())
 	{
-		newPage->SetAnaface(mainPage->ExtractRootControl());
-		if(mainPage.Get())
-			newPage->SetHandler(mainPage->GetHandler());
-		deletePage = mainPage;
-		mainPage = newPage;
+		auto root = mainPage->GetRootControl();
+		if (root.Get())
+			root->SetNewRenderTarget(drawingBoard->GetRenderer());
 		return true;
 	}
-
-	d3dEngine.Delete();
 	return false;
 }
 
@@ -489,9 +486,9 @@ TrecPointer<TArenaEngine> TWindow::GetNewArenaEngine(TString& name)
 	return ret;
 }
 
-TrecComPointer<ID2D1RenderTarget> TWindow::GetRenderTarget()
+TrecPointer<DrawingBoard> TWindow::GetDrawingBoard()
 {
-	return TrecComPointer<ID2D1RenderTarget>();
+	return drawingBoard;
 }
 
 void TWindow::DrawOtherPages()

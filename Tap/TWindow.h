@@ -56,7 +56,7 @@ public:
 	TrecPointer<TArenaEngine> GetNewArenaEngine();
 	TrecPointer<TArenaEngine> GetNewArenaEngine(TString& name);
 
-	TrecComPointer<ID2D1RenderTarget> GetRenderTarget();
+	TrecPointer<DrawingBoard> GetDrawingBoard();
 
 protected:
 
@@ -91,5 +91,6 @@ protected:
 	TTrecPointerArray<TArenaEngine> engines;
 
 	TAnimationManager animationCentral;
+	TrecPointer<DrawingBoard> drawingBoard;
 };
 

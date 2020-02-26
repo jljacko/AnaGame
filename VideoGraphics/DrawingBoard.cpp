@@ -190,10 +190,34 @@ TrecComPointer<ID2D1RenderTarget> DrawingBoard::GetRenderer()
 	return renderer;
 }
 
+TrecComPointer<ID2D1GdiInteropRenderTarget> DrawingBoard::GetGdiRenderer()
+{
+	return gdiRender;
+}
+
 void DrawingBoard::SetSelf(TrecPointer<DrawingBoard> self)
 {
 	if (this != self.Get())
 		throw L"ERROR! Self needed to be a real reference to this object";
 
 	this->self = TrecPointerKey::GetSoftPointerFromTrec<DrawingBoard>(self);
+}
+
+
+bool DrawingBoard::SetTransform(TRANSFORM_2D& matrix)
+{
+	if (!renderer.Get())
+		return false;
+
+	renderer->SetTransform(matrix);
+	return true;
+}
+
+bool DrawingBoard::GetTransoform(TRANSFORM_2D& matrix)
+{
+	if (!renderer.Get())
+		return false;
+
+	renderer->GetTransform(&matrix);
+	return true;
 }

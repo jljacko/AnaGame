@@ -2,7 +2,7 @@
 #include <TObject.h>
 #include "TColor.h"
 #include "Structure2D.h"
-class TGradientStop : public TObject
+class _VIDEO_GRAPHICS TGradientStop : public TObject
 {
 public:
 	TGradientStop(const TColor& color, float position);

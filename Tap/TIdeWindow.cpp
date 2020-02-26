@@ -31,7 +31,7 @@ int TIdeWindow::PrepareWindow()
 
 	for (UINT c = 0; c < ARRAYSIZE(pages); c++)
 	{
-		*pages[c] = TrecPointerKey::GetNewSelfTrecSubPointer<Page, IDEPage>(static_cast<ide_page_type>(c), pageBarSpace);
+		*pages[c] = TrecPointerKey::GetNewSelfTrecSubPointer<Page, IDEPage>(static_cast<ide_page_type>(c), pageBarSpace, drawingBoard);
 	}
 
 	for (UINT c = 0; c < ARRAYSIZE(pages); c++)
@@ -324,19 +324,15 @@ int TIdeWindow::CompileView(TString& file, TrecPointer<EventHandler> eh)
 	lowerRight->SetArea({ 0,0,0,0 });
 	deepConsole->SetArea(bottom);
 
-	TrecComPointer<ID2D1RenderTarget> rt = mainPage->GetRenderTarget();
+	panelbrush = drawingBoard->GetBrush(TColor(D2D1::ColorF::BlueViolet));
 
-	TrecComPointer<ID2D1SolidColorBrush>::TrecComHolder panelBrushHolder;
-	rt->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::BlueViolet), panelBrushHolder.GetPointerAddress());
-	panelbrush = panelBrushHolder.Extract();
-
-	body->SetResources(windowInstance, rt, TrecPointerKey::GetTrecPointerFromSoft<TWindow>(self));
-	upperLeft->SetResources(windowInstance, rt, TrecPointerKey::GetTrecPointerFromSoft<TWindow>(self));
-	upperRight->SetResources(windowInstance, rt, TrecPointerKey::GetTrecPointerFromSoft<TWindow>(self));
-	basicConsole->SetResources(windowInstance, rt, TrecPointerKey::GetTrecPointerFromSoft<TWindow>(self));
-	lowerLeft->SetResources(windowInstance, rt, TrecPointerKey::GetTrecPointerFromSoft<TWindow>(self));
-	lowerRight->SetResources(windowInstance, rt, TrecPointerKey::GetTrecPointerFromSoft<TWindow>(self));
-	deepConsole->SetResources(windowInstance, rt, TrecPointerKey::GetTrecPointerFromSoft<TWindow>(self));
+	body->SetResources(windowInstance, TrecPointerKey::GetTrecPointerFromSoft<TWindow>(self));
+	upperLeft->SetResources(windowInstance, TrecPointerKey::GetTrecPointerFromSoft<TWindow>(self));
+	upperRight->SetResources(windowInstance, TrecPointerKey::GetTrecPointerFromSoft<TWindow>(self));
+	basicConsole->SetResources(windowInstance, TrecPointerKey::GetTrecPointerFromSoft<TWindow>(self));
+	lowerLeft->SetResources(windowInstance, TrecPointerKey::GetTrecPointerFromSoft<TWindow>(self));
+	lowerRight->SetResources(windowInstance, TrecPointerKey::GetTrecPointerFromSoft<TWindow>(self));
+	deepConsole->SetResources(windowInstance, TrecPointerKey::GetTrecPointerFromSoft<TWindow>(self));
 
 	Draw();
 

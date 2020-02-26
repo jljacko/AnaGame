@@ -3,7 +3,7 @@
 #include <TrecReference.h>
 #include <TDataArray.h>
 #include "Structure2D.h"
-class TGeometry :
+class _VIDEO_GRAPHICS TGeometry :
 	public TObject
 {
 public:

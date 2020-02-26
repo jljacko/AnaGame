@@ -1,14 +1,14 @@
 #pragma once
 #include <TObject.h>
 #include <d2d1.h>
-
+#include "Structure2D.h"
 
 
 #define t_color D2D1::ColorF
 
 #define color_struct D2D1_COLOR_F
 
-class TColor : public TObject
+class _VIDEO_GRAPHICS TColor : public TObject
 {
 public:
 	TColor();

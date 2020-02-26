@@ -57,6 +57,6 @@ protected:
 
 	TrecSubPointer<Page, IDEPage> focusPage;
 
-	TrecComPointer<ID2D1SolidColorBrush> panelbrush;
+	TrecPointer<TBrush> panelbrush;
 };
 

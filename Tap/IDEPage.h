@@ -18,7 +18,7 @@ class IDEPageHolder
 	friend class IDEPage;
 	friend class IDEPageHolder;
 public:
-	IDEPageHolder(TString name, TrecComPointer<ID2D1RenderTarget> rt, UINT barSpace, TrecPointer<EventHandler> handler, TrecPointer<TWindow> win, D2D1_RECT_F initLoc);
+	IDEPageHolder(TString name, TrecPointer<DrawingBoard> rt, UINT barSpace, TrecPointer<EventHandler> handler, TrecPointer<TWindow> win, D2D1_RECT_F initLoc);
 	TrecPointer<Page> GetBasePage();
 	TrecSubPointer<Page, IDEPage> GetPage();
 
@@ -43,10 +43,10 @@ class _TAP_DLL IDEPage :
 	friend class TIdeWindow;
 	friend class TrecPointerKey;
 protected:
-	IDEPage(ide_page_type type, UINT barSpace);
+	IDEPage(ide_page_type type, UINT barSpace, TrecPointer<DrawingBoard> board);
 
-	void SetResources(TrecPointer<TInstance> in, TrecComPointer<ID2D1RenderTarget> render, TrecPointer<TWindow> window);
-	void SetResources(TrecPointer<TInstance> in, TrecComPointer<ID2D1RenderTarget> render, TrecPointer<TWindow> window, TrecPointer<TWindowEngine> engine);
+	void SetResources(TrecPointer<TInstance> in, TrecPointer<TWindow> window);
+	void SetResources(TrecPointer<TInstance> in, TrecPointer<TWindow> window, TrecPointer<TWindowEngine> engine);
 
 	void MoveBorder(float& magnitude, page_move_mode mode);
 
@@ -55,7 +55,7 @@ public:
 	afx_msg void OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
 	afx_msg void OnLButtonUp();
 
-	void Draw(TrecComPointer<ID2D1SolidColorBrush> color, TWindowEngine* twe = nullptr);
+	void Draw(TrecPointer<TBrush> color, TWindowEngine* twe = nullptr);
 	void SetLink(TrecSubPointer<Page, IDEPage> p, ide_page_type t);
 
 

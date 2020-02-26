@@ -16,7 +16,7 @@ typedef enum brush_type
 	brush_type_bitmap
 }brush_type;
 
-class TBrush : public TObject
+class _VIDEO_GRAPHICS TBrush : public TObject
 {
 	friend class TrecPointerKey;
 	friend class DrawingBoard;

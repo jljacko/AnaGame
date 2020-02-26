@@ -2,7 +2,7 @@
 #include <TObject.h>
 #include "TGradientStop.h"
 #include <TDataArray.h>
-class TGradientStopCollection :	public TObject
+class _VIDEO_GRAPHICS TGradientStopCollection :	public TObject
 {
 public:
 	TGradientStopCollection();

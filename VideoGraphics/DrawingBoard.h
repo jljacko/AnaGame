@@ -9,7 +9,7 @@
 
 class TWindow;
 
-class DrawingBoard : public TObject
+class _VIDEO_GRAPHICS DrawingBoard : public TObject
 {
 public:
 	DrawingBoard(TrecComPointer<ID2D1Factory1> fact, HWND window);
@@ -24,8 +24,12 @@ public:
 
 
 	TrecComPointer<ID2D1RenderTarget> GetRenderer();
+	TrecComPointer<ID2D1GdiInteropRenderTarget> GetGdiRenderer();
 
 	void SetSelf(TrecPointer<DrawingBoard> self);
+
+	bool SetTransform(TRANSFORM_2D& matrix);
+	bool GetTransoform(TRANSFORM_2D& matrix);
 private:
 	TrecComPointer<ID2D1RenderTarget> renderer;
 	TrecPointerSoft<DrawingBoard> self;

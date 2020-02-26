@@ -5,6 +5,7 @@
 #include "EventHandler.h"
 //#include "MiniHandler.h"
 #include <TWindowEngine.h>
+#include <DrawingBoard.h>
 
 class TWindow;
 
@@ -27,13 +28,13 @@ class _TAP_DLL Page : public TObject
 {
 	friend class TrecPointerKey;
 public:
-	~Page();
+	virtual ~Page();
 
 
 	static TrecPointer<Page> GetWindowPage(TrecPointer<TInstance>, TrecPointer<TWindow>,  TrecPointer<EventHandler>);
-	static TrecPointer<Page> GetWindowPage(TrecPointer<TInstance>, TrecComPointer<ID2D1RenderTarget>, TrecPointer<TWindow>, TrecPointer<EventHandler>);
-	static TrecPointer<Page> Get3DPage(TrecPointer<TInstance>, TrecPointer<TWindowEngine>, TrecPointer<EventHandler>, TrecPointer<TWindow> window);
-	static TrecPointer<Page> GetSmallPage(TrecPointer<Page>, D2D1_RECT_F area);
+
+
+	static TrecPointer<Page> GetSmallPage(TrecPointer<TInstance> in, TrecPointer<TWindow> window, D2D1_RECT_F area);
 
 	int SetAnaface(TrecPointer<TFile> file, TrecPointer<EventHandler> eh);
 	int SetAnaface(TrecPointer<TFile> file, TDataArray<eventNameID>& id);
@@ -52,7 +53,6 @@ public:
 	virtual UCHAR* GetAnaGameType()override;
 	afx_msg void OnSize(UINT nType, int cx,	int cy);
 
-	TrecComPointer<ID2D1RenderTarget> GetRenderTarget();
 	TrecPointer<TArenaEngine> GetArenaEngine();
 
 	void CreateLayout();
@@ -84,26 +84,17 @@ public:
 	void SetSelf(TrecPointer<Page>);
 	TrecPointer<TInstance> GetInstance();
 
-	void Clean3D();
+
 
 	void SetMiniHandler(TrecPointer<MiniHandler> mh);
-	RenderTargetType GetType();
-	TrecComPointer<ID2D1GdiInteropRenderTarget> GetGDIRenderTarget();
 
 protected:
-	Page();
+	Page(TrecPointer<DrawingBoard>);
 
 	float scale;
 
-	// DirectX Resources
-	TrecComPointer<ID2D1Factory1> fact;						// D2D Factory, provided by our AnaGame Instance Class
-	RenderTargetType rt_type;								// Keeps track of the type of RenderTarget this Page is using
-	TrecComPointer<ID2D1RenderTarget> regRenderTarget;		// The render target which will be used
-	// 3D mixing with 2D Resources
-	TrecComPointer<ID2D1Device> device;
-	TrecComPointer<ID2D1GdiInteropRenderTarget> gdiRender;
-	TrecComPointer<ID2D1Bitmap1> bit;
-	TrecComPointer<ID2D1SolidColorBrush> clearBursh;
+	TrecPointer<DrawingBoard> drawingBoard;
+	TrecPointer<TBrush> solidBrush;
 
 	// Regular Resources
 	
@@ -124,8 +115,5 @@ protected:
 
 	// Anaface Resources
 	TDataArray<TControl*> clickedControl;
-
-	UINT SetUpDeviceContextTarget(TrecPointer<TWindowEngine> winEnginie);
-	void SetUpHwndRenderTarget();
 };
 

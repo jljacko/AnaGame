@@ -2,8 +2,9 @@
 #include "TBrush.h"
 #include <TFileShell.h>
 #include <wincodec.h>
-class TBitmapBrush : public TBrush
+class _VIDEO_GRAPHICS TBitmapBrush : public TBrush
 {
+	friend class TrecPointerKey;
 public:
 	void NextFrame();
 	void PrevFrame();
