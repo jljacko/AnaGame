@@ -301,10 +301,10 @@ void TWindow::OnWindowResize(UINT width, UINT height)
 	newLoc.bottom = height;
 	newLoc.right = width;
 
-	if (d3dEngine.Get())
+	if (d3dEngine.Get() && drawingBoard.Get())
 	{
-		
 		d3dEngine->Resize();
+		drawingBoard->Resize();
 	}
 
 	mainPage->OnResize(newLoc, 0, d3dEngine);

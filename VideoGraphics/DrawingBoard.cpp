@@ -165,6 +165,15 @@ void DrawingBoard::Set3D(TrecPointer<TWindowEngine> engine)
 	is3D = true;
 }
 
+void DrawingBoard::Resize()
+{
+	if (is3D)
+	{
+		is3D = false;
+		Set3D(engine);
+	}
+}
+
 TrecPointer<TBrush> DrawingBoard::GetBrush(const TColor& col)
 {
 	return TrecPointerKey::GetNewTrecPointer<TBrush>(col, TrecPointerKey::GetTrecPointerFromSoft<DrawingBoard>(self));
