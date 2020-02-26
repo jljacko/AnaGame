@@ -1,5 +1,5 @@
 #include "DrawingBoard.h"
-
+#include "TGeometry.h"
 
 DrawingBoard::DrawingBoard(TrecComPointer<ID2D1Factory1> fact, HWND window)
 {
@@ -38,6 +38,7 @@ DrawingBoard::DrawingBoard(TrecComPointer<ID2D1Factory1> fact, HWND window)
 		throw L"Error! Failed to Create Window Render Target!";
 
 	renderer = TrecPointerKey::GetComPointer<ID2D1RenderTarget, ID2D1HwndRenderTarget>(renderHw);
+	layersPushed = 0;
 }
 
 DrawingBoard::DrawingBoard(TrecComPointer<ID2D1Factory1> fact, TrecPointer<TWindowEngine> engine)
@@ -95,6 +96,8 @@ DrawingBoard::DrawingBoard(TrecComPointer<ID2D1Factory1> fact, TrecPointer<TWind
 	gdiRender = gdiRenderHolder.Extract();
 	is3D = true;
 	this->engine = engine;
+
+	layersPushed = 0;
 }
 
 void DrawingBoard::Set3D(TrecPointer<TWindowEngine> engine)
@@ -229,4 +232,107 @@ bool DrawingBoard::GetTransoform(TRANSFORM_2D& matrix)
 
 	renderer->GetTransform(&matrix);
 	return true;
+}
+
+void DrawingBoard::PopLayer()
+{
+	if (renderer.Get() && layers.Size() && geometries.Size())
+	{
+		renderer->PopLayer();
+		layers.RemoveAt(layers.Size() - 1);
+		geometries.RemoveAt(geometries.Size() - 1);
+	}
+}
+
+bool DrawingBoard::AddLayer(RECT_2D& ret)
+{
+	if (renderer.Get())
+	{
+		ID2D1Factory* fact = nullptr;
+		renderer->GetFactory(&fact);
+
+		TrecPointer<TGeometry> geo = TrecPointerKey::GetNewTrecPointer<TGeometry>(fact, ret);
+		TrecComPointer<ID2D1Layer>::TrecComHolder layerHolder;
+		renderer->CreateLayer(layerHolder.GetPointerAddress());
+		TrecComPointer<ID2D1Layer> layer = layerHolder.Extract();
+
+		renderer->PushLayer(D2D1::LayerParameters(D2D1::InfiniteRect(), geo->GetUnderlyingGeometry().Get()), layer.Get());
+
+		layers.push_back(layer);
+		geometries.push_back(geo);
+
+		return true;
+	}
+	return false;
+}
+
+bool DrawingBoard::AddLayer(ELLIPSE_2D& ellipse)
+{
+	if (renderer.Get())
+	{
+		ID2D1Factory* fact = nullptr;
+		renderer->GetFactory(&fact);
+
+		TrecPointer<TGeometry> geo = TrecPointerKey::GetNewTrecPointer<TGeometry>(fact, ellipse);
+		TrecComPointer<ID2D1Layer>::TrecComHolder layerHolder;
+		renderer->CreateLayer(layerHolder.GetPointerAddress());
+		TrecComPointer<ID2D1Layer> layer = layerHolder.Extract();
+
+		renderer->PushLayer(D2D1::LayerParameters(D2D1::InfiniteRect(), geo->GetUnderlyingGeometry().Get()), layer.Get());
+
+		layers.push_back(layer);
+		geometries.push_back(geo);
+
+		return true;
+	}
+	return false;
+}
+
+bool DrawingBoard::AddLayer(ROUNDED_RECT_2D& rRect)
+{
+	if (renderer.Get())
+	{
+		ID2D1Factory* fact = nullptr;
+		renderer->GetFactory(&fact);
+
+		TrecPointer<TGeometry> geo = TrecPointerKey::GetNewTrecPointer<TGeometry>(fact, rRect);
+		TrecComPointer<ID2D1Layer>::TrecComHolder layerHolder;
+		renderer->CreateLayer(layerHolder.GetPointerAddress());
+		TrecComPointer<ID2D1Layer> layer = layerHolder.Extract();
+
+		renderer->PushLayer(D2D1::LayerParameters(D2D1::InfiniteRect(), geo->GetUnderlyingGeometry().Get()), layer.Get());
+
+		layers.push_back(layer);
+		geometries.push_back(geo);
+
+		return true;
+	}
+	return false;
+}
+
+bool DrawingBoard::AddLayer(TDataArray<POINT_2D>& points)
+{
+	if (renderer.Get())
+	{
+		ID2D1Factory* fact = nullptr;
+		renderer->GetFactory(&fact);
+
+		TrecPointer<TGeometry> geo = TrecPointerKey::GetNewTrecPointer<TGeometry>(fact, points);
+		TrecComPointer<ID2D1Layer>::TrecComHolder layerHolder;
+		renderer->CreateLayer(layerHolder.GetPointerAddress());
+		TrecComPointer<ID2D1Layer> layer = layerHolder.Extract();
+
+		renderer->PushLayer(D2D1::LayerParameters(D2D1::InfiniteRect(), geo->GetUnderlyingGeometry().Get()), layer.Get());
+
+		layers.push_back(layer);
+		geometries.push_back(geo);
+
+		return true;
+	}
+	return false;
+}
+
+UINT DrawingBoard::GetLayerCount()
+{
+	return layers.Size();
 }

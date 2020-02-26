@@ -31,6 +31,16 @@ public:
 
 	bool SetTransform(TRANSFORM_2D& matrix);
 	bool GetTransoform(TRANSFORM_2D& matrix);
+
+	// Methods handling layers
+	void PopLayer();
+	bool AddLayer(RECT_2D& ret);
+	bool AddLayer(ELLIPSE_2D& ellipse);
+	bool AddLayer(ROUNDED_RECT_2D& rRect);
+	bool AddLayer(TDataArray<POINT_2D>& points);
+
+	UINT GetLayerCount();
+
 private:
 	TrecComPointer<ID2D1RenderTarget> renderer;
 	TrecPointerSoft<DrawingBoard> self;
@@ -40,5 +50,9 @@ private:
 	TrecComPointer<ID2D1GdiInteropRenderTarget> gdiRender;
 	TrecComPointer<ID2D1Bitmap1> bit;
 	TrecPointer<TWindowEngine> engine;
+
+	UINT layersPushed;
+	TDataArray<TrecComPointer<ID2D1Layer>> layers;
+	TDataArray<TrecPointer<TGeometry>> geometries;
 };
 
