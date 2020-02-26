@@ -2,7 +2,7 @@
 #include "TScrollerControl.h"
 #include <d2d1.h>
 
-TTreeDataBind::TTreeDataBind(TrecComPointer<ID2D1RenderTarget> rt, TrecPointer<TArray<styleTable>> ta): TControl(rt, ta)
+TTreeDataBind::TTreeDataBind(TrecPointer<DrawingBoard> rt, TrecPointer<TArray<styleTable>> ta): TControl(rt, ta)
 {
 	isNodeSelected = isTickSelected = false;
 	nodeSelected = 0;

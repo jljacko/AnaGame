@@ -15,12 +15,12 @@ static TDataArray<TTextField*> TextList;
 /*
 * Method: (TTextField) (Constructor)
 * Purpose: Sets up a text field and performs basic initialization
-* Parameters: TrecComPointer<ID2D1RenderTarget> rt - The Render Target to draw to
+* Parameters: TrecPointer<DrawingBoard> rt - The Render Target to draw to
 *				TrecPointer<TArray<styleTable>> ta - The Style Table to draw from
 *				HWND winHand - the handle to the window so Windows Caret Support is possible
 * Returns: void
 */
-TTextField::TTextField(TrecComPointer<ID2D1RenderTarget> rt, TrecPointer<TArray<styleTable>> st, HWND winHand) :
+TTextField::TTextField(TrecPointer<DrawingBoard> rt, TrecPointer<TArray<styleTable>> st, HWND winHand) :
 	TGadgetControl(rt,st,false),
 	highlighter(rt)
 {
@@ -1846,7 +1846,7 @@ void incrimentControl::operator=(float f)
 	value.f = f;
 }
 
-TextHighlighter::TextHighlighter(TrecComPointer<ID2D1RenderTarget> rt)
+TextHighlighter::TextHighlighter(TrecPointer<DrawingBoard> rt)
 {
 	if (!rt.Get())
 		throw L"Error! Need Render Target To Be active!";

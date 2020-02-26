@@ -4,7 +4,7 @@ class _ANAFACE_DLL TContextMenu :
 	public TFlyout
 {
 public:
-	TContextMenu(TrecComPointer<ID2D1RenderTarget>, TrecPointer<TArray<styleTable>> ta);
+	TContextMenu(TrecPointer<DrawingBoard>, TrecPointer<TArray<styleTable>> ta);
 	~TContextMenu();
 
 	bool onCreate(D2D1_RECT_F location, TrecPointer<TWindowEngine> d3d) override;

@@ -2,7 +2,7 @@
 #include "TCanvas.h"
 
 
-TCanvas::TCanvas(TrecComPointer<ID2D1RenderTarget> rt, TrecPointer<TArray<styleTable>> ta):TControl(rt,ta)
+TCanvas::TCanvas(TrecPointer<DrawingBoard> rt, TrecPointer<TArray<styleTable>> ta):TControl(rt,ta)
 {
 }
 

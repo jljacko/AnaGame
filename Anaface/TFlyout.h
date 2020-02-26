@@ -17,7 +17,7 @@ typedef enum appearCondition
 class _ANAFACE_DLL TFlyout :	public TLayout
 {
 public:
-	TFlyout(TrecComPointer<ID2D1RenderTarget>, TrecPointer<TArray<styleTable>> ta);
+	TFlyout(TrecPointer<DrawingBoard>, TrecPointer<TArray<styleTable>> ta);
 	virtual ~TFlyout();
 
 	bool onCreate(D2D1_RECT_F, TrecPointer<TWindowEngine> d3d)override;

@@ -1,6 +1,6 @@
 #include "TScrollerControl.h"
 
-TScrollerControl::TScrollerControl(TrecComPointer<ID2D1RenderTarget> rt, TrecPointer<TArray<styleTable>> styles) :TControl( rt, styles)
+TScrollerControl::TScrollerControl(TrecPointer<DrawingBoard> rt, TrecPointer<TArray<styleTable>> styles) :TControl( rt, styles)
 {
 	onScrollFocus = false;
 }

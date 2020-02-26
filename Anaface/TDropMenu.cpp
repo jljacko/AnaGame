@@ -4,11 +4,11 @@
 /*
 * Method: (TDropMenu) (Constructor)
 * Purpose: Sets up the Control
-* Parameters:  TrecComPointer<ID2D1RenderTarget> rt - the render target to draw to
+* Parameters:  TrecPointer<DrawingBoard> rt - the render target to draw to
 *				TrecPointer<TArray<styleTable>> ta - the style list for Anaface
 * Returns: void
 */
-TDropMenu::TDropMenu(TrecComPointer<ID2D1RenderTarget> rt, TrecPointer<TArray<styleTable>> styles) :TControl(rt,styles,false)
+TDropMenu::TDropMenu(TrecPointer<DrawingBoard> rt, TrecPointer<TArray<styleTable>> styles) :TControl(rt,styles,false)
 {
 }
 
@@ -52,14 +52,6 @@ void TDropMenu::onDraw(TObject* obj)
 	DrawNode(location.top, currentNode);
 }
 
-void TDropMenu::SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget>rt)
-{
-	TControl::SetNewRenderTarget(rt);
-
-	if (dotBrush)
-		dotBrush->Release();
-	renderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &dotBrush);
-}
 
 /*
 * Method: TDropMenu - SetFolderAsRoot

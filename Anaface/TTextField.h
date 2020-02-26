@@ -78,7 +78,7 @@ typedef struct ColorEffect
 class TextHighlighter
 {
 public:
-	TextHighlighter(TrecComPointer<ID2D1RenderTarget>);
+	TextHighlighter(TrecPointer<DrawingBoard>);
 
 	void SetLayout(TrecComPointer<IDWriteTextLayout> l);
 	void SetFirstPosition(UINT);
@@ -94,7 +94,7 @@ private:
 
 	bool isActive;
 
-	TrecComPointer<ID2D1RenderTarget> renderer;
+	TrecPointer<DrawingBoard> renderer;
 	TrecComPointer<ID2D1SolidColorBrush> brush;
 	TrecComPointer<IDWriteTextLayout> layout;
 };
@@ -110,7 +110,7 @@ class _ANAFACE_DLL TTextField :	public TGadgetControl
 {
 	friend class AnafaceParser;
 public:
-	TTextField(TrecComPointer<ID2D1RenderTarget>, TrecPointer<TArray<styleTable>> ta, HWND);
+	TTextField(TrecPointer<DrawingBoard>, TrecPointer<TArray<styleTable>> ta, HWND);
 	~TTextField();
 
 

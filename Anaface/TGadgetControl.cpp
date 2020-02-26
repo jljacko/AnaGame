@@ -4,12 +4,12 @@
 /*
 * Method: TGadgetControl) (Constructor) 
 * Purpose: Sets up a TGadet Control
-* Parameters: TrecComPointer<ID2D1RenderTarget> rt - the Render Target to use
+* Parameters: TrecPointer<DrawingBoard> rt - the Render Target to use
 *				TrecPointer<TArray<styleTable>> ta - List of Styles for the TControl
 *				bool isGadgetBase - the gadget base
 * Return: void
 */
-TGadgetControl::TGadgetControl(TrecComPointer<ID2D1RenderTarget> rt, TrecPointer<TArray<styleTable>> ta, bool isGadgetBase):TControl(rt, ta, false)
+TGadgetControl::TGadgetControl(TrecPointer<DrawingBoard> rt, TrecPointer<TArray<styleTable>> ta, bool isGadgetBase):TControl(rt, ta, false)
 {
 	isGadBase = isGadgetBase;
 	if (isGadBase)
@@ -69,8 +69,8 @@ bool TGadgetControl::onCreate(D2D1_RECT_F r, TrecPointer<TWindowEngine> d3d)
 
 	if (!content1.Get())
 	{
-		content1 = TrecPointerKey::GetNewTrecPointer<TContent>(renderTarget, this);
-		content1->color = D2D1::ColorF(D2D1::ColorF::White);
+		content1 = TrecPointerKey::GetNewTrecPointer<TContent>(drawingBoard, this);
+		content1->stopCollection.AddGradient(TGradientStop(TColor(D2D1::ColorF(D2D1::ColorF::White)), 0.0f));
 		content1->onCreate(location);                         // this this isn't covered by the TControl
 															// as it didn't exist yet
 	}
@@ -99,11 +99,10 @@ bool TGadgetControl::onCreate(D2D1_RECT_F r, TrecPointer<TWindowEngine> d3d)
 	DxLocation.right = checker.right;
 	DxLocation.top = checker.top;
 
-	if (renderTarget.Get())
+	if (drawingBoard.Get())
 	{
-		TrecComPointer<ID2D1SolidColorBrush>::TrecComHolder brushRaw;
-		renderTarget->CreateSolidColorBrush(color, brushRaw.GetPointerAddress());
-		brush = brushRaw.Extract();
+		
+		brush = drawingBoard->GetBrush(TColor(color));
 	}
 
 	return false;
@@ -120,14 +119,6 @@ UCHAR * TGadgetControl::GetAnaGameType()
 	return nullptr;
 }
 
-void TGadgetControl::SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget> rt)
-{
-	TControl::SetNewRenderTarget(rt);
-
-	TrecComPointer<ID2D1SolidColorBrush>::TrecComHolder brushRaw;
-	renderTarget->CreateSolidColorBrush(color, brushRaw.GetPointerAddress());
-	brush = brushRaw.Extract();
-}
 
 void TGadgetControl::Resize(D2D1_RECT_F& r)
 {

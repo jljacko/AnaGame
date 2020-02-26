@@ -43,7 +43,7 @@ class _ANAFACE_DLL TLayout :
 {
 	friend class AnafaceUI;
 public:
-	TLayout(TrecComPointer<ID2D1RenderTarget>, TrecPointer<TArray<styleTable>> ta);
+	TLayout(TrecPointer<DrawingBoard>, TrecPointer<TArray<styleTable>> ta);
 	virtual ~TLayout();
 
 	bool setLayout(orgLayout);
@@ -87,7 +87,7 @@ public:
 
 	virtual UCHAR* GetAnaGameType()override;
 
-	virtual void SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget> rt);
+	virtual void SetNewRenderTarget(TrecPointer<DrawingBoard> rt);
 
 protected:
 	TArray<containerControl> lChildren;   // used to organize children more easily than regular TControl

@@ -11,11 +11,11 @@
 /*
 * Method: (TLayout) (Constructor)
 * Purpose: Sets up a TLayout Object that extends the Basic TControl
-* Parameters: TrecComPointer<ID2D1RenderTarget> rt -  the Render target to draw to (TControl handles it)
+* Parameters: TrecPointer<DrawingBoard> rt -  the Render target to draw to (TControl handles it)
 *				TrecPointer<TArray<styleTable>> ta - the Class Style list (TControl handles this)
 * Returns: void
 */
-TLayout::TLayout(TrecComPointer<ID2D1RenderTarget> rt, TrecPointer<TArray<styleTable>> ta):TControl(rt,ta, false)
+TLayout::TLayout(TrecPointer<DrawingBoard> rt, TrecPointer<TArray<styleTable>> ta):TControl(rt,ta, false)
 {
 	organization = orgLayout::VBuff;
 	specialFunction = specialLayout::Basic;
@@ -1408,7 +1408,7 @@ UCHAR * TLayout::GetAnaGameType()
 	return nullptr;
 }
 
-void TLayout::SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget> rt)
+void TLayout::SetNewRenderTarget(TrecPointer<DrawingBoard> rt)
 {
 	TControl::SetNewRenderTarget(rt);
 

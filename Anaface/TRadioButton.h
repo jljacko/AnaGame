@@ -10,7 +10,7 @@ class _ANAFACE_DLL TRadioButton :
 {
 	friend class TRadioButton;
 public:
-	TRadioButton(TrecComPointer<ID2D1RenderTarget> rt, TrecPointer<TArray<styleTable>> ta);
+	TRadioButton(TrecPointer<DrawingBoard> rt, TrecPointer<TArray<styleTable>> ta);
 	~TRadioButton();
 
 	bool onCreate(D2D1_RECT_F, TrecPointer<TWindowEngine> d3d)override;

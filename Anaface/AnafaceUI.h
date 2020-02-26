@@ -37,7 +37,7 @@ typedef struct tempHold
 class _ANAFACE_DLL AnafaceUI : public TControl
 {
 public:
-	AnafaceUI(TrecComPointer<ID2D1RenderTarget>, TrecPointer<TArray<styleTable>> ta, HWND);
+	AnafaceUI(TrecPointer<DrawingBoard>, TrecPointer<TArray<styleTable>> ta, HWND);
 	virtual ~AnafaceUI();
 
 	afx_msg virtual void OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
@@ -51,8 +51,6 @@ public:
 
 
 	bool switchView(UINT x);
-
-	virtual void SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget> rt);
 
 	virtual void SwitchChildControl(TrecPointerSoft<TControl> curControl, TrecPointer<TControl> newControl)override;
 

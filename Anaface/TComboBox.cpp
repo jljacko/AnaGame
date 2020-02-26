@@ -57,11 +57,11 @@ void ResetComboBoxes()
 /*
 * Method: (TComboBox) (Constructor)
 * Purpose: Set up the ComboBox with default values
-* Parameters: TrecComPointer<ID2D1RenderTarget> rt - The Render Target to draw to
+* Parameters: TrecPointer<DrawingBoard> rt - The Render Target to draw to
 *				TrecPointer<TArray<styleTable>> ta - The Style Table to draw from
 * Returns: void
 */
-TComboBox::TComboBox(TrecComPointer<ID2D1RenderTarget> rt, TrecPointer<TArray<styleTable>> ta):TGadgetControl(rt,ta)
+TComboBox::TComboBox(TrecPointer<DrawingBoard> rt, TrecPointer<TArray<styleTable>> ta):TGadgetControl(rt,ta)
 {
 	childHeight = 40;
 	showExtended = prepShowExtended = false;
@@ -356,14 +356,6 @@ bool TComboBox::GetExtensionStatus()
 	return showExtended;
 }
 
-void TComboBox::SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget>rt)
-{
-	TControl::SetNewRenderTarget(rt);
-	D2D1_COLOR_F whiteColor = D2D1::ColorF(D2D1::ColorF::White, 0.9f);
-	TrecComPointer<ID2D1SolidColorBrush>::TrecComHolder extendedBrushRaw;
-	HRESULT brushRes = renderTarget->CreateSolidColorBrush(whiteColor, extendedBrushRaw.GetPointerAddress());
-	extendedBrush = extendedBrushRaw.Extract();
-}
 
 /*
 * Method: TComboBox - OnLButtonDown

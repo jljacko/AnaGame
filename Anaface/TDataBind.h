@@ -3,7 +3,7 @@
 class _ANAFACE_DLL TDataBind : public TControl
 {
 public:
-	TDataBind(TrecComPointer<ID2D1RenderTarget>, TrecPointer<TArray<styleTable>> ta);
+	TDataBind(TrecPointer<DrawingBoard>, TrecPointer<TArray<styleTable>> ta);
 	~TDataBind();
 
 	virtual void onDraw(TObject* obj = nullptr) override;

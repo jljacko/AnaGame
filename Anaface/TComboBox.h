@@ -11,7 +11,7 @@ class _ANAFACE_DLL TComboBox :
 {
 	friend TComboBox;
 public:
-	TComboBox(TrecComPointer<ID2D1RenderTarget> rt, TrecPointer<TArray<styleTable>> ta);
+	TComboBox(TrecPointer<DrawingBoard> rt, TrecPointer<TArray<styleTable>> ta);
 	~TComboBox();
 
 	bool onCreate(D2D1_RECT_F, TrecPointer<TWindowEngine> d3d)override;
@@ -22,7 +22,6 @@ public:
 	virtual void storeInTML(TFile* ar, int childLevel,bool ov = true)override;
 
 	bool GetExtensionStatus();
-	virtual void SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget>);
 
 	afx_msg virtual void OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr, TDataArray<TControl*>& clickedControl);
 	void decrimentLocation();

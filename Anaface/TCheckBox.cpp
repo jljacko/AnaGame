@@ -4,11 +4,11 @@
 /*
 * Method: (TCheckBox) (Constructor) 
 * Purpose: Sets up the check box
-* Parameters: TrecComPointer<ID2D1RenderTarget> rt - the render target to draw to
+* Parameters: TrecPointer<DrawingBoard> rt - the render target to draw to
 *				TrecPointer<TArray<styleTable>> ta - the style list for Anaface
 * Returns: void
 */
-TCheckBox::TCheckBox(TrecComPointer<ID2D1RenderTarget> rt, TrecPointer<TArray<styleTable>> ta):TGadgetControl(rt, ta)
+TCheckBox::TCheckBox(TrecPointer<DrawingBoard> rt, TrecPointer<TArray<styleTable>> ta):TGadgetControl(rt, ta)
 {
 	isClicked = onClick = false;
 	height = width = 0;

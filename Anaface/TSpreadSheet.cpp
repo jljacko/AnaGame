@@ -2,7 +2,7 @@
 #include "TTextField.h"
 
 
-TSpreadSheet::TSpreadSheet(TrecComPointer<ID2D1RenderTarget> rt, TrecPointer<TArray<styleTable>> ta, HWND w): TLayoutEx(rt, ta)
+TSpreadSheet::TSpreadSheet(TrecPointer<DrawingBoard> rt, TrecPointer<TArray<styleTable>> ta, HWND w): TLayoutEx(rt, ta)
 {
 	window = w;
 	drawLines = true;

@@ -10,7 +10,7 @@ class _ANAFACE_DLL TGadgetControl :
 	public TControl
 {
 public:
-	TGadgetControl(TrecComPointer<ID2D1RenderTarget> rt, TrecPointer<TArray<styleTable>> ta, bool isGagetBase = true);
+	TGadgetControl(TrecPointer<DrawingBoard> rt, TrecPointer<TArray<styleTable>> ta, bool isGagetBase = true);
 	virtual ~TGadgetControl();
 
 	virtual void storeInTML(TFile* ar, int childLevel,bool ov = false) override;
@@ -18,14 +18,13 @@ public:
 	bool onCreate(D2D1_RECT_F, TrecPointer<TWindowEngine> d3d)override;
 	virtual UCHAR* GetAnaGameType()override;
 
-	virtual void SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget>);
 
 	void Resize(D2D1_RECT_F& r) override;
 protected:
 	int bSize;
 	RECT checker;
 
-	TrecComPointer<ID2D1SolidColorBrush> brush;
+	TrecPointer<TBrush> brush;
 
 	float thickness;
 

@@ -2,7 +2,7 @@
 #include "TScrollerControl.h"
 
 
-TDataBind::TDataBind(TrecComPointer<ID2D1RenderTarget> rt, TrecPointer<TArray<styleTable>> ta): TControl(rt, ta)
+TDataBind::TDataBind(TrecPointer<DrawingBoard> rt, TrecPointer<TArray<styleTable>> ta): TControl(rt, ta)
 {
 	isStack = true;
 	widthHeight = 90;

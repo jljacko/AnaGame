@@ -4,7 +4,7 @@ class _ANAFACE_DLL TCheckBox :
 	public TGadgetControl
 {
 public:
-	TCheckBox(TrecComPointer<ID2D1RenderTarget> rt, TrecPointer<TArray<styleTable>> ta);
+	TCheckBox(TrecPointer<DrawingBoard> rt, TrecPointer<TArray<styleTable>> ta);
 	~TCheckBox();
 
 	bool onCreate(D2D1_RECT_F, TrecPointer<TWindowEngine> d3d)override;

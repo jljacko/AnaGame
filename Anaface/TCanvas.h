@@ -6,7 +6,7 @@
 class _ANAFACE_DLL TCanvas :	public TControl
 {
 public:
-	TCanvas(TrecComPointer<ID2D1RenderTarget> rt, TrecPointer<TArray<styleTable>> ta);
+	TCanvas(TrecPointer<DrawingBoard> rt, TrecPointer<TArray<styleTable>> ta);
 	~TCanvas();
 
 	bool onCreate(D2D1_RECT_F, TrecPointer<TWindowEngine> d3d)override;

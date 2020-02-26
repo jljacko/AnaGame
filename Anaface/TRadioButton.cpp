@@ -29,11 +29,11 @@ void runLoop()
 /*
 * Method: (TRadioButton) (Constructor)
 * Purpose: Sets up the Radio Button
-* Parameters: TrecComPointer<ID2D1RenderTarget> rt - render target to use
+* Parameters: TrecPointer<DrawingBoard> rt - render target to use
 *				TrecPointer<TArray<styleTable>> ta - the list of Anaface styles
 * Returns: void
 */
-TRadioButton::TRadioButton(TrecComPointer<ID2D1RenderTarget>rt, TrecPointer<TArray<styleTable>> ta):TGadgetControl(rt,ta)
+TRadioButton::TRadioButton(TrecPointer<DrawingBoard>rt, TrecPointer<TArray<styleTable>> ta):TGadgetControl(rt,ta)
 {
 	otherButtonLocation = otherButtons.push_back(this);
 	buttonClass = NULL;

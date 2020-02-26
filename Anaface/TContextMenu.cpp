@@ -4,11 +4,11 @@
 /*
 * Method: (TContextMenu) (Constructor) 
 * Purpose: Sets up the context menu with drawing resources
-* Parameters:  TrecComPointer<ID2D1RenderTarget> rt - the render target to draw to
+* Parameters:  TrecPointer<DrawingBoard> rt - the render target to draw to
 *				TrecPointer<TArray<styleTable>> ta - the style list for Anaface
 * Returns: void
 */
-TContextMenu::TContextMenu(TrecComPointer<ID2D1RenderTarget> rt, TrecPointer<TArray<styleTable>> ta):TFlyout(rt,ta)
+TContextMenu::TContextMenu(TrecPointer<DrawingBoard> rt, TrecPointer<TArray<styleTable>> ta):TFlyout(rt,ta)
 {
 	appearWhen = appear_onRightClick;
 	organization = VStack;

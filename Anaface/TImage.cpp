@@ -2,7 +2,7 @@
 
 static D2D1_MATRIX_3X2_F identityMatrix = D2D1::Matrix3x2F::Identity();
 
-TImage::TImage(TrecComPointer<ID2D1RenderTarget> rt, TrecPointer<TArray<styleTable>> styles): TControl(rt, styles, false)
+TImage::TImage(TrecPointer<DrawingBoard> rt, TrecPointer<TArray<styleTable>> styles): TControl(rt, styles, false)
 {
 	rotation = identityMatrix;
 	currentImage = 0;
@@ -162,12 +162,6 @@ void TImage::onDraw(TObject* obj)
 	renderTarget->SetTransform(identityMatrix);
 }
 
-void TImage::SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget>rt)
-{
-	TControl::SetNewRenderTarget(rt);
-
-	// To Do:: Enable switch
-}
 
 void MarkPixels(TPoint& startPoint, UINT idealPixel, float tolerance, TDataArray<TDataArray<PixelMark>>& pixels)
 {

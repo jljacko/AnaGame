@@ -2,7 +2,7 @@
 #include "TLayoutEx.h"
 
 
-TLayoutEx::TLayoutEx(TrecComPointer<ID2D1RenderTarget> rt, TrecPointer<TArray<styleTable>> st):TLayout(rt,st)
+TLayoutEx::TLayoutEx(TrecPointer<DrawingBoard> rt, TrecPointer<TArray<styleTable>> st):TLayout(rt,st)
 {
 }
 

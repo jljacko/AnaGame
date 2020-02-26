@@ -7,11 +7,11 @@ TDataArray<TFlyout*> flyouts;
 /*
 * Method: (TFlyout) (Constructor) 
 * Purpose: Sets up the basic features of the TFlyout
-* Parameters: TrecComPointer<ID2D1RenderTarget>cd, 
+* Parameters: TrecPointer<DrawingBoard>cd, 
 *			TrecPointer<TArray<styleTable>> ta - the list of styles to draw from
 * Returns: void
 */
-TFlyout::TFlyout(TrecComPointer<ID2D1RenderTarget>cd, TrecPointer<TArray<styleTable>> ta):TLayout(cd,ta)
+TFlyout::TFlyout(TrecPointer<DrawingBoard>cd, TrecPointer<TArray<styleTable>> ta):TLayout(cd,ta)
 {
 	appearWhen = appear_unset;
 	isShown = false;

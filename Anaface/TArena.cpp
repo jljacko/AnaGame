@@ -7,13 +7,13 @@
 /*
 * Method: TArena) (Constructor) 
 * Purpose: Sets up the Arena
-* Parameters: TrecComPointer<ID2D1RenderTarget> rt - the render target to draw to
+* Parameters: TrecPointer<DrawingBoard> rt - the render target to draw to
 *				TrecPointer<TArray<styleTable>> st - list of Anaface styles
 *				HWND h - the window to attach to
 *				CAMERA_TYPE type - type of camera to start as
 * Returns: void
 */
-TArena::TArena(TrecComPointer<ID2D1RenderTarget> rt, TrecPointer<TArray<styleTable>> st, HWND h, CAMERA_TYPE type):TControl(rt, st,false)
+TArena::TArena(TrecPointer<DrawingBoard> rt, TrecPointer<TArray<styleTable>> st, HWND h, CAMERA_TYPE type):TControl(rt, st,false)
 {
 	cameraType = type;
 	windowHandle = h;

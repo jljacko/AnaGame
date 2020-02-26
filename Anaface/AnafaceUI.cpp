@@ -4,12 +4,12 @@
 /*
 * Method: (AnaFaceUI) (Constructor)
 * Purpose: Sets up the AnafaceUI
-* Parameters: TrecComPointer<ID2D1RenderTarget> rt - the render target to use
+* Parameters: TrecPointer<DrawingBoard> rt - the render target to use
 *				TrecPointer <TArray<styleTable>> ta - the styles for Anaface
 *				HWND win - the window handle to use
 * Returns void
 */
-AnafaceUI::AnafaceUI(TrecComPointer<ID2D1RenderTarget>rt, TrecPointer <TArray<styleTable>> ta, HWND win):TControl(rt,ta,false)
+AnafaceUI::AnafaceUI(TrecPointer<DrawingBoard>rt, TrecPointer <TArray<styleTable>> ta, HWND win):TControl(rt,ta,false)
 {
 	winHandle = win;
 	tabHeight = unknownTab = 0;
@@ -58,13 +58,7 @@ bool AnafaceUI::switchView(UINT x)
 	return false;
 }
 
-void AnafaceUI::SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget> rt)
-{
-	TControl::SetNewRenderTarget(rt);
-	if (tabs)
-		tabs->SetNewRenderTarget(rt);
-	
-}
+
 
 void AnafaceUI::SwitchChildControl(TrecPointerSoft<TControl> curControl, TrecPointer<TControl> newControl)
 {
@@ -335,7 +329,7 @@ bool AnafaceUI::onCreate(D2D1_RECT_F container, TrecPointer<TWindowEngine> d3d)
 	TrecPointer<TString> valpoint = attributes.retrieveEntry(TString(L"|TabHeight"));
 	if (valpoint.Get())
 	{
-		tabs_base = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TLayoutEx>(renderTarget, styles);
+		tabs_base = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TLayoutEx>(drawingBoard, styles);
 		tabs = dynamic_cast<TLayoutEx*>(tabs_base.Get());
 		tabs->setLayout(HStack);
 		if (valpoint->ConvertToInt(&tabHeight))
@@ -351,7 +345,7 @@ bool AnafaceUI::onCreate(D2D1_RECT_F container, TrecPointer<TWindowEngine> d3d)
 			if (!tcon)
 				continue;
 			tabs->addColunm(60, true);
-			TrecPointer<TControl> newTab = TrecPointerKey::GetNewSelfTrecPointer<TControl>(renderTarget, styles);
+			TrecPointer<TControl> newTab = TrecPointerKey::GetNewSelfTrecPointer<TControl>(drawingBoard, styles);
 			tabs->addChild(newTab, tabs->getColumnNumber() - 1, 0);
 		}
 
@@ -612,7 +606,7 @@ void AnafaceUI::AddNewTab(TString t)
 	if (tabs)
 	{
 		TrecPointer<TString> valpoint = attributes.retrieveEntry(TString(L"|TabStyle"));
-		TrecPointer<TControl> tc(TrecPointerKey::GetNewSelfTrecPointer<TControl>(renderTarget, styles));
+		TrecPointer<TControl> tc(TrecPointerKey::GetNewSelfTrecPointer<TControl>(drawingBoard, styles));
 		if (valpoint.Get())
 		{
 			styleTable* st;

@@ -3,7 +3,7 @@
 class TScrollerControl : public TControl
 {
 public:
-	TScrollerControl(TrecComPointer<ID2D1RenderTarget>, TrecPointer<TArray<styleTable>> styles);
+	TScrollerControl(TrecPointer<DrawingBoard>, TrecPointer<TArray<styleTable>> styles);
 
 	void onDraw(TObject* obj)override;
 

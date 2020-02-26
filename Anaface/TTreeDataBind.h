@@ -10,7 +10,7 @@ class _ANAFACE_DLL TTreeDataBind :
 	public TControl
 {
 public:
-	TTreeDataBind(TrecComPointer<ID2D1RenderTarget>, TrecPointer<TArray<styleTable>> ta);
+	TTreeDataBind(TrecPointer<DrawingBoard>, TrecPointer<TArray<styleTable>> ta);
 	~TTreeDataBind();
 
 	virtual void onDraw(TObject* obj = nullptr) override;

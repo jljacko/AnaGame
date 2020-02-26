@@ -21,13 +21,12 @@ private:
 class TDropMenu :public TControl
 {
 public:
-	TDropMenu(TrecComPointer<ID2D1RenderTarget>, TrecPointer<TArray<styleTable>> styles);
+	TDropMenu(TrecPointer<DrawingBoard>, TrecPointer<TArray<styleTable>> styles);
 	~TDropMenu();
 
 	bool onCreate(D2D1_RECT_F l, TrecPointer<TWindowEngine> d3d) override;
 	void onDraw(TObject* obj = nullptr) override;
 
-	virtual void SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget>) override;
 
 	bool SetFolderAsRoot(TString& folder);
 	virtual UCHAR* GetAnaGameType()override;

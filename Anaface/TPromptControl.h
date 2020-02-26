@@ -6,7 +6,7 @@ class TPromptControl :
 	public TTextField
 {
 public:
-	TPromptControl(TrecComPointer<ID2D1RenderTarget>, TrecPointer<TArray<styleTable>> ta, HWND);
+	TPromptControl(TrecPointer<DrawingBoard>, TrecPointer<TArray<styleTable>> ta, HWND);
 	~TPromptControl();
 
 	virtual bool onCreate(D2D1_RECT_F, TrecPointer<TWindowEngine> d3d) override;

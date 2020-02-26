@@ -5,13 +5,13 @@
 /*
 * Method: (HTMLParser) (Constructor)
 * Purpose: Sets up the HTML Parser with a place to draw the web page
-* Parameters: TrecComPointer<ID2D1RenderTarget> resources - the region to draw the page to
+* Parameters: TrecPointer<DrawingBoard> resources - the region to draw the page to
 *			HWND window - the window to draw to
 *			TString location - The url the HTML file is located in
 *			bool onDrive - whether or not the URL is on the local drive (flase means it's on the web)
 * Returns: void
 */
-HTMLParser::HTMLParser(TrecComPointer<ID2D1RenderTarget> resources, HWND window, TString location, bool onDrive)
+HTMLParser::HTMLParser(TrecPointer<DrawingBoard> resources, HWND window, TString location, bool onDrive)
 {
 	renderer = resources;
 	windowHandle = window;

@@ -14,7 +14,7 @@ typedef struct PixelMark {
 class TImage : public TControl
 {
 public:
-	TImage(TrecComPointer<ID2D1RenderTarget>, TrecPointer<TArray<styleTable>> styles);
+	TImage(TrecPointer<DrawingBoard>, TrecPointer<TArray<styleTable>> styles);
 	TImage(TImage&);
 	TImage();
 	~TImage();
@@ -29,7 +29,6 @@ public:
 	UINT rotate(TPoint& point);
 	virtual void onDraw(TObject* obj) override;
 
-	virtual void SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget>);
 
 protected:
 	D2D1_MATRIX_3X2_F rotation;
