@@ -19,7 +19,7 @@ class _ANAFACE_DLL AnafaceParser :
 	public Parser_
 {
 public:
-	AnafaceParser(TrecComPointer<ID2D1RenderTarget>, HWND,TString);
+	AnafaceParser(TrecPointer<DrawingBoard>, HWND,TString);
 	~AnafaceParser();
 
 	void setEventSystem(TDataArray<eventNameID>& e);
@@ -46,7 +46,7 @@ private:
 	TrecPointer<TControl> baseObj;
 //	TLayout* layoutObject; // use if object is a layout so we have access to TLayout methods
 	//TTextField* textObject; // use if object is a textField so we have access to textField methods
-	TrecComPointer<ID2D1RenderTarget> renderer;
+	TrecPointer<DrawingBoard> renderer;
 	TDataArray<int> columnwidth, rowHeight;
 	TDataArray<bool> columnFlex, rowFlex;
 	HWND windowHandle;

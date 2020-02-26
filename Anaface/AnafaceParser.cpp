@@ -19,12 +19,12 @@ bool isLayout(TrecPointer<TControl> cont);
 /*
 * Method: (AnafaceParser) (Constructor)
 * Purpose: Sets up the Anaface Parser
-* Parameters: TrecComPointer<ID2D1RenderTarget> rt - the render target the controls will be using 
+* Parameters: TrecPointer<DrawingBoard> rt - the render target the controls will be using 
 *				HWND hWin - the Window Handle the control would be using
 *				TString directory - the directory the file originated in
 * Returns: void
 */
-AnafaceParser::AnafaceParser(TrecComPointer<ID2D1RenderTarget> rt, HWND hWin,TString directory)
+AnafaceParser::AnafaceParser(TrecPointer<DrawingBoard> rt, HWND hWin,TString directory)
 {
 	assert(rt.Get());
 	renderer = rt;
