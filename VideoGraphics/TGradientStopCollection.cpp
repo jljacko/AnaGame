@@ -35,6 +35,13 @@ TGradientStop TGradientStopCollection::GetGradientStopAt(UINT index)const
 	return gradients.data()[index];
 }
 
+TColor TGradientStopCollection::GetColorAt(UINT index)
+{
+	if(!IsValid(index))
+		return TColor();
+	return gradients.data()[index].GetColor();
+}
+
 bool TGradientStopCollection::SetGradientAt(const TGradientStop& gradient, UINT index)
 {
 	if (!IsValid(index))

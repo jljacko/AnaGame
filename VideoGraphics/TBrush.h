@@ -33,8 +33,10 @@ public:
 	UINT GetMaxColors();
 
 	void SetColor(const TColor& color, UINT index = 0);
+	TColor GetColor(UINT index = 0);
 
 	brush_type GetBrushType();
+	TrecComPointer<ID2D1Brush> GetUnderlyingBrush();
 
 	virtual ~TBrush();
 

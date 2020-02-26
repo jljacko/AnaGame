@@ -13,6 +13,7 @@ public:
 	
 	bool IsValid(UINT index)const;
 	TGradientStop GetGradientStopAt(UINT index)const;
+	TColor GetColorAt(UINT index);
 
 	bool SetGradientAt(const TGradientStop& gradient, UINT index);
 	bool SetColorAt(const TColor& color, UINT index);

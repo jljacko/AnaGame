@@ -29,8 +29,8 @@ public:
 
 	void SetSelf(TrecPointer<DrawingBoard> self);
 
-	bool SetTransform(TRANSFORM_2D& matrix);
-	bool GetTransoform(TRANSFORM_2D& matrix);
+	bool SetTransform(const TRANSFORM_2D& matrix);
+	bool GetTransform(TRANSFORM_2D& matrix);
 
 	// Methods handling layers
 	void PopLayer();

@@ -216,7 +216,7 @@ void DrawingBoard::SetSelf(TrecPointer<DrawingBoard> self)
 }
 
 
-bool DrawingBoard::SetTransform(TRANSFORM_2D& matrix)
+bool DrawingBoard::SetTransform(const TRANSFORM_2D& matrix)
 {
 	if (!renderer.Get())
 		return false;
@@ -225,7 +225,7 @@ bool DrawingBoard::SetTransform(TRANSFORM_2D& matrix)
 	return true;
 }
 
-bool DrawingBoard::GetTransoform(TRANSFORM_2D& matrix)
+bool DrawingBoard::GetTransform(TRANSFORM_2D& matrix)
 {
 	if (!renderer.Get())
 		return false;

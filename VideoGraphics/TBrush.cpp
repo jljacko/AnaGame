@@ -84,9 +84,26 @@ void TBrush::SetColor(const TColor& color, UINT index)
 		gradients.SetColorAt(color, index);
 }
 
+TColor TBrush::GetColor(UINT index)
+{
+	if (brushType == brush_type_solid)
+	{
+		TColor col;
+		if (brush.Get())
+			col.SetColor(reinterpret_cast<ID2D1SolidColorBrush*>(brush.Get())->GetColor());
+		return col;
+	}
+	return gradients.GetColorAt(index);
+}
+
 brush_type TBrush::GetBrushType()
 {
 	return brushType;
+}
+
+TrecComPointer<ID2D1Brush> TBrush::GetUnderlyingBrush()
+{
+	return brush;
 }
 
 TBrush::~TBrush()

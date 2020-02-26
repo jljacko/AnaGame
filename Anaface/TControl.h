@@ -14,6 +14,10 @@
 #include <TFile.h>
 #include <TPoint.h>
 
+#include <DrawingBoard.h>
+#include <TBitmapBrush.h>
+#include <TGradientStopCollection.h>
+
 #include <TWindowEngine.h>
 
 
@@ -149,7 +153,7 @@ class _ANAFACE_DLL TBorder : public TControlComponent
 	friend class TControl;
 	friend class TBorder;
 public:
-	TBorder(TrecComPointer<ID2D1RenderTarget>,TControl*);
+	TBorder(TrecPointer<DrawingBoard>,TControl*);
 	TBorder(TrecPointer<TBorder>&,TControl*);
 	TBorder();
 	~TBorder();
@@ -187,30 +191,23 @@ public:
 private:
 	//CMap<CString, CString, CString, CString> styles;
 
-	TrecComPointer<ID2D1Brush> brush;												// The Brush to Paint with
+	TrecPointer<TBrush> brush;												// The Brush to Paint with
 
-	void SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget>);
 	void ResetBrush();
 
-	TrecComPointer <ID2D1SolidColorBrush> BuilderFocusBrush;						// Used by the Builder to Highlight Controls under editing
+	TrecPointer <TBrush> BuilderFocusBrush;						// Used by the Builder to Highlight Controls under editing
 	float thickness = 1.0f;											// Thickness
 	TString style;													// Holds a special style, NOTE: Feature not Implemented
-	D2D1_COLOR_F color = D2D1::ColorF(D2D1::ColorF::Black, 1.0);	// The Color of the Border
-	D2D1_COLOR_F color2 = D2D1::ColorF(D2D1::ColorF::Black, 1.0);	// The Second color used by multi color styles of the Control
-	TrecComPointer<ID2D1RenderTarget> rt;											// Pointer to the Render Target to Draw to
-	TrecComPointer<ID2D1BitmapBrush> bitBrush;										// In the event that an image is part of the Border
-	TrecComPointer<ID2D1Bitmap> image;												// the Image of the above structure
+
+	TrecPointer<DrawingBoard> drawingBoard;											// Pointer to the Render Target to Draw to
+	TrecPointer<TBitmapBrush> bitBrush;										// In the event that an image is part of the Border
+											// the Image of the above structure
 	int storeInTML(TFile* ar, int childLevel,messageState);		// Method to save the border in a TML File for later reconstrcting
 	TControl* cap;									// The TControl that owns the Border
 	TShape shape;													// Shape to Draw
-	bool secondColor;												// Whether or not a second color is being used
-
-	D2D1_LINEAR_GRADIENT_BRUSH_PROPERTIES linearProp;				// Used for Linear style color graphics
-	D2D1_RADIAL_GRADIENT_BRUSH_PROPERTIES radialProp;				// Used for Radial style color graphics
-
-	D2D1_GRADIENT_STOP gradients[2];			// Used for Multi Color
+	
+	TGradientStopCollection stopCollection;
 	bool useRadial;
-	TrecComPointer<ID2D1GradientStopCollection> stopColl;
 
 	// Alternate shapes
 	D2D1_RECT_F loci;
@@ -235,7 +232,7 @@ class _ANAFACE_DLL TText :public TControlComponent
 //	friend class TComboBox;
 	friend class TContextMenu;
 public:
-	TText(TrecComPointer<ID2D1RenderTarget>,TControl*);
+	TText(TrecPointer<DrawingBoard> drawingBoard, TControl*);
 	TText(TrecPointer<TText>&,TControl*);
 	TText();
 	~TText();
@@ -286,7 +283,6 @@ public:
 	void ShiftHorizontal(int degrees);
 	void ShiftVertical(int degrees);
 	
-	void SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget>);
 
 	// Inherited From TControlComponent
 	virtual void SetColor(const D2D1_COLOR_F& color)override;
@@ -298,7 +294,7 @@ public:
 
 private:
 	//CMap<CString, CString, CString, CString> styles;
-	TrecComPointer<ID2D1RenderTarget> rt;								// Render Target to focus on
+	TrecPointer<DrawingBoard> drawingBoard;							// Render Target to focus on
 	TrecComPointer<IDWriteFactory> writeFact;// Direct Write Factory
 	
 void ResetBrush();
@@ -307,7 +303,7 @@ void ResetBrush();
 	D2D1_RECT_F bounds;									// Location of the text
 	TString text;										// Text stored
 	UINT32 textLength;									// Length of text
-	TrecComPointer<ID2D1Brush> penBrush;								// Brush to draw with
+	TrecPointer<TBrush> penBrush;								// Brush to draw with
 
 
 	DWRITE_FONT_WEIGHT fontWeight;
@@ -320,17 +316,12 @@ void ResetBrush();
 	float fontSize = 12;
 	TString locale;
 	TString font;
-	D2D1_COLOR_F color = D2D1::ColorF(D2D1::ColorF::Black, 1.0);
+
 	int storeInTML(TFile* ar, int childLevel,messageState);
 	TControl* cap;
 
-	bool secondColor;
-	D2D1_COLOR_F color2 = D2D1::ColorF(D2D1::ColorF::Black, 1.0);
-	D2D1_LINEAR_GRADIENT_BRUSH_PROPERTIES linearProp;
-	D2D1_RADIAL_GRADIENT_BRUSH_PROPERTIES radialProp;
-	D2D1_GRADIENT_STOP gradients[2];
+	TGradientStopCollection stopCollection;
 	bool useRadial;
-	TrecComPointer<ID2D1GradientStopCollection> gradStop;
 
 	// Determine how to draw text
 	TrecComPointer<IDWriteTextLayout> fontLayout;
@@ -346,7 +337,7 @@ class _ANAFACE_DLL TContent :public TControlComponent
 	friend class TControl;
 	friend class TGadgetControl;
 public:
-	TContent(TrecComPointer<ID2D1RenderTarget>, TControl*);
+	TContent(TrecPointer<DrawingBoard>, TControl*);
 	TContent();
 	TContent(TrecPointer<TContent>&, TControl*);
 	~TContent();
@@ -365,8 +356,6 @@ public:
 	void SetRadialImage(TDataArray<D2D1_COLOR_F>& colors);
 	void SetLinearImage(TDataArray<D2D1_COLOR_F>& colors);
 
-	void SetRadialImage(TDataArray<D2D1_GRADIENT_STOP>& colors);
-	void SetLinearImage(TDataArray<D2D1_GRADIENT_STOP>& colors);
 
 	// Inherited From TControlComponent
 	virtual void SetColor(const D2D1_COLOR_F& color)override;
@@ -377,36 +366,28 @@ public:
 	virtual void SetLocation(const D2D1_RECT_F& loc) override;
 
 private:
-	TrecComPointer<ID2D1GradientStopCollection> getStopCollection(TDataArray<D2D1_COLOR_F>& colors);
-	void SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget>);
+	TrecPointer<TGradientStopCollection> getStopCollection(TDataArray<D2D1_COLOR_F>& colors);
 	void ResetBrush();
 
 	//CMap<CString, CString, CString, CString> styles;
-	TrecComPointer<ID2D1RenderTarget> rt;
+	TrecPointer<DrawingBoard> drawingBoard;
 
-	TrecComPointer<ID2D1Brush> brush;
-
-	TrecComPointer<ID2D1BitmapBrush> bitmap;
+	TrecPointer<TBrush> brush;
 
 	float thickness = 1.0f;
 	TString style;
-	D2D1_COLOR_F color;
+
 	D2D1_RECT_F location;
-	TrecComPointer<ID2D1Bitmap> image;
-	TrecComPointer<ID2D1Bitmap> cropImage;
+	TrecSubPointer<TBrush, TBitmapBrush> image;
+
 
 
 	int storeInTML(TFile* ar, int childLevel,messageState);
 	TControl* cap;
 	TShape shape;
-	bool secondColor;
-	D2D1_COLOR_F color2 = D2D1::ColorF(D2D1::ColorF::Black, 1.0);
 
-	D2D1_LINEAR_GRADIENT_BRUSH_PROPERTIES linearProp;
-	D2D1_RADIAL_GRADIENT_BRUSH_PROPERTIES radialProp;
-	D2D1_GRADIENT_STOP gradients[2];
+	TGradientStopCollection stopCollection;
 	bool useRadial;
-	TrecComPointer<ID2D1GradientStopCollection> gradStop;
 
 	// Alternate shapes
 	D2D1_ELLIPSE circle;
@@ -428,14 +409,13 @@ class _ANAFACE_DLL TControl : public TObject
 	friend class TTreeDataBind;
 public:
 
-	TControl(TrecComPointer<ID2D1RenderTarget>, TrecPointer<TArray<styleTable>> styles, bool base = true);
+	TControl(TrecPointer<DrawingBoard> drawingBoard, TrecPointer<TArray<styleTable>> styles, bool base = true);
 	TControl(TControl&);
 	TControl();
 	virtual ~TControl();
 
 	void SetSelf(TrecPointer<TControl> self);
 
-	virtual void SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget>);
 
 	//virtual int loadFromTML(CArchive* ar);
 	virtual int loadFromHTML(TFile* ar);
@@ -469,7 +449,7 @@ public:
 	virtual void onDraw(TObject* obj = nullptr);
 	virtual D2D1_RECT_F getLocation();
 	D2D1_RECT_F getMargin();
-	TrecComPointer<ID2D1RenderTarget> getRenderTarget();
+	TrecPointer<DrawingBoard> getDrawingBoard();
 	TrecPointer<TControl> getParent();
 	void setExternalBounds(D2D1_RECT_F);
 	bool getLayoutStatus();
@@ -535,8 +515,7 @@ protected:
 	TString ID;
 	D2D1_RECT_F location, margin;
 	TScrollBar *vScroll, *hScroll;
-	TrecComPointer<ID2D1Factory> factory;
-	TrecComPointer<ID2D1RenderTarget> renderTarget;
+	TrecPointer<DrawingBoard> drawingBoard;
 	
 	TrecPointerSoft<TControl> parent;
 	TrecPointerSoft<TControl> tThis;
