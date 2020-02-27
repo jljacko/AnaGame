@@ -56,9 +56,9 @@ SourceCodeApp::SourceCodeApp(TrecPointer<TControl> m, TrecPointer<TControl> o, T
 	rect = dynamic_cast<AnafaceUI*>(e.Get())->GetControlArea();
 	explorerPane = window->GetPageByArea(rect);
 
-	explorerControl = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TTreeDataBind>(explorerPane->GetRenderTarget(), TrecPointer<TArray<styleTable>>());
+	explorerControl = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TTreeDataBind>(explorerPane->GetWindowHandle()->GetDrawingBoard(), TrecPointer<TArray<styleTable>>());
 
-	TrecPointer<TControl> nodeControl = TrecPointerKey::GetNewSelfTrecPointer<TControl>(explorerPane->GetRenderTarget(), TrecPointer<TArray<styleTable>>());
+	TrecPointer<TControl> nodeControl = TrecPointerKey::GetNewSelfTrecPointer<TControl>(explorerPane->GetWindowHandle()->GetDrawingBoard(), TrecPointer<TArray<styleTable>>());
 	nodeControl->addAttribute(TString(L"|FontSize"), TrecPointerKey::GetNewTrecPointer<TString>(L"12"));
 	explorerControl->addAttribute(TString(L"|ContainerLoc"), TrecPointerKey::GetNewTrecPointer<TString>(L"0,0,30,100"));
 	nodeControl->addAttribute(TString(L"|Caption"), TrecPointerKey::GetNewTrecPointer<TString>(L"{}"));
