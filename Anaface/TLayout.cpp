@@ -141,7 +141,7 @@ bool TLayout::addColunm(int x, bool markDetected)
 			tempContC = TrecPointerKey::GetNewTrecPointer<containerControl>();
 			tempContC->x = colunms;
 			tempContC->y = c;
-			tempContC->contain = TrecPointerKey::GetNewSelfTrecPointer<TControl>(renderTarget, styles);
+			tempContC->contain = TrecPointerKey::GetNewSelfTrecPointer<TControl>(drawingBoard, styles);
 			
 			tempContC->contain->setLocation(tempRect);
 
@@ -166,7 +166,7 @@ bool TLayout::addColunm(int x, bool markDetected)
 		tempContC = TrecPointerKey::GetNewTrecPointer<containerControl>();
 		tempContC->x = colunms++;
 		tempContC->y = 0;
-		tempContC->contain = TrecPointerKey::GetNewSelfTrecPointer<TControl>(renderTarget, styles);
+		tempContC->contain = TrecPointerKey::GetNewSelfTrecPointer<TControl>(drawingBoard, styles);
 
 		tempContC->contain->setLocation(tempRect);
 
@@ -228,7 +228,7 @@ bool TLayout::addRow(int y, bool markDetected)
 			tempContC = TrecPointerKey::GetNewTrecPointer<containerControl>();
 			tempContC->x = c;
 			tempContC->y = rows;
-			tempContC->contain = TrecPointerKey::GetNewSelfTrecPointer<TControl>(renderTarget, styles);
+			tempContC->contain = TrecPointerKey::GetNewSelfTrecPointer<TControl>(drawingBoard, styles);
 
 			tempContC->contain->setLocation(tempRect);
 
@@ -253,7 +253,7 @@ bool TLayout::addRow(int y, bool markDetected)
 		tempContC = TrecPointerKey::GetNewTrecPointer<containerControl>();
 		tempContC->x = 0;
 		tempContC->y = rows++;
-		tempContC->contain = TrecPointerKey::GetNewSelfTrecPointer<TControl>(renderTarget, styles);
+		tempContC->contain = TrecPointerKey::GetNewSelfTrecPointer<TControl>(drawingBoard, styles);
 
 		tempContC->contain->setLocation(tempRect);
 
@@ -364,7 +364,7 @@ bool TLayout::setGrid(TDataArray<int>& col, TDataArray<int>& row)
 	tempContC = TrecPointerKey::GetNewTrecPointer<containerControl>();
 	tempContC->x = 0;
 	tempContC->y = 0;
-	tempContC->contain = TrecPointerKey::GetNewSelfTrecPointer<TControl>(renderTarget, styles);
+	tempContC->contain = TrecPointerKey::GetNewSelfTrecPointer<TControl>(drawingBoard, styles);
 
 	tempContC->contain->setLocation(tempRect);
 
@@ -652,11 +652,9 @@ bool TLayout::onCreate(D2D1_RECT_F margin, TrecPointer<TWindowEngine> d3d)
 
 
 
-	if (internalInit && renderTarget.Get())
-	{
-		TrecComPointer<ID2D1SolidColorBrush>::TrecComHolder solBrush;
-		renderTarget->CreateSolidColorBrush(internalColor, solBrush.GetPointerAddress());
-		internalBrush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1SolidColorBrush>(solBrush);
+	if (internalInit && drawingBoard.Get())
+	{		
+		internalBrush = drawingBoard->GetBrush(internalColor);
 	}
 
 	return TControl::onCreate(margin, d3d);
@@ -684,16 +682,14 @@ void TLayout::onDraw(TObject* obj)
 		for (int c = 0; c < rowLines.Size();c++)
 		{
 			int add = rowLines[c];
-			renderTarget->DrawLine(D2D1::Point2F(location.left, location.top + add),
-				D2D1::Point2F(location.right, location.top + add),
-				internalBrush.Get(), thickness);
+			internalBrush->DrawLine(D2D1::Point2F(location.left, location.top + add),
+				D2D1::Point2F(location.right, location.top + add), thickness);
 		}
 		for (int c = 0; c < columnLines.Size();c++)
 		{
 			int add = columnLines[c];
-			renderTarget->DrawLine(D2D1::Point2F(location.left + add, location.top),
-				D2D1::Point2F(location.left, location.bottom),
-				internalBrush.Get(), thickness);
+			internalBrush->DrawLine(D2D1::Point2F(location.left + add, location.top),
+				D2D1::Point2F(location.left, location.bottom), thickness);
 		}
 	}
 }
@@ -1406,18 +1402,6 @@ orgLayout TLayout::GetOrganization()
 UCHAR * TLayout::GetAnaGameType()
 {
 	return nullptr;
-}
-
-void TLayout::SetNewRenderTarget(TrecPointer<DrawingBoard> rt)
-{
-	TControl::SetNewRenderTarget(rt);
-
-	if (internalInit && renderTarget.Get())
-	{
-		TrecComPointer<ID2D1SolidColorBrush>::TrecComHolder solBrush;
-		renderTarget->CreateSolidColorBrush(internalColor, solBrush.GetPointerAddress());
-		internalBrush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1SolidColorBrush>(solBrush);
-	}
 }
 
 void TLayout::SwitchChildControl(TrecPointerSoft<TControl> curControl, TrecPointer<TControl> newControl)

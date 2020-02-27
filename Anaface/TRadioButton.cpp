@@ -92,7 +92,7 @@ bool TRadioButton::onCreate(D2D1_RECT_F r, TrecPointer<TWindowEngine> d3d)
 	}
 	else
 	{
-		text1 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, this);
+		text1 = TrecPointerKey::GetNewTrecPointer<TText>(drawingBoard, this);
 		text1->text = L"Radio-Button";
 
 
@@ -119,9 +119,9 @@ void TRadioButton::onDraw(TObject* obj)
 		return;
 
 	if (isClicked)
-		renderTarget->FillEllipse(&ellBut, brush.Get());
+		brush->FillEllipse(ellBut);
 	else
-		renderTarget->DrawEllipse(&ellBut,brush.Get());
+		brush->DrawEllipse(ellBut);
 }
 
 /*

@@ -39,7 +39,7 @@ bool TCheckBox::onCreate(D2D1_RECT_F r, TrecPointer<TWindowEngine> d3d)
 	}
 	else
 	{
-		text1 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, this);
+		text1 = TrecPointerKey::GetNewTrecPointer<TText>(drawingBoard, this);
 		text1->text = L"Check-Box";
 
 
@@ -62,15 +62,15 @@ void TCheckBox::onDraw(TObject* obj)
 
 
 
-	renderTarget->DrawRectangle(&DxLocation, brush.Get());
+	brush->DrawRectangle(DxLocation);
 	if (isClicked)
 	{
 		D2D1_POINT_2F upLeft = D2D1::Point2F(DxLocation.left, DxLocation.top);
 		D2D1_POINT_2F upRight = D2D1::Point2F(DxLocation.right, DxLocation.top);
 		D2D1_POINT_2F downLeft = D2D1::Point2F(DxLocation.left, DxLocation.bottom);
 		D2D1_POINT_2F downRight = D2D1::Point2F(DxLocation.right, DxLocation.bottom);
-		renderTarget->DrawLine(upLeft, downRight, brush.Get());
-		renderTarget->DrawLine(upRight, downLeft, brush.Get());
+		brush->DrawLine(upLeft, downRight);
+		brush->DrawLine(upRight, downLeft);
 	}
 }
 

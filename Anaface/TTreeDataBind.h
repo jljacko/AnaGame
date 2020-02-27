@@ -28,5 +28,8 @@ protected:
 
 	bool isNodeSelected, isTickSelected;
 	UINT nodeSelected;
+
+	TrecPointer<TBrush> outerBrush;
+	TrecPointer<TBrush> innerBrush;
 };
 

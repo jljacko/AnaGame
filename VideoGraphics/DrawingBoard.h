@@ -39,9 +39,17 @@ public:
 	bool AddLayer(ROUNDED_RECT_2D& rRect);
 	bool AddLayer(TDataArray<POINT_2D>& points);
 
+	// Methods to Generate Geometries
+	TrecPointer<TGeometry> GetGeometry(RECT_2D& ret);
+	TrecPointer<TGeometry> GetGeometry(ELLIPSE_2D& ellipse);
+	TrecPointer<TGeometry> GetGeometry(ROUNDED_RECT_2D& rRect);
+	TrecPointer<TGeometry> GetGeometry(TDataArray<POINT_2D>& points);
+
 	UINT GetLayerCount();
 
 private:
+	TrecComPointer<ID2D1Factory1> fact;
+
 	TrecComPointer<ID2D1RenderTarget> renderer;
 	TrecPointerSoft<DrawingBoard> self;
 	bool is3D;

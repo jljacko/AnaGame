@@ -21,14 +21,16 @@ class _VIDEO_GRAPHICS TBrush : public TObject
 	friend class TrecPointerKey;
 	friend class DrawingBoard;
 public:
-	void DrawRectangle(RECT_2D& r, float thickness = 1.0f);
-	void FillRectangle(RECT_2D& r);
-	void DrawRoundedRectangle(ROUNDED_RECT_2D& r, float thickness = 1.0f);
-	void FillRoundedRectangle(ROUNDED_RECT_2D& r);
-	void DrawEllipse(ELLIPSE_2D& r, float thickness = 1.0f);
-	void FillEllipse(ELLIPSE_2D& r);
+	void DrawRectangle(const RECT_2D& r, float thickness = 1.0f);
+	void FillRectangle(const RECT_2D& r);
+	void DrawRoundedRectangle(const ROUNDED_RECT_2D& r, float thickness = 1.0f);
+	void FillRoundedRectangle(const ROUNDED_RECT_2D& r);
+	void DrawEllipse(const ELLIPSE_2D& r, float thickness = 1.0f);
+	void FillEllipse(const ELLIPSE_2D& r);
 	void DrawGeometry(TrecPointer<TGeometry> geo, float thickness = 1.0f);
 	void FillGeometry(TrecPointer<TGeometry> geo);
+
+	void DrawLine(const POINT_2D& p1, const POINT_2D& p2, float thickness = 1.0f);
 	
 	UINT GetMaxColors();
 

@@ -11,16 +11,16 @@ TDataArray<TComboBox*> boxList;
 */
 void  DrawActiveComboBox(ID2D1RenderTarget * rt)
 {
-	for (int c = 0; c < boxList.Size(); c++)
-	{
-		if (!boxList[c])
-			continue;
-		if (boxList[c]->GetExtensionStatus())
-		{
-			boxList[c]->onDraw(rt);
-			break;
-		}
-	}
+	//for (int c = 0; c < boxList.Size(); c++)
+	//{
+	//	if (!boxList[c])
+	//		continue;
+	//	if (boxList[c]->GetExtensionStatus())
+	//	{
+	//		boxList[c]->onDraw(rt);
+	//		break;
+	//	}
+	//}
 }
 
 /*
@@ -113,7 +113,7 @@ bool TComboBox::onCreate(D2D1_RECT_F r, TrecPointer<TWindowEngine> d3d)
 	{
 		if (!text1.Get())
 		{
-			text1 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget,this);
+			text1 = TrecPointerKey::GetNewTrecPointer<TText>(drawingBoard,this);
 		}
 		text1->removeCaption();
 		defaultText = valpoint.Get();
@@ -149,7 +149,7 @@ bool TComboBox::onCreate(D2D1_RECT_F r, TrecPointer<TWindowEngine> d3d)
 	D2D1_RECT_F entrybox = D2D1_RECT_F{ 0,0,0,0 };
 	for (int c = 0; c < elements.Count(); c++)
 	{
-		tc = TrecPointerKey::GetNewSelfTrecPointer<TControl>(renderTarget, styles);
+		tc = TrecPointerKey::GetNewSelfTrecPointer<TControl>(drawingBoard, styles);
 		//cont = new TContainer();
 		//cont->setTControl(tc);
 
@@ -174,12 +174,9 @@ bool TComboBox::onCreate(D2D1_RECT_F r, TrecPointer<TWindowEngine> d3d)
 	// now set up the extended background
 	extendedSpace = D2D1::RectF(location.left, location.bottom,
 		location.right, location.bottom + (childHeight) * (children.Count()));
-	D2D1_COLOR_F whiteColor = D2D1::ColorF(D2D1::ColorF::White, 0.9f);
 
-	TrecComPointer<ID2D1SolidColorBrush>::TrecComHolder extendedBrushRaw;
-	HRESULT brushRes = renderTarget->CreateSolidColorBrush(whiteColor, extendedBrushRaw.GetPointerAddress());
-	extendedBrush = extendedBrushRaw.Extract();
-	return SUCCEEDED(brushRes);
+	extendedBrush = drawingBoard->GetBrush(TColor( D2D1::ColorF(D2D1::ColorF::White, 0.9f)));
+	return extendedBrush.Get() != nullptr;
 
 	//return false;
 }
@@ -196,7 +193,7 @@ void TComboBox::onDraw(TObject* obj)
 {
 	if (!isActive)
 		return;
-	if (!renderTarget.Get())
+	if (!drawingBoard.Get())
 		return;
 
 	// Although this code is seen in the TControl implementation of onDraw, 
@@ -242,12 +239,12 @@ void TComboBox::onDraw(TObject* obj)
 			text1->onDraw(location, obj);
 	}
 
-	renderTarget->DrawLine(leftpoint, vertexPoint, brush.Get());
-	renderTarget->DrawLine(vertexPoint, rightPoint, brush.Get());
+	brush->DrawLine(leftpoint, vertexPoint);
+	brush->DrawLine(vertexPoint, rightPoint);
 
 if (showExtended)
 {
-	renderTarget->FillRectangle(extendedSpace, extendedBrush.Get());
+	extendedBrush->FillRectangle(extendedSpace);
 
 	for (int c = 0; c < children.Count(); c++)
 	{
@@ -265,9 +262,9 @@ if (showExtended)
 * Parameter: ID2D1RenderTarget * rt - render target to use
 * Returns: void
 */
-void TComboBox::onDraw(ID2D1RenderTarget * rt)
+void TComboBox::onDraw(DrawingBoard * rt)
 {
-	if (rt == renderTarget.Get())
+	if (rt == drawingBoard.Get())
 		onDraw();
 }
 

@@ -123,24 +123,22 @@ void TFlyout::onDraw(TObject* obj)
 		return;
 	else
 	{
-		ID2D1SolidColorBrush* redBrush = NULL; 
+		TrecPointer<TBrush> redBrush; 
 		D2D1::ColorF redColor = D2D1::ColorF(D2D1::ColorF::Enum::Red);
 		if (mState != mouseHover || mState == mouseLClick ||mState == mouseRClick)
 			redColor.a = 0.5;
 
-		renderTarget->CreateSolidColorBrush(redColor,&redBrush);
+		redBrush = drawingBoard->GetBrush(redColor);
 
-		renderTarget->FillRectangle(&exitRect, redBrush);
+		redBrush->FillRectangle(exitRect);
 
 		redColor.b = 1.0;
 		redColor.g = 1.0;
 		redColor.r = 1.0;
 		redBrush->SetColor(redColor);
-		renderTarget->DrawLine(D2D1::Point2F(exitRect.left, exitRect.top), D2D1::Point2F(exitRect.right, exitRect.bottom),
-			redBrush, 2);
+		redBrush->DrawLine(D2D1::Point2F(exitRect.left, exitRect.top), D2D1::Point2F(exitRect.right, exitRect.bottom), 2.0f);
 
-		renderTarget->DrawLine(D2D1::Point2F(exitRect.right, exitRect.top), D2D1::Point2F(exitRect.left, exitRect.bottom),
-			redBrush, 2);
+		redBrush->DrawLine(D2D1::Point2F(exitRect.right, exitRect.top), D2D1::Point2F(exitRect.left, exitRect.bottom), 2.0f);
 
 		if (organization == tCanvas)
 			TControl::onDraw(obj);

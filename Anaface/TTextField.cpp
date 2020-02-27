@@ -371,7 +371,7 @@ bool TTextField::onCreate(D2D1_RECT_F r, TrecPointer<TWindowEngine> d3d)
 
 	if (!text1.Get())
 	{
-		text1 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, nullptr);
+		text1 = TrecPointerKey::GetNewTrecPointer<TText>(drawingBoard, nullptr);
 		int res = text1->onCreate(r);
 		res = res;
 	}
@@ -434,18 +434,18 @@ void TTextField::onDraw(TObject* obj)
 	else if (offerPasswordPeek)
 	{
 
-		renderTarget->DrawEllipse(&passwordPeek_outer, brush.Get());
+		brush->DrawEllipse(passwordPeek_outer);
 
 
 
 
-		renderTarget->FillEllipse(&passwordPeek_inner, brush.Get());
+		brush->FillEllipse(passwordPeek_inner);
 	}
 	else if (isNumber)
 	{
 
-		renderTarget->DrawRectangle(&topBut, brush.Get());
-		renderTarget->DrawRectangle(&botBut, brush.Get());
+		brush->DrawRectangle(topBut);
+		brush->DrawRectangle(botBut);
 
 		
 	}
@@ -872,7 +872,7 @@ void TTextField::AppendBoldText(const TString & t)
 	UINT beginFormatting = text.GetSize();
 	if (!text1.Get())
 	{
-		text1 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, this);
+		text1 = TrecPointerKey::GetNewTrecPointer<TText>(drawingBoard, this);
 	}
 	formattingDetails fd;
 	fd.range = { beginFormatting, static_cast<UINT>(t.GetSize()) };
@@ -895,7 +895,7 @@ void TTextField::AppendItalicText(const TString & t)
 	UINT beginFormatting = text.GetSize();
 	if (!text1.Get())
 	{
-		text1 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, this);
+		text1 = TrecPointerKey::GetNewTrecPointer<TText>(drawingBoard, this);
 	}
 	formattingDetails fd;
 	fd.range = { beginFormatting, static_cast<UINT>(t.GetSize()) };
@@ -918,7 +918,7 @@ void TTextField::AppendBoldItalicText(const TString & t)
 	UINT beginFormatting = text.GetSize();
 	if (!text1.Get())
 	{
-		text1 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, this);
+		text1 = TrecPointerKey::GetNewTrecPointer<TText>(drawingBoard, this);
 	}
 	formattingDetails fd;
 	fd.range = { beginFormatting, static_cast<UINT>(t.GetSize()) };
@@ -941,7 +941,7 @@ void TTextField::AppendNormalText(const TString & t)
 	UINT beginFormatting = text.GetSize();
 	if (!text1.Get())
 	{
-		text1 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, this);
+		text1 = TrecPointerKey::GetNewTrecPointer<TText>(drawingBoard, this);
 	}
 	formattingDetails fd;
 	fd.range = { beginFormatting, static_cast<UINT>(t.GetSize()) };
@@ -1121,7 +1121,7 @@ void TTextField::setNumericText(int i)
 
 	if (!text1.Get())
 	{
-		text1 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, this);
+		text1 = TrecPointerKey::GetNewTrecPointer<TText>(drawingBoard, this);
 		int res = text1->onCreate(location);
 	}
 	if (text1.Get())
@@ -1146,7 +1146,7 @@ void TTextField::setNumericText(float f)
 
 	if (!text1.Get())
 	{
-		text1 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, this);
+		text1 = TrecPointerKey::GetNewTrecPointer<TText>(drawingBoard, this);
 		int res = text1->onCreate(location);
 	}
 	if (text1.Get())
@@ -1155,7 +1155,7 @@ void TTextField::setNumericText(float f)
 
 void TTextField::AddColorEffect(D2D1_COLOR_F col, UINT start, UINT length)
 {
-	if (!text1.Get() || !renderTarget.Get())
+	if (!text1.Get() || !drawingBoard.Get())
 		return;
 
 	IDWriteTextLayout* layout = text1->fontLayout.Get();
@@ -1173,7 +1173,7 @@ void TTextField::AddColorEffect(D2D1_COLOR_F col, UINT start, UINT length)
 
 	ColorEffect ce{ nullptr, col };
 
-	HRESULT h = renderTarget->CreateSolidColorBrush(col, &ce.colBrush);
+	HRESULT h = drawingBoard->GetRenderer()->CreateSolidColorBrush(col, &ce.colBrush);
 	if (SUCCEEDED(h))
 	{
 		colors.push_back(ce);
@@ -1202,7 +1202,7 @@ void TTextField::updateTextString()
 {
 	if (!text1.Get())
 	{
-		text1 = TrecPointerKey::GetNewTrecPointer<TText>(renderTarget, this);
+		text1 = TrecPointerKey::GetNewTrecPointer<TText>(drawingBoard, this);
 
 	}
 	text1->setCaption(text);
@@ -1854,9 +1854,8 @@ TextHighlighter::TextHighlighter(TrecPointer<DrawingBoard> rt)
 	renderer = rt;
 	isActive = false;
 
-	TrecComPointer<ID2D1SolidColorBrush>::TrecComHolder brushHolder;
-	renderer->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Aqua), brushHolder.GetPointerAddress());
-	brush = brushHolder.Extract();
+	
+	brush = renderer->GetBrush(TColor(D2D1::ColorF::Aqua));
 }
 
 void TextHighlighter::SetLayout(TrecComPointer<IDWriteTextLayout> l)
@@ -1905,7 +1904,7 @@ void TextHighlighter::SetSecondPosition(UINT s)
 			beginningPosition = s;
 	}
 	ATLTRACE(L"HIGHLIGHTER MODIFIED\n");
-	layout->SetDrawingEffect(brush.Get(), DWRITE_TEXT_RANGE{ beginningPosition, endingPosition - beginningPosition });
+	layout->SetDrawingEffect(brush->GetUnderlyingBrush().Get(), DWRITE_TEXT_RANGE{ beginningPosition, endingPosition - beginningPosition });
 	isActive = true;
 }
 

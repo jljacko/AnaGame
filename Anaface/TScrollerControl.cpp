@@ -13,25 +13,20 @@ void TScrollerControl::onDraw(TObject* obj)
 	if ((location.bottom - location.top) < 1 || (location.right - location.left) < 1)
 		return;
 
-	ID2D1Layer* layer = nullptr;
+
 
 	RefreshScroll();
-	ID2D1Factory* fact = nullptr;
-	ID2D1RectangleGeometry* rectGeo = nullptr;
+
 
 	if (vScroll || hScroll)
 	{
-		renderTarget->CreateLayer(nullptr, &layer);
 
 		D2D1_RECT_F clipRect = location;
 		clipRect.bottom -= GetScrollbarBoxSize();
 		clipRect.right -= GetScrollbarBoxSize();
 
 		// Need to generate a geometry
-		renderTarget->GetFactory(&fact);
-		fact->CreateRectangleGeometry(clipRect, &rectGeo);
-
-		renderTarget->PushLayer(D2D1::LayerParameters(D2D1::InfiniteRect(), rectGeo), layer);
+		drawingBoard->AddLayer(clipRect);
 
 		if (vScroll)
 			vScroll->Refresh(clipRect, childControl->getLocation());
@@ -40,21 +35,14 @@ void TScrollerControl::onDraw(TObject* obj)
 	}
 	childControl->onDraw(obj);
 
-	if (layer)
+	if (vScroll || hScroll)
 	{
-		renderTarget->PopLayer();
-		layer->Release();
-		if (rectGeo)
-			rectGeo->Release();
-		fact->Release();
-		rectGeo = nullptr;
-		fact = nullptr;
+		drawingBoard->PopLayer();
 	}
-	layer = nullptr;
 	if (vScroll)
-		vScroll->onDraw(renderTarget.Get());
+		vScroll->onDraw(drawingBoard->GetRenderer().Get());
 	if (hScroll)
-		hScroll->onDraw(renderTarget.Get());
+		hScroll->onDraw(drawingBoard->GetRenderer().Get());
 
 }
 

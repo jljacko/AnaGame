@@ -16,7 +16,7 @@ public:
 
 	bool onCreate(D2D1_RECT_F, TrecPointer<TWindowEngine> d3d)override;
 	void onDraw(TObject* obj = nullptr) override;
-	void onDraw(ID2D1RenderTarget* rt);
+	void onDraw(DrawingBoard* rt);
 	void addElement(TString);
 	bool removeElement(TString);
 	virtual void storeInTML(TFile* ar, int childLevel,bool ov = true)override;
@@ -38,7 +38,7 @@ private:
 
 	TString defaultText;
 
-	TrecComPointer<ID2D1SolidColorBrush> extendedBrush;
+	TrecPointer<TBrush> extendedBrush;
 	D2D1_RECT_F extendedSpace;
 	bool reacted;
 	int boxLoc;

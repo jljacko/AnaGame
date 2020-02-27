@@ -19,7 +19,7 @@ public:
 	TImage();
 	~TImage();
 
-	UINT onFill(TPoint& pixel, D2D1_COLOR_F& color, float tolerance);
+	/*UINT onFill(TPoint& pixel, D2D1_COLOR_F& color, float tolerance);
 	UINT setLinearGradient(TDataArray<D2D1_COLOR_F>& colors);
 	UINT setLinearGradient(TDataArray<D2D1_GRADIENT_STOP>& colors);
 
@@ -31,10 +31,11 @@ public:
 
 
 protected:
-	D2D1_MATRIX_3X2_F rotation;
+	
 	TrecPointer<TContent> cover;
-	TDataArray<TBitmap> images;
+	TDataArray<TBitmap> images;*/
 	UINT currentImage;
+	D2D1_MATRIX_3X2_F rotation;
 };
 
 void MarkPixels(TPoint& startPoint, UINT idealPixel, float tolerance, TDataArray<TDataArray<PixelMark>>& pixels);

@@ -103,7 +103,7 @@ bool TSpreadSheet::onCreate(D2D1_RECT_F l, TrecPointer<TWindowEngine> d3d)
 		cc->x2 = h_x - 1;
 		cc->y2 = h_y - 1;
 
-		TrecPointer<TControl> ttf = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TTextField>(renderTarget, styles, window);
+		TrecPointer<TControl> ttf = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TTextField>(drawingBoard, styles, window);
 		TTextField* ttf_c = dynamic_cast<TTextField*>(ttf.Get());
 		ttf_c->SetText(title);
 		cc->contain = ttf;
@@ -147,7 +147,7 @@ bool TSpreadSheet::onCreate(D2D1_RECT_F l, TrecPointer<TWindowEngine> d3d)
 			if (!tc_cc.Get() || !tc_ts.GetSize())
 				continue;
 
-			tc_cc->contain = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TTextField>(renderTarget, styles, window);
+			tc_cc->contain = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TTextField>(drawingBoard, styles, window);
 			TTextField* ttf = dynamic_cast<TTextField*>(tc_cc->contain.Get());
 			ttf->SetText(tc_ts);
 			TrecPointer<TString> attr;
@@ -179,17 +179,15 @@ void TSpreadSheet::onDraw(TObject* obj)
 		for (int c = 0; c < rowLines.Size(); c++)
 		{
 			add += rowLines[c];
-			renderTarget->DrawLine(D2D1::Point2F(location.left, location.top + add),
-				D2D1::Point2F(location.right, location.top + add),
-				internalBrush.Get(), thickness);
+			internalBrush->DrawLine(D2D1::Point2F(location.left, location.top + add),
+				D2D1::Point2F(location.right, location.top + add), thickness);
 		}
 		add = 0;
 		for (int c = 0; c < columnLines.Size(); c++)
 		{
 			add += columnLines[c];
-			renderTarget->DrawLine(D2D1::Point2F(location.left + add, location.top),
-				D2D1::Point2F(location.left + add, location.bottom),
-				internalBrush.Get(), thickness);
+			internalBrush->DrawLine(D2D1::Point2F(location.left + add, location.top),
+				D2D1::Point2F(location.left + add, location.bottom), thickness);
 		}
 	}
 	TControl::onDraw(obj);
@@ -265,7 +263,7 @@ void TSpreadSheet::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut
 		lChildren.Add(cc_tc);
 		
 		//ttf->SetText(title);
-		cc->contain = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TTextField>(renderTarget, styles, window);
+		cc->contain = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TTextField>(drawingBoard, styles, window);
 		TTextField* ttf = dynamic_cast<TTextField*>(cc->contain.Get());
 		TrecPointer<TString> attr;
 		attr = TrecPointerKey::GetNewTrecPointer<TString>(L"1,1,1,1");

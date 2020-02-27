@@ -6,6 +6,7 @@ DrawingBoard::DrawingBoard(TrecComPointer<ID2D1Factory1> fact, HWND window)
 	is3D = false;
 	if (!fact.Get())
 		throw L"Error! Factory Object MUST be initialized!";
+	this->fact = fact;
 
 	D2D1_RENDER_TARGET_PROPERTIES props;
 	ZeroMemory(&props, sizeof(props));
@@ -45,7 +46,7 @@ DrawingBoard::DrawingBoard(TrecComPointer<ID2D1Factory1> fact, TrecPointer<TWind
 {
 	if (!fact.Get())
 		throw L"Error! Factory Object MUST be initialized!";
-
+	this->fact = fact;
 	if (!engine.Get())
 		throw L"Error! ArenaEngine Object MUST be initialized for a 3D enabled Page";
 	//if (!eh.Get())
@@ -248,9 +249,6 @@ bool DrawingBoard::AddLayer(RECT_2D& ret)
 {
 	if (renderer.Get())
 	{
-		ID2D1Factory* fact = nullptr;
-		renderer->GetFactory(&fact);
-
 		TrecPointer<TGeometry> geo = TrecPointerKey::GetNewTrecPointer<TGeometry>(fact, ret);
 		TrecComPointer<ID2D1Layer>::TrecComHolder layerHolder;
 		renderer->CreateLayer(layerHolder.GetPointerAddress());
@@ -270,9 +268,6 @@ bool DrawingBoard::AddLayer(ELLIPSE_2D& ellipse)
 {
 	if (renderer.Get())
 	{
-		ID2D1Factory* fact = nullptr;
-		renderer->GetFactory(&fact);
-
 		TrecPointer<TGeometry> geo = TrecPointerKey::GetNewTrecPointer<TGeometry>(fact, ellipse);
 		TrecComPointer<ID2D1Layer>::TrecComHolder layerHolder;
 		renderer->CreateLayer(layerHolder.GetPointerAddress());
@@ -292,9 +287,6 @@ bool DrawingBoard::AddLayer(ROUNDED_RECT_2D& rRect)
 {
 	if (renderer.Get())
 	{
-		ID2D1Factory* fact = nullptr;
-		renderer->GetFactory(&fact);
-
 		TrecPointer<TGeometry> geo = TrecPointerKey::GetNewTrecPointer<TGeometry>(fact, rRect);
 		TrecComPointer<ID2D1Layer>::TrecComHolder layerHolder;
 		renderer->CreateLayer(layerHolder.GetPointerAddress());
@@ -314,9 +306,6 @@ bool DrawingBoard::AddLayer(TDataArray<POINT_2D>& points)
 {
 	if (renderer.Get())
 	{
-		ID2D1Factory* fact = nullptr;
-		renderer->GetFactory(&fact);
-
 		TrecPointer<TGeometry> geo = TrecPointerKey::GetNewTrecPointer<TGeometry>(fact, points);
 		TrecComPointer<ID2D1Layer>::TrecComHolder layerHolder;
 		renderer->CreateLayer(layerHolder.GetPointerAddress());
@@ -330,6 +319,49 @@ bool DrawingBoard::AddLayer(TDataArray<POINT_2D>& points)
 		return true;
 	}
 	return false;
+}
+
+TrecPointer<TGeometry> DrawingBoard::GetGeometry(RECT_2D& ret)
+{
+	if(!renderer.Get())
+		return TrecPointer<TGeometry>();
+
+	TrecPointer<TGeometry> geo = TrecPointerKey::GetNewTrecPointer<TGeometry>(fact, ret);
+
+	return geo;
+}
+
+TrecPointer<TGeometry> DrawingBoard::GetGeometry(ELLIPSE_2D& ellipse)
+{
+	if (!renderer.Get())
+		return TrecPointer<TGeometry>();
+
+
+	TrecPointer<TGeometry> geo = TrecPointerKey::GetNewTrecPointer<TGeometry>(fact, ellipse);
+
+	return geo;
+}
+
+TrecPointer<TGeometry> DrawingBoard::GetGeometry(ROUNDED_RECT_2D& rRect)
+{
+	if (!renderer.Get())
+		return TrecPointer<TGeometry>();
+
+
+	TrecPointer<TGeometry> geo = TrecPointerKey::GetNewTrecPointer<TGeometry>(fact, rRect);
+
+	return geo;
+}
+
+TrecPointer<TGeometry> DrawingBoard::GetGeometry(TDataArray<POINT_2D>& points)
+{
+	if (!renderer.Get())
+		return TrecPointer<TGeometry>();
+
+
+	TrecPointer<TGeometry> geo = TrecPointerKey::GetNewTrecPointer<TGeometry>(fact, points);
+
+	return geo;
 }
 
 UINT DrawingBoard::GetLayerCount()

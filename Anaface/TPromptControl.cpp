@@ -2,7 +2,7 @@
 
 extern TDataArray<TTextField*> TextList;
 
-TPromptControl::TPromptControl(TrecComPointer<ID2D1RenderTarget>rt, TrecPointer<TArray<styleTable>> ta, HWND w):TTextField(rt,ta,w)
+TPromptControl::TPromptControl(TrecPointer<DrawingBoard> rt, TrecPointer<TArray<styleTable>> ta, HWND w):TTextField(rt,ta,w)
 {
 	processRunning = false;
 }

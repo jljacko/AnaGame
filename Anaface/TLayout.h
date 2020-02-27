@@ -87,7 +87,6 @@ public:
 
 	virtual UCHAR* GetAnaGameType()override;
 
-	virtual void SetNewRenderTarget(TrecPointer<DrawingBoard> rt);
 
 protected:
 	TArray<containerControl> lChildren;   // used to organize children more easily than regular TControl
@@ -127,7 +126,7 @@ protected:
 
 
 	// Brushes unique to TLayouts
-	TrecComPointer<ID2D1Brush> internalBrush;
+	TrecPointer<TBrush> internalBrush;
 	D2D1_COLOR_F internalColor;
 	bool internalInit;
 	float thickness;

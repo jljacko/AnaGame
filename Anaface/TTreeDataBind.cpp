@@ -25,14 +25,7 @@ void TTreeDataBind::onDraw(TObject* obj)
 
 	D2D1_RECT_F cLoc = location;
 	cLoc.bottom = cLoc.top + 30;
-	ID2D1PathGeometry* path = nullptr;
-	ID2D1Factory* fact = nullptr;
-	renderTarget->GetFactory(&fact);
-	
-	ID2D1SolidColorBrush* outerBrush = nullptr;
-	ID2D1SolidColorBrush* innerBrush = nullptr;
-	renderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &outerBrush);
-	renderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Wheat), &innerBrush);
+	TrecPointer<TGeometry> path;
 	
 	for (UINT c = 0; curNode.Get(); c++)
 	{
@@ -46,47 +39,38 @@ void TTreeDataBind::onDraw(TObject* obj)
 		triLoc.left += 5 + level * 5;
 		triLoc.right = triLoc.left + 20;
 
-		if (fact)
-			fact->CreatePathGeometry(&path);
 		
-		if (extDraw && path)
+		if (extDraw)
 		{
-			ID2D1GeometrySink* sink = nullptr;
-			path->Open(&sink);
-			if (sink)
+
+			TDataArray<POINT_2D> points;
+
+			if (ext)
 			{
-				sink->SetFillMode(D2D1_FILL_MODE_WINDING);
-				D2D1_POINT_2F points[2];
-
-				if (ext)
-				{
-					sink->BeginFigure(D2D1::Point2F(triLoc.left, triLoc.bottom), D2D1_FIGURE_BEGIN_FILLED);
-					points[0] = D2D1::Point2F(triLoc.right, triLoc.top);
-					points[1] = D2D1::Point2F(triLoc.right, triLoc.bottom);
-				}
-				else
-				{
-					sink->BeginFigure(D2D1::Point2F(triLoc.left, triLoc.bottom), D2D1_FIGURE_BEGIN_FILLED);
-					points[0] = D2D1::Point2F(triLoc.left, triLoc.top);
-					points[1] = D2D1::Point2F(triLoc.right, (triLoc.top + triLoc.bottom) / 2.0f);
-				}
-				sink->AddLines(points, ARRAYSIZE(points));
-				sink->EndFigure(D2D1_FIGURE_END_CLOSED);
-
-				if (SUCCEEDED(sink->Close()))
-				{
-					if (outerBrush)
-						renderTarget->DrawGeometry(path, outerBrush, 0.5f);
-					if (innerBrush)
-						renderTarget->FillGeometry(path, innerBrush);
-
-				}
-				sink->Release();
-				sink = nullptr;
+				points.push_back(D2D1::Point2F(triLoc.left, triLoc.bottom));
+				points.push_back(D2D1::Point2F(triLoc.right, triLoc.top));
+				points.push_back(D2D1::Point2F(triLoc.right, triLoc.bottom));
 			}
+			else
+			{
+				points.push_back(D2D1::Point2F(triLoc.left, triLoc.bottom));
+				points.push_back(D2D1::Point2F(triLoc.left, triLoc.top));
+				points.push_back(D2D1::Point2F(triLoc.right, (triLoc.top + triLoc.bottom) / 2.0f));
+			}
+			
+			path = drawingBoard->GetGeometry(points);
+
+			if (path.Get())
+			{
+				if (outerBrush.Get())
+					outerBrush->DrawGeometry(path, 0.5f);
+				if (innerBrush.Get())
+					innerBrush->FillGeometry(path);
+
+			}
+			
 		}
-		path->Release();
-		path = nullptr;
+
 
 		UINT r = triLoc.right;
 
@@ -104,13 +88,6 @@ void TTreeDataBind::onDraw(TObject* obj)
 		curNode = mainNode->GetNodeAt(c + 1, 0);
 	}
 
-	if (outerBrush)outerBrush->Release();
-	outerBrush = nullptr;
-	if (innerBrush)innerBrush->Release();
-	innerBrush = nullptr;
-
-	if (fact) fact->Release();
-	fact = nullptr;
 }
 
 UCHAR* TTreeDataBind::GetAnaGameType()
@@ -121,6 +98,11 @@ UCHAR* TTreeDataBind::GetAnaGameType()
 bool TTreeDataBind::onCreate(D2D1_RECT_F r, TrecPointer<TWindowEngine> d3d)
 {
 	TControl::onCreate(r, d3d);
+	if (drawingBoard.Get())
+	{
+		outerBrush = drawingBoard->GetBrush(TColor(D2D1::ColorF::Black));
+		innerBrush = drawingBoard->GetBrush(TColor(D2D1::ColorF::Wheat));
+	}
 	return false;
 }
 
@@ -237,7 +219,7 @@ void TTreeDataBind::Resize(D2D1_RECT_F& r)
 	{
 		if (parent.Get() && !dynamic_cast<TScrollerControl*>(parent.Get()))
 		{
-			TrecPointer<TControl> scrollControl = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TScrollerControl>(renderTarget, styles);
+			TrecPointer<TControl> scrollControl = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TScrollerControl>(drawingBoard, styles);
 			scrollControl->onCreate(r, TrecPointer<TWindowEngine>());
 			dynamic_cast<TScrollerControl*>(scrollControl.Get())->SetChildControl(TrecPointerKey::GetTrecPointerFromSoft<TControl>(tThis));
 			TrecPointerKey::GetTrecPointerFromSoft<TControl>(parent)->SwitchChildControl(tThis, scrollControl);

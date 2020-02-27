@@ -26,13 +26,13 @@ TDropMenu::~TDropMenu()
 * Method: TDropMenu - onCreate
 * Purpose: Sets up the brush used to draw the nodes
 * Parameters: D2D1_RECT_F l - the location on the menu
-* Returns: bool - true if renderTarget is set
+* Returns: bool - true if drawingBoard is set
 */
 bool TDropMenu::onCreate(D2D1_RECT_F l, TrecPointer<TWindowEngine> d3d)
 {
-	if (!renderTarget.Get())
+	if (!drawingBoard.Get())
 		return false;
-	renderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &dotBrush);
+	dotBrush = drawingBoard->GetBrush(TColor(D2D1::ColorF(D2D1::ColorF::Black)));
 	return true;
 }
 
@@ -92,7 +92,7 @@ UCHAR * TDropMenu::GetAnaGameType()
 */
 void TDropMenu::DrawNode(float & top, TrecPointer<DropMenuNode> node)
 {
-	if (!node.Get() || !text1.Get() || !dotBrush)
+	if (!node.Get() || !text1.Get() || !dotBrush.Get())
 		return;
 	D2D1_RECT_F curLoc = location;
 	curLoc.top = top;
@@ -114,7 +114,7 @@ void TDropMenu::DrawNode(float & top, TrecPointer<DropMenuNode> node)
 		if (node->childrenActive)
 		{
 			dotBrush->SetColor(D2D1::ColorF(D2D1::ColorF::Red));
-			renderTarget->FillEllipse(ellipse, dotBrush);
+			dotBrush->FillEllipse(ellipse);
 			for (UINT c = 0; c < node->children.Count(); c++)
 			{
 				DrawNode(top, node->children.ElementAt(c));
@@ -123,7 +123,7 @@ void TDropMenu::DrawNode(float & top, TrecPointer<DropMenuNode> node)
 		else
 		{
 			dotBrush->SetColor(D2D1::ColorF(D2D1::ColorF::Black));
-			renderTarget->FillEllipse(ellipse, dotBrush);
+			dotBrush->FillEllipse(ellipse);
 		}
 	}
 }

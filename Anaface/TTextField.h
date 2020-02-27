@@ -95,7 +95,7 @@ private:
 	bool isActive;
 
 	TrecPointer<DrawingBoard> renderer;
-	TrecComPointer<ID2D1SolidColorBrush> brush;
+	TrecPointer<TBrush> brush;
 	TrecComPointer<IDWriteTextLayout> layout;
 };
 

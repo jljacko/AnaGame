@@ -34,6 +34,6 @@ protected:
 	TrecPointer<DropMenuNode> rootNode;
 	void DrawNode(float& top,TrecPointer<DropMenuNode> node);
 	UINT nodeHeight;
-	ID2D1SolidColorBrush* dotBrush;
+	TrecPointer<TBrush> dotBrush;
 };
 

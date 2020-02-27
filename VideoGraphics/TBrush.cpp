@@ -2,7 +2,7 @@
 #include "DrawingBoard.h"
 #include "TGeometry.h"
 
-void TBrush::DrawRectangle(RECT_2D& r, float thickness)
+void TBrush::DrawRectangle(const RECT_2D& r, float thickness)
 {
 	if (Refresh())
 	{
@@ -10,7 +10,7 @@ void TBrush::DrawRectangle(RECT_2D& r, float thickness)
 	}
 }
 
-void TBrush::FillRectangle(RECT_2D& r)
+void TBrush::FillRectangle(const RECT_2D& r)
 {
 	if (Refresh())
 	{
@@ -18,7 +18,7 @@ void TBrush::FillRectangle(RECT_2D& r)
 	}
 }
 
-void TBrush::DrawRoundedRectangle(ROUNDED_RECT_2D& r, float thickness)
+void TBrush::DrawRoundedRectangle(const ROUNDED_RECT_2D& r, float thickness)
 {
 	if (Refresh())
 	{
@@ -26,7 +26,7 @@ void TBrush::DrawRoundedRectangle(ROUNDED_RECT_2D& r, float thickness)
 	}
 }
 
-void TBrush::FillRoundedRectangle(ROUNDED_RECT_2D& r)
+void TBrush::FillRoundedRectangle(const ROUNDED_RECT_2D& r)
 {
 	if (Refresh())
 	{
@@ -34,7 +34,7 @@ void TBrush::FillRoundedRectangle(ROUNDED_RECT_2D& r)
 	}
 }
 
-void TBrush::DrawEllipse(ELLIPSE_2D& r, float thickness)
+void TBrush::DrawEllipse(const ELLIPSE_2D& r, float thickness)
 {
 	if (Refresh())
 	{
@@ -42,7 +42,7 @@ void TBrush::DrawEllipse(ELLIPSE_2D& r, float thickness)
 	}
 }
 
-void TBrush::FillEllipse(ELLIPSE_2D& r)
+void TBrush::FillEllipse(const ELLIPSE_2D& r)
 {
 	if (Refresh())
 	{
@@ -63,6 +63,14 @@ void TBrush::FillGeometry(TrecPointer<TGeometry> geo)
 	if (Refresh() && geo.Get() && geo->IsValid())
 	{
 		currentRenderer->FillGeometry(geo->GetUnderlyingGeometry().Get(), brush.Get());
+	}
+}
+
+void TBrush::DrawLine(const POINT_2D& p1, const POINT_2D& p2, float thickness)
+{
+	if (Refresh())
+	{
+		currentRenderer->DrawLine(p1, p2, brush.Get(), thickness);
 	}
 }
 
