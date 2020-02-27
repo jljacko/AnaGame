@@ -446,9 +446,6 @@ bool TWindow::SetUp3D()
 
 	if (drawingBoard->GetGdiRenderer().Get())
 	{
-		auto root = mainPage->GetRootControl();
-		if (root.Get())
-			root->SetNewRenderTarget(drawingBoard->GetRenderer());
 		return true;
 	}
 	return false;

@@ -672,7 +672,7 @@ void IDEPage::MouseMoveLowerLeft(TPoint& diff)
 
 IDEPageHolder::IDEPageHolder(TString name, TrecPointer<DrawingBoard> rt, UINT barSpace, TrecPointer<EventHandler> handler, TrecPointer<TWindow> win, D2D1_RECT_F initLoc)
 {
-	text = TrecPointerKey::GetNewTrecPointer<TText>(rt->GetRenderer(), nullptr);
+	text = TrecPointerKey::GetNewTrecPointer<TText>(rt, nullptr);
 	text->SetColor(D2D1::ColorF(D2D1::ColorF::Black));
 	text->setNewFontSize(12.0f);
 	text->setCaption(name);
@@ -736,13 +736,7 @@ void IDEPageHolder::Draw()
 		text->onDraw(location);
 }
 
-void IDEPageHolder::ResetRenderer(TrecComPointer<ID2D1RenderTarget> rt)
-{
-	if (text.Get())
-	{
-		text->SetNewRenderTarget(rt);
-	}
-}
+
 
 void IDEPageHolder::Move(TPoint& moveBy)
 {

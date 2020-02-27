@@ -65,7 +65,7 @@ int Page::SetAnaface(TrecPointer<TFile> file, TrecPointer<EventHandler> eh)
 		return -1;
 	if (!file->IsOpen())
 		return -2;
-	AnafaceParser parser(drawingBoard->GetRenderer(), windowHandle->GetWindowHandle(), file->GetFileDirectory());
+	AnafaceParser parser(drawingBoard, windowHandle->GetWindowHandle(), file->GetFileDirectory());
 
 	if (eh.Get())
 		parser.setEventSystem(eh->GetEventNameList());
@@ -93,7 +93,7 @@ int Page::SetAnaface(TrecPointer<TFile> file, TDataArray<eventNameID>& id)
 		return -1;
 	if (!file->IsOpen())
 		return -2;
-	AnafaceParser parser(drawingBoard->GetRenderer(), windowHandle->GetWindowHandle(), file->GetFileDirectory());
+	AnafaceParser parser(drawingBoard, windowHandle->GetWindowHandle(), file->GetFileDirectory());
 
 	parser.setEventSystem(id);
 
@@ -113,8 +113,7 @@ int Page::SetAnaface(TrecPointer<TFile> file, TDataArray<eventNameID>& id)
 void Page::SetAnaface(TrecPointer<TControl> newRoot)
 {
 	rootControl = newRoot;
-	if(rootControl.Get())
-		rootControl->SetNewRenderTarget(drawingBoard->GetRenderer());
+
 }
 
 TrecPointer<TControl> Page::GetRootControl()
@@ -254,16 +253,11 @@ void Page::OnResize(D2D1_RECT_F& newLoc, UINT nFlags, TrecPointer<TWindowEngine>
 	// Only Resize if basic resources are in order
 	if (!instance.Get() || !windowHandle.Get())
 		return;
-	// First, we need to update DirectX resources to adjust to the change
-
-	bool requireNewRenderTarget = false;
 
 	area = newLoc;
 
 	if (rootControl.Get())
 	{
-		if(requireNewRenderTarget)
-			rootControl->SetNewRenderTarget(drawingBoard->GetRenderer());
 		rootControl->Resize(area);
 	}
 

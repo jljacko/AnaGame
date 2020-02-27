@@ -27,7 +27,6 @@ public:
 	D2D1_RECT_F GetLocation();
 	D2D1_RECT_F SetLocation(const D2D1_RECT_F& newLoc);
 	void Draw();
-	void ResetRenderer(TrecComPointer<ID2D1RenderTarget> rt);
 	void Move(TPoint& moveBy);
 
 protected:
