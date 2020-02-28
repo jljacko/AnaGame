@@ -23,6 +23,8 @@ TGeometry::TGeometry(TrecComPointer<ID2D1Factory1> fact, TDataArray<POINT_2D>& p
 
 	sink->EndFigure(D2D1_FIGURE_END_CLOSED);
 
+	sink->Close();
+
 	sink->Release();
 	valid = true;
 }

@@ -120,7 +120,7 @@ void GeoGroup::SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget> rt)
 	ResetBrush();
 }
 
-void GeoGroup::addGeometry(TrecPointer<TGeometry> tg)
+void GeoGroup::addGeometry(TrecPointer<TDrawGeometry> tg)
 {
 	if (tg.Get())
 	{

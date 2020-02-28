@@ -24,7 +24,7 @@ public:
 
 	void SetNewRenderTarget(TrecComPointer<ID2D1RenderTarget> rt);
 
-	void addGeometry(TrecPointer<TGeometry>);
+	void addGeometry(TrecPointer<TDrawGeometry>);
 
 private:
 	TrecComPointer<ID2D1RenderTarget> renderTarget;
@@ -33,7 +33,7 @@ private:
 	void ResetBrush();
 
 	TMap<TString> attributes;
-	TArray<TGeometry> children;
+	TArray<TDrawGeometry> children;
 	TrecComPointer<ID2D1Brush> brush;
 	bool secondColor;
 	D2D1_GRADIENT_STOP gradients[2];

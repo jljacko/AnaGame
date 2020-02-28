@@ -3,12 +3,12 @@
 #include <TrecReference.h>
 #include "Anaface.h"
 
-class _ANAFACE_DLL TGeometry
+class _ANAFACE_DLL TDrawGeometry
 {
 public:
-	TGeometry();
-	TGeometry(bool fill);
-	~TGeometry();
+	TDrawGeometry();
+	TDrawGeometry(bool fill);
+	~TDrawGeometry();
 
 	virtual void setPoint(D2D1_POINT_2F,int);
 	virtual void setWidth(int);

@@ -73,7 +73,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>..\..\DirectXTex\DirectXTex;..\TrecLib;$(IncludePath)</IncludePath>
-    <LibraryPath>..\..\DirectXTex\DirectXTex\Bin\Desktop_2019_Win10\Win32\Debug;../Debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>..\..\DirectXTex\DirectXTex\Bin\Desktop_2019\Win32\Debug;../Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>

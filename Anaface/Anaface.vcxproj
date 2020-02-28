@@ -187,7 +187,7 @@
     <ClInclude Include="TEllipseGeometry.h" />
     <ClInclude Include="TFlyout.h" />
     <ClInclude Include="TGadgetControl.h" />
-    <ClInclude Include="TGeometry.h" />
+    <ClInclude Include="TDrawGeometry.h" />
     <ClInclude Include="TImage.h" />
     <ClInclude Include="TLayout.h" />
     <ClInclude Include="TLayoutEx.h" />
@@ -235,7 +235,7 @@
     <ClCompile Include="TEllipseGeometry.cpp" />
     <ClCompile Include="TFlyout.cpp" />
     <ClCompile Include="TGadgetControl.cpp" />
-    <ClCompile Include="TGeometry.cpp" />
+    <ClCompile Include="TDrawGeometry.cpp" />
     <ClCompile Include="TImage.cpp" />
     <ClCompile Include="TLayout.cpp" />
     <ClCompile Include="TLayoutEx.cpp" />
