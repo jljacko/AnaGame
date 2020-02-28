@@ -416,7 +416,7 @@ void Page::Draw(TWindowEngine* twe)
 {
 	if (!rootControl.Get() || !drawingBoard.Get()) return;
 	
-	drawingBoard->SetTransform(adjustMatrix);
+	//drawingBoard->SetTransform(adjustMatrix);
 	rootControl->onDraw();
 	//regRenderTarget->EndDraw();
 

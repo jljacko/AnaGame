@@ -28,7 +28,7 @@ TWindow::TWindow(TString& name, TString& winClass, UINT style, HWND parent, int 
 	this->command = commandShow;
 
 	HDC dc = GetWindowDC(currentWindow);
-	SetMapMode(dc, MM_LOENGLISH);
+	SetMapMode(dc, MM_HIENGLISH);
 
 	locked = false;
 	safeToDraw = 0;
@@ -291,6 +291,12 @@ bool TWindow::OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlags)
 
 void TWindow::OnWindowResize(UINT width, UINT height)
 {
+	if (d3dEngine.Get())
+		d3dEngine->Resize();
+
+	if(drawingBoard.Get())
+		drawingBoard->Resize(this->currentWindow);
+	
 	if (!mainPage.Get())
 		return;
 
@@ -301,11 +307,6 @@ void TWindow::OnWindowResize(UINT width, UINT height)
 	newLoc.bottom = height;
 	newLoc.right = width;
 
-	if (d3dEngine.Get() && drawingBoard.Get())
-	{
-		d3dEngine->Resize();
-		drawingBoard->Resize();
-	}
 
 	mainPage->OnResize(newLoc, 0, d3dEngine);
 

@@ -169,12 +169,19 @@ void DrawingBoard::Set3D(TrecPointer<TWindowEngine> engine)
 	is3D = true;
 }
 
-void DrawingBoard::Resize()
+void DrawingBoard::Resize(HWND window)
 {
 	if (is3D)
 	{
 		is3D = false;
 		Set3D(engine);
+	}
+	else if(renderer.Get())
+	{
+		RECT area;
+		GetClientRect(window, &area);
+		reinterpret_cast<ID2D1HwndRenderTarget*>(renderer.Get())->Resize(D2D1::SizeU(area.right - area.left,
+			area.bottom - area.top));
 	}
 }
 

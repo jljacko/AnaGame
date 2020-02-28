@@ -16,7 +16,7 @@ public:
 	DrawingBoard(TrecComPointer<ID2D1Factory1> fact, TrecPointer<TWindowEngine> engine);
 
 	void Set3D(TrecPointer<TWindowEngine> engine);
-	void Resize();
+	void Resize(HWND window);
 
 	TrecPointer<TBrush> GetBrush(const TColor& col);
 	TrecPointer<TBrush> GetBrush(const TGradientStopCollection& coll, const POINT_2D& p1, const POINT_2D& p2, float x, float y);

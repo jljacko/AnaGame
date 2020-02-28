@@ -68,7 +68,7 @@ void TTreeDataBind::onDraw(TObject* obj)
 					innerBrush->FillGeometry(path);
 
 			}
-			
+			path.Delete();
 		}
 
 

@@ -27,6 +27,7 @@ TGeometry::TGeometry(TrecComPointer<ID2D1Factory1> fact, TDataArray<POINT_2D>& p
 
 	sink->Release();
 	valid = true;
+	//geoType = geo_type_path;
 }
 
 TGeometry::TGeometry(TrecComPointer<ID2D1Factory1> fact, RECT_2D& r)
@@ -40,6 +41,7 @@ TGeometry::TGeometry(TrecComPointer<ID2D1Factory1> fact, RECT_2D& r)
 
 	geo = TrecPointerKey::GetComPointer<ID2D1Geometry, ID2D1RectangleGeometry>(rectHolder);
 	valid = true;
+	//geoType = geo_type_rect;
 }
 
 TGeometry::TGeometry(TrecComPointer<ID2D1Factory1> fact, ROUNDED_RECT_2D& r)
@@ -53,6 +55,7 @@ TGeometry::TGeometry(TrecComPointer<ID2D1Factory1> fact, ROUNDED_RECT_2D& r)
 
 	geo = TrecPointerKey::GetComPointer<ID2D1Geometry, ID2D1RoundedRectangleGeometry>(rectHolder);
 	valid = true;
+	//geoType
 }
 
 TGeometry::TGeometry(TrecComPointer<ID2D1Factory1> fact, ELLIPSE_2D& r)
@@ -66,6 +69,11 @@ TGeometry::TGeometry(TrecComPointer<ID2D1Factory1> fact, ELLIPSE_2D& r)
 	fact->CreateEllipseGeometry(r, circleHolder.GetPointerAddress());
 	geo = TrecPointerKey::GetComPointer<ID2D1Geometry, ID2D1EllipseGeometry>(circleHolder);
 	valid = true;
+}
+
+TGeometry::~TGeometry()
+{
+	geo.Nullify();
 }
 
 bool TGeometry::IsValid() const
