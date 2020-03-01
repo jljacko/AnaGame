@@ -33,7 +33,7 @@ AnafaceParser::AnafaceParser(TrecPointer<DrawingBoard> rt, HWND hWin,TString dir
 	windowHandle = hWin;
 	events = NULL;
 	classList = TrecPointerKey::GetNewTrecPointerPlain<TArray<styleTable>>();
-
+	parserMode = anaface_parser_mode_normal;
 }
 
 /*
@@ -71,6 +71,24 @@ bool AnafaceParser::Obj(TString* va)
 
 	TString v(va);
 	v.Trim();
+
+	if (!v.Compare(L"PersistentStoryBoard"))
+	{
+		addToTree(currentObj);
+		currentObj.Nullify();
+		anaface_parser_mode_persistant_story;
+		return true;
+	}
+	if (!v.Compare(L"StoryBoard"))
+	{
+		addToTree(currentObj);
+		currentObj.Nullify();
+		parserMode = anaface_parser_mode_normal_story;
+		return true;
+	}
+
+	parserMode = anaface_parser_mode_normal;
+	currentAnimation.Nullify();
 
 	TrecPointer<TDataArray<TString>> strings;
 
@@ -272,6 +290,12 @@ bool AnafaceParser::Obj(TString* va)
 		addToTree(currentObj);
 		currentObj.Nullify();//  null<TControl>();
 	}
+	else if (!v.Compare(L"Animation"))
+	{
+		currentAnimation = TrecPointerKey::GetNewTrecPointer<AnimationBuilder>();
+		addToTree(currentObj);
+		currentObj.Nullify();//  null<TControl>();
+	}
 	else
 	{
 
@@ -292,6 +316,27 @@ bool AnafaceParser::Obj(TString* va)
 */
 bool AnafaceParser::Attribute(TrecPointer<TString> v, TString& e)
 {
+	if (!e.CompareNoCase(L"Name") && parserMode == anaface_parser_mode_normal_story)
+	{
+		if (!v.Get())
+			return false;
+		basicStoryBoards.push_back(*v.Get());
+		return true;
+	}
+	if (!e.CompareNoCase(L"Name") && parserMode == anaface_parser_mode_persistant_story)
+	{
+		if (!v.Get())
+			return false;
+		persistantStoryBoards.push_back(*v.Get());
+		return true;
+	}
+
+	if (currentAnimation.Get())
+	{
+		currentAnimation->SetAttribute(e, v);
+		return true;
+	}
+
 	if (!currentObj.Get() && !currentStyle.Get() )
 		return false;
 
@@ -431,6 +476,21 @@ TrecPointer<TControl> AnafaceParser::getRootControl()
 UCHAR * AnafaceParser::GetAnaGameType()
 {
 	return nullptr;
+}
+
+TDataArray<TrecPointer<AnimationBuilder>> AnafaceParser::GetAnimations()
+{
+	return animations;
+}
+
+TDataArray<TString> AnafaceParser::GetStoryBoards()
+{
+	return basicStoryBoards;
+}
+
+TDataArray<TString> AnafaceParser::GetPersistentStoryBoards()
+{
+	return persistantStoryBoards;
 }
 
 /*

@@ -32,6 +32,12 @@ void TAnimationManager::AddStoryBoard(TString& name, TrecPointer<TStoryBoard> st
 		stories.addEntry(name, story);
 }
 
+void TAnimationManager::CleanBegin()
+{
+	begin.Terminate();
+	begin.Empty();
+}
+
 void TAnimationManager::StartBegin()
 {
 	begin.Run();

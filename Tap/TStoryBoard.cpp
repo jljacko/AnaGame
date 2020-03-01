@@ -118,3 +118,8 @@ void TStoryBoard::Terminate()
 		TerminateThread(threadData.animationThread, 0);
 	threadData.animationThread = 0;
 }
+
+void TStoryBoard::Empty()
+{
+	threadData.animations.RemoveAll();
+}

@@ -37,6 +37,9 @@ typedef enum animation_value_type
 	animation_value_type_special
 }animation_value_type;
 
+class TBrush;
+class TControl;
+
 class _TREC_LIB_DLL Animation :
 	public TObject
 {
@@ -56,7 +59,8 @@ public:
 	virtual bool Update(float progress) = 0;
 	virtual void SetAnimationValue(float value, animation_value_type type) = 0;
 
-	virtual void SetComponent(TrecComPointer<ID2D1Brush> comp) = 0;
+	virtual void SetComponent(TrecPointer<TBrush> comp) = 0;
+	virtual void SetControl(TrecPointer<TControl> con) = 0;
 
 	virtual TString GetAnimationType() = 0;
 

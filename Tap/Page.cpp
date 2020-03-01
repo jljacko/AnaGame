@@ -15,6 +15,90 @@ Page::Page(TrecPointer<DrawingBoard> board)
 	scale = 1.0f;
 }
 
+TrecPointer<AnimationBuilder> Page::GetAnimationByName(TString& name)
+{
+	for (UINT Rust = 0; animations.Size(); Rust++)
+	{
+		if (!animations[Rust].Get())
+			continue;
+		if (!animations[Rust]->GetName().Compare(name))
+			return animations[Rust];
+	}
+	return TrecPointer<AnimationBuilder>();
+}
+
+void Page::PrepAnimations(TAnimationManager& aManager)
+{
+	if (!rootControl.Get())
+		return;
+
+	aManager.CleanBegin();
+
+	TDataArray<TrecPointer<AnimationData>> aData;
+	rootControl->RegisterAnimations(aData);
+
+	TMap<TStoryBoard> storyBoards;
+	TMap<TStoryBoard> persistentStoryBoards;
+
+	for (UINT Rust = 0; Rust < basicStoryBoards.Size(); Rust++)
+	{
+		TrecPointer<TStoryBoard> story = TrecPointerKey::GetNewTrecPointer<TStoryBoard>();
+		storyBoards.addEntry(basicStoryBoards[Rust], story);
+		story->SetWindow(windowHandle);
+	}
+
+	for (UINT Rust = 0; Rust < this->persistentStoryBoards.Size(); Rust++)
+	{
+		TrecPointer<TStoryBoard> story = TrecPointerKey::GetNewTrecPointer<TStoryBoard>();
+		persistentStoryBoards.addEntry(this->persistentStoryBoards[Rust], story);
+		story->SetPersistant();
+		story->SetWindow(windowHandle);
+	}
+
+	for (UINT Rust = 0; Rust < aData.Size(); Rust++)
+	{
+		if (aData[Rust].Get())
+		{
+			auto builder = GetAnimationByName(aData[Rust]->name);
+			if (!builder.Get())
+				continue;
+			TrecPointer<Animation> ani = builder->Build();
+			if (!ani.Get())
+				continue;
+			ani->SetControl(TrecPointerKey::GetTrecPointerFromSoft<TControl>(aData[Rust]->control));
+			if (aData[Rust]->brush.Get())
+				ani->SetComponent(aData[Rust]->brush);
+			TrecPointer<TStoryBoard> sb = storyBoards.retrieveEntry(aData[Rust]->storyName);
+			if(!sb.Get())
+				sb = persistentStoryBoards.retrieveEntry(aData[Rust]->storyName);
+			if (aData[Rust]->storyName.GetSize() && sb.Get())
+			{
+				sb->AddAnimation(ani);
+			}
+			else
+				aManager.AddAnimationBegin(ani);
+		}
+	}
+
+	for (UINT Rust = 0; Rust < storyBoards.count(); Rust++)
+	{
+		auto entry = storyBoards.GetEntryAt(Rust);
+		if (!entry.Get() || !entry->object.Get())
+			continue;
+
+		aManager.AddStoryBoard(entry->key, entry->object);
+	}
+
+	for (UINT Rust = 0; Rust < persistentStoryBoards.count(); Rust++)
+	{
+		auto entry = persistentStoryBoards.GetEntryAt(Rust);
+		if (!entry.Get() || !entry->object.Get())
+			continue;
+
+		aManager.AddStoryBoard(entry->key, entry->object);
+	}
+}
+
 
 Page::~Page()
 {
@@ -84,6 +168,10 @@ int Page::SetAnaface(TrecPointer<TFile> file, TrecPointer<EventHandler> eh)
 		rootControl->onCreate(area, windowHandle->GetWindowEngine());
 	if(handler.Get())
 		handler->Initialize(TrecPointerKey::GetTrecPointerFromSoft<Page>(self));
+
+	persistentStoryBoards = parser.GetPersistentStoryBoards();
+	basicStoryBoards = parser.GetStoryBoards();
+	animations = parser.GetAnimations();
 	return 0;
 }
 
@@ -107,6 +195,11 @@ int Page::SetAnaface(TrecPointer<TFile> file, TDataArray<eventNameID>& id)
 		rootControl->onCreate(area, windowHandle->GetWindowEngine());
 	if(handler.Get())
 		handler->Initialize(TrecPointerKey::GetTrecPointerFromSoft<Page>(self));
+
+	persistentStoryBoards = parser.GetPersistentStoryBoards();
+	basicStoryBoards = parser.GetStoryBoards();
+	animations = parser.GetAnimations();
+
 	return 0;
 }
 

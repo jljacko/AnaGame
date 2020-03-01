@@ -1,6 +1,7 @@
 #include "ColorAnimation.h"
 #include <TString.h>
 #include <atltrace.h>
+#include <TBrush.h>
 
 TString colorAnimationString(L"Simple-Color");
 
@@ -25,7 +26,7 @@ bool ColorAnimation::Update(float progress)
 
 	try
 	{
-		reinterpret_cast<ID2D1SolidColorBrush*>(brush.Get())->SetColor(curColor);
+		brush.Get()->SetColor(curColor);
 	}
 	catch (...)
 	{
@@ -71,9 +72,13 @@ void ColorAnimation::SetAnimationValue(float value, animation_value_type type)
 	}
 }
 
-void ColorAnimation::SetComponent(TrecComPointer<ID2D1Brush> comp)
+void ColorAnimation::SetComponent(TrecPointer<TBrush> comp)
 {
 	brush = comp;
+}
+
+void ColorAnimation::SetControl(TrecPointer<TControl> con)
+{
 }
 
 void ColorAnimation::Prepare()

@@ -20,11 +20,14 @@ public:
 class _TAP_DLL TStoryBoard :
 	public TObject
 {
+	friend class TAnimationManager;
 public:
 	TStoryBoard();
 	~TStoryBoard();
 	bool AddAnimation(TrecPointer<Animation> a);
 	void SetWindow(TrecPointer<TWindow> w);
+
+	
 
 	void SetPersistant();
 
@@ -36,7 +39,7 @@ public:
 protected:
 	ThreadData threadData;
 	DWORD threadID;
-
+	void Empty();
 };
 
 DWORD WINAPI ProcessAnimations(LPVOID param);

@@ -10,6 +10,7 @@
 class TWindow;
 
 class MiniHandler;
+class TAnimationManager;
 
 typedef enum RenderTargetType
 {
@@ -84,12 +85,14 @@ public:
 	void SetSelf(TrecPointer<Page>);
 	TrecPointer<TInstance> GetInstance();
 
-
+	void PrepAnimations(TAnimationManager& aManager);
 
 	void SetMiniHandler(TrecPointer<MiniHandler> mh);
 
 protected:
 	Page(TrecPointer<DrawingBoard>);
+
+	TrecPointer<AnimationBuilder> GetAnimationByName(TString& name);
 
 	float scale;
 
@@ -115,5 +118,13 @@ protected:
 
 	// Anaface Resources
 	TDataArray<TControl*> clickedControl;
+
+
+	// Animation Resources
+	TDataArray<TrecPointer<AnimationBuilder>> animations;
+	TDataArray<TString> basicStoryBoards;
+	TDataArray<TString> persistentStoryBoards;
+
+
 };
 

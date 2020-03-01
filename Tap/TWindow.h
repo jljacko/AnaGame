@@ -58,6 +58,8 @@ public:
 
 	TrecPointer<DrawingBoard> GetDrawingBoard();
 
+	bool PrepAnimations(TrecPointer<Page> page);
+
 protected:
 
 	// Draw Other pages that are special to the Window

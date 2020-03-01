@@ -164,6 +164,7 @@
     <ClInclude Include="Anaface.h" />
     <ClInclude Include="AnafaceParser.h" />
     <ClInclude Include="AnafaceUI.h" />
+    <ClInclude Include="AnimationBuilder.h" />
     <ClInclude Include="ColorAnimation.h" />
     <ClInclude Include="ControlTypeSafety.h" />
     <ClInclude Include="EventTarget.h" />
@@ -207,6 +208,7 @@
   <ItemGroup>
     <ClCompile Include="AnafaceParser.cpp" />
     <ClCompile Include="AnafaceUI.cpp" />
+    <ClCompile Include="AnimationBuilder.cpp" />
     <ClCompile Include="ColorAnimation.cpp" />
     <ClCompile Include="ControlTypeSafety.cpp" />
     <ClCompile Include="dllmain.cpp" />

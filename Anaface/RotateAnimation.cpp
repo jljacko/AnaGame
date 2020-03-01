@@ -2,7 +2,7 @@
 #include <TString.h>
 #include "TControl.h"
 
-TString rotationAnimationString(L"Simple-Transition");
+TString rotationAnimationString(L"Simple-Rotation");
 
 RotateAnimation::RotateAnimation(animation_phase ap): Animation(ap)
 {
@@ -54,7 +54,7 @@ void RotateAnimation::SetAnimationValue(float value, animation_value_type type)
 	}
 }
 
-void RotateAnimation::SetComponent(TrecComPointer<ID2D1Brush> comp)
+void RotateAnimation::SetComponent(TrecPointer<TBrush> comp)
 {
 }
 

@@ -83,6 +83,11 @@ int TWindow::CompileView(TString& file, TrecPointer<EventHandler> eh)
 		return 2;
 
 	mainPage->SetAnaface(aFile, eh);
+
+	mainPage->PrepAnimations(animationCentral);
+
+	animationCentral.StartBegin();
+
 	Draw();
 
 	return 0;
@@ -487,6 +492,15 @@ TrecPointer<TArenaEngine> TWindow::GetNewArenaEngine(TString& name)
 TrecPointer<DrawingBoard> TWindow::GetDrawingBoard()
 {
 	return drawingBoard;
+}
+
+bool TWindow::PrepAnimations(TrecPointer<Page> page)
+{
+	if(!page.Get() || page->GetWindowHandle().Get() != this)
+		return false;
+	page->PrepAnimations(animationCentral);
+	animationCentral.StartBegin();
+	return true;
 }
 
 void TWindow::DrawOtherPages()

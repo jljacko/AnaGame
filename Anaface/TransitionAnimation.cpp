@@ -67,7 +67,7 @@ void TransitionAnimation::SetAnimationValue(float value, animation_value_type ty
 	}
 }
 
-void TransitionAnimation::SetComponent(TrecComPointer<ID2D1Brush> comp)
+void TransitionAnimation::SetComponent(TrecPointer<TBrush> comp)
 {
 }
 

@@ -141,7 +141,13 @@ typedef enum BrushMarker
 	BM_LinearBrush
 }BrushMarker;
 
-
+class AnimationData
+{
+public:
+	TString name, storyName;
+	TrecPointerSoft<TControl> control;
+	TrecPointer<TBrush> brush;
+};
 
 
 /*
@@ -188,6 +194,10 @@ public:
 	virtual D2D1_COLOR_F GetColor2() override;
 	virtual D2D1_RECT_F GetLocation() override;
 	virtual void SetLocation(const D2D1_RECT_F& loc) override;
+
+	TrecPointer<TBrush> GetBrush();
+
+
 private:
 	//CMap<CString, CString, CString, CString> styles;
 
@@ -292,6 +302,8 @@ public:
 	virtual D2D1_RECT_F GetLocation() override;
 	virtual void SetLocation(const D2D1_RECT_F& loc) override;
 
+	TrecPointer<TBrush> GetBrush();
+
 private:
 	//CMap<CString, CString, CString, CString> styles;
 	TrecPointer<DrawingBoard> drawingBoard;							// Render Target to focus on
@@ -364,6 +376,9 @@ public:
 	virtual D2D1_COLOR_F GetColor2() override;
 	virtual D2D1_RECT_F GetLocation() override;
 	virtual void SetLocation(const D2D1_RECT_F& loc) override;
+
+
+	TrecPointer<TBrush> GetBrush();
 
 private:
 	TrecPointer<TGradientStopCollection> getStopCollection(TDataArray<D2D1_COLOR_F>& colors);
@@ -487,6 +502,9 @@ public:
 	TrecPointer<TContent> getContent(int n);
 	TrecPointer<TBorder> getBorder(int n);
 	void setNewText(int n);
+
+
+	void RegisterAnimations(TDataArray<TrecPointer<AnimationData>>& aData);
 	//void setWrapperPointer(TrecPointer<TControl> tcp);
 
 
@@ -505,6 +523,9 @@ public:
 
 protected:
 	//CMap<CString, CString, CString, CString> styles;
+	TDataArray<TrecPointer<AnimationData>> animateData;
+
+	TDataArray<TString> GetMultiData(const TString& key);
 
 	bool SetScrollControlOnMinSize(D2D1_RECT_F l);
 	virtual void SwitchChildControl(TrecPointerSoft<TControl> curControl, TrecPointer<TControl> newControl);

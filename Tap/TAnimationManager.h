@@ -19,7 +19,7 @@ public:
 
 	void AddStoryBoard(TString& name, TrecPointer<TStoryBoard> stpry);
 	
-
+	void CleanBegin();
 
 	void StartBegin();
 	void StartEnd();

@@ -717,6 +717,23 @@ TrecPointer<styleTable> classy;
 		case T_Custom_shape:
 			break;
 		}
+
+		TDataArray<TString> animators = GetMultiData(TString(L"|BorderAnimation"));
+		for (UINT Rust = 0; Rust < animators.Size(); Rust++)
+		{
+			TString name = animators[Rust];
+			auto names = name.split(TString(L";"));
+			if (!names->Size())
+				continue;
+			TrecPointer<AnimationData> animate = TrecPointerKey::GetNewTrecPointer<AnimationData>();
+			animate->control = tThis;
+			animate->name = names->at(0);
+			if (names->Size() > 1)
+				animate->storyName = names->at(1);
+			animate->brush = border1->GetBrush();
+
+			animateData.push_back(animate);
+		}
 	}
 		
 	if (content1.Get())
@@ -735,9 +752,45 @@ TrecPointer<styleTable> classy;
 		case T_Custom_shape:
 			break;
 		}
+
+		TDataArray<TString> animators = GetMultiData(TString(L"|ContentAnimation"));
+		for (UINT Rust = 0; Rust < animators.Size(); Rust++)
+		{
+			TString name = animators[Rust];
+			auto names = name.split(TString(L";"));
+			if (!names->Size())
+				continue;
+			TrecPointer<AnimationData> animate = TrecPointerKey::GetNewTrecPointer<AnimationData>();
+			animate->control = tThis;
+			animate->name = names->at(0);
+			if (names->Size() > 1)
+				animate->storyName = names->at(1);
+			animate->brush = content1->GetBrush();
+
+			animateData.push_back(animate);
+		}
 	}
 	if (text1.Get())
+	{
 		text1->onCreate(location);
+
+		TDataArray<TString> animators = GetMultiData(TString(L"|TextAnimation"));
+		for (UINT Rust = 0; Rust < animators.Size(); Rust++)
+		{
+			TString name = animators[Rust];
+			auto names = name.split(TString(L";"));
+			if (!names->Size())
+				continue;
+			TrecPointer<AnimationData> animate = TrecPointerKey::GetNewTrecPointer<AnimationData>();
+			animate->control = tThis;
+			animate->name = names->at(0);
+			if (names->Size() > 1)
+				animate->storyName = names->at(1);
+			animate->brush = text1->GetBrush();
+
+			animateData.push_back(animate);
+		}
+	}
 	if (border2.Get())
 	{
 		switch (shape)
@@ -753,6 +806,23 @@ TrecPointer<styleTable> classy;
 			break;
 		case T_Custom_shape:
 			break;
+		}
+
+		TDataArray<TString> animators = GetMultiData(TString(L"|HoverBorderAnimation"));
+		for (UINT Rust = 0; Rust < animators.Size(); Rust++)
+		{
+			TString name = animators[Rust];
+			auto names = name.split(TString(L";"));
+			if (!names->Size())
+				continue;
+			TrecPointer<AnimationData> animate = TrecPointerKey::GetNewTrecPointer<AnimationData>();
+			animate->control = tThis;
+			animate->name = names->at(0);
+			if (names->Size() > 1)
+				animate->storyName = names->at(1);
+			animate->brush = border2->GetBrush();
+
+			animateData.push_back(animate);
 		}
 	}
 	if (content2.Get())
@@ -772,9 +842,45 @@ TrecPointer<styleTable> classy;
 
 			break;
 		}
+
+		TDataArray<TString> animators = GetMultiData(TString(L"|HoverContentAnimation"));
+		for (UINT Rust = 0; Rust < animators.Size(); Rust++)
+		{
+			TString name = animators[Rust];
+			auto names = name.split(TString(L";"));
+			if (!names->Size())
+				continue;
+			TrecPointer<AnimationData> animate = TrecPointerKey::GetNewTrecPointer<AnimationData>();
+			animate->control = tThis;
+			animate->name = names->at(0);
+			if (names->Size() > 1)
+				animate->storyName = names->at(1);
+			animate->brush = content2->GetBrush();
+
+			animateData.push_back(animate);
+		}
 	}
 	if (text2.Get())
+	{
 		text2->onCreate(location);
+
+		TDataArray<TString> animators = GetMultiData(TString(L"|HoverTextAnimation"));
+		for (UINT Rust = 0; Rust < animators.Size(); Rust++)
+		{
+			TString name = animators[Rust];
+			auto names = name.split(TString(L";"));
+			if (!names->Size())
+				continue;
+			TrecPointer<AnimationData> animate = TrecPointerKey::GetNewTrecPointer<AnimationData>();
+			animate->control = tThis;
+			animate->name = names->at(0);
+			if (names->Size() > 1)
+				animate->storyName = names->at(1);
+			animate->brush = text2->GetBrush();
+
+			animateData.push_back(animate);
+		}
+	}
 	if (border3.Get())
 	{
 		switch (shape)
@@ -790,6 +896,23 @@ TrecPointer<styleTable> classy;
 			break;
 		case T_Custom_shape:
 			break;
+		}
+
+		TDataArray<TString> animators = GetMultiData(TString(L"|ClickBorderAnimation"));
+		for (UINT Rust = 0; Rust < animators.Size(); Rust++)
+		{
+			TString name = animators[Rust];
+			auto names = name.split(TString(L";"));
+			if (!names->Size())
+				continue;
+			TrecPointer<AnimationData> animate = TrecPointerKey::GetNewTrecPointer<AnimationData>();
+			animate->control = tThis;
+			animate->name = names->at(0);
+			if (names->Size() > 1)
+				animate->storyName = names->at(1);
+			animate->brush = border3->GetBrush();
+
+			animateData.push_back(animate);
 		}
 	}
 	if (content3.Get())
@@ -808,9 +931,45 @@ TrecPointer<styleTable> classy;
 		case T_Custom_shape:
 			break;
 		}
+
+		TDataArray<TString> animators = GetMultiData(TString(L"|ClickContentAnimation"));
+		for (UINT Rust = 0; Rust < animators.Size(); Rust++)
+		{
+			TString name = animators[Rust];
+			auto names = name.split(TString(L";"));
+			if (!names->Size())
+				continue;
+			TrecPointer<AnimationData> animate = TrecPointerKey::GetNewTrecPointer<AnimationData>();
+			animate->control = tThis;
+			animate->name = names->at(0);
+			if (names->Size() > 1)
+				animate->storyName = names->at(1);
+			animate->brush = content3->GetBrush();
+
+			animateData.push_back(animate);
+		}
 	}
 	if (text3.Get())
+	{
 		text3->onCreate(location);
+
+		TDataArray<TString> animators = GetMultiData(TString(L"|ClickTextAnimation"));
+		for (UINT Rust = 0; Rust < animators.Size(); Rust++)
+		{
+			TString name = animators[Rust];
+			auto names = name.split(TString(L";"));
+			if (!names->Size())
+				continue;
+			TrecPointer<AnimationData> animate = TrecPointerKey::GetNewTrecPointer<AnimationData>();
+			animate->control = tThis;
+			animate->name = names->at(0);
+			if (names->Size() > 1)
+				animate->storyName = names->at(1);
+			animate->brush = text3->GetBrush();
+
+			animateData.push_back(animate);
+		}
+	}
 	int occ = 0;
 	valpoint = attributes.retrieveEntry(TString(L"|ContainerLoc"), occ);
 
@@ -855,6 +1014,23 @@ TrecPointer<styleTable> classy;
 	// Now see if any child element extends beyond 
 	CheckScroll();
 
+
+	// Now handle Animations that this Control might have
+	TDataArray<TString> animators = GetMultiData(TString(L"Animation"));
+	for (UINT Rust = 0; Rust < animators.Size(); Rust++)
+	{
+		TString name = animators[Rust];
+		auto names = name.split(TString(L";"));
+		if (!names->Size())
+			continue;
+		TrecPointer<AnimationData> animate = TrecPointerKey::GetNewTrecPointer<AnimationData>();
+		animate->control = tThis;
+		animate->name = names->at(0);
+		if (names->Size() > 1)
+			animate->storyName = names->at(1);
+
+		animateData.push_back(animate);
+	}
 	return true;
 }
 
@@ -1145,6 +1321,21 @@ UCHAR * TControl::GetAnaGameType()
 void TControl::SetNormalMouseState()
 {
 	mState = normal;
+}
+
+TDataArray<TString> TControl::GetMultiData(const TString& key)
+{
+	TDataArray<TString> ret;
+
+	TrecPointer<TString> value = attributes.retrieveEntry(key);
+	UINT occ = 1;
+	while (value.Get())
+	{
+		ret.push_back(*value.Get());
+		value = attributes.retrieveEntry(key, occ++);
+	}
+
+	return ret;
 }
 
 bool TControl::SetScrollControlOnMinSize(D2D1_RECT_F l)
@@ -1791,6 +1982,20 @@ void TControl::setNewText(int n)
 	}
 }
 
+void TControl::RegisterAnimations(TDataArray<TrecPointer<AnimationData>>& aData)
+{
+	for (UINT Rust = 0; Rust < children.Count(); Rust++)
+	{
+		if (children.ElementAt(Rust).Get())
+			children.ElementAt(Rust)->RegisterAnimations(aData);
+	}
+
+	for (UINT Rust = 0; Rust < animateData.Size(); Rust++)
+	{
+		aData.push_back(animateData[Rust]);
+	}
+}
+
 /*
 * Method: TControl - setWrapperPointer
 * Purpose: Sets the wrapper component, DO NOT USE
@@ -2026,6 +2231,11 @@ bool TControl::onCreate(TMap<TString>* att, D2D1_RECT_F loc)
 		valpoint->Replace(L"/", L"\\");
 		int res = generateImage(content1, valpoint, loc);
 	}
+
+
+
+
+
 	return false;
 }
 
@@ -4085,6 +4295,11 @@ void TBorder::SetLocation(const D2D1_RECT_F& loc)
 		cap->setLocation(loc);
 }
 
+TrecPointer<TBrush> TBorder::GetBrush()
+{
+	return brush;
+}
+
 
 void TBorder::ResetBrush()
 {
@@ -4728,6 +4943,11 @@ void TText::SetLocation(const D2D1_RECT_F& loc)
 		cap->setLocation(loc);
 }
 
+TrecPointer<TBrush> TText::GetBrush()
+{
+	return penBrush;
+}
+
 
 void TText::ResetBrush()
 {
@@ -5272,6 +5492,11 @@ void TContent::SetLocation(const D2D1_RECT_F& loc)
 	location = loc;
 	if (cap)
 		cap->setLocation(loc);
+}
+
+TrecPointer<TBrush> TContent::GetBrush()
+{
+	return brush;
 }
 
 TrecPointer<TGradientStopCollection> TContent::getStopCollection(TDataArray<D2D1_COLOR_F>& colors)
