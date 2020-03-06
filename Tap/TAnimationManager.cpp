@@ -14,6 +14,8 @@ TAnimationManager::~TAnimationManager()
 void TAnimationManager::SetWindow(TrecPointer<TWindow> win)
 {
 	window = win;
+	begin.SetWindow(win);
+	end.SetWindow(win);
 }
 
 void TAnimationManager::AddAnimationBegin(TrecPointer<Animation> a)

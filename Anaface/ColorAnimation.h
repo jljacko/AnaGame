@@ -14,6 +14,7 @@ public:
 	virtual TString GetAnimationType();
 protected:
 	D2D1_COLOR_F color1, color2;
+	bool color1Set, color2Set;
 	TrecPointer<TBrush> brush;
 };
 

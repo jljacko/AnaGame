@@ -693,9 +693,6 @@ TrecPointer<styleTable> classy;
 		}
 	}
 
-	if (classy.Get())
-		onCreate(&classy->names, contain); // if there is a style to use, derive apperance based off of its specifications
-
 	onCreate(&attributes,contain); // then derive appearence based off of the individual control's spec. If there are any conflicts between
 	                       // a style attribute from a style spec and that of the controls' spec, the latter is used 
 	onCreate2(&attributes, contain);

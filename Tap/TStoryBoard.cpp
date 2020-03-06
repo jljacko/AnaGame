@@ -20,7 +20,7 @@ DWORD __stdcall ProcessAnimations(LPVOID param)
 		if (data->win.Get())
 			data->win->Draw();
 
-		progress += (static_cast<float>(data->longestAni) / static_cast<float>(data->shortestInterval));
+		progress += (static_cast<float>(data->shortestInterval) / static_cast<float>(data->longestAni));
 
 		// To-do Add Sleep
 		Sleep(data->shortestInterval);
@@ -34,8 +34,9 @@ DWORD __stdcall ProcessAnimations(LPVOID param)
 TStoryBoard::TStoryBoard()
 {
 	threadData.animationThread = 0;
-	threadData.longestAni = threadData.shortestInterval = 0;
+	threadData.longestAni = 0;
 	threadData.persist = false;
+	threadData.shortestInterval = 60000;
 }
 
 TStoryBoard::~TStoryBoard()

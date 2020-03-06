@@ -293,6 +293,7 @@ bool AnafaceParser::Obj(TString* va)
 	else if (!v.Compare(L"Animation"))
 	{
 		currentAnimation = TrecPointerKey::GetNewTrecPointer<AnimationBuilder>();
+		animations.push_back(currentAnimation);
 		addToTree(currentObj);
 		currentObj.Nullify();//  null<TControl>();
 	}
@@ -333,7 +334,14 @@ bool AnafaceParser::Attribute(TrecPointer<TString> v, TString& e)
 
 	if (currentAnimation.Get())
 	{
-		currentAnimation->SetAttribute(e, v);
+		if (!e.CompareNoCase(L"|type"))
+			currentAnimation->SetType(v->SubString(0));
+		else if (!e.CompareNoCase(L"|name"))
+			currentAnimation->SetName(v->SubString(0));
+		else
+		{
+			currentAnimation->SetAttribute(e, v);
+		}
 		return true;
 	}
 

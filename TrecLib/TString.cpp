@@ -587,7 +587,10 @@ bool TString::ConvertToColor(D2D1_COLOR_F & color, ColorFormat& cf)
 		}
 
 		if (works)
+		{
 			color = tempColor;
+			return true;
+		}
 	}
 
 	// Okay, check for rbg[a] or hsl[a]

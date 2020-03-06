@@ -1,6 +1,7 @@
 #include "TBrush.h"
 #include "DrawingBoard.h"
 #include "TGeometry.h"
+#include <atltrace.h>
 
 void TBrush::DrawRectangle(const RECT_2D& r, float thickness)
 {
@@ -83,13 +84,40 @@ UINT TBrush::GetMaxColors()
 
 void TBrush::SetColor(const TColor& color, UINT index)
 {
+	switch (brushType)
+	{
+	case brush_type_solid:
+		ATLTRACE(L"SOLID BRUSH TYPE\n");
+		break;
+	case brush_type_linear:
+		ATLTRACE(L"LINEAR BRUSH TYPE\n");
+		break;
+	case brush_type_radial:
+		ATLTRACE(L"RADIAL BRUSH TYPE\n");
+		break;
+	case brush_type_bitmap:
+		ATLTRACE(L"BITMAP BRUSH TYPE\n");
+		break;
+	default:
+		ATLTRACE(L"OTHER BRUSH TYPE\n");
+	}
+
+
 	if (brushType == brush_type_solid)
 	{
+		
 		if (brush.Get())
+		{
 			reinterpret_cast<ID2D1SolidColorBrush*>(brush.Get())->SetColor(color.GetColor());
+			ATLTRACE(L"Set color!");
+		}
+		else
+			ATLTRACE(L"COLD NOT GET BRUSH!");
 	}
 	else
+	{
 		gradients.SetColorAt(color, index);
+	}
 }
 
 TColor TBrush::GetColor(UINT index)

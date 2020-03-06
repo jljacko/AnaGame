@@ -17,7 +17,7 @@ Page::Page(TrecPointer<DrawingBoard> board)
 
 TrecPointer<AnimationBuilder> Page::GetAnimationByName(TString& name)
 {
-	for (UINT Rust = 0; animations.Size(); Rust++)
+	for (UINT Rust = 0; Rust < animations.Size(); Rust++)
 	{
 		if (!animations[Rust].Get())
 			continue;
