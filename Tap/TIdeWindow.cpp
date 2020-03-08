@@ -65,6 +65,13 @@ void TIdeWindow::OnMouseMove(UINT nFlags, TPoint point)
 { 
 	if (locked) return;
 	messageOutput output = negative;
+
+	if (focusPage.Get())
+	{
+		focusPage.GetBase()->OnMouseMove(nFlags, point, &output);
+		goto finish;
+	}
+
 	if (isContained(point, mainPage->GetArea()))
 	{
 		mainPage->OnMouseMove(nFlags, point, &output);
@@ -112,15 +119,6 @@ void TIdeWindow::OnMouseMove(UINT nFlags, TPoint point)
 		deepConsole.GetBase()->OnMouseMove(nFlags, point, &output);
 		goto finish;
 	}
-
-	ATLTRACE("Not one Page intercepted Mouse Move!\n");
-
-	if (focusPage.Get())
-	{
-		focusPage.GetBase()->OnMouseMove(nFlags, point, &output);
-		ATLTRACE("Focus Page intercepted Mouse Move!\n");
-	}
-
 	
 
 finish:
@@ -333,7 +331,7 @@ int TIdeWindow::CompileView(TString& file, TrecPointer<EventHandler> eh)
 	lowerLeft->SetResources(windowInstance, TrecPointerKey::GetTrecPointerFromSoft<TWindow>(self));
 	lowerRight->SetResources(windowInstance, TrecPointerKey::GetTrecPointerFromSoft<TWindow>(self));
 	deepConsole->SetResources(windowInstance, TrecPointerKey::GetTrecPointerFromSoft<TWindow>(self));
-
+	safeToDraw = 1;
 	Draw();
 
 	return 0;

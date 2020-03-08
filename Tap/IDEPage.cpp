@@ -150,7 +150,7 @@ void IDEPage::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataA
 	
 
 	TPoint diff(static_cast<int>(point.x) - static_cast<int>(curPoint.x),
-		static_cast<int>(curPoint.y) - static_cast<int>(point.y));
+		static_cast<int>(point.y) - static_cast<int>(curPoint.y));
 
 	switch (type)
 	{
@@ -348,6 +348,11 @@ void IDEPage::RemovePage(TrecPointer<IDEPageHolder> pageHolder)
 	pages.RemoveAt(index);
 }
 
+bool IDEPage::IsDrawing()
+{
+	return draw = !isSnipZero(area);
+}
+
 void IDEPage::MouseMoveBody(TPoint& diff)
 {
 	TPoint before = diff;
@@ -356,21 +361,59 @@ void IDEPage::MouseMoveBody(TPoint& diff)
 	switch (moveMode)
 	{
 	case page_move_mode_bottom:
-		dynamic_cast<IDEPage*>(basicConsole.Get())->MoveBorder(diff.y, page_move_mode_top);
-		if (before.y != diff.y)
+		if(!dynamic_cast<IDEPage*>(basicConsole.Get())->IsDrawing())
+			dynamic_cast<IDEPage*>(deepConsole.Get())->MoveBorder(diff.y, page_move_mode_top);
+		else
 		{
-			// In this case, we went down and tried to push it down. We should still attempt to push the deep console down
-			yDiff = before.y - diff.y;
+			dynamic_cast<IDEPage*>(basicConsole.Get())->MoveBorder(diff.y, page_move_mode_top);
+			if (before.y != diff.y)
+			{
+				// In this case, we went down and tried to push it down. We should still attempt to push the deep console down
+				yDiff = before.y - diff.y;
 
-			dynamic_cast<IDEPage*>(deepConsole.Get())->MoveBorder(yDiff, page_move_mode_top);
-			curRect = basicConsole.Get()->GetArea();
-			curRect.bottom += yDiff;
-			curRect.top += yDiff;
-			basicConsole.Get()->SetArea(curRect);
+				dynamic_cast<IDEPage*>(deepConsole.Get())->MoveBorder(yDiff, page_move_mode_top);
+				curRect = basicConsole.Get()->GetArea();
+				curRect.bottom += yDiff;
+				curRect.top += yDiff;
+				basicConsole.Get()->SetArea(curRect);
 
-			// Since the deep Console moved, we need to send the message to the lower side panels
-			dynamic_cast<IDEPage*>(lowerLeft.Get())->MoveBorder(yDiff, page_move_mode_bottom);
-			dynamic_cast<IDEPage*>(lowerRight.Get())->MoveBorder(yDiff, page_move_mode_bottom);
+				
+			}
+		}
+		// Now do the left side
+		if (!dynamic_cast<IDEPage*>(lowerLeft.Get())->IsDrawing())
+			dynamic_cast<IDEPage*>(upperLeft.Get())->MoveBorder(diff.y, page_move_mode_bottom);
+		else
+		{
+			dynamic_cast<IDEPage*>(lowerLeft.Get())->MoveBorder(diff.y, page_move_mode_bottom);
+			if (yDiff != diff.y)
+			{
+				float newDiff = yDiff - diff.y;
+				dynamic_cast<IDEPage*>(upperLeft.Get())->MoveBorder(newDiff, page_move_mode_bottom);
+				curRect = basicConsole.Get()->GetArea();
+				curRect.bottom += newDiff;
+				curRect.top += newDiff;
+				basicConsole.Get()->SetArea(curRect);
+				diff.y = yDiff;
+			}
+		}
+
+		// Finally, the right side
+		if (!dynamic_cast<IDEPage*>(lowerRight.Get())->IsDrawing())
+			dynamic_cast<IDEPage*>(upperRight.Get())->MoveBorder(diff.y, page_move_mode_bottom);
+		else
+		{
+			dynamic_cast<IDEPage*>(lowerRight.Get())->MoveBorder(diff.y, page_move_mode_bottom);
+			if (yDiff != diff.y)
+			{
+				float newDiff = yDiff - diff.y;
+				dynamic_cast<IDEPage*>(upperRight.Get())->MoveBorder(newDiff, page_move_mode_bottom);
+				curRect = basicConsole.Get()->GetArea();
+				curRect.bottom += newDiff;
+				curRect.top += newDiff;
+				basicConsole.Get()->SetArea(curRect);
+				diff.y = yDiff;
+			}
 		}
 		MoveBorder(diff.y, moveMode);
 		break;
@@ -428,43 +471,58 @@ void IDEPage::MouseMoveDeepConsole(TPoint& diff)
 		float yDiff = diff.y;
 
 		// First, tackle the basic console and the body if necessary
-		dynamic_cast<IDEPage*>(basicConsole.Get())->MoveBorder(diff.y, page_move_mode_bottom);
-		if (yDiff != diff.y)
+		if(!dynamic_cast<IDEPage*>(basicConsole.Get())->IsDrawing())
+			dynamic_cast<IDEPage*>(body.Get())->MoveBorder(diff.y, page_move_mode_bottom);
+		else
 		{
-			float newDiff = yDiff - diff.y;
-			dynamic_cast<IDEPage*>(body.Get())->MoveBorder(newDiff, page_move_mode_top);
-			curRect = basicConsole.Get()->GetArea();
-			curRect.bottom += newDiff;
-			curRect.top += newDiff;
-			basicConsole.Get()->SetArea(curRect);
-			diff.y = yDiff;
+			dynamic_cast<IDEPage*>(basicConsole.Get())->MoveBorder(diff.y, page_move_mode_bottom);
+			if (yDiff != diff.y)
+			{
+				float newDiff = yDiff - diff.y;
+				dynamic_cast<IDEPage*>(body.Get())->MoveBorder(newDiff, page_move_mode_bottom);
+				curRect = basicConsole.Get()->GetArea();
+				curRect.bottom += newDiff;
+				curRect.top += newDiff;
+				basicConsole.Get()->SetArea(curRect);
+				diff.y = yDiff;
+			}
 		}
 
 
 		// Now do the left side
-		dynamic_cast<IDEPage*>(lowerLeft.Get())->MoveBorder(diff.y, page_move_mode_bottom);
-		if (yDiff != diff.y)
+		if(!dynamic_cast<IDEPage*>(lowerLeft.Get())->IsDrawing())
+			dynamic_cast<IDEPage*>(upperLeft.Get())->MoveBorder(diff.y, page_move_mode_bottom);
+		else
 		{
-			float newDiff = yDiff - diff.y;
-			dynamic_cast<IDEPage*>(upperLeft.Get())->MoveBorder(newDiff, page_move_mode_top);
-			curRect = basicConsole.Get()->GetArea();
-			curRect.bottom += newDiff;
-			curRect.top += newDiff;
-			basicConsole.Get()->SetArea(curRect);
-			diff.y = yDiff;
+			dynamic_cast<IDEPage*>(lowerLeft.Get())->MoveBorder(diff.y, page_move_mode_bottom);
+			if (yDiff != diff.y)
+			{
+				float newDiff = yDiff - diff.y;
+				dynamic_cast<IDEPage*>(upperLeft.Get())->MoveBorder(newDiff, page_move_mode_bottom);
+				curRect = basicConsole.Get()->GetArea();
+				curRect.bottom += newDiff;
+				curRect.top += newDiff;
+				basicConsole.Get()->SetArea(curRect);
+				diff.y = yDiff;
+			}
 		}
 
 		// Finally, the right side
-		dynamic_cast<IDEPage*>(lowerRight.Get())->MoveBorder(diff.y, page_move_mode_bottom);
-		if (yDiff != diff.y)
+		if(dynamic_cast<IDEPage*>(lowerRight.Get())->IsDrawing())
+			dynamic_cast<IDEPage*>(upperRight.Get())->MoveBorder(diff.y, page_move_mode_bottom);
+		else
 		{
-			float newDiff = yDiff - diff.y;
-			dynamic_cast<IDEPage*>(upperRight.Get())->MoveBorder(newDiff, page_move_mode_top);
-			curRect = basicConsole.Get()->GetArea();
-			curRect.bottom += newDiff;
-			curRect.top += newDiff;
-			basicConsole.Get()->SetArea(curRect);
-			diff.y = yDiff;
+			dynamic_cast<IDEPage*>(lowerRight.Get())->MoveBorder(diff.y, page_move_mode_bottom);
+			if (yDiff != diff.y)
+			{
+				float newDiff = yDiff - diff.y;
+				dynamic_cast<IDEPage*>(upperRight.Get())->MoveBorder(newDiff, page_move_mode_bottom);
+				curRect = basicConsole.Get()->GetArea();
+				curRect.bottom += newDiff;
+				curRect.top += newDiff;
+				basicConsole.Get()->SetArea(curRect);
+				diff.y = yDiff;
+			}
 		}
 		MoveBorder(diff.y, moveMode);
 	}

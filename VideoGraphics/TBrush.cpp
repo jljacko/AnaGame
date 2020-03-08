@@ -139,7 +139,9 @@ brush_type TBrush::GetBrushType()
 
 TrecComPointer<ID2D1Brush> TBrush::GetUnderlyingBrush()
 {
-	return brush;
+	if(Refresh())
+		return brush;
+	return TrecComPointer<ID2D1Brush>();
 }
 
 TBrush::~TBrush()

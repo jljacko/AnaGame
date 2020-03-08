@@ -106,7 +106,7 @@ void DrawingBoard::Set3D(TrecPointer<TWindowEngine> engine)
 	if (is3D && this->engine.Get())
 		return;
 
-	if (renderer.Get())
+	if (!renderer.Get())
 		return;
 	HWND win = reinterpret_cast<ID2D1HwndRenderTarget*>(renderer.Get())->GetHwnd();
 

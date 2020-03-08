@@ -4619,6 +4619,7 @@ bool TText::onDraw(D2D1_RECT_F& loc, TObject* obj)
 {
 	if (!penBrush.Get() || !drawingBoard.Get())
 		return false;
+
 	if (bounds != loc)
 		bounds = loc;
 	// TString print;
@@ -4634,7 +4635,9 @@ bool TText::onDraw(D2D1_RECT_F& loc, TObject* obj)
 		{
 			fontLayout->SetMaxHeight(loc.bottom - loc.top);
 			fontLayout->SetMaxWidth(loc.right - loc.left);
-			drawingBoard->GetRenderer()->DrawTextLayout(D2D1::Point2F(loc.left, loc.top), fontLayout.Get(), penBrush->GetUnderlyingBrush().Get());
+			ID2D1Brush* b = penBrush->GetUnderlyingBrush().Get();
+			if(b)
+				drawingBoard->GetRenderer()->DrawTextLayout(D2D1::Point2F(loc.left, loc.top), fontLayout.Get(), b);
 		}
 		
 	

@@ -67,6 +67,8 @@ public:
 	TrecPointer<Page> AddNewPage(TrecPointer<TInstance> ins, TrecPointer<TWindow> win, TString name, TrecPointer<EventHandler> h);
 	void RemovePage(TrecPointer<IDEPageHolder> pageHolder);
 
+	bool IsDrawing();
+
 protected:
 
 	TrecSubPointer<Page, IDEPage> body;
