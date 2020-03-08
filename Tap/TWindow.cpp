@@ -1,6 +1,5 @@
 #include "TWindow.h"
 #include "TInstance.h"
-#include <atltrace.h>
 
 bool IsD2D1RectEqual(const D2D1_RECT_F& r1, const  D2D1_RECT_F& r2, float difference)
 {
@@ -139,7 +138,6 @@ void TWindow::Draw()
 {
 	if (mainPage.Get() && safeToDraw)
 	{
-		ATLTRACE(L"Drawing Commencing!\n");
 		UCHAR tempSafe = safeToDraw;
 		safeToDraw = 0;
 		TrecComPointer<ID2D1RenderTarget> rt = drawingBoard->GetRenderer();
@@ -190,14 +188,17 @@ void TWindow::Draw()
 		}
 		safeToDraw = tempSafe;
 	}
-	else {
-		ATLTRACE(L"Drawing Skipped!\n");
-	}
+
 }
 
 void TWindow::Draw(Page& draw)
 {
 	draw.Draw();
+}
+
+void TWindow::InduceDraw()
+{
+	RedrawWindow(currentWindow, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
 }
 
 void TWindow::OnRButtonUp(UINT nFlags, TPoint point)

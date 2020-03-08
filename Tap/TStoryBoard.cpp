@@ -18,7 +18,7 @@ DWORD __stdcall ProcessAnimations(LPVOID param)
 				data->animations[c]->Update(progress);
 
 		if (data->win.Get())
-			data->win->Draw();
+			data->win->InduceDraw();
 
 		progress += (static_cast<float>(data->shortestInterval) / static_cast<float>(data->longestAni));
 

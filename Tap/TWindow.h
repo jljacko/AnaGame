@@ -24,6 +24,8 @@ public:
 	// Action Listeners
 	virtual void Draw() override;
 	void Draw(Page& draw);
+
+	void InduceDraw();
 	
 
 	afx_msg void OnRButtonUp(UINT nFlags, TPoint point);
