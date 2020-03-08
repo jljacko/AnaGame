@@ -3,7 +3,6 @@
 #include "TInstance.h"
 
 #include <TFileShell.h>
-#include <atltrace.h>
 #include <DirectoryInterface.h>
 
 
@@ -57,7 +56,6 @@ void TIdeWindow::OnLButtonUp(UINT nFlags, TPoint point)
 	dynamic_cast<IDEPage*>(upperLeft.Get())->OnLButtonUp();
 	dynamic_cast<IDEPage*>(lowerLeft.Get())->OnLButtonUp();
 	TWindow::OnLButtonUp(nFlags, point);
-	ATLTRACE(L"IDE Window On Button Up called!\n");
 	focusPage.Nullify();
 }
 
@@ -184,7 +182,6 @@ void TIdeWindow::OnLButtonDown(UINT nFlags, TPoint point)
 		focusPage = deepConsole;
 		goto finish;
 	}
-	ATLTRACE("Not one Page intercepted L Button Down!\n");
 
 finish:
 	if (output == positiveContinueUpdate || output == positiveOverrideUpdate || output == negativeUpdate)

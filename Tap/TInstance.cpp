@@ -2,7 +2,6 @@
 #include <windowsx.h>
 #include "TDialog.h"
 #include "TIdeWindow.h"
-#include <atltrace.h>
 
 
 static TString dialogClassName(L"TDialog");
