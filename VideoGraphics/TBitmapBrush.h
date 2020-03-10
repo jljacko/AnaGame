@@ -14,6 +14,11 @@ public:
 	UINT GetCurrentFrame();
 	~TBitmapBrush();
 
+	virtual void FillRectangle(const RECT_2D& r)override;
+	virtual void FillRoundedRectangle(const ROUNDED_RECT_2D& r)override;
+	virtual void FillEllipse(const ELLIPSE_2D& r)override;
+	virtual void FillGeometry(TrecPointer<TGeometry> geo)override;
+
 protected:
 	TBitmapBrush(TrecPointer<TFileShell> picture, TrecPointer<DrawingBoard> rt, RECT_2D& loc);
 	bool valid;

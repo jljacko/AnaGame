@@ -34,16 +34,17 @@ public:
 
 	// Methods handling layers
 	void PopLayer();
-	bool AddLayer(RECT_2D& ret);
-	bool AddLayer(ELLIPSE_2D& ellipse);
-	bool AddLayer(ROUNDED_RECT_2D& rRect);
-	bool AddLayer(TDataArray<POINT_2D>& points);
+	bool AddLayer(const RECT_2D& ret);
+	bool AddLayer(const ELLIPSE_2D& ellipse);
+	bool AddLayer(const ROUNDED_RECT_2D& rRect);
+	bool AddLayer(const TDataArray<POINT_2D>& points);
+	bool AddLayer(TrecPointer<TGeometry> geo);
 
 	// Methods to Generate Geometries
-	TrecPointer<TGeometry> GetGeometry(RECT_2D& ret);
-	TrecPointer<TGeometry> GetGeometry(ELLIPSE_2D& ellipse);
-	TrecPointer<TGeometry> GetGeometry(ROUNDED_RECT_2D& rRect);
-	TrecPointer<TGeometry> GetGeometry(TDataArray<POINT_2D>& points);
+	TrecPointer<TGeometry> GetGeometry(const RECT_2D& ret);
+	TrecPointer<TGeometry> GetGeometry(const ELLIPSE_2D& ellipse);
+	TrecPointer<TGeometry> GetGeometry(const ROUNDED_RECT_2D& rRect);
+	TrecPointer<TGeometry> GetGeometry(const TDataArray<POINT_2D>& points);
 
 	UINT GetLayerCount();
 

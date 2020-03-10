@@ -1,6 +1,7 @@
 #include "TBitmapBrush.h"
 #include <wincodec.h>
 #include "DrawingBoard.h"
+#include "TGeometry.h"
 
 void TBitmapBrush::NextFrame()
 {
@@ -49,6 +50,62 @@ TBitmapBrush::~TBitmapBrush()
 	brushes.RemoveAll();
 	bitmaps.RemoveAll();
 }
+
+void TBitmapBrush::FillRectangle(const RECT_2D& r)
+{
+	if (Refresh() && currentFrame < bitmaps.Size() && bitmaps[currentFrame].Get() 
+		&& currentFrame < brushes.Size() && brushes[currentFrame].Get())
+	{
+		currentRenderer->DrawBitmap(bitmaps[currentFrame].Get(), r);
+	}
+}
+
+void TBitmapBrush::FillRoundedRectangle(const ROUNDED_RECT_2D& r)
+{
+	if (Refresh() && currentFrame < bitmaps.Size() && bitmaps[currentFrame].Get()
+		&& currentFrame < brushes.Size() && brushes[currentFrame].Get())
+	{
+		if (!board->AddLayer(r))
+			return;
+		currentRenderer->DrawBitmap(bitmaps[currentFrame].Get(), r.rect);
+		board->PopLayer();
+	}
+}
+
+void TBitmapBrush::FillEllipse(const ELLIPSE_2D& r)
+{
+	if (Refresh() && currentFrame < bitmaps.Size() && bitmaps[currentFrame].Get()
+		&& currentFrame < brushes.Size() && brushes[currentFrame].Get())
+	{
+		if(!board->AddLayer(r))
+			return;
+		RECT_2D rect = {
+			r.point.x - r.radiusX,
+			r.point.y - r.radiusY,
+			r.point.x + r.radiusX,
+			r.point.y + r.radiusY
+		};
+		currentRenderer->DrawBitmap(bitmaps[currentFrame].Get(), rect);
+		board->PopLayer();
+	}
+}
+
+void TBitmapBrush::FillGeometry(TrecPointer<TGeometry> geo)
+{
+	if (geo.Get() && Refresh() && currentFrame < bitmaps.Size() && bitmaps[currentFrame].Get()
+		&& currentFrame < brushes.Size() && brushes[currentFrame].Get())
+	{
+		RECT_2D rect;
+		if (!geo->GetBounds(rect))
+			return;
+		if (!board->AddLayer(geo))
+			return;
+	
+		currentRenderer->DrawBitmap(bitmaps[currentFrame].Get(), rect);
+		board->PopLayer();
+	}
+}
+
 
 TBitmapBrush::TBitmapBrush(TrecPointer<TFileShell> picture, TrecPointer<DrawingBoard> rt, RECT_2D& loc): TBrush(rt)
 {

@@ -16,10 +16,10 @@ class _VIDEO_GRAPHICS TGeometry :
 	public TObject
 {
 public:
-	TGeometry(TrecComPointer<ID2D1Factory1> fact, TDataArray<POINT_2D>& points);
-	TGeometry(TrecComPointer<ID2D1Factory1> fact, RECT_2D& r);
-	TGeometry(TrecComPointer<ID2D1Factory1> fact, ROUNDED_RECT_2D& r);
-	TGeometry(TrecComPointer<ID2D1Factory1> fact, ELLIPSE_2D& r);
+	TGeometry(TrecComPointer<ID2D1Factory1> fact, const TDataArray<POINT_2D>& points);
+	TGeometry(TrecComPointer<ID2D1Factory1> fact, const RECT_2D& r);
+	TGeometry(TrecComPointer<ID2D1Factory1> fact, const ROUNDED_RECT_2D& r);
+	TGeometry(TrecComPointer<ID2D1Factory1> fact, const ELLIPSE_2D& r);
 
 	virtual ~TGeometry();
 

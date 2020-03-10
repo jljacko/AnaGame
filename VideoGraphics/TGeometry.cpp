@@ -1,6 +1,6 @@
 #include "TGeometry.h"
 
-TGeometry::TGeometry(TrecComPointer<ID2D1Factory1> fact, TDataArray<POINT_2D>& points)
+TGeometry::TGeometry(TrecComPointer<ID2D1Factory1> fact, const TDataArray<POINT_2D>& points)
 {
 	valid = false;
 	if (!fact.Get())
@@ -17,9 +17,9 @@ TGeometry::TGeometry(TrecComPointer<ID2D1Factory1> fact, TDataArray<POINT_2D>& p
 	if (FAILED(reinterpret_cast<ID2D1PathGeometry*>(geo.Get())->Open(&sink)) || points.Size() < 2)
 		return;
 
-	sink->BeginFigure(points[0], D2D1_FIGURE_BEGIN_FILLED);
+	sink->BeginFigure(points.data()[0], D2D1_FIGURE_BEGIN_FILLED);
 
-	sink->AddLines(&points[1], points.Size() - 1);
+	sink->AddLines(&(points.data()[1]), points.Size() - 1);
 
 	sink->EndFigure(D2D1_FIGURE_END_CLOSED);
 
@@ -30,7 +30,7 @@ TGeometry::TGeometry(TrecComPointer<ID2D1Factory1> fact, TDataArray<POINT_2D>& p
 	//geoType = geo_type_path;
 }
 
-TGeometry::TGeometry(TrecComPointer<ID2D1Factory1> fact, RECT_2D& r)
+TGeometry::TGeometry(TrecComPointer<ID2D1Factory1> fact, const RECT_2D& r)
 {
 	valid = false;
 	if (!fact.Get())
@@ -44,7 +44,7 @@ TGeometry::TGeometry(TrecComPointer<ID2D1Factory1> fact, RECT_2D& r)
 	//geoType = geo_type_rect;
 }
 
-TGeometry::TGeometry(TrecComPointer<ID2D1Factory1> fact, ROUNDED_RECT_2D& r)
+TGeometry::TGeometry(TrecComPointer<ID2D1Factory1> fact, const ROUNDED_RECT_2D& r)
 {
 	valid = false;
 	if (!fact.Get())
@@ -58,7 +58,7 @@ TGeometry::TGeometry(TrecComPointer<ID2D1Factory1> fact, ROUNDED_RECT_2D& r)
 	//geoType
 }
 
-TGeometry::TGeometry(TrecComPointer<ID2D1Factory1> fact, ELLIPSE_2D& r)
+TGeometry::TGeometry(TrecComPointer<ID2D1Factory1> fact, const ELLIPSE_2D& r)
 {
 	valid = false;
 	if (!fact.Get())

@@ -252,7 +252,7 @@ void DrawingBoard::PopLayer()
 	}
 }
 
-bool DrawingBoard::AddLayer(RECT_2D& ret)
+bool DrawingBoard::AddLayer(const RECT_2D& ret)
 {
 	if (renderer.Get())
 	{
@@ -271,7 +271,7 @@ bool DrawingBoard::AddLayer(RECT_2D& ret)
 	return false;
 }
 
-bool DrawingBoard::AddLayer(ELLIPSE_2D& ellipse)
+bool DrawingBoard::AddLayer(const ELLIPSE_2D& ellipse)
 {
 	if (renderer.Get())
 	{
@@ -290,7 +290,7 @@ bool DrawingBoard::AddLayer(ELLIPSE_2D& ellipse)
 	return false;
 }
 
-bool DrawingBoard::AddLayer(ROUNDED_RECT_2D& rRect)
+bool DrawingBoard::AddLayer(const ROUNDED_RECT_2D& rRect)
 {
 	if (renderer.Get())
 	{
@@ -309,7 +309,7 @@ bool DrawingBoard::AddLayer(ROUNDED_RECT_2D& rRect)
 	return false;
 }
 
-bool DrawingBoard::AddLayer(TDataArray<POINT_2D>& points)
+bool DrawingBoard::AddLayer(const TDataArray<POINT_2D>& points)
 {
 	if (renderer.Get())
 	{
@@ -328,7 +328,24 @@ bool DrawingBoard::AddLayer(TDataArray<POINT_2D>& points)
 	return false;
 }
 
-TrecPointer<TGeometry> DrawingBoard::GetGeometry(RECT_2D& ret)
+bool DrawingBoard::AddLayer(TrecPointer<TGeometry> geo)
+{
+	if (renderer.Get())
+	{
+		TrecComPointer<ID2D1Layer>::TrecComHolder layerHolder;
+		renderer->CreateLayer(layerHolder.GetPointerAddress());
+		TrecComPointer<ID2D1Layer> layer = layerHolder.Extract();
+
+		renderer->PushLayer(D2D1::LayerParameters(D2D1::InfiniteRect(), geo->GetUnderlyingGeometry().Get()), layer.Get());
+
+		layers.push_back(layer);
+		geometries.push_back(geo);
+		return true;
+	}
+	return false;
+}
+
+TrecPointer<TGeometry> DrawingBoard::GetGeometry(const RECT_2D& ret)
 {
 	if(!renderer.Get())
 		return TrecPointer<TGeometry>();
@@ -338,7 +355,7 @@ TrecPointer<TGeometry> DrawingBoard::GetGeometry(RECT_2D& ret)
 	return geo;
 }
 
-TrecPointer<TGeometry> DrawingBoard::GetGeometry(ELLIPSE_2D& ellipse)
+TrecPointer<TGeometry> DrawingBoard::GetGeometry(const ELLIPSE_2D& ellipse)
 {
 	if (!renderer.Get())
 		return TrecPointer<TGeometry>();
@@ -349,7 +366,7 @@ TrecPointer<TGeometry> DrawingBoard::GetGeometry(ELLIPSE_2D& ellipse)
 	return geo;
 }
 
-TrecPointer<TGeometry> DrawingBoard::GetGeometry(ROUNDED_RECT_2D& rRect)
+TrecPointer<TGeometry> DrawingBoard::GetGeometry(const ROUNDED_RECT_2D& rRect)
 {
 	if (!renderer.Get())
 		return TrecPointer<TGeometry>();
@@ -360,7 +377,7 @@ TrecPointer<TGeometry> DrawingBoard::GetGeometry(ROUNDED_RECT_2D& rRect)
 	return geo;
 }
 
-TrecPointer<TGeometry> DrawingBoard::GetGeometry(TDataArray<POINT_2D>& points)
+TrecPointer<TGeometry> DrawingBoard::GetGeometry(const TDataArray<POINT_2D>& points)
 {
 	if (!renderer.Get())
 		return TrecPointer<TGeometry>();
