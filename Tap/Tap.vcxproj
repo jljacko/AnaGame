@@ -164,6 +164,7 @@
     <ClInclude Include="AlertDialog.h" />
     <ClInclude Include="AnagameAsm.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="HandlerMessage.h" />
     <ClInclude Include="IDEPage.h" />
     <ClInclude Include="NameDialog.h" />
     <ClInclude Include="OkayHandler.h" />
@@ -192,6 +193,7 @@
     <ClCompile Include="AlertDialog.cpp" />
     <ClCompile Include="AnagameAsm.cpp" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="HandlerMessage.cpp" />
     <ClCompile Include="IDEPage.cpp" />
     <ClCompile Include="NameDialog.cpp" />
     <ClCompile Include="OkayHandler.cpp" />

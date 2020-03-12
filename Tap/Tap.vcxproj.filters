@@ -93,6 +93,9 @@
     <ClInclude Include="TStoryBoard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="HandlerMessage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -162,6 +165,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TStoryBoard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HandlerMessage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
