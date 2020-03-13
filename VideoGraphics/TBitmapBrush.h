@@ -12,6 +12,7 @@ public:
 	bool IsValid();
 	void SetLocation(RECT_2D& loc);
 	UINT GetCurrentFrame();
+	UINT GetFrameCount();
 	~TBitmapBrush();
 
 	virtual void FillRectangle(const RECT_2D& r)override;

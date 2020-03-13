@@ -170,6 +170,7 @@
     <ClInclude Include="EventTarget.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="GeoGroup.h" />
+    <ClInclude Include="GifAnimation.h" />
     <ClInclude Include="HTMLParser.h" />
     <ClInclude Include="Parser.h" />
     <ClInclude Include="ParseReader.h" />
@@ -214,6 +215,7 @@
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="EventTarget.cpp" />
     <ClCompile Include="GeoGroup.cpp" />
+    <ClCompile Include="GifAnimation.cpp" />
     <ClCompile Include="HTMLParser.cpp" />
     <ClCompile Include="Parser.cpp" />
     <ClCompile Include="ParseReader.cpp" />

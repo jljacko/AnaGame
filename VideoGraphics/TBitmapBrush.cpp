@@ -40,6 +40,11 @@ UINT TBitmapBrush::GetCurrentFrame()
 	return currentFrame;
 }
 
+UINT TBitmapBrush::GetFrameCount()
+{
+	return bitmaps.Size();
+}
+
 TBitmapBrush::~TBitmapBrush()
 {
 	SAFE_RELEASE(imageFactory)
