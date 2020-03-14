@@ -125,6 +125,9 @@ TrecPointer<Page> Page::GetWindowPage(TrecPointer<TInstance> in , TrecPointer<TW
 	ret->windowHandle = window;
 	ret->deviceH = GetWindowDC(window->GetWindowHandle());
 
+	if (ret->handler.Get() && in.Get())
+		in->RegisterHandler(eh);
+
 	return ret;
 
 }
@@ -234,6 +237,8 @@ TrecPointer<EventHandler> Page::GetHandler()
 void Page::SetHandler(TrecPointer <EventHandler> eh)
 {
 	handler = eh;
+	if (handler.Get && instance.Get())
+		instance->RegisterHandler(handler);
 }
 
 void Page::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
@@ -472,6 +477,10 @@ TrecPointer<TInstance> Page::GetInstance()
 void Page::SetMiniHandler(TrecSubPointer<EventHandler, MiniHandler> mh)
 {
 	miniHandler = mh;
+	if (miniHandler.Get() && instance.Get())
+	{
+		instance->RegisterHandler(TrecPointerKey::GetTrecPointerFromSub<EventHandler, MiniHandler>(miniHandler));
+	}
 }
 
 

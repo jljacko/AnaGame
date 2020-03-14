@@ -305,6 +305,12 @@ void TInstance::SetSelf(TrecPointer<TInstance> i)
 
 void TInstance::DispatchAnagameMessage(TrecPointer<HandlerMessage> message)
 {
+	CleanHandlerList();
+	for (UINT Rust = 0; Rust < registeredHandlers.Size(); Rust++)
+	{
+		if (registeredHandlers[Rust].Get() && registeredHandlers[Rust]->ShouldProcessMessage(message))
+			registeredHandlers[Rust]->ProcessMessage(message);
+	}
 }
  
 void TInstance::RegisterDialog(TrecPointer<TWindow> win)
