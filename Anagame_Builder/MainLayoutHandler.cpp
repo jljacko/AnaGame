@@ -227,8 +227,8 @@ void MainLayoutHandler::HandleEvents(TDataArray<EventID_Cred>& eventAr)
 
 void MainLayoutHandler::Draw()
 {
-	if (currentDocument.Get())
-		currentDocument->Draw();
+	//if (currentDocument.Get())
+		//currentDocument->Draw();
 }
 
 void MainLayoutHandler::OnSwitchTab(TControl* tc, EventArgs ea)
@@ -241,6 +241,11 @@ void MainLayoutHandler::OnSwitchTab(TControl* tc, EventArgs ea)
 		if (currentDocument.Get())
 			currentDocument->OnShow();
 	}
+}
+
+void MainLayoutHandler::ProcessMessage(TrecPointer<HandlerMessage> message)
+{
+
 }
 
 void MainLayoutHandler::OnLoadNewSolution(TControl* tc, EventArgs ea)
@@ -281,8 +286,8 @@ void MainLayoutHandler::OnNewArena(TControl* tc, EventArgs ea)
 
 	if (!arenaName.GetSize())
 		return;
-
-	currentDocument = TrecPointerKey::GetNewSelfTrecPointerAlt<MiniHandler, ArenaApp>(body, outputPanel, classUI, app, arenaName);
+	auto tempPoint = TrecPointerKey::GetNewSelfTrecPointerAlt<EventHandler, ArenaApp>(body, outputPanel, classUI, app, arenaName);
+	currentDocument =  TrecPointerKey::GetTrecSubPointerFromTrec<EventHandler,MiniHandler>( tempPoint);
 	ActiveDocuments.push_back(currentDocument);
 	currentDocument->InitializeControls();
 	currentDocument->OnShow();
@@ -322,7 +327,8 @@ void MainLayoutHandler::OnNewModel(TControl* tc, EventArgs ea)
 
 void MainLayoutHandler::OnNewCodeFile(TControl* tc, EventArgs ea)
 {
-	currentDocument = TrecPointerKey::GetNewSelfTrecPointerAlt<MiniHandler, SourceCodeApp>(body, outputPanel, classUI, app);
+	auto tempPoint = TrecPointerKey::GetNewSelfTrecPointerAlt<EventHandler, SourceCodeApp>(body, outputPanel, classUI, app);
+	currentDocument = TrecPointerKey::GetTrecSubPointerFromTrec<EventHandler, MiniHandler>(tempPoint);
 	ActiveDocuments.push_back(currentDocument);
 	currentDocument->InitializeControls();
 	currentDocument->OnShow();
@@ -330,7 +336,8 @@ void MainLayoutHandler::OnNewCodeFile(TControl* tc, EventArgs ea)
 
 void MainLayoutHandler::OnImportCode(TControl* tc, EventArgs ea)
 {
-	currentDocument = TrecPointerKey::GetNewSelfTrecPointerAlt<MiniHandler, SourceCodeApp>(body, outputPanel, classUI, app);
+	auto tempPoint = TrecPointerKey::GetNewSelfTrecPointerAlt<EventHandler, SourceCodeApp>(body, outputPanel, classUI, app);
+	currentDocument = TrecPointerKey::GetTrecSubPointerFromTrec<EventHandler, MiniHandler>(tempPoint);
 	ActiveDocuments.push_back(currentDocument);
 	currentDocument->InitializeControls();
 
@@ -343,4 +350,9 @@ void MainLayoutHandler::OnProcessCode(TControl* tc, EventArgs ea)
 	SourceCodeApp* sca = dynamic_cast<SourceCodeApp*>(currentDocument.Get());
 	if (sca)
 		sca->ProcessFile(environment);
+}
+
+bool MainLayoutHandler::ShouldProcessMessageByType(TrecPointer<HandlerMessage> message)
+{
+	return false;
 }

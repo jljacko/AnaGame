@@ -469,7 +469,7 @@ TrecPointer<TInstance> Page::GetInstance()
 
 
 
-void Page::SetMiniHandler(TrecPointer<MiniHandler> mh)
+void Page::SetMiniHandler(TrecSubPointer<EventHandler, MiniHandler> mh)
 {
 	miniHandler = mh;
 }

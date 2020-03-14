@@ -26,6 +26,8 @@ public:
 
 	void Draw();
 	void OnSwitchTab(TControl* tc, EventArgs ea);
+
+	virtual void ProcessMessage(TrecPointer<HandlerMessage> message)override;
 protected:
 	TDataArray<LayoutCall> calls;
 
@@ -79,7 +81,10 @@ protected:
 
 
 	/// Now to host the various mini apps that the user g=could launch on the builder
-	TDataArray<TrecPointer<MiniHandler>> ActiveDocuments;
-	TrecPointer<MiniHandler> currentDocument;
+	TDataArray<TrecSubPointer<EventHandler, MiniHandler>> ActiveDocuments;
+	TrecSubPointer<EventHandler, MiniHandler> currentDocument;
+
+
+	virtual bool ShouldProcessMessageByType(TrecPointer<HandlerMessage> message) override;
 };
 

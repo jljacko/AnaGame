@@ -36,7 +36,9 @@ public:
 	afx_msg bool OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags, messageOutput* mOut)override;
 	afx_msg void OnResize(D2D1_RECT_F newSize)override;
 
-	void SetSelf(TrecPointer<MiniHandler> s);
+	void SetSelf(TrecPointer<EventHandler> s)override;
+
+	virtual void ProcessMessage(TrecPointer<HandlerMessage> message)override;
 
 protected:
 
@@ -55,6 +57,8 @@ protected:
 	TrecPointer<TWindow> window;
 	//TrecPointer<Page> drawer;
 
-	TrecPointerSoft<MiniHandler> self;
+	TrecSubPointerSoft<EventHandler, MiniHandler> self;
+
+	virtual bool ShouldProcessMessageByType(TrecPointer<HandlerMessage> message) override;
 };
 

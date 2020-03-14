@@ -230,6 +230,10 @@ void MainLayoutHandler::OnSwitchTab(TControl* tc, EventArgs ea)
 	}
 }
 
+void MainLayoutHandler::ProcessMessage(TrecPointer<HandlerMessage> message)
+{
+}
+
 void MainLayoutHandler::OnLoadNewSolution(TControl* tc, EventArgs ea)
 {
 }
@@ -321,4 +325,11 @@ void MainLayoutHandler::OnImportCode(TControl* tc, EventArgs ea)
 
 void MainLayoutHandler::OnProcessCode(TControl* tc, EventArgs ea)
 {
+}
+
+bool MainLayoutHandler::ShouldProcessMessageByType(TrecPointer<HandlerMessage> message)
+{
+	if(!message.Get())
+		return false;
+	return message->GetHandlerType() == handler_type_other;
 }

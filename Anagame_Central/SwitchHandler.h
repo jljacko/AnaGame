@@ -17,6 +17,8 @@ public:
 
 	void Initialize(TrecPointer<Page> page);
 	void HandleEvents(TDataArray<EventID_Cred>& eventAr);
+
+	virtual void ProcessMessage(TrecPointer<HandlerMessage> message)override;
 protected:
 	TrecPointer<Page> page;
 	methodArray handlers[SWITCH_HANDLER_METHOD_COUNT];
@@ -35,6 +37,8 @@ protected:
 	void OnSelectText(TControl* tc, EventArgs ea);
 	void OnSelectCombo(TControl* tc, EventArgs ea);
 	void OnSelectScroll(TControl* tc, EventArgs ea);
+
+	virtual bool ShouldProcessMessageByType(TrecPointer<HandlerMessage> message) override;
 
 };
 

@@ -1,6 +1,8 @@
 #pragma once
 #include <TObject.h>
 #include "TWindow.h"
+#include "HandlerMessage.h"
+#include <TTrecSoftPointerArray.h>
 
 class WindowContainer
 {
@@ -21,6 +23,9 @@ class _TAP_DLL TInstance : public TObject
 {
 	friend class TWindow;
 	friend class TDialog;
+	friend class Page;
+	friend class IDEPage;
+	friend class EventHandler;
 public:
 	TInstance(TString& name, TString& winClass, UINT style, HWND parent, int commandShow, HINSTANCE ins, WNDPROC wp);
 
@@ -45,6 +50,8 @@ public:
 	TrecComPointer<ID2D1Factory1> GetFactory();
 	void SetSelf(TrecPointer<TInstance> i);
 
+	void DispatchAnagameMessage(TrecPointer<HandlerMessage> message);
+
 protected:
 	void AssertDialogRegistered();
 	ATOM dialogAtom;
@@ -67,5 +74,13 @@ protected:
 	TrecPointerSoft<TInstance> self;
 
 	UINT messageStack;
+	UINT handlerID;
+
+
+	TTrecPointerSoftArray<EventHandler> registeredHandlers;
+
+	bool RegisterHandler(TrecPointer<EventHandler> handler);
+
+	void CleanHandlerList();
 };
 

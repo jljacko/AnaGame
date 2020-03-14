@@ -165,6 +165,8 @@ TBrush::TBrush(const TColor& col, TrecPointer<DrawingBoard> rt)
 
 	brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1SolidColorBrush>(brushHolder);
 	brushType = brush_type_solid;
+
+	gradients.AddGradient(TGradientStop(col, 0.0f));
 }
 
 TBrush::TBrush(const TGradientStopCollection& coll, TrecPointer<DrawingBoard> rt, const POINT_2D& p1, const POINT_2D& p2, float x, float y)
@@ -238,13 +240,14 @@ TBrush::TBrush(TrecPointer<DrawingBoard> rt)
 
 bool TBrush::Refresh()
 {
-	if (!currentRenderer.Get() || !board.Get() || !brush.Get())
+	if (!board.Get() || !brush.Get())
 		return false;
 
-	if (currentRenderer.Get() == board->GetRenderer().Get())
+	if (currentRenderer.Get() && currentRenderer.Get() == board->GetRenderer().Get())
 		return true;
+	currentRenderer = board->GetRenderer();
 	RefreshBrush();
-	return true;
+	return currentRenderer.Get() != nullptr;
 }
 
 void TBrush::RefreshBrush()

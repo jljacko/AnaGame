@@ -149,7 +149,7 @@ void TWindow::Draw()
 		if (gdi.Get()  && d3d)
 		{
 			rt->BeginDraw();
-			//rt->Clear(D2D1::ColorF(D2D1::ColorF::White));
+			rt->Clear(D2D1::ColorF(D2D1::ColorF::White));
 			d3d->PrepareScene(D2D1::ColorF(D2D1::ColorF::Wheat));
 
 			mainPage->Draw();

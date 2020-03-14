@@ -2,7 +2,7 @@
 #include "Page.h"
 #include "TWindow.h"
 
-OkayHandler::OkayHandler(TrecPointer<TInstance> instance): EventHandler(instance)
+OkayHandler::OkayHandler(TrecPointer<TInstance> instance): EventHandler(instance, TString(L"Okay"))
 {
 	eventNameID enid;
 
@@ -43,6 +43,11 @@ void OkayHandler::HandleEvents(TDataArray<EventID_Cred>& eventAr)
 		OnOkay(nullptr, ea);
 }
 
+void OkayHandler::ProcessMessage(TrecPointer<HandlerMessage> message)
+{
+
+}
+
 void OkayHandler::OnOkay(TControl* control, EventArgs ea)
 {
 	if (!page.Get())
@@ -52,4 +57,12 @@ void OkayHandler::OnOkay(TControl* control, EventArgs ea)
 		throw L"Error! Handler's Page Object returned a NULL window handle";
 
 	DestroyWindow(windHandle->GetWindowHandle());
+}
+
+bool OkayHandler::ShouldProcessMessageByType(TrecPointer<HandlerMessage> message)
+{
+	if(!message.Get())
+		return false;
+
+	return message->GetHandlerType() == handler_type_okay;
 }

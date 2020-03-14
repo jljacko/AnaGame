@@ -87,7 +87,7 @@ public:
 
 	void PrepAnimations(TAnimationManager& aManager);
 
-	void SetMiniHandler(TrecPointer<MiniHandler> mh);
+	void SetMiniHandler(TrecSubPointer<EventHandler, MiniHandler> mh);
 
 protected:
 	Page(TrecPointer<DrawingBoard>);
@@ -109,7 +109,7 @@ protected:
 	TrecPointer<TArenaEngine> engine;	// Incase we are using 3D Resources
 	TrecPointer<TControl> rootControl;	// The Control to Draw when
 	 TrecPointer<EventHandler> handler; // The class that manages specific actions
-	TrecPointer<MiniHandler> miniHandler; // Intended for tabs whise contents have specific hanling specs
+	TrecSubPointer<EventHandler, MiniHandler> miniHandler; // Intended for tabs whise contents have specific hanling specs
 	 TrecPointer<TInstance> instance;
 	D2D1_MATRIX_3X2_F adjustMatrix;
 	TrecPointer<TWindow> windowHandle;		// the Window attached to the page

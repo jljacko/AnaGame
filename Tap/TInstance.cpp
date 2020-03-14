@@ -8,6 +8,7 @@ static TString dialogClassName(L"TDialog");
 
 TInstance::TInstance(TString& name, TString& winClass, UINT style, HWND parent, int commandShow, HINSTANCE ins, WNDPROC wp)
 {
+	handlerID = 1;
 	messageStack = 0;
 	if (!wp)
 		throw L"ERROR! Window Proc Function must be a valid pointer!";
@@ -301,6 +302,10 @@ void TInstance::SetSelf(TrecPointer<TInstance> i)
 
 	AssertDialogRegistered();
 }
+
+void TInstance::DispatchAnagameMessage(TrecPointer<HandlerMessage> message)
+{
+}
  
 void TInstance::RegisterDialog(TrecPointer<TWindow> win)
 {
@@ -318,6 +323,31 @@ void TInstance::CleanWindows()
 			windowList[Rust]->window.Delete();
 			windowList.RemoveAt(Rust);
 		}
+	}
+}
+
+bool TInstance::RegisterHandler(TrecPointer<EventHandler> handler)
+{
+	if(!handler.Get())
+		return false;
+
+	for (UINT Rust = 0; Rust < registeredHandlers.Size(); Rust++)
+	{
+		if (handler.Get() == registeredHandlers[Rust].Get())
+			return false;
+	}
+
+	registeredHandlers.push_back(handler);
+	handler->id = handlerID++;
+	return true;
+}
+
+void TInstance::CleanHandlerList()
+{
+	for (int Rust = static_cast<int>(registeredHandlers.Size()) - 1; Rust >= 0; Rust--)
+	{
+		if (!registeredHandlers[Rust].Get())
+			registeredHandlers.RemoveAt(Rust);
 	}
 }
 

@@ -6,9 +6,40 @@ EventHandler::EventHandler(TrecPointer<TInstance> instance)
 	app = instance;
 }
 
+EventHandler::EventHandler(TrecPointer<TInstance> instance, const TString& name)
+{
+	app = instance;
+	this->name.Set(name);
+}
+
 EventHandler::~EventHandler()
 {
 
+}
+
+bool EventHandler::ShouldProcessMessage(TrecPointer<HandlerMessage> message)
+{
+	if(!message.Get())
+		return false;
+
+	switch (message->GetMessageTransmission())
+	{
+	case message_transition_firm_id:
+		return message->GetHandlerIdType() == id;
+	case message_transition_firm_name:
+		return name.GetSize() && !name.Compare(message->GetHandlerName());
+	case message_transmission_id_over_name:
+		if (message->GetHandlerIdType() == id)
+			return true;
+		return name.GetSize() && !name.Compare(message->GetHandlerName());
+	case message_transmission_name_over_id:
+		if (name.GetSize() && !name.Compare(message->GetHandlerName()))
+			return true;
+		return message->GetHandlerIdType() == id;
+	case message_transmission_by_type:
+		return this->ShouldProcessMessageByType(message);
+	}
+	return true;
 }
 
 bool EventHandler::OnDestroy()
@@ -56,4 +87,18 @@ TDataArray<eventNameID>& EventHandler::GetEventNameList()
 
 void EventHandler::Draw()
 {
+}
+
+void EventHandler::SetSelf(TrecPointer<EventHandler> handleSelf)
+{
+	if (handleSelf.Get() != this)
+		throw L"Error! Needs to be set to Self";
+	hSelf = TrecPointerKey::GetSoftPointerFromTrec<EventHandler>(handleSelf);
+	if (instance.Get())
+		instance->RegisterHandler(handleSelf);
+}
+
+UINT EventHandler::GetId()
+{
+	return id;
 }

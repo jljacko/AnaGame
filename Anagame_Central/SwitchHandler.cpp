@@ -114,6 +114,10 @@ void SwitchHandler::HandleEvents(TDataArray<EventID_Cred>& eventAr)
 	}
 }
 
+void SwitchHandler::ProcessMessage(TrecPointer<HandlerMessage> message)
+{
+}
+
 void SwitchHandler::OnSelect1(TControl* tc, EventArgs ea)
 {
 	TrecPointer<DrawingBoard> rtb = page->GetWindowHandle()->GetDrawingBoard();
@@ -915,4 +919,9 @@ void SwitchHandler::OnSelectScroll(TControl* tc, EventArgs ea)
 	changeControl->addChild(TrecPointer<TControl>(childControl));
 	this->rootLayout->addChild(changeControl, 1, 0);
 	page->CreateLayout();
+}
+
+bool SwitchHandler::ShouldProcessMessageByType(TrecPointer<HandlerMessage> message)
+{
+	return false;
 }

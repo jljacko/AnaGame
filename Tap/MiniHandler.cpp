@@ -103,17 +103,17 @@ void MiniHandler::OnShow()
 {
 	if (mainPage.Get())
 	{
-		mainPage->SetMiniHandler(TrecPointerKey::GetTrecPointerFromSoft<MiniHandler>(self));
+		mainPage->SetMiniHandler(TrecPointerKey::GetSubPointerFromSoft<EventHandler, MiniHandler>(self));
 		mainPage->SetAnaface(mainControl);
 	}
 	if (outputPane.Get())
 	{
-		outputPane->SetMiniHandler(TrecPointerKey::GetTrecPointerFromSoft<MiniHandler>(self));
+		outputPane->SetMiniHandler(TrecPointerKey::GetSubPointerFromSoft<EventHandler, MiniHandler>(self));
 		outputPane->SetAnaface(outputControl);
 	}
 	if (explorerPane.Get())
 	{
-		explorerPane->SetMiniHandler(TrecPointerKey::GetTrecPointerFromSoft<MiniHandler>(self));
+		explorerPane->SetMiniHandler(TrecPointerKey::GetSubPointerFromSoft<EventHandler, MiniHandler>(self));
 		explorerPane->SetAnaface(explorerControl);
 	}
 }
@@ -376,11 +376,17 @@ void MiniHandler::OnResize(D2D1_RECT_F newSize)
 		explorerPane->SetArea(explorerControl->getLocation());
 }
 
-void MiniHandler::SetSelf(TrecPointer<MiniHandler> s)
+void MiniHandler::SetSelf(TrecPointer<EventHandler> s)
 {
-	if (!s.Get() || s.Get() != this)
-		throw L"Error! Expected Self pointer to be initialized to 'this'!";
-	self = TrecPointerKey::GetSoftPointerFromTrec<MiniHandler>(s);
+	EventHandler::SetSelf(s);
+	auto tempPoint = TrecPointerKey::GetTrecSubPointerFromTrec<EventHandler, MiniHandler>(s);
+	if (!tempPoint.Get())
+		throw L"Error! SetSelf Operation encountered an incorrect type!";
+	self = TrecPointerKey::GetSoftSubPointerFromSub<EventHandler, MiniHandler>(tempPoint);
+}
+
+void MiniHandler::ProcessMessage(TrecPointer<HandlerMessage> message)
+{
 }
 
 void MiniHandler::OnSave(TFile&)
@@ -389,6 +395,13 @@ void MiniHandler::OnSave(TFile&)
 
 void MiniHandler::OnLoad(TFile&)
 {
+}
+
+bool MiniHandler::ShouldProcessMessageByType(TrecPointer<HandlerMessage> message)
+{
+	if(!message.Get())
+		return false;
+	return message->GetHandlerType() == handler_type_generic;
 }
 
 bool MiniHandler::InitializeControls()

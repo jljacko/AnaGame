@@ -2,6 +2,8 @@
 #include <TObject.h>
 #include <TString.h>
 
+#include "Tap_dll.h"
+
 typedef enum handler_type
 {
 	handler_type_generic,
@@ -10,6 +12,8 @@ typedef enum handler_type
 	handler_type_file_manager,
 	handler_type_compiler,
 	handler_type_interpreter,
+	handler_type_okay,
+
 
 	handler_type_other
 }handler_type;
@@ -25,7 +29,7 @@ typedef enum message_transmission
 };
 
 
-class HandlerMessage : public TObject
+class _TAP_DLL HandlerMessage : public TObject
 {
 public:
 	HandlerMessage(const TString& handlerName, handler_type type, UINT otherType, message_transmission transmission, UINT handlerIdTarget, const TString& message);

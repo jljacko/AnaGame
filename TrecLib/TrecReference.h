@@ -115,6 +115,53 @@ public:
 			return pointer->Get();
 		return nullptr;
 	}
+
+	void operator=(const TrecPointerSoft<T>& other)
+	{
+		// First, make sure that the other TrecPointer isn't pointing to the same reference.
+		// If it is, we don't want to decrement the reference lest it become 0 (and self-destructs)
+		if (other.pointer == pointer)
+			return;
+
+		pointer = other.pointer;
+	}
+};
+
+template<class T, class U> class TrecSubPointerSoft
+{
+	friend class TrecPointerKey;
+private:
+	TrecBoxPointer<T>* pointer;
+
+	TrecSubPointerSoft(TrecBoxPointer<T>* pointer)
+	{
+		if (!pointer)
+			throw L"Error! TrecPointers must be initialized with a pointer, not NULL!";
+		this->pointer = pointer;
+	}
+
+public:
+	TrecSubPointerSoft()
+	{
+		pointer = nullptr;
+	}
+
+	U* Get()
+	{
+		if (pointer)
+			return dynamic_cast<U*>(pointer->Get());
+		return nullptr;
+	}
+
+	void operator=(const TrecSubPointerSoft<T, U>& other)
+	{
+		// First, make sure that the other TrecPointer isn't pointing to the same reference.
+		// If it is, we don't want to decrement the reference lest it become 0 (and self-destructs)
+		if (other.pointer == pointer)
+			return;
+
+		pointer = other.pointer;
+	}
 };
 
 template<class t, class u> class TrecSubPointer
@@ -546,6 +593,20 @@ public:
 		return TrecComPointer<t>(raw);
 	}
 
+	template <class T, class U> static TrecSubPointer<T, U> GetSubPointerFromSoft(TrecSubPointerSoft<T, U> s)
+	{
+		TrecSubPointer<T, U> ret;
+
+		ret.pointer = s.pointer;
+		if (ret.pointer)
+			ret.pointer->Increment();
+		return ret;
+	}
+
+	template <class T, class U> static TrecSubPointerSoft<T, U> GetSoftSubPointerFromSub(TrecSubPointer<T, U> trec)
+	{
+		return TrecSubPointerSoft<T,U>(trec.pointer);
+	}
 
 
 };

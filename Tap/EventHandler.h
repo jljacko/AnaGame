@@ -1,18 +1,26 @@
 #pragma once
 #include "Tap_dll.h"
 #include <AnafaceParser.h>
+#include "HandlerMessage.h"
 
 class Page;
 class TInstance;
 
 class _TAP_DLL EventHandler
 {
+	friend class TInstance;
 public:
     EventHandler(TrecPointer<TInstance> instance);
+	EventHandler(TrecPointer<TInstance> instance, const TString& name);
     virtual ~EventHandler();
 
     virtual void Initialize(TrecPointer<Page> page) = 0;
     virtual void HandleEvents(TDataArray<EventID_Cred>& eventAr) = 0;
+	bool ShouldProcessMessage(TrecPointer<HandlerMessage> message);
+
+	virtual void ProcessMessage(TrecPointer<HandlerMessage> message) = 0;
+
+
     virtual bool OnDestroy();
 
 	afx_msg virtual void OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut);
@@ -28,7 +36,14 @@ public:
 
 	virtual void Draw();
 
+	virtual void SetSelf(TrecPointer<EventHandler> handleSelf);
+	UINT GetId();
+
 protected:
+	TrecPointerSoft<EventHandler> hSelf;
+	virtual bool ShouldProcessMessageByType(TrecPointer<HandlerMessage> message) = 0;
+	UINT id;
+	TString name;
 	TrecPointer<TInstance> app;
 	TDataArray<eventNameID> events;
 	TrecPointer<TInstance> instance;

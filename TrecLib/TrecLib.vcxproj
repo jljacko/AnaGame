@@ -189,6 +189,7 @@
     <ClInclude Include="TShell.h" />
     <ClInclude Include="TString.h" />
     <ClInclude Include="TTrecPointerArray.h" />
+    <ClInclude Include="TTrecSoftPointerArray.h" />
     <ClInclude Include="TType.h" />
     <ClInclude Include="TTypeMetadata.h" />
   </ItemGroup>
