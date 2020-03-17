@@ -554,7 +554,7 @@ public:
 		return ret;
 	}
 
-	template <class t, class u> static TrecSubPointer<t, u> GetTrecSubPointerFromTrec(TrecPointer<t>& tPointer)
+	template <class t, class u> static TrecSubPointer<t, u> GetTrecSubPointerFromTrec(const TrecPointer<t>& tPointer)
 	{
 		TrecSubPointer<t, u> ret;
 		ret.pointer = tPointer.pointer;

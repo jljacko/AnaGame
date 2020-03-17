@@ -237,7 +237,7 @@ TrecPointer<EventHandler> Page::GetHandler()
 void Page::SetHandler(TrecPointer <EventHandler> eh)
 {
 	handler = eh;
-	if (handler.Get && instance.Get())
+	if (handler.Get() && instance.Get())
 		instance->RegisterHandler(handler);
 }
 

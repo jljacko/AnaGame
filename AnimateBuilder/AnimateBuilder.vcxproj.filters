@@ -36,6 +36,9 @@
     <ClInclude Include="SourceCodeApp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SourceCodeApp2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimateBuilder.cpp">
@@ -48,6 +51,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SourceCodeApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCodeApp2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

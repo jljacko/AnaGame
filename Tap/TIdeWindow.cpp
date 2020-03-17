@@ -204,7 +204,8 @@ void TIdeWindow::AddNewPage(anagame_page pageType, ide_page_type pageLoc, TStrin
 
 		break;
 	case anagame_page_code_file:
-
+		uiFile->Open(GetDirectoryWithSlash(cd_Executable) + L"Resources\\LineTextEditor.txt", TFile::t_file_read | TFile::t_file_share_read | TFile::t_file_open_always);
+		fileShell = TFileShell::GetFileInfo(tmlLoc);
 		break;
 	case anagame_page_command_prompt:
 		uiFile->Open(GetDirectoryWithSlash(cd_Executable) + L"Resources\\IDEPrompt.tml", TFile::t_file_read | TFile::t_file_share_read | TFile::t_file_open_always);
@@ -262,6 +263,10 @@ void TIdeWindow::AddNewPage(anagame_page pageType, ide_page_type pageLoc, TStrin
 	newPage->SetAnaface(uiFile, pageHandler);
 
 	uiFile->Close();
+
+	newPage->SetHandler(pageHandler);
+	if (pageHandler.Get())
+		pageHandler->Initialize(newPage);
 }
 
 int TIdeWindow::CompileView(TString& file, TrecPointer<EventHandler> eh)

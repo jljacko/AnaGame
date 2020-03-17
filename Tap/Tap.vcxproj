@@ -163,18 +163,20 @@
   <ItemGroup>
     <ClInclude Include="AlertDialog.h" />
     <ClInclude Include="AnagameAsm.h" />
+    <ClInclude Include="DocumentHandler.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="HandlerMessage.h" />
     <ClInclude Include="IDEPage.h" />
+    <ClInclude Include="MiniApp.h" />
     <ClInclude Include="NameDialog.h" />
     <ClInclude Include="OkayHandler.h" />
     <ClInclude Include="Page.h" />
-    <ClInclude Include="ParseReader.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="TAnimationManager.h" />
     <ClInclude Include="Tap_dll.h" />
     <ClInclude Include="TByteCode.h" />
     <ClInclude Include="TByteVirtualMachine.h" />
+    <ClInclude Include="TCodeHandler.h" />
     <ClInclude Include="TDialog.h" />
     <ClInclude Include="TerminalHandler.h" />
     <ClInclude Include="TIdeWindow.h" />
@@ -193,8 +195,10 @@
     <ClCompile Include="AlertDialog.cpp" />
     <ClCompile Include="AnagameAsm.cpp" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="DocumentHandler.cpp" />
     <ClCompile Include="HandlerMessage.cpp" />
     <ClCompile Include="IDEPage.cpp" />
+    <ClCompile Include="MiniApp.cpp" />
     <ClCompile Include="NameDialog.cpp" />
     <ClCompile Include="OkayHandler.cpp" />
     <ClCompile Include="Page.cpp" />
@@ -206,6 +210,7 @@
     </ClCompile>
     <ClCompile Include="TByteVirtualMachine.cpp" />
     <ClCompile Include="TAnimationManager.cpp" />
+    <ClCompile Include="TCodeHandler.cpp" />
     <ClCompile Include="TDialog.cpp" />
     <ClCompile Include="TerminalHandler.cpp" />
     <ClCompile Include="TIdeWindow.cpp" />

@@ -104,6 +104,11 @@ void TScrollerControl::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOu
 	onScrollFocus = false;
 }
 
+TrecPointer<TControl> TScrollerControl::GetChildControl()
+{
+	return childControl;
+}
+
 void TScrollerControl::RefreshScroll()
 {
 	if (!childControl.Get())

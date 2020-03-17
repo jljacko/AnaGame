@@ -1,6 +1,6 @@
 #pragma once
 #include "EventHandler.h"
-class TerminalHandler :
+class _TAP_DLL TerminalHandler :
 	public EventHandler
 {
 public:

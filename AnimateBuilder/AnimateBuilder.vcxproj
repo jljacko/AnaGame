@@ -156,6 +156,7 @@
     <ClInclude Include="MainLayoutHandler.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SourceCodeApp.h" />
+    <ClInclude Include="SourceCodeApp2.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
@@ -163,6 +164,7 @@
     <ClCompile Include="ArenaApp.cpp" />
     <ClCompile Include="MainLayoutHandler.cpp" />
     <ClCompile Include="SourceCodeApp.cpp" />
+    <ClCompile Include="SourceCodeApp2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="AnimateBuilder.rc" />
