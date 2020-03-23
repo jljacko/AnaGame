@@ -1,22 +1,18 @@
 #pragma once
+#include <Windows.h>
 #include "TObject.h"
-#include "TString.h"
-#include "TFile.h"
 
-/*
- * class TShell
- * Purpose: provides support for command-line functionality in Anagame
- */
-class _TREC_LIB_DLL TShell :
+#include "TFile.h"
+#include "DirectoryInterface.h"
+class  TShell2 :
 	public TObject
 {
 public:
-	TShell();
-	~TShell();
+	TShell2();
+	~TShell2();
 
 	void SubmitCommand(TString& command);
 	TString GetOutput();
-	TString GetError();
 
 	void TerminateProcess();
 
@@ -34,14 +30,11 @@ private:
 	void ProcessFrontCommand(TString& command);
 
 	TString workingDirectory;
-
-	TString output, standardError;
-
-	HANDLE stdOutRd, stdInRd, stdErrRd;
-	HANDLE stdOutWt, stdInWt, stdErrWt;
-	PROCESS_INFORMATION processInfo;
-
 	TString programShell;
-	ULONGLONG outputLoc;
+
+	TFile file;
+	UINT outputLoc;
+	TString output;
+	SHELLEXECUTEINFOW info;
 };
 

@@ -4,6 +4,8 @@
 
 #include <TFileShell.h>
 #include <DirectoryInterface.h>
+#include "TerminalHandler.h"
+#include "TCodeHandler.h"
 
 
 TIdeWindow::TIdeWindow(TString& name, TString& winClass, UINT style, HWND parent, int commandShow, 
@@ -31,6 +33,7 @@ int TIdeWindow::PrepareWindow()
 	for (UINT c = 0; c < ARRAYSIZE(pages); c++)
 	{
 		*pages[c] = TrecPointerKey::GetNewSelfTrecSubPointer<Page, IDEPage>(static_cast<ide_page_type>(c), pageBarSpace, drawingBoard);
+		this->pages.push_back(TrecPointerKey::GetTrecPointerFromSub<Page, IDEPage>(*pages[c]));
 	}
 
 	for (UINT c = 0; c < ARRAYSIZE(pages); c++)
@@ -206,10 +209,18 @@ void TIdeWindow::AddNewPage(anagame_page pageType, ide_page_type pageLoc, TStrin
 	case anagame_page_code_file:
 		uiFile->Open(GetDirectoryWithSlash(cd_Executable) + L"Resources\\LineTextEditor.txt", TFile::t_file_read | TFile::t_file_share_read | TFile::t_file_open_always);
 		fileShell = TFileShell::GetFileInfo(tmlLoc);
+		if (!handler.Get())
+			pageHandler = TrecPointerKey::GetNewSelfTrecPointerAlt<EventHandler, TCodeHandler>(windowInstance);
+		else
+			pageHandler = handler;
 		break;
 	case anagame_page_command_prompt:
 		uiFile->Open(GetDirectoryWithSlash(cd_Executable) + L"Resources\\IDEPrompt.tml", TFile::t_file_read | TFile::t_file_share_read | TFile::t_file_open_always);
 		fileShell = TFileShell::GetFileInfo(tmlLoc);
+		if (!handler.Get())
+			pageHandler = TrecPointerKey::GetNewSelfTrecPointerAlt<EventHandler, TerminalHandler>(windowInstance);
+		else
+			pageHandler = handler;
 		break;
 	case anagame_page_file_node:
 		uiFile->Open(GetDirectoryWithSlash(cd_Executable) + L"Resources\\FileBrowser.tml", TFile::t_file_read | TFile::t_file_share_read | TFile::t_file_open_always);
@@ -267,6 +278,7 @@ void TIdeWindow::AddNewPage(anagame_page pageType, ide_page_type pageLoc, TStrin
 	newPage->SetHandler(pageHandler);
 	if (pageHandler.Get())
 		pageHandler->Initialize(newPage);
+
 }
 
 int TIdeWindow::CompileView(TString& file, TrecPointer<EventHandler> eh)

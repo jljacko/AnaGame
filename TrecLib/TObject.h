@@ -1,5 +1,5 @@
 #pragma once
-
+#include <Windows.h>
 #include <new>
 #include <memory>
 #include "TrecLib.h"

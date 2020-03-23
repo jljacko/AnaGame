@@ -37,15 +37,34 @@ void TPromptControl::onDraw(TObject* obj)
 			lowerOutput.Find(L"passphrase") != -1 ||
 			lowerOutput.Find(L"passcode") != -1)
 			isPassword = true;
+
+		caretLoc += shellOutput.GetSize();
 	}
 
-	if (processRunning && !shell.CheckProcess())
+	bool processCheck = shell.CheckProcess();
+
+	if (processRunning && !processCheck)
 	{
 		processRunning = false;
+		TString add;
+
+		TString output(shell.GetOutput());
+		if (output.GetSize())
+			output.Set(TString(L"\n") + output + L"\n");
+
 		if (isEditable)
-			TTextField::SetText(text + L"\n\n" + shell.GetOutput() + L"\n\n" + shell.GetWorkingDirectory() + L"\n\n-->" + input);
+			add.Set(output + shell.GetWorkingDirectory() + L"\n-->" + input);
 		else
-			TTextField::SetText(text + L"\n\n" + shell.GetOutput() + L"\n\n");
+			add.Set(output);
+
+		TTextField::SetText(text + add);
+		caretLoc += add.GetSize();
+	}
+	else if (isEditable && !shell.CheckProcess() && !text.GetSize())
+	{
+		TString add(shell.GetOutput() + L"\n" + shell.GetWorkingDirectory() + L"\n-->" + input);
+		TTextField::SetText(text + add);
+		caretLoc += add.GetSize();
 	}
 
 	TControl::onDraw(obj);
@@ -242,6 +261,8 @@ bool TPromptControl::OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags
 					break;
 				case VK_RETURN:
 					SubmitCommand();
+					text.AppendChar(L'\n');
+					caretLoc++;
 					break;
 				/*case VK_UP:
 					if (GetCaretPos(&caretPoint))
@@ -295,6 +316,7 @@ void TPromptControl::SubmitCommand(TString& command)
 {
 	isPassword = false;
 	shell.SubmitCommand(command);
+	processRunning = true;
 }
 
 bool TPromptControl::isInInput(UINT proposeLoc)
@@ -307,6 +329,7 @@ void TPromptControl::SubmitCommand()
 {
 	isPassword = false;
 	shell.SubmitCommand(input);
+	processRunning = true;
 	input.Empty();
 }
 
@@ -364,6 +387,8 @@ void TPromptControl::InputChar(wchar_t cha, int times)
 				text.Delete(caretLoc, 1);
 				input.Delete(caretLoc - caretDif, 1);
 			}
+			break;
+		case L'\r':
 			break;
 		default:
 		def:

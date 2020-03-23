@@ -14,6 +14,15 @@ TShell::TShell()
 	stdOutWt = stdInWt = stdErrWt = nullptr;
 
 	RtlZeroMemory(&processInfo, sizeof(processInfo));
+
+	WCHAR shellBuffer[150];
+	ZeroMemory(shellBuffer, sizeof(WCHAR) * 150);
+
+	auto ret = GetEnvironmentVariableW(L"COMSPEC", shellBuffer, 150);
+	auto er = GetLastError();
+
+	programShell.Set(shellBuffer);
+	outputLoc = 0;
 }
 
 /*
@@ -93,7 +102,10 @@ TString TShell::GetOutput()
 		if (ReadFile(stdOutRd, str, 100, &read, nullptr))
 			output.Set(str);
 		else
+		{
+			auto err = GetLastError();
 			output.Set(L"Error Obtaining Standard Output");
+		}
 		delete[] str;
 		str = nullptr;
 	}
@@ -115,6 +127,13 @@ TString TShell::GetError()
 		char* str = new char[101];
 		ZeroMemory(str, sizeof(char) * 101);
 		DWORD read;
+
+		OVERLAPPED overlap;
+		ZeroMemory(&overlap, sizeof(overlap));
+
+
+
+
 		if (ReadFile(stdErrRd, str, 100, &read, nullptr))
 			standardError.Set(str);
 		else
@@ -158,7 +177,11 @@ bool TShell::CheckProcess()
 		if (runStatus == STILL_ACTIVE)
 			return true;
 		else if (runStatus)
-			output.Format(TString(L"Process %i terminated with Exit Code: %i\n"), processInfo.dwProcessId, statusCode);
+			output.Format(TString(L"Process %i terminated with Exit Code: %i"), processInfo.dwProcessId, statusCode);
+		CloseHandle(processInfo.hProcess);
+		CloseHandle(stdOutRd);
+		CloseHandle(stdInWt);
+		CloseHandle(stdErrRd);
 		ZeroMemory(&processInfo, sizeof(processInfo));
 	}
 	return false;
@@ -224,8 +247,10 @@ void TShell::ProcessBackgroundProcess(TString& command)
 	ZeroMemory(&start, sizeof(start));
 
 	start.cb = sizeof(start);
+
+	TString realCommand(TString(L"\"") + programShell + TString(L"\" ") + command);
 	
-	WCHAR* commandBuff = command.GetBufferCopy();
+	WCHAR* commandBuff = realCommand.GetBufferCopy();
 	BOOL creat = CreateProcessW(nullptr,
 		commandBuff,
 		&security,
@@ -294,29 +319,51 @@ void TShell::ProcessFrontCommand(TString& command)
 		return;
 	}
 
+	HANDLE saveOut = GetStdHandle(STD_OUTPUT_HANDLE),
+		saveIn = GetStdHandle(STD_INPUT_HANDLE),
+		saveEr = GetStdHandle(STD_ERROR_HANDLE);
+
+
+	SetStdHandle(STD_OUTPUT_HANDLE, stdOutWt);
+	SetStdHandle(STD_INPUT_HANDLE, stdInRd);
+	SetStdHandle(STD_ERROR_HANDLE, stdErrWt);
+
+	SetHandleInformation(stdOutRd, HANDLE_FLAG_INHERIT, 0);
+	SetHandleInformation(stdInWt, HANDLE_FLAG_INHERIT, 0);
+
 	start.cb = sizeof(start);
 	start.dwFlags = STARTF_USESTDHANDLES;//  STARTF_PREVENTPINNING | STARTF_TITLEISAPPID
 	start.hStdError = stdErrWt;
 	start.hStdInput = stdInRd;
 	start.hStdOutput = stdOutWt;
 
-	WCHAR* commandBuff = command.GetBufferCopy();
+	TString realCommand(TString(L"\"") + programShell + TString(L"\" /c ") + command);
 
-	BOOL creat = CreateProcessW(nullptr,
+	WCHAR* commandBuff = realCommand.GetBufferCopy();
+	WCHAR* appBuff = programShell.GetBufferCopy();
+
+	BOOL creat = CreateProcessW(appBuff,
 		commandBuff,
 		&security,
-		nullptr,
-		FALSE,
-		0,
+		&security,
+		TRUE,
+		CREATE_NO_WINDOW,
 		nullptr,
 		workingDirectory.GetConstantBuffer(),
 		&start,
 		&processInfo
 	);
 	delete[] commandBuff;
-	commandBuff = nullptr;
+	delete[] appBuff;
+	commandBuff = appBuff = nullptr;
+
+	SetStdHandle(STD_OUTPUT_HANDLE, saveOut);
+	SetStdHandle(STD_INPUT_HANDLE, saveIn);
+	SetStdHandle(STD_ERROR_HANDLE, saveEr);
+
 	if (!creat)
 	{
+		auto er = GetLastError();
 		CloseHandle(stdOutRd);
 		CloseHandle(stdOutWt);
 		CloseHandle(stdInRd);
@@ -327,4 +374,11 @@ void TShell::ProcessFrontCommand(TString& command)
 		output.Set(L"Failed to run Command Process");
 		return;
 	}
+
+	// close the handle pipes we don't need
+	CloseHandle(stdOutWt);
+	CloseHandle(stdErrWt);
+	CloseHandle(stdInRd);
+	CloseHandle(processInfo.hThread);
+	outputLoc = 0;
 }

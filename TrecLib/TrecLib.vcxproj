@@ -187,6 +187,7 @@
     <ClInclude Include="TrecLib.h" />
     <ClInclude Include="TrecReference.h" />
     <ClInclude Include="TShell.h" />
+    <ClInclude Include="TShell2.h" />
     <ClInclude Include="TString.h" />
     <ClInclude Include="TTrecPointerArray.h" />
     <ClInclude Include="TTrecSoftPointerArray.h" />
@@ -224,6 +225,7 @@
     <ClCompile Include="TPrimitiveType.cpp" />
     <ClCompile Include="TrecLib.cpp" />
     <ClCompile Include="TShell.cpp" />
+    <ClCompile Include="TShell2.cpp" />
     <ClCompile Include="TString.cpp" />
     <ClCompile Include="TType.cpp" />
     <ClCompile Include="TTypeMetadata.cpp" />

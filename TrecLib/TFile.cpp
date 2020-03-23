@@ -141,6 +141,10 @@ UINT TFile::ReadString(TString & rString, UINT nMax)
 {
 	rString.Empty();
 	UINT rust = 0;
+
+	if (fileEncode == fet_unknown)
+		DeduceEncodingType();
+
 	switch (fileEncode)
 	{
 	case fet_acsii:
@@ -269,7 +273,9 @@ void TFile::WriteString(const TString& lpsz)
 		break;
 	case fet_unicode_little:
 		for (UINT c = 0; lpsz[c] != L'\0'; c++)
+		{
 			Write(&bufferString[c], 2);
+		}
 	}
 
 	delete[] bufferString;

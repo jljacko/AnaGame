@@ -11,8 +11,11 @@ public:
 
 	virtual UINT Initialize() = 0;
 
+	void SetSelf(TrecPointer<MiniApp> s);
+
 protected:
 	TrecSubPointer<TWindow, TIdeWindow> win;
 	TrecPointer<TInstance> instance;
+	TrecPointerSoft<MiniApp> self;
 };
 

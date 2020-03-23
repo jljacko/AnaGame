@@ -1,6 +1,7 @@
 #pragma once
 #include <EventHandler.h>
 #include <MiniHandler.h>
+#include <MiniApp.h>
 
 class MainLayoutHandler;
 
@@ -76,8 +77,10 @@ protected:
 
 
 	/// Now to host the various mini apps that the user g=could launch on the builder
-	TDataArray<TrecPointer<MiniHandler>> ActiveDocuments;
-	TrecPointer<MiniHandler> currentDocument;
+	TDataArray<TrecPointer<MiniApp>> ActiveDocuments;
+	TrecPointer<MiniApp> currentDocument;
+
+	TrecSubPointer<TWindow, TIdeWindow> window;
 
 	virtual bool ShouldProcessMessageByType(TrecPointer<HandlerMessage> message) override;
 };

@@ -3,6 +3,7 @@
 #include "ArenaApp.h"
 #include <TDialog.h>
 #include "SourceCodeApp.h"
+#include "SourceCodeApp2.h"
 
 
 // Found on the Home Tab
@@ -100,44 +101,44 @@ MainLayoutHandler::~MainLayoutHandler()
 
 void MainLayoutHandler::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
 {
-	if (currentDocument.Get())
-		currentDocument->OnRButtonUp(nFlags, point, mOut);
+	//if (currentDocument.Get())
+	//	currentDocument->OnRButtonUp(nFlags, point, mOut);
 }
 
 void MainLayoutHandler::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
 {
-	if (currentDocument.Get())
-		currentDocument->OnLButtonDown(nFlags, point, mOut);
+	//if (currentDocument.Get())
+	//	currentDocument->OnLButtonDown(nFlags, point, mOut);
 }
 
 void MainLayoutHandler::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
 {
-	if (currentDocument.Get())
-		currentDocument->OnRButtonDown(nFlags, point, mOut);
+	/*if (currentDocument.Get())
+		currentDocument->OnRButtonDown(nFlags, point, mOut);*/
 }
 
 void MainLayoutHandler::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut)
 {
-	if (currentDocument.Get())
-		currentDocument->OnMouseMove(nFlags, point, mOut);
+	//if (currentDocument.Get())
+	//	currentDocument->OnMouseMove(nFlags, point, mOut);
 }
 
 void MainLayoutHandler::OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut)
 {
-	if (currentDocument.Get())
-		currentDocument->OnLButtonDblClk(nFlags, point, mOut);
+	//if (currentDocument.Get())
+	//	currentDocument->OnLButtonDblClk(nFlags, point, mOut);
 }
 
 void MainLayoutHandler::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
 {
-	if (currentDocument.Get())
-		currentDocument->OnLButtonUp(nFlags, point, mOut);
+	//if (currentDocument.Get())
+	//	currentDocument->OnLButtonUp(nFlags, point, mOut);
 }
 
 bool MainLayoutHandler::OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags, messageOutput* mOut)
 {
-	if (currentDocument.Get())
-		return currentDocument->OnChar(fromChar, nChar, nRepCnt, nFlags, mOut);
+	//if (currentDocument.Get())
+	//	return currentDocument->OnChar(fromChar, nChar, nRepCnt, nFlags, mOut);
 	return false;
 }
 
@@ -151,6 +152,8 @@ void MainLayoutHandler::Initialize(TrecPointer<Page> page)
 	instance = page->GetInstance();
 
 	rootControl = page->GetRootControl();
+
+	window = TrecPointerKey::GetTrecSubPointerFromTrec<TWindow, TIdeWindow>(page->GetWindowHandle());
 
 
 	// Setting up the main Ribbon
@@ -200,11 +203,11 @@ void MainLayoutHandler::HandleEvents(TDataArray<EventID_Cred>& eventAr)
 
 		int ea_id = ea.methodID;
 
-		/*if (ea_id > -1 && ea_id < calls.Size())
+		if (ea_id > -1 && ea_id < calls.Size())
 		{
 			(this->*calls[ea_id])(cont, ea);
 		}
-		else if (ea_id == -1 && ea.control == body.Get() && ea.eventType == On_sel_change)
+		/*else if (ea_id == -1 && ea.control == body.Get() && ea.eventType == On_sel_change)
 		{
 			OnSwitchTab(cont, ea);
 		}*/
@@ -214,20 +217,20 @@ void MainLayoutHandler::HandleEvents(TDataArray<EventID_Cred>& eventAr)
 
 void MainLayoutHandler::Draw()
 {
-	if (currentDocument.Get())
-		currentDocument->Draw();
+	//if (currentDocument.Get())
+	//	currentDocument->Draw();
 }
 
 void MainLayoutHandler::OnSwitchTab(TControl* tc, EventArgs ea)
 {
-	if (ea.arrayLabel >= 0 && ea.arrayLabel < ActiveDocuments.Size())
-	{
-		if (currentDocument.Get())
-			currentDocument->onHide();
-		currentDocument = ActiveDocuments[ea.arrayLabel];
-		if (currentDocument.Get())
-			currentDocument->OnShow();
-	}
+	//if (ea.arrayLabel >= 0 && ea.arrayLabel < ActiveDocuments.Size())
+	//{
+	//	if (currentDocument.Get())
+	//		currentDocument->onHide();
+	//	currentDocument = ActiveDocuments[ea.arrayLabel];
+	//	if (currentDocument.Get())
+	//		currentDocument->OnShow();
+	//}
 }
 
 void MainLayoutHandler::ProcessMessage(TrecPointer<HandlerMessage> message)
@@ -240,17 +243,17 @@ void MainLayoutHandler::OnLoadNewSolution(TControl* tc, EventArgs ea)
 
 void MainLayoutHandler::OnSaveFile(TControl* tc, EventArgs ea)
 {
-	if (currentDocument.Get())
-		currentDocument->OnSave();
+	//if (currentDocument.Get())
+	//	currentDocument->OnSave();
 }
 
 void MainLayoutHandler::OnSaveAllFiles(TControl* tc, EventArgs ea)
 {
-	for (UINT Rust = 0; Rust < ActiveDocuments.Size(); Rust++)
-	{
-		if (ActiveDocuments[Rust].Get())
-			ActiveDocuments[Rust]->OnSave();
-	}
+	//for (UINT Rust = 0; Rust < ActiveDocuments.Size(); Rust++)
+	//{
+	//	if (ActiveDocuments[Rust].Get())
+	//		ActiveDocuments[Rust]->OnSave();
+	//}
 }
 
 void MainLayoutHandler::OnNewFile(TControl* tc, EventArgs ea)
@@ -317,6 +320,10 @@ void MainLayoutHandler::OnNewCodeFile(TControl* tc, EventArgs ea)
 	ActiveDocuments.push_back(currentDocument);
 	currentDocument->InitializeControls();
 	currentDocument->OnShow();*/
+
+	currentDocument = TrecPointerKey::GetNewSelfTrecPointerAlt<MiniApp, SourceCodeApp2>(window);
+	ActiveDocuments.push_back(currentDocument);
+	currentDocument->Initialize();
 }
 
 void MainLayoutHandler::OnImportCode(TControl* tc, EventArgs ea)

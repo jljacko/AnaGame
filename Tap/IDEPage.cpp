@@ -89,6 +89,70 @@ void IDEPage::MoveBorder(float& magnitude, page_move_mode mode)
 		rootControl->Resize(topBorder);
 }
 
+void IDEPage::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
+{
+	if (currentPage.Get())
+		currentPage->OnRButtonUp(nFlags, point, mOut);
+	else
+		Page::OnRButtonUp(nFlags, point, mOut);
+}
+
+void IDEPage::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
+{
+	if (currentPage.Get())
+		currentPage->OnLButtonDown(nFlags, point, mOut);
+	else
+		Page::OnLButtonDown(nFlags, point, mOut);
+}
+
+void IDEPage::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
+{
+	if (currentPage.Get())
+		currentPage->OnRButtonDown(nFlags, point, mOut);
+	else
+		Page::OnRButtonDown(nFlags, point, mOut);
+}
+
+void IDEPage::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut)
+{
+	if (currentPage.Get())
+		currentPage->OnMouseMove(nFlags, point, mOut);
+	else
+		Page::OnMouseMove(nFlags, point, mOut);
+}
+
+void IDEPage::OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut)
+{
+	if (currentPage.Get())
+		currentPage->OnLButtonDblClk(nFlags, point, mOut);
+	else
+		Page::OnLButtonDblClk(nFlags, point, mOut);
+}
+
+void IDEPage::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
+{
+	if (currentPage.Get())
+		currentPage->OnLButtonUp(nFlags, point, mOut);
+	else
+		Page::OnLButtonUp(nFlags, point, mOut);
+}
+
+bool IDEPage::OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags, messageOutput* mOut)
+{
+	if (currentPage.Get())
+		return currentPage->OnChar(fromChar, nChar, nRepCnt, nFlags, mOut);
+	else
+		return Page::OnChar(fromChar, nChar, nRepCnt, nFlags, mOut);
+}
+
+void IDEPage::OnResize(D2D1_RECT_F& newLoc, UINT nFlags, TrecPointer<TWindowEngine> e)
+{
+	if (currentPage.Get())
+		currentPage->OnResize(newLoc, nFlags, e);
+	else
+		Page::OnResize(newLoc, nFlags, e);
+}
+
 void IDEPage::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
 	if (isContained(point, area))
@@ -316,6 +380,7 @@ TrecPointer<Page> IDEPage::AddNewPage(TrecPointer<TInstance> ins, TrecPointer<TW
 	TrecPointer<IDEPageHolder> newHolder = TrecPointerKey::GetNewTrecPointer<IDEPageHolder>(name, drawingBoard, barSpace, h, win, curArea);
 	newHolder->SetPage(newPage);
 	pages.push_back(newHolder);
+	currentPage = TrecPointerKey::GetTrecPointerFromSub<Page, IDEPage>(newPage);
 	return newHolder->GetBasePage();
 }
 
