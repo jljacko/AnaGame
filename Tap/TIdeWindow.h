@@ -39,6 +39,8 @@ public:
 
 	void AddNewPage(anagame_page pageType, ide_page_type pageLoc, TString name, TString tmlLoc, TrecPointer<EventHandler> handler, bool pageTypeStrict = false);
 
+
+
 	int CompileView(TString& file, TrecPointer<EventHandler> eh)override;
 
 protected:

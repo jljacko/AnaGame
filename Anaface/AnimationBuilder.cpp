@@ -2,6 +2,7 @@
 #include "ColorAnimation.h"
 #include "RotateAnimation.h"
 #include "TransitionAnimation.h"
+#include "GifAnimation.h"
 #include "TControl.h"
 
 AnimationBuilder::AnimationBuilder()
@@ -43,6 +44,11 @@ TString AnimationBuilder::GetName()
 	return name;
 }
 
+TString AnimationBuilder::GetType()
+{
+	return type;
+}
+
 TrecPointer<Animation> AnimationBuilder::Build()
 {
 	TrecPointer<Animation> ret;
@@ -53,6 +59,8 @@ TrecPointer<Animation> AnimationBuilder::Build()
 		ret = TrecPointerKey::GetNewTrecPointerAlt<Animation, TransitionAnimation>(phase);
 	else if (!type.CompareNoCase(TString(L"Simple-Rotation")))
 		ret = TrecPointerKey::GetNewTrecPointerAlt<Animation, RotateAnimation>(phase);
+	else if (!type.CompareNoCase(TString(L"Gif")))
+		ret = TrecPointerKey::GetNewTrecPointerAlt<Animation, GifAnimation>(phase);
 
 
 	if (!ret.Get())

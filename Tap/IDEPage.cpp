@@ -99,6 +99,8 @@ void IDEPage::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
 
 void IDEPage::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
 {
+	focusPage = GetFocusPage(point);
+
 	if (currentPage.Get())
 		currentPage->OnLButtonDown(nFlags, point, mOut);
 	else
@@ -131,6 +133,25 @@ void IDEPage::OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut)
 
 void IDEPage::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
 {
+	auto upPage = GetFocusPage(point);
+	if (focusPage.Get() && focusPage.Get() == upPage.Get())
+	{
+		currentPage = focusPage->GetBasePage();
+		switch (*mOut)
+		{
+		case negative:
+			*mOut = negativeUpdate;
+			break;
+		case positiveContinue:
+			*mOut = positiveContinueUpdate;
+			break;
+		case positiveOverride:
+			*mOut = positiveOverrideUpdate;
+		}
+
+	}
+	focusPage.Nullify();
+
 	if (currentPage.Get())
 		currentPage->OnLButtonUp(nFlags, point, mOut);
 	else
@@ -250,6 +271,7 @@ void IDEPage::OnLButtonUp()
 {
 	curPoint.x = curPoint.y = 0.0f;
 	moveMode = page_move_mode_normal;
+
 }
 
 void IDEPage::Draw(TrecPointer<TBrush> color, TWindowEngine* twe)
@@ -261,6 +283,15 @@ void IDEPage::Draw(TrecPointer<TBrush> color, TWindowEngine* twe)
 		color->FillRectangle(topBorder);
 	if (type != ide_page_type_drag)
 	{
+		for (UINT C = 0; C < pages.Size(); C++)
+		{
+			if (pages[C].Get())
+			{
+				pages[C]->Draw();
+			}
+		}
+
+
 		if (dynamic_cast<IDEPage*>(currentPage.Get()))
 			dynamic_cast<IDEPage*>(currentPage.Get())->Draw(color, twe);
 	}
@@ -367,7 +398,7 @@ TrecPointer<Page> IDEPage::AddNewPage(TrecPointer<TInstance> ins, TrecPointer<TW
 	curArea.bottom = curArea.top + barSpace;
 
 
-	for (UINT c = pages.Size() - 1; c > -1; c--)
+	for (UINT c = pages.Size() - 1; c < pages.Size(); c--)
 	{
 		if (pages[c].Get() && pages[c]->GetLocation().right)
 		{
@@ -416,6 +447,16 @@ void IDEPage::RemovePage(TrecPointer<IDEPageHolder> pageHolder)
 bool IDEPage::IsDrawing()
 {
 	return draw = !isSnipZero(area);
+}
+
+TrecPointer<IDEPageHolder> IDEPage::GetFocusPage(TPoint& point)
+{
+	for (UINT c = 0; c < pages.Size(); c++)
+	{
+		if(pages[c].Get() && isContained(point, pages[c]->GetLocation()))
+			return pages[c];
+	}
+	return TrecPointer<IDEPageHolder>();
 }
 
 void IDEPage::MouseMoveBody(TPoint& diff)

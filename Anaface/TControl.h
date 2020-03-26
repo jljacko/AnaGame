@@ -380,6 +380,8 @@ public:
 
 	TrecPointer<TBrush> GetBrush();
 
+	UINT GetImageCount();
+
 private:
 	TrecPointer<TGradientStopCollection> getStopCollection(TDataArray<D2D1_COLOR_F>& colors);
 	void ResetBrush();

@@ -732,6 +732,8 @@ TrecPointer<styleTable> classy;
 			animateData.push_back(animate);
 		}
 	}
+
+	bool callOnGif = false;
 		
 	if (content1.Get())
 	{
@@ -766,6 +768,9 @@ TrecPointer<styleTable> classy;
 
 			animateData.push_back(animate);
 		}
+
+		if (content1->GetImageCount() > 1)
+			callOnGif = true;
 	}
 	if (text1.Get())
 	{
@@ -856,6 +861,7 @@ TrecPointer<styleTable> classy;
 
 			animateData.push_back(animate);
 		}
+
 	}
 	if (text2.Get())
 	{
@@ -945,6 +951,7 @@ TrecPointer<styleTable> classy;
 
 			animateData.push_back(animate);
 		}
+
 	}
 	if (text3.Get())
 	{
@@ -967,6 +974,18 @@ TrecPointer<styleTable> classy;
 			animateData.push_back(animate);
 		}
 	}
+
+	if (callOnGif)
+	{
+		TrecPointer<AnimationData> animate = TrecPointerKey::GetNewTrecPointer<AnimationData>();
+		animate->control = tThis;
+		animate->brush = TrecPointerKey::GetTrecPointerFromSub<TBrush, TBitmapBrush>(content1->image);
+		animate->name.Set(L"Gif");
+		animate->storyName.Set(L"GifRunner");
+
+		animateData.push_back(animate);
+	}
+
 	int occ = 0;
 	valpoint = attributes.retrieveEntry(TString(L"|ContainerLoc"), occ);
 
@@ -5497,6 +5516,14 @@ void TContent::SetLocation(const D2D1_RECT_F& loc)
 TrecPointer<TBrush> TContent::GetBrush()
 {
 	return brush;
+}
+
+UINT TContent::GetImageCount()
+{
+	if(!image.Get())
+		return 0;
+
+	return image->GetFrameCount();
 }
 
 TrecPointer<TGradientStopCollection> TContent::getStopCollection(TDataArray<D2D1_COLOR_F>& colors)

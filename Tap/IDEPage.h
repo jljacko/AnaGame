@@ -92,6 +92,9 @@ protected:
 	TDataArray<TrecPointer<IDEPageHolder>> pages;
 	TrecPointer<Page> currentPage;
 
+	TrecPointer<IDEPageHolder> focusPage;
+	TrecPointer<IDEPageHolder> GetFocusPage(TPoint& point);
+
 	ide_page_type type;
 	UINT barSpace;
 	page_move_mode moveMode;

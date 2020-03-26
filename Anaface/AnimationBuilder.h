@@ -13,6 +13,7 @@ public:
 	void SetAttribute(const TString& key, TrecPointer<TString> value);
 
 	TString GetName();
+	TString GetType();
 
 	TrecPointer<Animation> Build();
 protected:

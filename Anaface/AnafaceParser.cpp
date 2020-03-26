@@ -488,6 +488,27 @@ UCHAR * AnafaceParser::GetAnaGameType()
 
 TDataArray<TrecPointer<AnimationBuilder>> AnafaceParser::GetAnimations()
 {
+	TrecPointer<AnimationBuilder> gifBuilder;
+
+	for (UINT c = 0; c < animations.Size(); c++)
+	{
+		if (animations[c].Get() && animations[c]->GetName().CompareNoCase(TString(L"Gif")) && animations[c]->GetType().CompareNoCase(TString(L"Gif")))
+		{
+			gifBuilder = animations[c];
+			break;
+		}
+	}
+
+	if (!gifBuilder.Get())
+	{
+		gifBuilder = TrecPointerKey::GetNewTrecPointer<AnimationBuilder>();
+		gifBuilder->SetName(TString(L"Gif"));
+		gifBuilder->SetType(TString(L"Gif"));
+		gifBuilder->SetAttribute(TString(L"|RefreshRate"), TrecPointerKey::GetNewTrecPointer<TString>(L"10"));
+	}
+
+	animations.push_back(gifBuilder);
+
 	return animations;
 }
 
@@ -498,6 +519,19 @@ TDataArray<TString> AnafaceParser::GetStoryBoards()
 
 TDataArray<TString> AnafaceParser::GetPersistentStoryBoards()
 {
+	bool hasGif = false;
+
+	for (UINT c = 0; c < persistantStoryBoards.Size(); c++)
+	{
+		if (!persistantStoryBoards[c].Compare(L"GifRunner"))
+		{
+			hasGif = true;
+			break;
+		}
+	}
+
+	if (!hasGif)
+		persistantStoryBoards.push_back(TString(L"GifRunner"));
 	return persistantStoryBoards;
 }
 
