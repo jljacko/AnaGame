@@ -15,9 +15,11 @@ TShell::TShell()
 
 	RtlZeroMemory(&processInfo, sizeof(processInfo));
 
+	// Set up a buffer to get the location of the Command prompt
 	WCHAR shellBuffer[150];
 	ZeroMemory(shellBuffer, sizeof(WCHAR) * 150);
 
+	// Location of the Command Prompt is held by "COMSPEC", so use it to get our prompt program
 	auto ret = GetEnvironmentVariableW(L"COMSPEC", shellBuffer, 150);
 	auto er = GetLastError();
 
@@ -94,11 +96,13 @@ void TShell::SubmitCommand(TString& command)
 */
 TString TShell::GetOutput()
 {
+	// If a process is running capture the output
 	if (processInfo.hProcess)
 	{
 		char* str = new char[101];
 		ZeroMemory(str, sizeof(char) * 101);
 		DWORD read;
+		// Use our read-output handle to read the output from our running process
 		if (ReadFile(stdOutRd, str, 100, &read, nullptr))
 			output.Set(str);
 		else
@@ -109,6 +113,7 @@ TString TShell::GetOutput()
 		delete[] str;
 		str = nullptr;
 	}
+	// capture the output into a return string and empty the output string
 	TString ret(output);
 	output.Empty();
 	return ret;
@@ -122,6 +127,7 @@ TString TShell::GetOutput()
 */
 TString TShell::GetError()
 {
+	// If Process is running capture the error reported by the process
 	if (processInfo.hProcess)
 	{
 		char* str = new char[101];
@@ -133,7 +139,7 @@ TString TShell::GetError()
 
 
 
-
+		// Use our read-error handle to read the output from our running process
 		if (ReadFile(stdErrRd, str, 100, &read, nullptr))
 			standardError.Set(str);
 		else
@@ -141,6 +147,7 @@ TString TShell::GetError()
 		delete[] str;
 		str = nullptr;
 	}
+	// Capture the error string into a return string and empty the error string for further data
 	TString ret(standardError);
 	standardError.Empty();
 	return ret;
@@ -154,6 +161,7 @@ TString TShell::GetError()
 */
 void TShell::TerminateProcess()
 {
+	// To-Do: Find a less crude way of terminating the process
 	if (processInfo.hProcess)
 	{
 		::TerminateProcess(processInfo.hProcess, 0);
@@ -163,27 +171,33 @@ void TShell::TerminateProcess()
 
 /*
 * Method: TShell - CheckProcess
-* Purpose: Reports whether there is an active process running under the shell
+* Purpose: Reports whether there is an active process running under the shell, if a process has finished,
+*	this method also cleans up the resources associated with the process and prepares to host a new one
 * Parameters: void
 * Returns: bool - whether there is a process running under this process
 */
 bool TShell::CheckProcess()
 {
+	// If a process is active, check on it
 	if (processInfo.hProcess)
 	{
 		DWORD statusCode = 0;
+		// Find out if the process is still running
 		BOOL runStatus = GetExitCodeProcess(processInfo.hProcess, &statusCode);
 
-		if (runStatus == STILL_ACTIVE)
+		if (runStatus == STILL_ACTIVE) // If the process is still active, return true
 			return true;
-		else if (runStatus)
+		else if (runStatus) // Report the termination of the process
 			output.Format(TString(L"Process %i terminated with Exit Code: %i"), processInfo.dwProcessId, statusCode);
+		
+		// Close the handles we no longer need
 		CloseHandle(processInfo.hProcess);
 		CloseHandle(stdOutRd);
 		CloseHandle(stdInWt);
 		CloseHandle(stdErrRd);
 		ZeroMemory(&processInfo, sizeof(processInfo));
 	}
+	// If we make it here, we can assume that the TShell no longer has an active process running, so report false
 	return false;
 }
 
@@ -237,34 +251,38 @@ void TShell::Process_cd(TString& command)
 */
 void TShell::ProcessBackgroundProcess(TString& command)
 {
+	// Set up default security settings
 	SECURITY_ATTRIBUTES security;
 	ZeroMemory(&security, sizeof(security));
 	security.nLength = sizeof(security);
 	security.bInheritHandle = TRUE;
 
-
+	// Set up a start struct with default settings
 	STARTUPINFOW start;
 	ZeroMemory(&start, sizeof(start));
 
 	start.cb = sizeof(start);
 
+	// St up the real command so that any spaces in "programShell" don't get mistaken for a split in arguments
 	TString realCommand(TString(L"\"") + programShell + TString(L"\" ") + command);
 	
+	// We need to use the Buffer Copy as Windows documents that the string could be editied by the function
 	WCHAR* commandBuff = realCommand.GetBufferCopy();
-	BOOL creat = CreateProcessW(nullptr,
-		commandBuff,
-		&security,
-		nullptr,
-		FALSE,
-		0,
-		nullptr,
-		workingDirectory.GetConstantBuffer(),
-		&start,
-		&processInfo
+	BOOL creat = CreateProcessW(nullptr, 
+		commandBuff,	// Command to call
+		&security,		// use our security object for the process
+		nullptr,		// nothing for the thread
+		FALSE,			// no need to inherite handles since this process is background and we don't ned to track it
+		0,				// No special flags
+		nullptr,		// No special environment settings
+		workingDirectory.GetConstantBuffer(), // the Working Directory to use
+		&start,			// the start info object we created
+		&processInfo	// Get information about our process
 	);
 	delete[] commandBuff;
 	commandBuff = nullptr;
 
+	// Since this is a background process, simply report success or fail back to the shell control
 	if (creat)
 	{
 		output.Format(TString(L"Created Process with ID=[%d] and Thread ID=[%d]"), processInfo.dwProcessId, processInfo.dwThreadId);
@@ -285,22 +303,28 @@ void TShell::ProcessBackgroundProcess(TString& command)
 */
 void TShell::ProcessFrontCommand(TString& command)
 {
+	// Set default startup info
 	STARTUPINFOW start;
 	ZeroMemory(&start, sizeof(start));
 
+	// Set basic Security
 	SECURITY_ATTRIBUTES security;
 	ZeroMemory(&security, sizeof(security));
 	security.nLength = sizeof(security);
+	// Have the process inherit our handles
 	security.bInheritHandle = TRUE;
 
+	// Attempt to create a pipe so we can capture standard output
 	if (!CreatePipe(&stdOutRd, &stdOutWt, &security, 0)) 
 	{
 		output.Set(L"Error Creating Outout Pipe for process");
 		return;
 	}
 
+	// Attempt to create standard input pipe
 	if (!CreatePipe(&stdInRd, &stdInWt, &security, 0))
 	{
+		// If we failed, clean up the outout pipe that did succeed and report issue to user
 		CloseHandle(stdOutRd);
 		CloseHandle(stdOutWt);
 		stdOutRd = stdOutWt = nullptr;
@@ -308,8 +332,10 @@ void TShell::ProcessFrontCommand(TString& command)
 		return;
 	}
 
+	// Attempt to create a standard error pipe
 	if (!CreatePipe(&stdErrRd, &stdErrWt, &security, 0))
 	{
+		// Failed? Clean up the input and output pipe that worked
 		CloseHandle(stdOutRd);
 		CloseHandle(stdOutWt);
 		CloseHandle(stdInRd);
@@ -319,6 +345,8 @@ void TShell::ProcessFrontCommand(TString& command)
 		return;
 	}
 
+	// Save handle information so we can set up the handles for the process.
+	// Failure to do so caused ReadFile calls to fail
 	HANDLE saveOut = GetStdHandle(STD_OUTPUT_HANDLE),
 		saveIn = GetStdHandle(STD_INPUT_HANDLE),
 		saveEr = GetStdHandle(STD_ERROR_HANDLE);
@@ -332,37 +360,44 @@ void TShell::ProcessFrontCommand(TString& command)
 	SetHandleInformation(stdInWt, HANDLE_FLAG_INHERIT, 0);
 
 	start.cb = sizeof(start);
-	start.dwFlags = STARTF_USESTDHANDLES;//  STARTF_PREVENTPINNING | STARTF_TITLEISAPPID
+	start.dwFlags = STARTF_USESTDHANDLES;// Make sure our pipe handles are used
 	start.hStdError = stdErrWt;
 	start.hStdInput = stdInRd;
 	start.hStdOutput = stdOutWt;
 
+	// Set up the real command to use, using quotes to guard against spaces in "programShell"
 	TString realCommand(TString(L"\"") + programShell + TString(L"\" /c ") + command);
 
+	// Get buffer copies as the Documentation suggests that CreateProcessW could write to these buffers
 	WCHAR* commandBuff = realCommand.GetBufferCopy();
 	WCHAR* appBuff = programShell.GetBufferCopy();
 
-	BOOL creat = CreateProcessW(appBuff,
-		commandBuff,
-		&security,
-		&security,
-		TRUE,
-		CREATE_NO_WINDOW,
-		nullptr,
-		workingDirectory.GetConstantBuffer(),
-		&start,
-		&processInfo
+	BOOL creat = CreateProcessW(appBuff,		// Program name (command Prompt by Default)
+		commandBuff,							// Command to run
+		&security,								// Security for the Process
+		&security,								// Security for the thread
+		TRUE,									// Make sure process get our handles so we can communicate with it
+		CREATE_NO_WINDOW,						// We're presenting the output in our window so don't create a new one
+		nullptr,								// no special environment
+		workingDirectory.GetConstantBuffer(),	// Provide the working directory to use
+		&start,									// Default  start info
+		&processInfo							// Information about the process being created (out param)
 	);
+	// Delete the string buffers we no longer need them
 	delete[] commandBuff;
 	delete[] appBuff;
 	commandBuff = appBuff = nullptr;
 
+	// Restore the old handles
 	SetStdHandle(STD_OUTPUT_HANDLE, saveOut);
 	SetStdHandle(STD_INPUT_HANDLE, saveIn);
 	SetStdHandle(STD_ERROR_HANDLE, saveEr);
 
 	if (!creat)
 	{
+		// Here, we hand failed to create a new process, so clean up the pipes we have created
+
+		// Added for debugging
 		auto er = GetLastError();
 		CloseHandle(stdOutRd);
 		CloseHandle(stdOutWt);
@@ -375,7 +410,7 @@ void TShell::ProcessFrontCommand(TString& command)
 		return;
 	}
 
-	// close the handle pipes we don't need
+	// close the handle pipes we don't need, Failure to do so will cause ReadFile to hang Anagame
 	CloseHandle(stdOutWt);
 	CloseHandle(stdErrWt);
 	CloseHandle(stdInRd);

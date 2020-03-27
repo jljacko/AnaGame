@@ -170,6 +170,13 @@ bool TFileShell::IsReadOnly()
 	return  fileInfo.dwFileAttributes & FILE_ATTRIBUTE_READONLY;
 }
 
+
+/*
+* Method: TFileShell::TFileShell
+* Purpose: Creates the intended file attribute object
+* Parameters: const TString& path -  the path of the intended file
+* Returns: TFIleShell requested
+*/
 TFileShell::TFileShell(const TString& path)
 {
 	if (GetFileAttributesExW(path.GetConstantBuffer(), GET_FILEEX_INFO_LEVELS::GetFileExInfoStandard, &this->fileInfo))
