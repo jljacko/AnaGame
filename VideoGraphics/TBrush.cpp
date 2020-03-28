@@ -232,6 +232,7 @@ TBrush::TBrush(TrecPointer<DrawingBoard> rt)
 		throw L"ERROR! Needed Render Target to Not Be Null";
 
 	currentRenderer = rt->GetRenderer();
+
 	if (!currentRenderer.Get())
 		throw L"Error! Drawing Board had a NULL Render Target";
 
