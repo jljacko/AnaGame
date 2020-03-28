@@ -3,6 +3,12 @@
 #include "DrawingBoard.h"
 #include "TGeometry.h"
 
+/**
+ * Method: TBitmapBrush::NextFrame
+ * Purpose: In a multiframe image, sets the brush to draw the next frame in a sequence
+ * Parameters:void
+ * Returns: void
+ */
 void TBitmapBrush::NextFrame()
 {
 	if (!valid)
@@ -14,6 +20,12 @@ void TBitmapBrush::NextFrame()
 	brush = brushes[currentFrame];
 }
 
+/**
+ * Method: TBitmapBrush::PrevFrame
+ * Purpose: In a multifram image, sets the brush to draw the previous frame in an image
+ * Parameters: void
+ * Returns: void
+ */
 void TBitmapBrush::PrevFrame()
 {
 	if (!valid)return;
@@ -24,27 +36,57 @@ void TBitmapBrush::PrevFrame()
 	brush = brushes[currentFrame];
 }
 
+/**
+ * Method: TBitmapBrush::IsValid
+ * Purpose: Reports whether the Brush Construction worked and is ready to draw
+ * Parameters: void
+ * Returns: bool
+ */
 bool TBitmapBrush::IsValid()
 {
 	return valid;
 }
 
+/**
+ * Method: TBitmapBrush::SetLocation
+ * Purpose: Sets the location where the image will be drawn
+ * Parameters: RECT_2D& loc - the location on the board to draw the image
+ * Returns: void
+ */
 void TBitmapBrush::SetLocation(RECT_2D& loc)
 {
 	location = loc;
 	RefreshBrush();
 }
 
+/**
+ * Method: TBitmapBrush::GetCurrentFrame
+ * Purpose: Returns the index of the current frame to be drawn
+ * Parameters: void
+ * Returns: UINT - the index of the current frame
+ */
 UINT TBitmapBrush::GetCurrentFrame()
 {
 	return currentFrame;
 }
 
+/**
+ * Method: TBitmapBrush::GetFrameCount
+ * Purpose: Retrieves the total number of frames in the image
+ * Parameters: void
+ * Returns: UINT - the total frame count
+ */
 UINT TBitmapBrush::GetFrameCount()
 {
 	return bitmaps.Size();
 }
 
+/**
+ * Method: TBitmapBrush::~TBitmapBrush
+ * Purpose: Destructor
+ * Parameters: void
+ * Returns: void
+ */
 TBitmapBrush::~TBitmapBrush()
 {
 	SAFE_RELEASE(imageFactory)
@@ -56,6 +98,12 @@ TBitmapBrush::~TBitmapBrush()
 	bitmaps.RemoveAll();
 }
 
+/**
+ * Method: TBitmapBrush::FillRectangle
+ * Purpose: Fills the Rectangle with the currently selected image
+ * Parameters: const RECT_2D& r - the rectangle to apply the brush to
+ * Returns: void
+ */
 void TBitmapBrush::FillRectangle(const RECT_2D& r)
 {
 	if (Refresh() && currentFrame < bitmaps.Size() && bitmaps[currentFrame].Get() 
@@ -65,6 +113,12 @@ void TBitmapBrush::FillRectangle(const RECT_2D& r)
 	}
 }
 
+/**
+ * Method: TBitmapBrush::FillRoundedRectangle
+ * Purpose:  Fills the Rounded Rectangle with the currently selected image
+ * Parameters: const ROUNDED_RECT_2D& r - the rounded rectangle to apply the brush to
+ * Returns: void
+ */
 void TBitmapBrush::FillRoundedRectangle(const ROUNDED_RECT_2D& r)
 {
 	if (Refresh() && currentFrame < bitmaps.Size() && bitmaps[currentFrame].Get()
@@ -77,6 +131,12 @@ void TBitmapBrush::FillRoundedRectangle(const ROUNDED_RECT_2D& r)
 	}
 }
 
+/**
+ * Method: TBitmapBrush::FillEllipse
+ * Purpose: Fills the Ellipse with the currently selected image
+ * Parameters: const ELLIPSE_2D& r - the Ellipse to apply the brush to
+ * Returns: void
+ */
 void TBitmapBrush::FillEllipse(const ELLIPSE_2D& r)
 {
 	if (Refresh() && currentFrame < bitmaps.Size() && bitmaps[currentFrame].Get()
@@ -95,6 +155,12 @@ void TBitmapBrush::FillEllipse(const ELLIPSE_2D& r)
 	}
 }
 
+/**
+ * Method: TBitmapBrush::FillGeometry
+ * Purpose: Fills the Geometry with the currently selected image
+ * Parameters: TrecPointer<TGeometry> geo - the Geometry to apply the brush to
+ * Returns:void
+ */
 void TBitmapBrush::FillGeometry(TrecPointer<TGeometry> geo)
 {
 	if (geo.Get() && Refresh() && currentFrame < bitmaps.Size() && bitmaps[currentFrame].Get()
@@ -112,6 +178,14 @@ void TBitmapBrush::FillGeometry(TrecPointer<TGeometry> geo)
 }
 
 
+/**
+ * Method: TBitmapBrush::TBitmapBrush
+ * Purpose: Cretes a TBitmap Brush
+ * Parameters: TrecPointer<TFileShell> picture - the location of the image file
+ *				TrecPointer<DrawingBoard> rt - the Drawing Board crating the Brush
+ *				RECT_2D& loc - the initial location to draw the image
+ * Returns: New Bitmap Brush Object
+ */
 TBitmapBrush::TBitmapBrush(TrecPointer<TFileShell> picture, TrecPointer<DrawingBoard> rt, RECT_2D& loc): TBrush(rt)
 {
 	valid = false;
@@ -206,6 +280,13 @@ TBitmapBrush::TBitmapBrush(TrecPointer<TFileShell> picture, TrecPointer<DrawingB
 	location = loc;
 }
 
+/**
+ * Method: TBitmapBrush::RefreshBrush
+ * Purpose: Makes sure that the Brush is compatible with the Render Target, as Direct2D demands that a new Brush be created when
+ *		a new Render Target is used
+ * Parameters: void
+ * Returns: void
+ */
 void TBitmapBrush::RefreshBrush()
 {
 	brushes.RemoveAll();

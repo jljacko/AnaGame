@@ -17,7 +17,7 @@ class _VIDEO_GRAPHICS TColor : public TObject
 public:
 
 	/**
-	 * Mehtod: TColor::TColor
+	 * Method: TColor::TColor
 	 * Purpose: Default constructor
 	 * Parameters: void
 	 * Returns: New TColor Object, the value set to Black
@@ -27,7 +27,7 @@ public:
 	TColor();
 
 	/**
-	 * Mehtod: TColor::TColor
+	 * Method: TColor::TColor
 	 * Purpose: Enum constructor
 	 * Parameters: t_color::Enum - the Direct2D enumeration of the desired color
 	 * Returns: New TColor Object
@@ -35,7 +35,7 @@ public:
 	TColor(t_color::Enum);
 
 	/**
-	 * Mehtod: TColor::TColor
+	 * Method: TColor::TColor
 	 * Purpose: rgb constructor
 	 * Parameters: float r - the red value to set to
 	 *				float g - the green value to set to
@@ -45,7 +45,7 @@ public:
 	TColor(float r, float g, float b);
 
 	/**
-	 * Mehtod: TColor::TColor
+	 * Method: TColor::TColor
 	 * Purpose: rgba constructor
 	 * Parameters: float r - the red value to set to
 	 *				float g - the green value to set to
@@ -56,7 +56,7 @@ public:
 	TColor(float r, float g, float b, float a);
 
 	/**
-	 * Mehtod: TColor::TColor
+	 * Method: TColor::TColor
 	 * Purpose: Copy Construcotr
 	 * Parameters: const TColor& c - the TColor to get the color from
 	 * Returns: New TColor Object
@@ -64,7 +64,7 @@ public:
 	TColor(const TColor& c);
 
 	/**
-	 * Mehtod: TColor::TColor
+	 * Method: TColor::TColor
 	 * Purpose: struct constructor
 	 * Parameters: const color_struct& color - the structure hoding the desired color
 	 * Returns: New TColor Object
@@ -73,7 +73,7 @@ public:
 
 
 	/**
-	 * Mehtod: TColor::SetColor
+	 * Method: TColor::SetColor
 	 * Purpose: Sets the color based off of the Enumeration for the color
 	 * Parameters: t_color::Enum - the Direct2D provided enum for the color
 	 * Returns: void
@@ -81,7 +81,7 @@ public:
 	void SetColor(t_color::Enum);
 
 	/**
-	 * Mehtod: TColor::SetColor
+	 * Method: TColor::SetColor
 	 * Purpose: Sets the color based off of specific rgb values
 	 * Parameters: float r - the red value to set to
 	 *				float g - the green value to set to
@@ -91,7 +91,7 @@ public:
 	void SetColor(float r, float g, float b);
 
 	/**
-	 * Mehtod: TColor::SetColor
+	 * Method: TColor::SetColor
 	 * Purpose: Sets the color based off of specific rgba values
 	 * Parameters: float r - the red value to set to
 	 *				float g - the green value to set to
@@ -102,7 +102,7 @@ public:
 	void SetColor(float r, float g, float b, float a);
 
 	/**
-	 * Mehtod: TColor::SetColor
+	 * Method: TColor::SetColor
 	 * Purpose: Sets this Color to the values held by the Parameter Color
 	 * Parameters: const TColor& co - the color Object to borow from
 	 * Returns: void
@@ -111,7 +111,7 @@ public:
 
 
 	/**
-	 * Mehtod: TColor::GetRed
+	 * Method: TColor::GetRed
 	 * Purpose: Retrieves the red value of the color
 	 * Parameters: void
 	 * Returns: float - the red value of the color
@@ -119,7 +119,7 @@ public:
 	float GetRed()const;
 
 	/**
-	 * Mehtod: TColor::GetBlue
+	 * Method: TColor::GetBlue
 	 * Purpose: Retrieves the blue value of the color
 	 * Parameters: void
 	 * Returns: float - the blue value of the color
@@ -127,7 +127,7 @@ public:
 	float GetBlue()const;
 
 	/**
-	 * Mehtod: TColor::GetGreen
+	 * Method: TColor::GetGreen
 	 * Purpose: Retrieves the green value of the color
 	 * Parameters: void
 	 * Returns: float - the green value of the color
@@ -135,7 +135,7 @@ public:
 	float GetGreen()const;
 
 	/**
-	 * Mehtod: TColor::GetOpacity
+	 * Method: TColor::GetOpacity
 	 * Purpose: Retrieves the Opacity value of the color
 	 * Parameters: void
 	 * Returns: float - the opacity of the color
@@ -144,7 +144,7 @@ public:
 
 
 	/**
-	 * Mehtod: TColor::GetColor
+	 * Method: TColor::GetColor
 	 * Purpose: Returns the color held by the object
 	 * Parameters: void
 	 * Returns: color_struct - the underlying color structure

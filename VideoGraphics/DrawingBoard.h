@@ -18,7 +18,7 @@ class _VIDEO_GRAPHICS DrawingBoard : public TObject
 public:
 
 	/**
-	 * Mehtod: DrawingBoard::DrawingBoard
+	 * Method: DrawingBoard::DrawingBoard
 	 * Purpose: Constructor that sets the mode to 2D
 	 * Parameters: TrecComPointer<ID2D1Factory1> fact - the Direct2D Factory associated with the intance
 	 *				 HWND window -  the Window handle associated with the window the Drawing board is attaching to
@@ -30,7 +30,7 @@ public:
 	DrawingBoard(TrecComPointer<ID2D1Factory1> fact, HWND window);
 
 	/**
-	 * Mehtod: DrawingBoard::DrawingBoard
+	 * Method: DrawingBoard::DrawingBoard
 	 * Purpose: Constructor that sets the mode to 3D
 	 * Parameters: TrecComPointer<ID2D1Factory1> fact - the Direct2D Factory associated with the intance
 	 *				TrecPointer<TWindowEngine> engine - the set of resources that enable integration with Direct3D
@@ -40,7 +40,7 @@ public:
 
 
 	/**
-	 * Mehtod: DrawingBoard::Set3D
+	 * Method: DrawingBoard::Set3D
 	 * Purpose: Enables the Drawing Board to switch from only 2D support to 3D support
 	 * Parameters: TrecPointer<TWindowEngine> engine - the set of resources needed to jump from 2D to 3D
 	 * Returns: void
@@ -50,7 +50,7 @@ public:
 	void Set3D(TrecPointer<TWindowEngine> engine);
 
 	/**
-	 * Mehtod: DrawingBoard::Resize
+	 * Method: DrawingBoard::Resize
 	 * Purpose: Resets the Underlying Rendertarget should the window size be changed
 	 * Parameters: HWND window -  the window to get the size from
 	 * Returns: void
@@ -58,7 +58,7 @@ public:
 	void Resize(HWND window);
 
 	/**
-	 * Mehtod: DrawingBoard::GetBrush
+	 * Method: DrawingBoard::GetBrush
 	 * Purpose: Produces a Solid Color-enabled TBrush
 	 * Parameters: const TColor& col - the color to set the brush to
 	 * Returns: TrecPointer<TBrush> - the TBrush with solid-color enabled
@@ -66,7 +66,7 @@ public:
 	TrecPointer<TBrush> GetBrush(const TColor& col);
 
 	/**
-	 * Mehtod: DrawingBoard::GetBrush
+	 * Method: DrawingBoard::GetBrush
 	 * Purpose: Produces a radial-gradient enabled TBrush
 	 * Parameters: const TGradientStopCollection& coll - the collection of colors to work with
 	 *				const POINT_2D& p1 -Center of the gradient ellipse
@@ -78,7 +78,7 @@ public:
 	TrecPointer<TBrush> GetBrush(const TGradientStopCollection& coll, const POINT_2D& p1, const POINT_2D& p2, float x, float y);
 
 	/**
-	 * Mehtod: DrawingBoard::GetBrush
+	 * Method: DrawingBoard::GetBrush
 	 * Purpose: Produces a linear-gradient enabled TBrush
 	 * Parameters: const TGradientStopCollection& coll - the collection of colors to work with
 	 *				const POINT_2D& p1 - one point the line is expected to pass through
@@ -88,7 +88,7 @@ public:
 	TrecPointer<TBrush> GetBrush(const TGradientStopCollection& coll, const POINT_2D& p1, const POINT_2D& p2);
 
 	/**
-	 * Mehtod: DrawingBoard::GetBrush
+	 * Method: DrawingBoard::GetBrush
 	 * Purpose: Produces a Brush containing an image and capable of drawing an image
 	 * Parameters: TrecPointer<TFileShell> picture - Pointer to the file to get the picture from
 	 *				RECT_2D& loc - the location where the picture is expected to be drawn
@@ -98,7 +98,7 @@ public:
 
 
 	/**
-	 * Mehtod: DrawingBoard::GetRenderer
+	 * Method: DrawingBoard::GetRenderer
 	 * Purpose: Returns the Raw Render Object in case direct operations need to be performed on it
 	 * Parameters: void
 	 * Returns: TrecComPointer<ID2D1RenderTarget> - the underlying Render Target
@@ -106,7 +106,7 @@ public:
 	TrecComPointer<ID2D1RenderTarget> GetRenderer();
 
 	/**
-	 * Mehtod: DrawingBoard::GetGdiRenderer
+	 * Method: DrawingBoard::GetGdiRenderer
 	 * Purpose: Retrieves the GDI-RenderTarget
 	 * Parameters: void
 	 * Returns: TrecComPointer<ID2D1GdiInteropRenderTarget> the 3D RenderTarget
@@ -118,7 +118,7 @@ public:
 
 
 	/**
-	 * Mehtod: DrawingBoard::SetSelf
+	 * Method: DrawingBoard::SetSelf
 	 * Purpose: Enables a reference to itself so that when Brushes are created, they have a reference to their creator
 	 * Parameters: TrecPointer<DrawingBoard> self -  the Parameter holding a reference to this object
 	 * Returns: void
@@ -127,7 +127,7 @@ public:
 
 
 	/**
-	 * Mehtod: DrawingBoard::SetTransform
+	 * Method: DrawingBoard::SetTransform
 	 * Purpose: Sets the transform of the underlying RenderTarget. Enables the rotation, translation, skewing, and sizing of various images
 	 * Parameters: const TRANSFORM_2D& matrix
 	 * Returns: bool - whether the operation was successful
@@ -136,7 +136,7 @@ public:
 
 
 	/**
-	 * Mehtod: DrawingBoard::GetTransform
+	 * Method: DrawingBoard::GetTransform
 	 * Purpose: Retrieves the current transform matrix of the underlying RenderTarget
 	 * Parameters: TRANSFORM_2D& matrix
 	 * Returns: bool - whether the operation was successful
@@ -150,7 +150,7 @@ public:
 
 
 	/**
-	 * Mehtod: DrawingBoard::PopLayer
+	 * Method: DrawingBoard::PopLayer
 	 * Purpose: Removes a layer from the Render Target
 	 * Parameters: void
 	 * Returns: void
@@ -158,7 +158,7 @@ public:
 	void PopLayer();
 
 	/**
-	 * Mehtod: DrawingBoard::AddLayer
+	 * Method: DrawingBoard::AddLayer
 	 * Purpose: Adds a layer so that contents drawn withing the Rectangle are presented
 	 * Parameters: const RECT_2D& ret
 	 * Returns: bool - whether the operation was successful
@@ -166,7 +166,7 @@ public:
 	bool AddLayer(const RECT_2D& ret);
 
 	/**
-	 * Mehtod: DrawingBoard::AddLayer
+	 * Method: DrawingBoard::AddLayer
 	 * Purpose:Adds a layer so that contents drawn withing the Ellipse are presented
 	 * Parameters: const ELLIPSE_2D& ellipse
 	 * Returns: bool - whether the operation was successful
@@ -174,7 +174,7 @@ public:
 	bool AddLayer(const ELLIPSE_2D& ellipse);
 
 	/**
-	 * Mehtod: DrawingBoard::AddLayer
+	 * Method: DrawingBoard::AddLayer
 	 * Purpose: Adds a layer so that contents drawn withing the Rounded Rectangle are presented
 	 * Parameters: const ROUNDED_RECT_2D& rRect
 	 * Returns: bool - whether the operation was successful
@@ -182,7 +182,7 @@ public:
 	bool AddLayer(const ROUNDED_RECT_2D& rRect);
 
 	/**
-	 * Mehtod: DrawingBoard::AddLayer
+	 * Method: DrawingBoard::AddLayer
 	 * Purpose:Adds a layer so that contents drawn withing the geometry are presented
 	 * Parameters: const TDataArray<POINT_2D>& points
 	 * Returns: bool - whether the operation was successful
@@ -190,7 +190,7 @@ public:
 	bool AddLayer(const TDataArray<POINT_2D>& points);
 
 	/**
-	 * Mehtod: DrawingBoard::AddLayer
+	 * Method: DrawingBoard::AddLayer
 	 * Purpose: Adds a layer so that contents drawn withing the geometry are presented
 	 * Parameters: TrecPointer<TGeometry> geo
 	 * Returns: bool - whether the operation was successful
@@ -204,7 +204,7 @@ public:
 	// Methods to Generate Geometries
 
 	/**
-	 * Mehtod: DrawingBoard::GetGeometry
+	 * Method: DrawingBoard::GetGeometry
 	 * Purpose: Creates a TGeometry based off of the provided Rectabgle
 	 * Parameters: const RECT_2D& ret - the rectangle to get a geometry object from
 	 * Returns: TrecPointer<TGeometry> - the TGeometry object
@@ -212,7 +212,7 @@ public:
 	TrecPointer<TGeometry> GetGeometry(const RECT_2D& ret);
 
 	/**
-	 * Mehtod: DrawingBoard::GetGeometry
+	 * Method: DrawingBoard::GetGeometry
 	 * Purpose: Creates a TGeometry based off of the provided Ellipse
 	 * Parameters: const ELLIPSE_2D& ellipse  - the ellipse to get a geometry object from
 	 * Returns: TrecPointer<TGeometry> - the TGeometry object
@@ -220,7 +220,7 @@ public:
 	TrecPointer<TGeometry> GetGeometry(const ELLIPSE_2D& ellipse);
 
 	/**
-	 * Mehtod: DrawingBoard::GetGeometry
+	 * Method: DrawingBoard::GetGeometry
 	 * Purpose:Creates a TGeometry based off of the provided Rounded-Rectabgle
 	 * Parameters: const ROUNDED_RECT_2D& rRect - the rounded-rectangle to get a geometry object from
 	 * Returns: TrecPointer<TGeometry> - the TGeometry object
@@ -228,7 +228,7 @@ public:
 	TrecPointer<TGeometry> GetGeometry(const ROUNDED_RECT_2D& rRect);
 
 	/**
-	 * Mehtod: DrawingBoard::GetGeometry
+	 * Method: DrawingBoard::GetGeometry
 	 * Purpose:Creates a TGeometry based off of the provided set pf points
 	 * Parameters:const TDataArray<POINT_2D>& points - the points to get a geometry object from
 	 * Returns: TrecPointer<TGeometry> - the TGeometry object
@@ -237,7 +237,7 @@ public:
 
 
 	/**
-	 * Mehtod: DrawingBoard::GetLayerCount
+	 * Method: DrawingBoard::GetLayerCount
 	 * Purpose: Retrieves the number of layers currently stacked on the render target
 	 * Parameters: void
 	 * Returns: UINT

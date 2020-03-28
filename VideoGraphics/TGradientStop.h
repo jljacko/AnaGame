@@ -2,12 +2,17 @@
 #include <TObject.h>
 #include "TColor.h"
 #include "Structure2D.h"
+
+/**
+ * class TGradientStop
+ * Purpose: Holds GradientStops
+ */
 class _VIDEO_GRAPHICS TGradientStop : public TObject
 {
 public:
 
 	/**
-	 * Mehtod: TGradientStop::TGradientStop
+	 * Method: TGradientStop::TGradientStop
 	 * Purpose: Attribute Constructor
 	 * Parameters: const TColor& color - the color of the new gradient stop
 	 *				float position - position of the grdient stop
@@ -16,7 +21,7 @@ public:
 	TGradientStop(const TColor& color, float position);
 
 	/**
-	 * Mehtod: TGradientStop::TGradientStop
+	 * Method: TGradientStop::TGradientStop
 	 * Purpose: Copy Constructor
 	 * Parameters: const TGradientStop& sto - the object to copy from
 	 * Returns: New TGradientStop Object
@@ -24,7 +29,7 @@ public:
 	TGradientStop(const TGradientStop& stop);
 
 	/**
-	 * Mehtod: TGradientStop::TGradientStop
+	 * Method: TGradientStop::TGradientStop
 	 * Purpose: Default Constructor
 	 * Parameters: void
 	 * Returns: New TGradientStop Object
@@ -33,7 +38,7 @@ public:
 
 
 	/**
-	 * Mehtod: TGradientStop::SetColor
+	 * Method: TGradientStop::SetColor
 	 * Purpose: Sets the color of the gradient
 	 * Parameters: const TColor& color - the color to set the grdient to
 	 * Returns: void
@@ -41,7 +46,7 @@ public:
 	void SetColor(const TColor& color);
 
 	/**
-	 * Mehtod: TGradientStop::SetPosition
+	 * Method: TGradientStop::SetPosition
 	 * Purpose: Sets the position of the gradient
 	 * Parameters: float position - the position to set the grdient to
 	 * Returns: void
@@ -49,7 +54,7 @@ public:
 	void SetPosition(float position);
 
 	/**
-	 * Mehtod: TGradientStop::SetGradient
+	 * Method: TGradientStop::SetGradient
 	 * Purpose: Sets the Gradient of this object by structure
 	 * Parameters: const GRADIENT_STOP_2D& stop -  the gradient to set to
 	 * Returns: void
@@ -58,7 +63,7 @@ public:
 
 
 	/**
-	 * Mehtod: TGradientStop::GetColor
+	 * Method: TGradientStop::GetColor
 	 * Purpose:  retrieves the color of the gradient
 	 * Parameters: void
 	 * Returns: TColor - the color of the gradient
@@ -66,7 +71,7 @@ public:
 	TColor GetColor()const;
 
 	/**
-	 * Mehtod: TGradientStop::GetPosition
+	 * Method: TGradientStop::GetPosition
 	 * Purpose: Retrieves the position of the gradient
 	 * Parameters: void
 	 * Returns: float - the position of the gradient
@@ -74,7 +79,7 @@ public:
 	float GetPosition()const;
 
 	/**
-	 * Mehtod: TGradientStop::GetGradient
+	 * Method: TGradientStop::GetGradient
 	 * Purpose: Retrieves the underlying gradient
 	 * Parameters: void
 	 * Returns: GRADIENT_STOP_2D - the underlying gradient

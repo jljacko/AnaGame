@@ -32,7 +32,7 @@ class _VIDEO_GRAPHICS TBrush : public TObject
 public:
 
 	/**
-	 * Mehtod: TBrush::DrawRectangle
+	 * Method: TBrush::DrawRectangle
 	 * Purpose: draws the given Rectangle on the DrawingBoard
 	 * Parameters: const RECT_2D& r - The Rectangle to apply
 	 *				float thickness -  the thickness of the line (default is 1.0f)
@@ -41,7 +41,7 @@ public:
 	void DrawRectangle(const RECT_2D& r, float thickness = 1.0f);
 
 	/**
-	 * Mehtod: TBrush::FillRectangle
+	 * Method: TBrush::FillRectangle
 	 * Purpose: fills the given Rectangle on the DrawingBoard
 	 * Parameters: const RECT_2D& r - The Rectangle to apply
 	 * Returns: void
@@ -49,7 +49,7 @@ public:
 	virtual void FillRectangle(const RECT_2D& r);
 
 	/**
-	 * Mehtod: TBrush::DrawRoundedRectangle
+	 * Method: TBrush::DrawRoundedRectangle
 	 * Purpose: draws the given Rounded Rectangle on the DrawingBoard
 	 * Parameters: const ROUNDED_RECT_2D& r - The Rounded Rectangle to apply
 	 *				float thickness -  the thickness of the line (default is 1.0f)
@@ -58,7 +58,7 @@ public:
 	void DrawRoundedRectangle(const ROUNDED_RECT_2D& r, float thickness = 1.0f);
 
 	/**
-	 * Mehtod: TBrush::FillRoundedRectangle
+	 * Method: TBrush::FillRoundedRectangle
 	 * Purpose: fills the given Rounded Rectangle on the DrawingBoard
 	 * Parameters: const ROUNDED_RECT_2D& r - The Rounded Rectangle to apply
 	 * Returns: void
@@ -66,7 +66,7 @@ public:
 	virtual void FillRoundedRectangle(const ROUNDED_RECT_2D& r);
 
 	/**
-	 * Mehtod: TBrush::DrawEllipse
+	 * Method: TBrush::DrawEllipse
 	 * Purpose: draws the given Ellipse on the DrawingBoard
 	 * Parameters: const ELLIPSE_2D& r - The Ellipse to apply
 	 *				float thickness -  the thickness of the line (default is 1.0f)
@@ -75,7 +75,7 @@ public:
 	void DrawEllipse(const ELLIPSE_2D& r, float thickness = 1.0f);
 
 	/**
-	 * Mehtod: TBrush::FillEllipse
+	 * Method: TBrush::FillEllipse
 	 * Purpose: fills the given Ellipse on the DrawingBoard
 	 * Parameters:const ELLIPSE_2D& r - The Ellipse to apply
 	 * Returns: void
@@ -83,7 +83,7 @@ public:
 	virtual void FillEllipse(const ELLIPSE_2D& r);
 
 	/**
-	 * Mehtod: TBrush::DrawGeometry
+	 * Method: TBrush::DrawGeometry
 	 * Purpose: draws the given Geometry on the DrawingBoard
 	 * Parameters: TrecPointer<TGeometry> geo - The Geometry to apply
 	 *				float thickness -  the thickness of the line (default is 1.0f) 
@@ -92,7 +92,7 @@ public:
 	void DrawGeometry(TrecPointer<TGeometry> geo, float thickness = 1.0f);
 
 	/**
-	 * Mehtod: TBrush::FillGeometry
+	 * Method: TBrush::FillGeometry
 	 * Purpose: fills the given Geometry on the DrawingBoard
 	 * Parameters: TrecPointer<TGeometry> geo - The Geometry to apply
 	 * Returns: void
@@ -101,7 +101,7 @@ public:
 
 
 	/**
-	 * Mehtod: TBrush::DrawLine
+	 * Method: TBrush::DrawLine
 	 * Purpose: Draws a specific line to the Drawing Board
 	 * Parameters: const POINT_2D& p1 - the beginning of the line
 	 *				const POINT_2D& p2 - the end of the line
@@ -112,7 +112,7 @@ public:
 	
 
 	/**
-	 * Mehtod: TBrush::GetMaxColors
+	 * Method: TBrush::GetMaxColors
 	 * Purpose: Reports the number of gradients held by the brush. Use to ensure successful calls to SetColor() and GetColor()
 	 * Parameters: void
 	 * Returns: UINT - the Number of colors held by the Brush
@@ -121,7 +121,7 @@ public:
 
 
 	/**
-	 * Mehtod: TBrush::SetColor
+	 * Method: TBrush::SetColor
 	 * Purpose: Sets one of the gradients to a specific color
 	 * Parameters: const TColor& color - the color to set the brush to
 	 *				UINT index - the index of the gradient to apply the color to (default is 0 for solid brushes will only have 1 gradient)
@@ -132,7 +132,7 @@ public:
 	void SetColor(const TColor& color, UINT index = 0);
 
 	/**
-	 * Mehtod: TBrush::GetColor
+	 * Method: TBrush::GetColor
 	 * Purpose: Retrieves the Specified color being drawn by the brush
 	 * Parameters: UINT index - the index of the gradient to get the color from (defaults to 0 as a solid brush will only have 1 gradient)
 	 * Returns: TColor - the color requested
@@ -143,7 +143,7 @@ public:
 
 
 	/**
-	 * Mehtod: TBrush::GetBrushType
+	 * Method: TBrush::GetBrushType
 	 * Purpose:  Reports the type of brush this TBrush is using
 	 * Parameters: void
 	 * Returns: brush_type the type of brush the TBrush is set to
@@ -151,7 +151,7 @@ public:
 	brush_type GetBrushType();
 
 	/**
-	 * Mehtod: TBrush::GetUnderlyingBrush
+	 * Method: TBrush::GetUnderlyingBrush
 	 * Purpose: Retrieves the underlying brush
 	 * Parameters: void
 	 * Returns: TrecComPointer<ID2D1Brush> - the underlying brush
@@ -160,7 +160,7 @@ public:
 
 
 	/**
-	 * Mehtod: TBrush::~TBrush
+	 * Method: TBrush::~TBrush
 	 * Purpose: Destructor
 	 * Parameters: void
 	 * Returns: void
@@ -171,7 +171,7 @@ protected:
 	brush_type brushType;
 
 	/**
-	 * Mehtod: TBrush::TBrush
+	 * Method: TBrush::TBrush
 	 * Purpose:  Constructor that sets the brush to draw solid colors
 	 * Parameters: const TColor& col - the initial color to set the brush to
 	 *				TrecPointer<DrawingBoard> rt - the Drawing Board that created this brush
@@ -180,7 +180,7 @@ protected:
 	TBrush(const TColor& col, TrecPointer<DrawingBoard> rt);
 
 	/**
-	 * Mehtod: TBrush::TBrush
+	 * Method: TBrush::TBrush
 	 * Purpose: Constructor that sets the brush to draw radial gradients
 	 * Parameters: const TGradientStopCollection& coll - the collection of colors to work with
 	 *				TrecPointer<DrawingBoard> rt - the Drawing Board that created this brush
@@ -193,7 +193,7 @@ protected:
 	TBrush(const TGradientStopCollection& coll, TrecPointer<DrawingBoard> rt, const POINT_2D& p1, const POINT_2D& p2, float x, float y);
 
 	/**
-	 * Mehtod: TBrush::TBrush
+	 * Method: TBrush::TBrush
 	 * Purpose: Constructor that sets the brush to draw linear gradients
 	 * Parameters: const TGradientStopCollection& coll - the collection of colors to work with
 	 *				TrecPointer<DrawingBoard> rt - the Drawing Board that created this brush
@@ -205,7 +205,7 @@ protected:
 
 
 	/**
-	 * Mehtod: TBrush::TBrush
+	 * Method: TBrush::TBrush
 	 * Purpose:
 	 * Parameters: TrecPointer<DrawingBoard> rt - 
 	 * Returns: New TBrush Object
@@ -216,7 +216,7 @@ protected:
 
 
 	/**
-	 * Mehtod: TBrush::Refresh
+	 * Method: TBrush::Refresh
 	 * Purpose: Allows Brushes to know that it is safe to Draw and attempt to correct any issue that pops up
 	 * Parameters: void
 	 * Returns: bool
@@ -224,7 +224,7 @@ protected:
 	bool Refresh();
 
 	/**
-	 * Mehtod: TBrush::RefreshBrush
+	 * Method: TBrush::RefreshBrush
 	 * Purpose: Makes sure that if the Render Target is changed, that the Brushes are refreshed as Direct2D demands that new brushes are created when a new Render Target is used
 	 * Parameters: void
 	 * Returns: void

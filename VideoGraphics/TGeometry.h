@@ -26,7 +26,7 @@ class _VIDEO_GRAPHICS TGeometry :
 public:
 
 	/**
-	 * Mehtod: TGeometry::TGeometry
+	 * Method: TGeometry::TGeometry
 	 * Purpose: Creates a Geometry from a set of points
 	 * Parameters: TrecComPointer<ID2D1Factory1> fact - used to create the geometry
 					const TDataArray<POINT_2D>& points -  - the set of points to create the geometry from
@@ -35,7 +35,7 @@ public:
 	TGeometry(TrecComPointer<ID2D1Factory1> fact, const TDataArray<POINT_2D>& points);
 
 	/**
-	 * Mehtod: TGeometry::TGeometry
+	 * Method: TGeometry::TGeometry
 	 * Purpose: Creates a Geometry from a rectangle
 	 * Parameters: TrecComPointer<ID2D1Factory1> fact - used to create the geometry
 	 *				const RECT_2D& r - the rectangle to create the geometry from
@@ -44,7 +44,7 @@ public:
 	TGeometry(TrecComPointer<ID2D1Factory1> fact, const RECT_2D& r);
 
 	/**
-	 * Mehtod: TGeometry::TGeometry
+	 * Method: TGeometry::TGeometry
 	 * Purpose: Creates a rounded rectangle from a set of points
 	 * Parameters: TrecComPointer<ID2D1Factory1> fact - used to create the geometry
 	 *				const ROUNDED_RECT_2D& r - the rounded rectangle to create the geometry from
@@ -53,7 +53,7 @@ public:
 	TGeometry(TrecComPointer<ID2D1Factory1> fact, const ROUNDED_RECT_2D& r);
 
 	/**
-	 * Mehtod: TGeometry::TGeometry
+	 * Method: TGeometry::TGeometry
 	 * Purpose: Creates a ellipse from a set of points
 	 * Parameters: TrecComPointer<ID2D1Factory1> fact - used to create the geometry
 	 *				const ELLIPSE_2D& r - the ellipse to create the geometry from
@@ -63,7 +63,7 @@ public:
 
 
 	/**
-	 * Mehtod: TGeometry::~TGeometry
+	 * Method: TGeometry::~TGeometry
 	 * Purpose: Destructor
 	 * Parameters: void
 	 * Returns: void
@@ -72,7 +72,7 @@ public:
 
 
 	/**
-	 * Mehtod: TGeometry::IsValid
+	 * Method: TGeometry::IsValid
 	 * Purpose: Reports whether Geomatry construction was successful
 	 * Parameters: void
 	 * Returns:bool - whether the object is ready for use
@@ -81,7 +81,7 @@ public:
 
 
 	/**
-	 * Mehtod: TGeometry::GetArea
+	 * Method: TGeometry::GetArea
 	 * Purpose: Reports the Area
 	 * Parameters: float& res - reference to the float that will hold the area of the geometry
 	 * Returns:bool - whether the operation was successful
@@ -89,7 +89,7 @@ public:
 	bool GetArea(float& res);
 
 	/**
-	 * Mehtod: TGeometry::GetParameter
+	 * Method: TGeometry::GetParameter
 	 * Purpose: Reports the Parameter
 	 * Parameters: float& res - reference to the float that will hold the parameter of the geometry
 	 * Returns:bool - whether the operation was successful
@@ -97,7 +97,7 @@ public:
 	bool GetParameter(float& res);
 
 	/**
-	 * Mehtod: TGeometry::IsInside
+	 * Method: TGeometry::IsInside
 	 * Purpose: Whether the point falls within the geomatry
 	 * Parameters: BOOL& res - reference to whether the point is inide or not
 	 *				POINT_2D& - the point to chack
@@ -106,7 +106,7 @@ public:
 	bool IsInside(BOOL& res, POINT_2D&);
 
 	/**
-	 * Mehtod: TGeometry::GetBounds
+	 * Method: TGeometry::GetBounds
 	 * Purpose: Gets the boundaries of the geomatry in rectangle form
 	 * Parameters: RECT_2D& bounds - reference to hold the boundaries of the geometry
 	 * Returns:bool - whether the operation was successful
@@ -114,7 +114,7 @@ public:
 	bool GetBounds(RECT_2D& bounds);
 
 	/**
-	 * Mehtod: TGeometry::GetUnderlyingGeometry
+	 * Method: TGeometry::GetUnderlyingGeometry
 	 * Purpose: Allows access to the underlying Geometry
 	 * Parameters: void
 	 * Returns: TrecComPointer<ID2D1Geometry> - the underlying geometry

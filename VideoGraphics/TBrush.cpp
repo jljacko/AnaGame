@@ -3,6 +3,13 @@
 #include "TGeometry.h"
 #include <atltrace.h>
 
+/**
+ * Method: TBrush::DrawRectangle
+ * Purpose: draws the given Rectangle on the DrawingBoard
+ * Parameters: const RECT_2D& r - The Rectangle to apply
+ *				float thickness -  the thickness of the line (default is 1.0f)
+ * Returns: void
+ */
 void TBrush::DrawRectangle(const RECT_2D& r, float thickness)
 {
 	if (Refresh())
@@ -11,6 +18,12 @@ void TBrush::DrawRectangle(const RECT_2D& r, float thickness)
 	}
 }
 
+/**
+ * Method: TBrush::FillRectangle
+ * Purpose: fills the given Rectangle on the DrawingBoard
+ * Parameters: const RECT_2D& r - The Rectangle to apply
+ * Returns: void
+ */
 void TBrush::FillRectangle(const RECT_2D& r)
 {
 	if (Refresh())
@@ -19,6 +32,13 @@ void TBrush::FillRectangle(const RECT_2D& r)
 	}
 }
 
+/**
+ * Method: TBrush::DrawRoundedRectangle
+ * Purpose: draws the given Rounded Rectangle on the DrawingBoard
+ * Parameters: const ROUNDED_RECT_2D& r - The Rounded Rectangle to apply
+ *				float thickness -  the thickness of the line (default is 1.0f)
+ * Returns: void
+ */
 void TBrush::DrawRoundedRectangle(const ROUNDED_RECT_2D& r, float thickness)
 {
 	if (Refresh())
@@ -27,6 +47,12 @@ void TBrush::DrawRoundedRectangle(const ROUNDED_RECT_2D& r, float thickness)
 	}
 }
 
+/**
+ * Method: TBrush::FillRoundedRectangle
+ * Purpose: fills the given Rounded Rectangle on the DrawingBoard
+ * Parameters: const ROUNDED_RECT_2D& r - The Rounded Rectangle to apply
+ * Returns: void
+ */
 void TBrush::FillRoundedRectangle(const ROUNDED_RECT_2D& r)
 {
 	if (Refresh())
@@ -35,6 +61,13 @@ void TBrush::FillRoundedRectangle(const ROUNDED_RECT_2D& r)
 	}
 }
 
+/**
+ * Method: TBrush::DrawEllipse
+ * Purpose: draws the given Ellipse on the DrawingBoard
+ * Parameters: const ELLIPSE_2D& r - The Ellipse to apply
+ *				float thickness -  the thickness of the line (default is 1.0f)
+ * Returns: void
+ */
 void TBrush::DrawEllipse(const ELLIPSE_2D& r, float thickness)
 {
 	if (Refresh())
@@ -43,6 +76,12 @@ void TBrush::DrawEllipse(const ELLIPSE_2D& r, float thickness)
 	}
 }
 
+/**
+ * Method: TBrush::FillEllipse
+ * Purpose: fills the given Ellipse on the DrawingBoard
+ * Parameters:const ELLIPSE_2D& r - The Ellipse to apply
+ * Returns: void
+ */
 void TBrush::FillEllipse(const ELLIPSE_2D& r)
 {
 	if (Refresh())
@@ -51,6 +90,13 @@ void TBrush::FillEllipse(const ELLIPSE_2D& r)
 	}
 }
 
+/**
+ * Method: TBrush::DrawGeometry
+ * Purpose: draws the given Geometry on the DrawingBoard
+ * Parameters: TrecPointer<TGeometry> geo - The Geometry to apply
+ *				float thickness -  the thickness of the line (default is 1.0f)
+ * Returns: void
+ */
 void TBrush::DrawGeometry(TrecPointer<TGeometry> geo, float thickness)
 {
 	if (Refresh() && geo.Get() && geo->IsValid())
@@ -59,6 +105,12 @@ void TBrush::DrawGeometry(TrecPointer<TGeometry> geo, float thickness)
 	}
 }
 
+/**
+ * Method: TBrush::FillGeometry
+ * Purpose: fills the given Geometry on the DrawingBoard
+ * Parameters: TrecPointer<TGeometry> geo - The Geometry to apply
+ * Returns: void
+ */
 void TBrush::FillGeometry(TrecPointer<TGeometry> geo)
 {
 	if (Refresh() && geo.Get() && geo->IsValid())
@@ -67,6 +119,14 @@ void TBrush::FillGeometry(TrecPointer<TGeometry> geo)
 	}
 }
 
+/**
+ * Method: TBrush::DrawLine
+ * Purpose: Draws a specific line to the Drawing Board
+ * Parameters: const POINT_2D& p1 - the beginning of the line
+ *				const POINT_2D& p2 - the end of the line
+ *				float thickness -  the thickness of the line (default is 1.0f)
+ * Returns: void
+ */
 void TBrush::DrawLine(const POINT_2D& p1, const POINT_2D& p2, float thickness)
 {
 	if (Refresh())
@@ -75,6 +135,12 @@ void TBrush::DrawLine(const POINT_2D& p1, const POINT_2D& p2, float thickness)
 	}
 }
 
+/**
+ * Method: TBrush::GetMaxColors
+ * Purpose: Reports the number of gradients held by the brush. Use to ensure successful calls to SetColor() and GetColor()
+ * Parameters: void
+ * Returns: UINT - the Number of colors held by the Brush
+ */
 UINT TBrush::GetMaxColors()
 {
 	if (brushType == brush_type_solid)
@@ -82,6 +148,15 @@ UINT TBrush::GetMaxColors()
 	return gradients.GetGradientCount();
 }
 
+/**
+ * Method: TBrush::SetColor
+ * Purpose: Sets one of the gradients to a specific color
+ * Parameters: const TColor& color - the color to set the brush to
+ *				UINT index - the index of the gradient to apply the color to (default is 0 for solid brushes will only have 1 gradient)
+ * Returns: void
+ *
+ * Note: if the index is out of bounds, the operation will silently fail. to ensure success, call the GetMaxColors() to ensure your index is within bounds
+ */
 void TBrush::SetColor(const TColor& color, UINT index)
 {
 	switch (brushType)
@@ -120,6 +195,14 @@ void TBrush::SetColor(const TColor& color, UINT index)
 	}
 }
 
+/**
+ * Method: TBrush::GetColor
+ * Purpose: Retrieves the Specified color being drawn by the brush
+ * Parameters: UINT index - the index of the gradient to get the color from (defaults to 0 as a solid brush will only have 1 gradient)
+ * Returns: TColor - the color requested
+ *
+ * Note: If the index is out of bounds, the color black will be returned. To ensure that the returned color is legitimate, call GetMaxColors()
+ */
 TColor TBrush::GetColor(UINT index)
 {
 	if (brushType == brush_type_solid)
@@ -132,11 +215,23 @@ TColor TBrush::GetColor(UINT index)
 	return gradients.GetColorAt(index);
 }
 
+/**
+ * Method: TBrush::GetBrushType
+ * Purpose:  Reports the type of brush this TBrush is using
+ * Parameters: void
+ * Returns: brush_type the type of brush the TBrush is set to
+ */
 brush_type TBrush::GetBrushType()
 {
 	return brushType;
 }
 
+/**
+ * Method: TBrush::GetUnderlyingBrush
+ * Purpose: Retrieves the underlying brush
+ * Parameters: void
+ * Returns: TrecComPointer<ID2D1Brush> - the underlying brush
+ */
 TrecComPointer<ID2D1Brush> TBrush::GetUnderlyingBrush()
 {
 	if(Refresh())
@@ -144,10 +239,23 @@ TrecComPointer<ID2D1Brush> TBrush::GetUnderlyingBrush()
 	return TrecComPointer<ID2D1Brush>();
 }
 
+/**
+ * Method: TBrush::~TBrush
+ * Purpose: Destructor
+ * Parameters: void
+ * Returns: void
+ */
 TBrush::~TBrush()
 {
 }
 
+/**
+ * Method: TBrush::TBrush
+ * Purpose:  Constructor that sets the brush to draw solid colors
+ * Parameters: const TColor& col - the initial color to set the brush to
+ *				TrecPointer<DrawingBoard> rt - the Drawing Board that created this brush
+ * Returns: New TBrush holder optimized for a solid color
+ */
 TBrush::TBrush(const TColor& col, TrecPointer<DrawingBoard> rt)
 {
 	if (!rt.Get())
@@ -169,6 +277,17 @@ TBrush::TBrush(const TColor& col, TrecPointer<DrawingBoard> rt)
 	gradients.AddGradient(TGradientStop(col, 0.0f));
 }
 
+/**
+ * Method: TBrush::TBrush
+ * Purpose: Constructor that sets the brush to draw radial gradients
+ * Parameters: const TGradientStopCollection& coll - the collection of colors to work with
+ *				TrecPointer<DrawingBoard> rt - the Drawing Board that created this brush
+ *				const POINT_2D& p1 -Center of the gradient ellipse
+ *				const POINT_2D& p2 - offset of the gradient origin
+ *				float x - x-radius of the ellipse center
+ *				float y - y-radius of the ellipse center
+ * Returns: New TBrush holder optimized for linar gradient drawing
+ */
 TBrush::TBrush(const TGradientStopCollection& coll, TrecPointer<DrawingBoard> rt, const POINT_2D& p1, const POINT_2D& p2, float x, float y)
 {
 	if (!rt.Get())
@@ -198,6 +317,15 @@ TBrush::TBrush(const TGradientStopCollection& coll, TrecPointer<DrawingBoard> rt
 	brushType = brush_type_radial;
 }
 
+/**
+ * Method: TBrush::TBrush
+ * Purpose: Constructor that sets the brush to draw linear gradients
+ * Parameters: const TGradientStopCollection& coll - the collection of colors to work with
+ *				TrecPointer<DrawingBoard> rt - the Drawing Board that created this brush
+ *				const POINT_2D& p1 - one point the line is expected to pass through
+ *				const POINT_2D& p2 - second point line is expected to pass through
+ * Returns: New TBrush holder optimized for linar gradient drawing
+ */
 TBrush::TBrush(const TGradientStopCollection& coll, TrecPointer<DrawingBoard> rt, const POINT_2D& p1, const POINT_2D& p2)
 {
 	if (!rt.Get())
@@ -239,6 +367,12 @@ TBrush::TBrush(TrecPointer<DrawingBoard> rt)
 	board = rt;
 }
 
+/**
+ * Method: TBrush::Refresh
+ * Purpose: Allows Brushes to know that it is safe to Draw and attempt to correct any issue that pops up
+ * Parameters: void
+ * Returns: bool
+ */
 bool TBrush::Refresh()
 {
 	if (!board.Get() || !brush.Get())
@@ -251,6 +385,12 @@ bool TBrush::Refresh()
 	return currentRenderer.Get() != nullptr;
 }
 
+/**
+ * Method: TBrush::RefreshBrush
+ * Purpose: Makes sure that if the Render Target is changed, that the Brushes are refreshed as Direct2D demands that new brushes are created when a new Render Target is used
+ * Parameters: void
+ * Returns: void
+ */
 void TBrush::RefreshBrush()
 {
 	if (!currentRenderer.Get() || !brush.Get())
