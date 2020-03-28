@@ -32,7 +32,7 @@ AnafaceParser::AnafaceParser(TrecPointer<DrawingBoard> rt, HWND hWin,TString dir
 	fileLoc.Set(directory);
 	windowHandle = hWin;
 	events = NULL;
-	classList = TrecPointerKey::GetNewTrecPointerPlain<TArray<styleTable>>();
+	classList = TrecPointerKey::GetNewTrecPointer<TArray<styleTable>>();
 	parserMode = anaface_parser_mode_normal;
 }
 

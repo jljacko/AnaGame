@@ -25,7 +25,7 @@
  *			manually deleting them.
  *
  *
- *		The Other class you will ue extensively is the TrecPointerKey class. This is a utility class necessary to operate on the TrecPointers
+ *		The Other class you will use extensively is the TrecPointerKey class. This is a utility class necessary to operate on the TrecPointers
  *			This is because the TrecPointers restrict what you can do with them. 
  */
 
@@ -68,8 +68,8 @@ public:
 	/**
 	 * Method: TrecBoxPointer::~TrecBoxPointer
 	 * Purpose: Removes the rar pointer if still initialized
-	 * Parameters:
-	 * Returns:
+	 * Parameters: void
+	 * Returns: void
 	 */
 	~TrecBoxPointer()
 	{
@@ -127,10 +127,20 @@ public:
 	}
 };
 
+/**
+ * class TrecComBoxPointer
+ * Purpose: Holds the actual raw pointer to COM types used
+ */
 template<class T> class TrecComBoxPointer
 {
 private:
+	/**
+	 * the Raw pointer to the type
+	 */
 	T* rawPointer;
+	/**
+	 * keeps track of how many TrecComPointers are referencing this object
+	 */
 	UINT counter;
 public:
 
@@ -209,10 +219,19 @@ public:
 };
 
 
+/**
+ * class TrecPointerSoft
+ * Purpose: Provides a weak pointer type to help prevent circular references that prevent counters from reaching 0
+ * 
+ * Note: Written to allow certain objects to hold references to themselves and return regular TrecPointer's to themselves
+ */
 template<class T> class TrecPointerSoft
 {
 	friend class TrecPointerKey;
 private:
+	/**
+	 * counter that holds the reference and reference count
+	 */
 	TrecBoxPointer<T>* pointer;
 
 
@@ -271,10 +290,17 @@ public:
 	}
 };
 
+/**
+ * class TrecSubPointerSoft
+ * Purpose: Provides a weak pointer type for the TrecSubPointer (which assumes object is a subclass of type u)
+ */
 template<class T, class U> class TrecSubPointerSoft
 {
 	friend class TrecPointerKey;
 private:
+	/**
+	 * counter that holds the reference and reference count
+	 */
 	TrecBoxPointer<T>* pointer;
 
 	/**
@@ -332,19 +358,29 @@ public:
 	}
 };
 
+/**
+ * class TrecSubPointer
+ * Purpose: Provide a means to hold a reference to a base class T and provide easy access to members of sub class U
+ */
 template<class t, class u> class TrecSubPointer
 {
 	friend class TrecPointerKey;
 	// friend class TrecPointer<t>;
 protected:
+	/**
+	 * counter that holds the reference and reference count
+	 */
 	TrecBoxPointer<t>* pointer;
 
 
 	/**
-	 * Method: TrecSubPointer::
-	 * Purpose:
-	 * Parameters:
-	 * Returns:
+	 * Method: TrecSubPointer::TrecSubPointer
+	 * Purpose: Constructor
+	 * Parameters: u* raw - pointer to the new object
+	 * Returns: New TrecSubPointer Object
+	 *
+	 * Note: Made protected to ensure that there is only one counter per object. To initialize a new Pointer,
+	 *		call "TrecPointerKey::GetNewTrecSubPointer<T,U>(arguments here)" in order to get a new TrecSubPointer
 	 */
 	TrecSubPointer(u* raw)
 	{
@@ -359,10 +395,10 @@ protected:
 public:
 
 	/**
-	 * Method: TrecSubPointer::
-	 * Purpose:
-	 * Parameters:
-	 * Returns:
+	 * Method: TrecSubPointer::TrecSubPointer
+	 * Purpose: Default Constructor
+	 * Parameters: void
+	 * Returns: New Blank TrecSubPointer Object
 	 */
 	TrecSubPointer()
 	{
@@ -370,10 +406,10 @@ public:
 	}
 
 	/**
-	 * Method: TrecSubPointer::
-	 * Purpose:
-	 * Parameters:
-	 * Returns:
+	 * Method: TrecSubPointer::TrecSubPointer
+	 * Purpose: Copy Constructor
+	 * Parameters: const TrecSubPointer<t,u>& copy -  the Pointer to copy from
+	 * Returns: New Copied TrecSubPointer object
 	 */
 	TrecSubPointer(const TrecSubPointer<t,u>& copy)
 	{
@@ -383,10 +419,10 @@ public:
 	}
 
 	/**
-	 * Method: TrecSubPointer::
-	 * Purpose:
-	 * Parameters:
-	 * Returns:
+	 * Method: TrecSubPointer::~TrecSubPointer
+	 * Purpose: Destructor
+	 * Parameters: void
+	 * Returns: void
 	 */
 	~TrecSubPointer()
 	{
@@ -394,10 +430,10 @@ public:
 	}
 
 	/**
-	 * Method: TrecSubPointer::
-	 * Purpose:
-	 * Parameters:
-	 * Returns:
+	 * Method: TrecSubPointer::Nullify
+	 * Purpose: Sets the Pointer to null and, if not null already, decriments the counter
+	 * Parameters: void
+	 * Returns: void
 	 */
 	void Nullify()
 	{
@@ -407,10 +443,10 @@ public:
 	}
 
 	/**
-	 * Method: TrecSubPointer::
-	 * Purpose:
-	 * Parameters:
-	 * Returns:
+	 * Method: TrecSubPointer::operator=
+	 * Purpose: Allows use of the = operator
+	 * Parameters: const TrecSubPointer<t,u>& other - the Pointer to copy from
+	 * Returns: void
 	 */
 	void operator=(const TrecSubPointer<t,u>& other)
 	{
@@ -429,10 +465,10 @@ public:
 	}
 
 	/**
-	 * Method: TrecSubPointer::
-	 * Purpose:
-	 * Parameters:
-	 * Returns:
+	 * Method: TrecSubPointer::operator->
+	 * Purpose: Allows access to the objects public (or accessible) attributes/methods
+	 * Parameters: void
+	 * Returns: u* - the object to operate on (or a null value that should have been checked for prior)
 	 */
 	u* operator->()
 	{
@@ -441,10 +477,10 @@ public:
 	}
 
 	/**
-	 * Method: TrecSubPointer::
-	 * Purpose:
-	 * Parameters:
-	 * Returns:
+	 * Method: TrecSubPointer::Get
+	 * Purpose: Retrieves the underlying raw pointer
+	 * Parameters: void
+	 * Returns: u* - the sub class of the raw pointer (null if object is not of type u)
 	 */
 	u* Get()
 	{
@@ -453,10 +489,10 @@ public:
 	}
 
 	/**
-	 * Method: TrecSubPointer::
-	 * Purpose:
-	 * Parameters:
-	 * Returns:
+	 * Method: TrecSubPointer::GetBase
+	 * Purpose: Retireves the base pointer
+	 * Parameters: void
+	 * Returns: t* - the raw pointer 
 	 */
 	t* GetBase()
 	{
@@ -465,10 +501,10 @@ public:
 	}
 
 	/**
-	 * Method: TrecSubPointer::
-	 * Purpose:
-	 * Parameters:
-	 * Returns:
+	 * Method: TrecSubPointer::Delete
+	 * Purpose: Allows for early deletion
+	 * Parameters: void
+	 * Returns: void
 	 */
 	void Delete()
 	{
@@ -479,18 +515,28 @@ public:
 	}
 };
 
+/**
+ * class TrecPointer
+ * Purpose: Provide a Smart Pointer for use in Anagame
+ */
 template<class t> class TrecPointer
 {
 	friend class TrecPointerKey;
 protected:
+	/**
+	 * counter that holds the reference and reference count
+	 */
 	TrecBoxPointer<t>* pointer;
 
 
 	/**
-	 * Method: TrecPointer::
-	 * Purpose:
-	 * Parameters:
-	 * Returns:
+	 * Method: TrecPointer::TrecPointer
+	 * Purpose: Constructor
+	 * Parameters: t* raw - pointer to the new object
+	 * Returns: New TrecPointer Object
+	 *
+	 * Note: Made protected to ensure that there is only one counter per object. To initialize a new Pointer,
+	 *		call "TrecPointerKey::GetNewTrecPointer<T>(arguments here)" in order to get a new TrecPointer
 	 */
 	TrecPointer(t* raw)
 	{
@@ -500,10 +546,10 @@ protected:
 	}
 public:
 	/**
-	 * Method: TrecPointer::
-	 * Purpose:
-	 * Parameters:
-	 * Returns:
+	 * Method: TrecPointer::TrecPointer
+	 * Purpose: Copy Constructor
+	 * Parameters: const TrecPointer<t>& copy - the Pointer to copy from
+	 * Returns: New TrecPointer Object
 	 */
 	TrecPointer(const TrecPointer<t>& copy)
 	{
@@ -513,10 +559,10 @@ public:
 	}
 
 	/**
-	 * Method: TrecPointer::
-	 * Purpose:
-	 * Parameters:
-	 * Returns:
+	 * Method: TrecPointer::TrecPointer
+	 * Purpose: Default Constructor
+	 * Parameters: void
+	 * Returns: New Null TrecPointer Object
 	 */
 	TrecPointer()
 	{
@@ -524,21 +570,22 @@ public:
 	}
 
 	/**
-	 * Method: TrecPointer::
-	 * Purpose:
-	 * Parameters:
-	 * Returns:
+	 * Method: TrecPointer::~TrecPointer
+	 * Purpose: Destructor
+	 * Parameters: void
+	 * Returns: void
 	 */
 	~TrecPointer()
 	{
+		// Make sure we decriment the coutner before deletion is complete
 		Nullify();
 	}
 
 	/**
-	 * Method: TrecPointer::
-	 * Purpose:
-	 * Parameters:
-	 * Returns:
+	 * Method: TrecPointer::Nullify
+	 * Purpose: Sets the TrecPointer to Null, making sure to decriment any counter in the process
+	 * Parameters: void
+	 * Returns: void
 	 */
 	void Nullify()
 	{
@@ -548,10 +595,10 @@ public:
 	}
 
 	/**
-	 * Method: TrecPointer::
-	 * Purpose:
-	 * Parameters:
-	 * Returns:
+	 * Method: TrecPointer::operator=
+	 * Purpose: Allows the use of the = operator
+	 * Parameters: const TrecPointer<t>& other - the Pointer to copy from
+	 * Returns: void
 	 */
 	void operator=(const TrecPointer<t>& other)
 	{
@@ -570,10 +617,12 @@ public:
 	}
 
 	/**
-	 * Method: TrecPointer::
-	 * Purpose:
-	 * Parameters:
-	 * Returns:
+	 * Method: TrecPointer::As
+	 * Purpose: Retrieves a raw pointer in a new form
+	 * Parameters: void
+	 * Returns: u* the raw pointer in the new type
+	 *
+	 * Note: DEPRECATED - For alterntive type access, there is the TrecSubPointer<T,U> which share counters with the TrecPointer<T>
 	 */
 	template<class u> u* As()
 	{
@@ -591,10 +640,10 @@ public:
 	}
 
 	/**
-	 * Method: TrecPointer::
-	 * Purpose:
-	 * Parameters:
-	 * Returns:
+	 * Method: TrecPointer::Get
+	 * Purpose: Retrieves the raw pointer of the t object
+	 * Parameters: void
+	 * Returns: t* - the raw pointer
 	 */
 	t* Get()
 	{
@@ -603,10 +652,10 @@ public:
 	}
 
 	/**
-	 * Method: TrecPointer::
-	 * Purpose:
-	 * Parameters:
-	 * Returns:
+	 * Method: TrecPointer::operator->
+	 * Purpose: Allows access to the objects public (or accessible) attributes/methods
+	 * Parameters: void
+	 * Returns: t* - the object to operate on (or a null value that should have been checked for prior)
 	 */
 	t* operator->()
 	{
@@ -615,10 +664,10 @@ public:
 	}
 
 	/**
-	 * Method: TrecPointer::
-	 * Purpose:
-	 * Parameters:
-	 * Returns:
+	 * Method: TrecPointer::Delete
+	 * Purpose: Allows for early deletion
+	 * Parameters: void
+	 * Returns: void
 	 */
 	void Delete()
 	{
@@ -630,26 +679,61 @@ public:
 };
 
 
-
+/**
+ * class TrecComPointer
+ * Purpose: Provide a smart pointer that can be used on Microsoft COM objects
+ *
+ * To initialize a new object, the TrecComPointer provides the TrecComHolder class. Here is an example on how to initialize a ID2D1Factory1 object:
+ *
+ *		TrecComPointer<ID2D1Factory1>::TrecComHolder factoryHolder;			// Declare the holder object
+ *		D2D1_FACTORY_OPTIONS d2dDebugLevel = { D2D1_DEBUG_LEVEL_ERROR };v	// prepare the parameters for the factory function
+ *		
+ *		// Use the holder's GetPointerAddress to get the new object
+ *		D2D1CreateFactory(D2D1_FACTORY_TYPE_MULTI_THREADED, d2dDebugLevel, factoryHolder.GetPointerAddress());
+ *		factory = factoryHolder.Extract();									// Call Extract to get the functional TrecComPointer
+ *	
+ *
+ * Suppose you wish to initialize an ID2D1HwndRenderTarget but wish to store it in an ID2D1RenderTarget Pointer. You'll need the
+ *	TrecPointerKey for that.
+ *
+ * 		TrecComPointer<ID2D1HwndRenderTarget>::TrecComHolder renderHw;		// Declare the holder
+ *
+ *		// assume props and hProps are ready for use
+ *		HRESULT res = fact->CreateHwndRenderTarget(props, hProps, renderHw.GetPointerAddress());
+ *
+ *		// Use the TrecPointerKey to get the TrecComPointer
+ *		renderer = TrecPointerKey::GetComPointer<ID2D1RenderTarget, ID2D1HwndRenderTarget>(renderHw);
+ */
 template<class t> class TrecComPointer
 {
 	friend class TrecPointerKey;
 protected:
+	/**
+	 * counter that holds the reference and reference count
+	 */
 	TrecComBoxPointer<t>* pointer;
 public:
+	/**
+	 * class TrecComHolder
+	 * Purpose: Provide a means through which TrecComPointers can be initialized when the means to create them is 
+	 *	through factory methods/functions
+	 */
 	class TrecComHolder
 	{
 		friend class TrecPointerKey;
 	protected:
+		/**
+		 * pointer to the COM object to be initialized
+		 */
 		t* holder;
 
 	public:
 
 		/**
-		 * Method: TrecComHolder::
-		 * Purpose:
-		 * Parameters:
-		 * Returns:
+		 * Method: TrecComHolder::TrecComHolder
+		 * Purpose: Default Constructor
+		 * Parameters: void
+		 * Returns: New Blank TrecComHolder Object
 		 */
 		TrecComHolder()
 		{
@@ -657,32 +741,26 @@ public:
 		}
 
 		/**
-		 * Method: TrecComHolder::
-		 * Purpose:
-		 * Parameters:
-		 * Returns:
+		 * Method: TrecComHolder::TrecComHolder
+		 * Purpose: Returns a pointer to the raw pointer for Factory methods and functions to use to initialize the com object
+		 * Parameters: void
+		 * Returns: t** - pointer to the raw pointer of the type
 		 */
 		t** GetPointerAddress()
 		{
 			return &holder;
 		}
 
-		/**
-		 * Method: TrecComHolder::
-		 * Purpose:
-		 * Parameters:
-		 * Returns:
-		 */
 		void OfferValue(TrecComPointer<t>& point)
 		{
 			holder = point.Get();
 		}
 
 		/**
-		 * Method: TrecComHolder::
-		 * Purpose:
-		 * Parameters:
-		 * Returns:
+		 * Method: TrecComHolder::Extract
+		 * Purpose: Provides a parameterized means of initializing the TrecComPointer
+		 * Parameters: TrecComPointer<t>& point - the Pointer to initialize
+		 * Returns: void 
 		 */
 		void Extract(TrecComPointer<t>& point)
 		{
@@ -697,10 +775,14 @@ public:
 		}
 
 		/**
-		 * Method: TrecComHolder::
-		 * Purpose:
-		 * Parameters:
-		 * Returns:
+		 * Method: TrecComHolder::Extract
+		 * Purpose: Retrieves the value procured from the Factory call
+		 * Parameters: void
+		 * Returns: TrecComPointer<t> - the New initialized TrecComPointer
+		 *
+		 * Note 1: Make sure that the Holder is holding a value, otherwise an exception is thrown.
+		 * Note 2: To prevent multiple counters to the same object, this method only works once, after that, it nullifies itself
+		 * Note 3: If you wish to use a different (compatible type), use the TrecPointerKey's "GetComPointer" function
 		 */
 		TrecComPointer<t> Extract()
 		{
@@ -716,10 +798,13 @@ public:
 protected:
 
 	/**
-	 * Method: TrecComPointer::
-	 * Purpose:
-	 * Parameters:
-	 * Returns:
+	 * Method: TrecComPointer::TrecComPointer
+	 * Purpose: Constructor
+	 * Parameters: t* raw - pointer to the new object
+	 * Returns: New TrecComPointer Object
+	 *
+	 * Note: Made protected to prevent the creation of multiple counters to the same reference. To initialize a new
+	 *		COM object, use the TrecComPointer::TrecComHolder class
 	 */
 	TrecComPointer(t* raw)
 	{
@@ -732,9 +817,9 @@ public:
 
 	/**
 	 * Method: TrecComPointer::
-	 * Purpose:
-	 * Parameters:
-	 * Returns:
+	 * Purpose: Default Constructor
+	 * Parameters: void
+	 * Returns: New Null TrecComPointer Object
 	 */
 	TrecComPointer()
 	{
@@ -742,21 +827,22 @@ public:
 	}
 
 	/**
-	 * Method: TrecComPointer::
-	 * Purpose:
-	 * Parameters:
-	 * Returns:
+	 * Method: TrecComPointer::~TrecComPointer
+	 * Purpose: Destructor
+	 * Parameters: void
+	 * Returns: void
 	 */
 	~TrecComPointer()
 	{
+		// Make sure we decriment the coutner before deletion is complete
 		Nullify();
 	}
 
 	/**
-	 * Method: TrecComPointer::
-	 * Purpose:
-	 * Parameters:
-	 * Returns:
+	 * Method: TrecComPointer::TrecComPointer
+	 * Purpose: Copy Constructor
+	 * Parameters: const TrecComPointer<t>& copy - the Pointer to copy from
+	 * Returns: New TrecComPointer Object
 	 */
 	TrecComPointer(const TrecComPointer<t>& other)
 	{
@@ -767,10 +853,10 @@ public:
 	}
 
 	/**
-	 * Method: TrecComPointer::
-	 * Purpose:
-	 * Parameters:
-	 * Returns:
+	 * Method: TrecComPointer::operator=
+	 * Purpose: Allows the use of the = operator
+	 * Parameters: const TrecComPointer<t>& other - the Pointer to copy from
+	 * Returns: void
 	 */
 	void operator=(const TrecComPointer<t>& other)
 	{
@@ -789,9 +875,9 @@ public:
 
 	/**
 	 * Method: TrecComPointer::
-	 * Purpose:
-	 * Parameters:
-	 * Returns:
+	 * Purpose: Sets the TrecPointer to Null, making sure to decriment any counter in the process
+	 * Parameters: void
+	 * Returns: void
 	 */
 	void Nullify()
 	{
@@ -800,32 +886,12 @@ public:
 		pointer = nullptr;
 	}
 
-	/**
-	 * Method: TrecComPointer::
-	 * Purpose:
-	 * Parameters:
-	 * Returns:
-	 */
-	template<class u> u* As()
-	{
-		if (!pointer) return nullptr;
-
-		t* raw = pointer->Get();
-		if (!raw)
-			return nullptr;
-
-		u* altRaw = dynamic_cast<u*>(raw);
-
-		if (!altRaw)
-			throw (L"Error! Attempted to retrieve a pointer of an incompatible type!");
-		return altRaw;
-	}
 
 	/**
-	 * Method: TrecComPointer::
-	 * Purpose:
-	 * Parameters:
-	 * Returns:
+	 * Method: TrecComPointer::Get
+	 * Purpose: Retrieves the raw pointer of the t object
+	 * Parameters: void
+	 * Returns: t* - the raw pointer
 	 */
 	t* Get()
 	{
@@ -835,9 +901,9 @@ public:
 
 	/**
 	 * Method: TrecComPointer::
-	 * Purpose:
-	 * Parameters:
-	 * Returns:
+	 * Purpose: Allows access to the objects public (or accessible) attributes/methods
+	 * Parameters: void
+	 * Returns: t* - the object to operate on (or a null value that should have been checked for prior)
 	 */
 	t* operator->()
 	{
@@ -847,9 +913,9 @@ public:
 
 	/**
 	 * Method: TrecComPointer::
-	 * Purpose:
-	 * Parameters:
-	 * Returns:
+	 * Purpose: Allows for early deletion
+	 * Parameters: void
+	 * Returns: void
 	 */
 	void Delete()
 	{
@@ -860,15 +926,22 @@ public:
 	}
 };
 
+
+
+
+/**
+ * class TrecPointerKey
+ * Purpose: Utility class to allow for initializing various TrecPointer types and swapping compatible TrecPointer types
+ */
 class TrecPointerKey
 {
 public:
 
 	/**
-	 * Method: static TrecPointerKey::
-	 * Purpose:
-	 * Parameters:
-	 * Returns:
+	 * Method: static TrecPointerKey::GetTrecPointerFromSoft<T>
+	 * Purpose: Retrieves a regular TrecPointer from an instance of a TrecPointerSoft
+	 * Parameters: TrecPointerSoft<T>& soft - the weak pointer with the counter
+	 * Returns: TrecPointer<T> - a regular TrecPointer with the object held by the soft pointer
 	 */
 	template <class T> static TrecPointer<T> GetTrecPointerFromSoft(TrecPointerSoft<T>& soft)
 	{
@@ -880,10 +953,10 @@ public:
 	}
 
 	/**
-	 * Method: static TrecPointerKey::
-	 * Purpose:
-	 * Parameters:
-	 * Returns:
+	 * Method: static TrecPointerKey::GetSoftPointerFromTrec
+	 * Purpose: Retrieves a Soft pointer from a regular TrecPointer
+	 * Parameters: TrecPointer<T>& trec -  the TrecPointer to get a Soft pointer from
+	 * Returns: TrecPointerSoft<T> -  the Soft pointer with the same reference a the parameter
 	 */
 	template <class T> static TrecPointerSoft<T> GetSoftPointerFromTrec(TrecPointer<T>& trec)
 	{
@@ -891,10 +964,12 @@ public:
 	}
 
 	/**
-	 * Method: static TrecPointerKey::
-	 * Purpose:
-	 * Parameters:
-	 * Returns:
+	 * Method: static TrecPointerKey::GetNewSelfTrecPointer
+	 * Purpose:  Creates a new object and returns it in a regular TrecPointer
+	 * Parameters: types&& ... args - the arguments that get passed to the constructor of the object
+	 * Returns: TrecPointer<t> - The regular TrecPointer with a new object
+	 *
+	 * Note: This method will only compile if the t type provides a "SetSelf" method used to hold a soft pointer to itself
 	 */
 	template <class T, class...types> static TrecPointer<T> GetNewSelfTrecPointer(types&& ... args)
 	{
@@ -905,10 +980,10 @@ public:
 	}
 
 	/**
-	 * Method: static TrecPointerKey::
-	 * Purpose:
-	 * Parameters:
-	 * Returns:
+	 * Method: static TrecPointerKey::GetNewTrecPointer
+	 * Purpose: Creates a new object and returns it in a regular TrecPointer
+	 * Parameters: types&& ... args - the arguments that get passed to the constructor of the object
+	 * Returns: TrecPointer<t> - The regular TrecPointer with a new object
 	 */
 	template <class t, class...types> static TrecPointer<t> GetNewTrecPointer(types&& ... args)
 	{
@@ -917,24 +992,14 @@ public:
 		return ret;
 	}
 
-	/**
-	 * Method: static TrecPointerKey::
-	 * Purpose:
-	 * Parameters:
-	 * Returns:
-	 */
-	template <class T> static TrecPointer<T> GetNewTrecPointerPlain()
-	{
-		T* raw = new T();
-		TrecPointer<T> ret(raw);
-		return ret;
-	}
 
 	/**
-	 * Method: static TrecPointerKey::
-	 * Purpose:
-	 * Parameters:
-	 * Returns:
+	 * Method: static TrecPointerKey::GetNewSelfTrecPointerAlt
+	 * Purpose: Creates an object of type u that is then stored in a TrecPointer of type T (with type T having a SetSelf method)
+	 * Parameters: types&& ... args - the arguments that get passed to the constructor of the object
+	 * Returns:TrecPointer<t> - the T TrecPointer holding the U type
+	 * 
+	 * Note: This method will only compile if the t type provides a "SetSelf" method used to hold a soft pointer to itself
 	 */
 	template <class t, class u, class...types> static TrecPointer<t> GetNewSelfTrecPointerAlt(types&& ... args)
 	{
@@ -945,10 +1010,10 @@ public:
 	}
 
 	/**
-	 * Method: static TrecPointerKey::
-	 * Purpose:
-	 * Parameters:
-	 * Returns:
+	 * Method: static TrecPointerKey::GetNewTrecPointerAlt
+	 * Purpose: Creates an object of type u that is then stored in a TrecPointer of type T
+	 * Parameters: types&& ... args - the arguments that get passed to the constructor of the object
+	 * Returns: TrecPointer<t> - the T TrecPointer holding the U type
 	 */
 	template <class t, class u, class...types> static TrecPointer<t> GetNewTrecPointerAlt(types&& ... args)
 	{
@@ -971,10 +1036,10 @@ public:
 	}
 
 	/**
-	 * Method: static TrecPointerKey::
-	 * Purpose:
-	 * Parameters:
-	 * Returns:
+	 * Method: static TrecPointerKey::GetTrecPointerFromSub
+	 * Purpose: Provides a regular TrecPointer from the provided Sub Pointer
+	 * Parameters: TrecSubPointer<t, u>& sub - the Sub Pointer to get the regular TrecPointer
+	 * Returns: TrecPointer<t> - the Regular TrecPointer 
 	 */
 	template <class t, class u> static TrecPointer<t> GetTrecPointerFromSub(TrecSubPointer<t, u>& sub)
 	{
@@ -986,10 +1051,12 @@ public:
 	}
 
 	/**
-	 * Method: static TrecPointerKey::
+	 * Method: static TrecPointerKey::GetTrecSubPointerFromTrec
 	 * Purpose:
-	 * Parameters:
-	 * Returns:
+	 * Parameters: const TrecPointer<t>& tPointer - Retrieves a Sub Pointer from the Regular Trec Pointer
+	 * Returns: TrecSubPointer<t, u> - the Pointer that assumes the object is of type u
+	 *
+	 * Note: if the object held by the TrecPointer is NOT of type u, the returned pointer will effectively act like a null pointer
 	 */
 	template <class t, class u> static TrecSubPointer<t, u> GetTrecSubPointerFromTrec(const TrecPointer<t>& tPointer)
 	{
@@ -1001,10 +1068,10 @@ public:
 	}
 
 	/**
-	 * Method: static TrecPointerKey::
-	 * Purpose:
-	 * Parameters:
-	 * Returns:
+	 * Method: static TrecPointerKey::GetNewTrecSubPointer
+	 * Purpose: Initializes an object of type u that has a reference to itself and can operate with TrecPointer<t>
+	 * Parameters: types&& ... args - the arguments that get passed to the constructor of the object
+	 * Returns: TrecSubPointer<t, u> - the SubPointer with a reference to the u object
 	 */
 	template <class t, class u, class...types> static TrecSubPointer<t, u> GetNewTrecSubPointer(types&& ... args)
 	{
@@ -1014,10 +1081,12 @@ public:
 	}
 
 	/**
-	 * Method: static TrecPointerKey::
-	 * Purpose:
-	 * Parameters:
-	 * Returns:
+	 * Method: static TrecPointerKey::GetNewSelfTrecSubPointer
+	 * Purpose: Initializes an object of type u that has a reference to itself and can operate with TrecPointer<t>
+	 * Parameters: types&& ... args - the arguments that get passed to the constructor of the object
+	 * Returns: TrecSubPointer<t, u> - the SubPointer with a reference to the u object
+	 *
+	 * Note: This method will only compile if the t type provides a "SetSelf" method used to hold a soft pointer to itself
 	 */
 	template <class t, class u, class...types> static TrecSubPointer<t, u> GetNewSelfTrecSubPointer(types&& ... args)
 	{
@@ -1028,10 +1097,13 @@ public:
 	}
 
 	/**
-	 * Method: static TrecPointerKey::
+	 * Method: static TrecPointerKey::GetComPointer
 	 * Purpose:
-	 * Parameters:
-	 * Returns:
+	 * Parameters:typename TrecComPointer<u>::TrecComHolder& holder - the Holder to extract the value from
+	 * Returns: TrecComPointer<t> -  the Pointer with the desired type specified.
+	 *
+	 * Note: provided to handle cases where you want to create a specific COM object like ID2D1HwndRenderTarget and wish
+	 *		to use a more broad type such as ID2D1RenderTarget
 	 */
 	template <class t, class u> static TrecComPointer<t> GetComPointer(typename TrecComPointer<u>::TrecComHolder& holder)
 	{
@@ -1043,16 +1115,17 @@ public:
 		if (!raw)
 			throw L"Error! Dealing with incompatible types!";
 
+		// Prevent a second counter from being created later on
 		holder.holder = nullptr;
 
 		return TrecComPointer<t>(raw);
 	}
 
 	/**
-	 * Method: static TrecPointerKey::
-	 * Purpose:
-	 * Parameters:
-	 * Returns:
+	 * Method: static TrecPointerKey::GetSubPointerFromSoft
+	 * Purpose: Retrieves an active Sub Pointer from a Soft version of the pointer
+	 * Parameters: TrecSubPointerSoft<T, U> s - The Soft pointer to get the strong one from
+	 * Returns:TrecSubPointer<T, U> -  the Sub Pointer sought 
 	 */
 	template <class T, class U> static TrecSubPointer<T, U> GetSubPointerFromSoft(TrecSubPointerSoft<T, U> s)
 	{
@@ -1065,10 +1138,10 @@ public:
 	}
 
 	/**
-	 * Method: static TrecPointerKey::
-	 * Purpose:
-	 * Parameters:
-	 * Returns:
+	 * Method: static TrecPointerKey::GetSoftSubPointerFromSub<T,U>
+	 * Purpose: Retrieves a Soft Sub Pointer from a Sub Trec Pointer
+	 * Parameters: TrecSubPointer<T, U> trec -  the Pointer with the object
+	 * Returns: TrecSubPointerSoft<T, U> trec - the Soft version of the TrecSubPointer
 	 */
 	template <class T, class U> static TrecSubPointerSoft<T, U> GetSoftSubPointerFromSub(TrecSubPointer<T, U> trec)
 	{
