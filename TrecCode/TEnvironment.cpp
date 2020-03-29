@@ -66,84 +66,18 @@ TString retrieveLanguageByExtension(TString ext)
 	return TString();
 }
 
-TEnvironment::TEnvironment(TString& rootDirectory, TString& sourceDirectory, TString& resourceDirectory, TString& binDirectory)
+
+TEnvironment::TEnvironment(TrecPointer<TFileShell> shell)
 {
-	this->rootDirectory.Set(rootDirectory);
-	this->rootSource.Set(sourceDirectory);
-	this->rootResources.Set(resourceDirectory);
-	this->rootBin.Set(binDirectory);
-
-	ForgeDirectory(rootDirectory);
-	if (rootDirectory.GetSize() && rootDirectory[rootDirectory.GetSize() - 1] != L'\\')
-		rootDirectory.AppendChar(L'\\');
-
-
-	if (rootSource.GetSize() > 5 && (rootSource[0] != L'\\' || rootSource[0] != L'/' || rootSource[1] != L':'))
-	{
-		rootSource.Set(rootDirectory + rootSource);
-	}
-	ForgeDirectory(rootSource);
-
-	if (rootResources.GetSize() > 5 && (rootResources[0] != L'\\' || rootResources[0] != L'/' || rootResources[1] != L':'))
-	{
-		rootResources.Set(rootDirectory + rootResources);
-	}
-	ForgeDirectory(rootResources);
-
-	if (rootBin.GetSize() > 5 && (rootBin[0] != L'\\' || rootBin[0] != L'/' || rootBin[1] != L':'))
-	{
-		rootBin.Set(rootDirectory + rootBin);
-	}
-	ForgeDirectory(rootBin);
 }
 
 TEnvironment::~TEnvironment()
 {
 }
 
-UINT TEnvironment::SetUpEnv(TFile& props)
+TEnvironment::TEnvironment(TrecSubPointer<TControl, TPromptControl> prompt)
 {
-	if (!props.IsOpen())
-		return 1;
-
-	TString prop;
-	TMap<TString> properties;
-	while (props.ReadString(prop))
-	{
-
-		int commentStart = prop.FindOutOfQuotes(TString(L"#"));
-		if (commentStart != -1)
-			prop.Set(prop.SubString(0, commentStart));
-
-		int split = prop.FindOutOfQuotes(TString(L":"));
-		if (split = -1)
-			continue;
-
-		properties.addEntry(prop.SubString(0, split), TrecPointerKey::GetNewTrecPointer<TString>(prop.SubString(split + 1)));
-	}
-
-	TrecPointer<TString> value = properties.retrieveEntry(TString(L"TargetEnvironment"));
-	if (value.Get())
-		targetExtensions.Set(value.Get());
-
-
-	// To-Do: Scan Source Directory for source files and set up languages
-
-
-
-
-	// Now set up Primitive types that each detected language offers
-	for (UINT C = 0; C < languages.count(); C++)
-	{
-		TrecPointer<TLanguage> language = languages.GetEntryAt(C).Get()->object;
-		if (!language.Get())
-			continue;
-
-		TMap<TString> pTypes = language->GetPrimitiveTypes();
-
-	}
-
-	return 0;
+	shellRunner = prompt;
 }
 
 void TEnvironment::Compile()
@@ -162,40 +96,56 @@ void TEnvironment::Run()
 {
 }
 
-void TEnvironment::PreProcessSingleFile(TrecPointer<TFile> file)
+TDataArray<TString> TEnvironment::GetTaskList()
 {
-	if (!file.Get() || !file->IsOpen())
+	return taskList;
+}
+
+void GetAnagameProvidedEnvironmentList(TrecPointer<TFileShell> directory, TDataArray<TString>& environmentType)
+{
+	if (!directory.Get() || !directory->IsDirectory())
 		return;
 
-	TString fileExt(file->GetFileExtension());
+	auto files = dynamic_cast<TDirectory*>(directory.Get())->GetFileListing();
 
-	TrecPointer<TLanguage> lang = languages.retrieveEntry(fileExt);
-
-	if (!lang.Get())
+	for (UINT Rust = 0; Rust < files.Size(); Rust++)
 	{
-		SetUpLanguageExtensionMapping();
+		if (!files[Rust].Get())
+			continue;
 
-		TString langName(retrieveLanguageByExtension(fileExt));
-		if (!langName.GetSize())
-			return;
+		TString fileName = files[Rust]->GetName();
 
-		auto language = TLanguage::getLanguage(langName);
-		if (!language.Get())
-			return;
-
-		for (UINT C = 0; C < languageList.Size(); C++)
+		if (!fileName.CompareNoCase(TString(L"build.gradle")))
 		{
-			if (languageList[C].language.Compare(langName))
-				continue;
-			for (UINT Rust = 0; Rust < languageList[C].fileExtensions.Size(); Rust++)
-			{
-				languages.addEntry(languageList[C].fileExtensions[Rust], language);
-			}
-			break;
+			environmentType.push_back(TString(L"Gradle"));
+			continue;
 		}
 
-		lang = language;
-	}
+		if (!fileName.CompareNoCase(TString(L"pom.xml")))
+		{
+			environmentType.push_back(TString(L"Maven"));
+			continue;
+		}
 
-	lang->PreProcessFile(file);
+		if (!fileName.CompareNoCase(TString(L"treccode.tml")))
+		{
+			environmentType.push_back(TString(L"TrecCode"));
+			continue;
+		}
+
+		if (!fileName.CompareNoCase(TString(L"ag_vid.tml")))
+		{
+			environmentType.push_back(TString(L"AnagameVideo"));
+			continue;
+		}
+
+		// file.sln
+		// 012345678
+
+		if (fileName.Find(TString(L".snl")) == fileName.GetSize() - 4 || fileName.Find(TString(L".vcxproj")) == fileName.GetSize() - 8)
+		{
+			environmentType.push_back(TString(L"VisualStudio"));
+			continue;
+		}
+	}
 }

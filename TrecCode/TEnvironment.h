@@ -4,6 +4,9 @@
 #include <TMap.h>
 #include "TLanguage.h"
 #include <TType.h>
+#include <TDirectory.h>
+#include <TCanvas.h>
+#include <TPromptControl.h>
 
 typedef enum CompileErrorHandling
 {
@@ -27,6 +30,9 @@ typedef struct Variable
 	UINT location;
 }Variable;
 
+
+void GetAnagameProvidedEnvironmentList(TrecPointer<TFileShell> directory, TDataArray<TString>& environmentType);
+
 /* struct LangNames
  * Purpose: holds the name of a Programming language and the file extensions associated with them
  */
@@ -42,37 +48,33 @@ class _TREC_CODE_DLL TEnvironment :
 	public TObject
 {
 public:
-	TEnvironment(TString& rootDirectory, TString& sourceDirectory, TString& resourceDirectory, TString& binDirectory);
+	TEnvironment(TrecPointer<TFileShell> shell);
 	~TEnvironment();
 
-	UINT SetUpEnv(TFile& props);
+	TEnvironment(TrecSubPointer<TControl, TPromptControl> prompt);
+virtual TDataArray<TString> GetTaskList();
+	//virtual static bool IsViable(TrecPointer<TFileShell> shell) = 0;
+	virtual UINT SetUpEnv() = 0;
 
-	void Compile();
-	void Compile(TrecPointer<TFile> logFile);
+	virtual void Compile() = 0;
+	virtual void Compile(TrecPointer<TFile> logFile) = 0;
 
-	void Log();
+	virtual void Log() = 0;
 
-	void Run();
+	virtual void Run() = 0;
 
-	void PreProcessSingleFile(TrecPointer<TFile> file);
+	
+
+	virtual UINT RunTask(TString& task) = 0;
 
 protected:
 
 	void SetUpLanguageExtensionMapping();
 
-	TString rootDirectory;		// Root directory of the project
-	TString rootSource;			// Root directory of the source files of the project
-	TString rootResources;		// Root directory of the resource files of the project
-	TString rootBin;			// Root directory of the bin files (output files)
+	TrecPointer<TFileShell> rootDirectory;
 
-	TString targetExtensions;	// Extensions to target for compilation
+	TDataArray<TString> taskList;
 
-	CompileErrorHandling compileErrorHandling;
-	TargetAnagameMachine targetMachine;
-	TString endEnvironment;
-
-	TMap<TLanguage> languages;
-
-	TDataArray<Variable> globalVariables;
+	TrecSubPointer<TControl, TPromptControl> shellRunner;
 };
 
