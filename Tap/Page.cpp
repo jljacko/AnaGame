@@ -534,6 +534,8 @@ D2D1_RECT_F Page::GetArea()
 void Page::SetArea(const D2D1_RECT_F& loc)
 {
 	area = loc;
+	if (rootControl.Get())
+		rootControl->Resize(area);
 }
 
 

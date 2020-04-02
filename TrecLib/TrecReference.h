@@ -1148,5 +1148,16 @@ public:
 		return TrecSubPointerSoft<T,U>(trec.pointer);
 	}
 
-
+	/**
+	 * Method: static TrecPointerKey::GetSoftSubPointerFromSoft<T,U>
+	 * Purpose: Retrieves a Soft Sub Pointer from a Soft Trec Pointer
+	 * Parameters: TrecPointerSoft<T> trec -  the Pointer with the object
+	 * Returns: TrecSubPointerSoft<T, U> trec - the Soft version of the TrecSubPointer
+	 */
+	template <class T, class U> static TrecSubPointerSoft<T, U> GetSoftSubPointerFromSoft(TrecPointerSoft<T> trec)
+	{
+		if(trec.pointer)
+			return TrecSubPointerSoft<T, U>(trec.pointer);
+		return TrecSubPointerSoft<T, U>();
+	}
 };

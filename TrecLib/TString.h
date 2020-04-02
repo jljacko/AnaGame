@@ -121,7 +121,7 @@ public:
 	TString GetDelete(int& ret, int index, int count = 1);
 
 	int Find(const TString& sub, int start = 0);
-	int Find(WCHAR sub, int start = 0);
+	int Find(WCHAR sub, int start = 0, bool ignoreEscape = true);
 	int FindOneOf(const TString& chars, int start = 0);
 
 	int FindLast(const TString& sub, int start = -1);

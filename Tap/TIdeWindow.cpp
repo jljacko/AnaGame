@@ -34,6 +34,8 @@ int TIdeWindow::PrepareWindow()
 	{
 		*pages[c] = TrecPointerKey::GetNewSelfTrecSubPointer<Page, IDEPage>(static_cast<ide_page_type>(c), pageBarSpace, drawingBoard);
 		this->pages.push_back(TrecPointerKey::GetTrecPointerFromSub<Page, IDEPage>(*pages[c]));
+
+		(*pages[c])->parentWindow = TrecPointerKey::GetSoftSubPointerFromSoft<TWindow, TIdeWindow>(self);
 	}
 
 	for (UINT c = 0; c < ARRAYSIZE(pages); c++)
@@ -51,15 +53,78 @@ int TIdeWindow::PrepareWindow()
 
 void TIdeWindow::OnLButtonUp(UINT nFlags, TPoint point)
 {
-	dynamic_cast<IDEPage*>(body.Get())->OnLButtonUp();
-	dynamic_cast<IDEPage*>(basicConsole.Get())->OnLButtonUp();
-	dynamic_cast<IDEPage*>(deepConsole.Get())->OnLButtonUp();
-	dynamic_cast<IDEPage*>(upperRight.Get())->OnLButtonUp();
-	dynamic_cast<IDEPage*>(lowerRight.Get())->OnLButtonUp();
-	dynamic_cast<IDEPage*>(upperLeft.Get())->OnLButtonUp();
-	dynamic_cast<IDEPage*>(lowerLeft.Get())->OnLButtonUp();
+	if (dynamic_cast<IDEPage*>(body.Get())->OnLButtonUp(point) && currentHolder.Get())
+	{
+		if (focusPage.Get() && body.Get() != focusPage.Get())
+		{
+			focusPage->RemovePage(currentHolder);
+		}
+		body->AddNewPage(currentHolder);
+		currentHolder.Nullify();
+	}
+	if (dynamic_cast<IDEPage*>(basicConsole.Get())->OnLButtonUp(point) && currentHolder.Get())
+	{
+		if (focusPage.Get() && basicConsole.Get() != focusPage.Get())
+		{
+			focusPage->RemovePage(currentHolder);
+		}
+		basicConsole->AddNewPage(currentHolder);
+		currentHolder.Nullify();
+	}
+	if (dynamic_cast<IDEPage*>(deepConsole.Get())->OnLButtonUp(point) && currentHolder.Get())
+	{
+		if (focusPage.Get() && deepConsole.Get() != focusPage.Get())
+		{
+			focusPage->RemovePage(currentHolder);
+		}
+		deepConsole->AddNewPage(currentHolder);
+		currentHolder.Nullify();
+	}
+	if (dynamic_cast<IDEPage*>(upperRight.Get())->OnLButtonUp(point) && currentHolder.Get())
+	{  
+		if (focusPage.Get() && upperRight.Get() != focusPage.Get())
+		{
+			focusPage->RemovePage(currentHolder);
+		}
+		upperRight->AddNewPage(currentHolder);
+		currentHolder.Nullify();
+	}
+	if (dynamic_cast<IDEPage*>(lowerRight.Get())->OnLButtonUp(point) && currentHolder.Get())
+	{
+		if (focusPage.Get() && lowerRight.Get() != focusPage.Get())
+		{
+			focusPage->RemovePage(currentHolder);
+		}
+		lowerRight->AddNewPage(currentHolder);
+		currentHolder.Nullify();
+	}
+	if (dynamic_cast<IDEPage*>(upperLeft.Get())->OnLButtonUp(point) && currentHolder.Get())
+	{
+		if (focusPage.Get() && upperLeft.Get() != focusPage.Get())
+		{
+			focusPage->RemovePage(currentHolder);
+		}
+		upperLeft->AddNewPage(currentHolder);
+		currentHolder.Nullify();
+	}
+	if (dynamic_cast<IDEPage*>(lowerLeft.Get())->OnLButtonUp(point) && currentHolder.Get())
+	{
+		if (focusPage.Get() && lowerLeft.Get() != focusPage.Get())
+		{
+			focusPage->RemovePage(currentHolder);
+		}
+		lowerLeft->AddNewPage(currentHolder);
+		currentHolder.Nullify();
+	}
+	if (focusPage.Get() && currentHolder.Get())
+	{
+		focusPage->AddNewPage(currentHolder);
+	}
+	currentHolder.Nullify();
+
 	TWindow::OnLButtonUp(nFlags, point);
 	focusPage.Nullify();
+
 }
 
 void TIdeWindow::OnMouseMove(UINT nFlags, TPoint point)
@@ -123,6 +188,13 @@ void TIdeWindow::OnMouseMove(UINT nFlags, TPoint point)
 	
 
 finish:
+
+	if (currentHolder.Get())
+	{
+		currentHolder->Move(point);
+	}
+
+
 	if (output == positiveContinueUpdate || output == positiveOverrideUpdate || output == negativeUpdate)
 		Draw();
 }
@@ -131,6 +203,10 @@ void TIdeWindow::OnLButtonDown(UINT nFlags, TPoint point)
 {
 	if (locked) return;
 	messageOutput output = negative;
+
+
+	auto curFocusPage = focusPage;
+
 	if (isContained(point, mainPage->GetArea()))
 	{
 		mainPage->OnLButtonDown(nFlags, point, &output);
@@ -187,6 +263,10 @@ void TIdeWindow::OnLButtonDown(UINT nFlags, TPoint point)
 	}
 
 finish:
+	
+
+
+
 	if (output == positiveContinueUpdate || output == positiveOverrideUpdate || output == negativeUpdate)
 		Draw();
 }
@@ -351,6 +431,11 @@ int TIdeWindow::CompileView(TString& file, TrecPointer<EventHandler> eh)
 	return 0;
 }
 
+void TIdeWindow::SetCurrentHolder(TrecPointer<IDEPageHolder> holder)
+{
+	currentHolder = holder;
+}
+
 void TIdeWindow::DrawOtherPages()
 {
 	if (body.Get())dynamic_cast<IDEPage*>(body.Get())->Draw(panelbrush, d3dEngine.Get());
@@ -360,4 +445,8 @@ void TIdeWindow::DrawOtherPages()
 	if (upperRight.Get())dynamic_cast<IDEPage*>(upperRight.Get())->Draw(panelbrush, d3dEngine.Get());
 	if (lowerLeft.Get()) dynamic_cast<IDEPage*>(lowerLeft.Get())->Draw(panelbrush, d3dEngine.Get());
 	if (lowerRight.Get())dynamic_cast<IDEPage*>(lowerRight.Get())->Draw(panelbrush, d3dEngine.Get());
+
+
+	if (currentHolder.Get())
+		currentHolder->Draw();
 }

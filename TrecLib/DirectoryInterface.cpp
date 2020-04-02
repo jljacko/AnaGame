@@ -6,8 +6,8 @@
 
 static bool initialized = false;
 
-static TString directories[9];
-static TString shadowDirectories[9];
+static TString directories[16];
+static TString shadowDirectories[16];
 
 void ForgeDirectory(TString& dir)
 {
@@ -76,12 +76,41 @@ void InitializeDirectories()
 	tempString.Set(folderString);
 	directories[7].Set(tempString);
 
-	directories[8].Set(directories[7]);
-	directories[8].Replace(TString(L"\\Downloads"), TString(L""));
+
+	SHGetKnownFolderPath(FOLDERID_Public, 0, NULL, &folderString);
+	tempString.Set(folderString);
+	directories[8].Set(tempString);
+
+	SHGetKnownFolderPath(FOLDERID_PublicDesktop, 0, NULL, &folderString);
+	tempString.Set(folderString);
+	directories[9].Set(tempString);
+
+	SHGetKnownFolderPath(FOLDERID_PublicDocuments, 0, NULL, &folderString);
+	tempString.Set(folderString);
+	directories[10].Set(tempString);
+
+	SHGetKnownFolderPath(FOLDERID_PublicDownloads, 0, NULL, &folderString);
+	tempString.Set(folderString);
+	directories[11].Set(tempString);
+
+	SHGetKnownFolderPath(FOLDERID_PublicMusic, 0, NULL, &folderString);
+	tempString.Set(folderString);
+	directories[12].Set(tempString);
+
+	SHGetKnownFolderPath(FOLDERID_PublicPictures, 0, NULL, &folderString);
+	tempString.Set(folderString);
+	directories[13].Set(tempString);
+
+	SHGetKnownFolderPath(FOLDERID_PublicVideos, 0, NULL, &folderString);
+	tempString.Set(folderString);
+	directories[14].Set(tempString);
+
+	directories[15].Set(directories[7]);
+	directories[15].Replace(TString(L"\\Downloads"), TString(L""));
 
 	initialized = true;
 	
-	TString baseShadow = GetDirectoryWithSlash(cd_AppData) + TString(L"AnaGame\\ShadowFiles");
+	TString baseShadow = GetDirectoryWithSlash(CentralDirectories::cd_AppData) + TString(L"AnaGame\\ShadowFiles");
 	ForgeDirectory(baseShadow);
 
 	initialized = false;
@@ -94,7 +123,17 @@ void InitializeDirectories()
 	shadowDirectories[5].Set(baseShadow + TString(L"\\Pictures"));
 	shadowDirectories[6].Set(baseShadow + TString(L"\\Videos"));
 	shadowDirectories[7].Set(baseShadow + TString(L"\\Downloads"));
-	shadowDirectories[8].Set(baseShadow);
+	// New Public Shadow Directories
+	shadowDirectories[8].Set(baseShadow + TString(L"\\Public"));
+	shadowDirectories[9].Set(baseShadow + TString(L"\\Public\\Desktop"));
+	shadowDirectories[10].Set(baseShadow + TString(L"\\Public\\Documents"));
+	shadowDirectories[11].Set(baseShadow + TString(L"\\Public\\Downloads"));
+	shadowDirectories[12].Set(baseShadow + TString(L"\\Public\\Music"));
+	shadowDirectories[13].Set(baseShadow + TString(L"\\Public\\Pictures"));
+	shadowDirectories[14].Set(baseShadow + TString(L"\\Public\\Videos"));
+
+	// User
+	shadowDirectories[15].Set(baseShadow);
 
 	for (UINT c = 0; c < 9; c++)
 	{

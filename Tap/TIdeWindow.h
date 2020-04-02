@@ -1,6 +1,8 @@
 #pragma once
 #include "TWindow.h"
 
+
+
 typedef enum ide_page_type
 {
 	ide_page_type_body,
@@ -25,7 +27,7 @@ typedef enum anagame_page
 };
 
 class IDEPage;
-
+class IDEPageHolder;
 
 class _TAP_DLL TIdeWindow :
 	public TWindow
@@ -43,9 +45,15 @@ public:
 
 	int CompileView(TString& file, TrecPointer<EventHandler> eh)override;
 
+	void SetCurrentHolder(TrecPointer<IDEPageHolder> holder);
+
 protected:
 	UINT pageBarSpace;
 	UINT mainViewSpace;
+
+
+	TrecPointer<IDEPageHolder> currentHolder;
+
 
 	virtual void DrawOtherPages()override;
 

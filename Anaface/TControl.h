@@ -241,6 +241,7 @@ class _ANAFACE_DLL TText :public TControlComponent
 	friend class TRadioButton;
 //	friend class TComboBox;
 	friend class TContextMenu;
+	friend class TTabBar;
 public:
 	TText(TrecPointer<DrawingBoard> drawingBoard, TControl*);
 	TText(TrecPointer<TText>&,TControl*);
@@ -348,6 +349,7 @@ class _ANAFACE_DLL TContent :public TControlComponent
 {
 	friend class TControl;
 	friend class TGadgetControl;
+	friend class TTabBar;
 public:
 	TContent(TrecPointer<DrawingBoard>, TControl*);
 	TContent();

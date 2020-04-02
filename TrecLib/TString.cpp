@@ -1510,14 +1510,18 @@ int TString::Find(const TString& sub, int start)
 	return -1;
 }
 
-int TString::Find(WCHAR sub, int start)
+int TString::Find(WCHAR sub, int start, bool ignoreEscape = true)
 {
 	if (start < 0)
 		return -1;
 	for (int c = start; c < size; c++)
 	{
 		if (string[c] == sub)
+		{
+			if (!ignoreEscape && c > 0 && string[c - 1] == L'\\')
+				continue;
 			return c;
+		}
 	}
 	return -1;
 }

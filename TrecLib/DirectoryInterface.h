@@ -7,17 +7,24 @@
 * enum CentralDirectories
 * Represents possible directory types AnaGame and its taps might be interested in
 */
-typedef enum CentralDirectories
+typedef enum class CentralDirectories
 {
-	cd_Executable,	// 0
-	cd_AppData,		// 1
-	cd_Desktop,		// 2
-	cd_Documents,	// 3
-	cd_Music,		// 4
-	cd_Pictures,	// 5
-	cd_Videos,		// 6
-	cd_Downloads,	// 7
-	cd_User			// 8
+	cd_Executable,			// 0
+	cd_AppData,				// 1
+	cd_Desktop,				// 2
+	cd_Documents,			// 3
+	cd_Music,				// 4
+	cd_Pictures,			// 5
+	cd_Videos,				// 6
+	cd_Downloads,			// 7
+	cd_public,				// 8
+	cd_public_Desktop,		// 9
+	cd_public_Documents,	// 10
+	cd_public_Downloads,	// 11
+	cd_public_Music,		// 12
+	cd_public_pictures,		// 13
+	cd_public_videos,		// 14
+	cd_User					// 15
 }CentralDirectories;
 
 void _TREC_LIB_DLL ForgeDirectory(TString& dir);

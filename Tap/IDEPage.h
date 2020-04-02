@@ -29,11 +29,14 @@ public:
 	void Draw();
 	void Move(TPoint& moveBy);
 
+	void SetCurrentPoint(TPoint& p);
+
 protected:
 	void SetPage(TrecSubPointer<Page, IDEPage> p);
 	TrecSubPointer<Page, IDEPage> page;
 	TrecPointer<TText> text;
 	D2D1_RECT_F location;
+	TPoint curPoint;
 };
 
 class _TAP_DLL IDEPage :
@@ -62,7 +65,7 @@ protected:
 public:
 	afx_msg void OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
 	afx_msg void OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
-	afx_msg void OnLButtonUp();
+	afx_msg bool OnLButtonUp(TPoint& point);
 
 	void Draw(TrecPointer<TBrush> color, TWindowEngine* twe = nullptr);
 	void SetLink(TrecSubPointer<Page, IDEPage> p, ide_page_type t);
@@ -94,6 +97,8 @@ protected:
 
 	TrecPointer<IDEPageHolder> focusPage;
 	TrecPointer<IDEPageHolder> GetFocusPage(TPoint& point);
+
+	TrecSubPointerSoft<TWindow, TIdeWindow> parentWindow;
 
 	ide_page_type type;
 	UINT barSpace;

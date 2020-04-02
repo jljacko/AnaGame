@@ -1,5 +1,6 @@
 #include "IDEPage.h"
 #include "TInstance.h"
+#include "TIdeWindow.h"
 
 IDEPage::IDEPage(ide_page_type type, UINT barSpace, TrecPointer<DrawingBoard> board): Page(board)
 {
@@ -100,6 +101,12 @@ void IDEPage::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
 void IDEPage::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
 {
 	focusPage = GetFocusPage(point);
+
+	if (focusPage.Get() && parentWindow.Get())
+	{
+		TrecPointerKey::GetSubPointerFromSoft<TWindow, TIdeWindow>(parentWindow)->SetCurrentHolder(focusPage);
+		focusPage->curPoint = point;
+	}
 
 	if (currentPage.Get())
 		currentPage->OnLButtonDown(nFlags, point, mOut);
@@ -267,11 +274,12 @@ void IDEPage::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataA
 	*mOut = positiveOverrideUpdate;
 }
 
-void IDEPage::OnLButtonUp()
+bool IDEPage::OnLButtonUp(TPoint& point)
 {
 	curPoint.x = curPoint.y = 0.0f;
 	moveMode = page_move_mode_normal;
 
+	return isContained(point, area);
 }
 
 void IDEPage::Draw(TrecPointer<TBrush> color, TWindowEngine* twe)
@@ -348,6 +356,25 @@ void IDEPage::AddNewPage(TrecPointer<IDEPageHolder> pageHolder)
 	{
 		if (pages[c].Get() == pageHolder.Get())
 		{
+			// First, return the location if need be
+			D2D1_RECT_F loc{ 0.0f,0.0f,0.0f,0.0f };
+			loc.top = area.top;
+			loc.bottom = area.top + barSpace;
+
+			if (c == 0)
+				loc.left = area.left;
+			else
+				loc.left = pages[c - 1]->GetLocation().right;
+
+			if (c + 1 == pages.Size())
+			{
+				loc.right = area.right;
+			}
+			else
+				loc.right = pages[c + 1]->GetLocation().left;
+
+			pageHolder->SetLocation(loc);
+
 			return;
 		}
 	}
@@ -453,8 +480,12 @@ TrecPointer<IDEPageHolder> IDEPage::GetFocusPage(TPoint& point)
 {
 	for (UINT c = 0; c < pages.Size(); c++)
 	{
-		if(pages[c].Get() && isContained(point, pages[c]->GetLocation()))
+		if (pages[c].Get() && isContained(point, pages[c]->GetLocation()))
+		{
+
+
 			return pages[c];
+		}
 	}
 	return TrecPointer<IDEPageHolder>();
 }
@@ -904,13 +935,24 @@ void IDEPageHolder::Draw()
 
 void IDEPageHolder::Move(TPoint& moveBy)
 {
+	auto tempPoint = moveBy;
+	moveBy.x -= curPoint.x;
+	moveBy.y -= curPoint.y;
+
 	location.bottom += moveBy.y;
 	location.top += moveBy.y;
 	location.left += moveBy.x;
 	location.right += moveBy.x;
 
+	curPoint = tempPoint;
+
 	if (text.Get())
 		text->setNewLocation(convertD2DRectToRECT(location));
+}
+
+void IDEPageHolder::SetCurrentPoint(TPoint& p)
+{
+	curPoint = p;
 }
 
 void IDEPageHolder::SetPage(TrecSubPointer<Page, IDEPage> p)
