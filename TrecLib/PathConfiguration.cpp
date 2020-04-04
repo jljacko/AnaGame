@@ -26,7 +26,7 @@ PathConfiguration::PathConfiguration()
  */
 PathConfiguration::PathConfiguration(PathConfiguration& pathConfig)
 {
-	name.Set(pathConfig.GetName);
+	name.Set(pathConfig.GetName());
 	currentPath.Set(pathConfig.GetCurrentPath());
 
 	paths = pathConfig.paths;

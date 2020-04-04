@@ -79,6 +79,11 @@ void TStoryBoard::SetPersistant()
 	threadData.persist = true;
 }
 
+bool TStoryBoard::IsPersistant()
+{
+	return threadData.persist;
+}
+
 bool TStoryBoard::Run()
 {
 	if (threadData.animationThread)

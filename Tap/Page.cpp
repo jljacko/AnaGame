@@ -169,12 +169,15 @@ int Page::SetAnaface(TrecPointer<TFile> file, TrecPointer<EventHandler> eh)
 	rootControl = parser.getRootControl();
 	if (rootControl.Get())
 		rootControl->onCreate(area, windowHandle->GetWindowEngine());
-	if(handler.Get())
-		handler->Initialize(TrecPointerKey::GetTrecPointerFromSoft<Page>(self));
 
 	persistentStoryBoards = parser.GetPersistentStoryBoards();
 	basicStoryBoards = parser.GetStoryBoards();
 	animations = parser.GetAnimations();
+
+	if(handler.Get())
+		handler->Initialize(TrecPointerKey::GetTrecPointerFromSoft<Page>(self));
+
+
 	return 0;
 }
 
@@ -483,6 +486,20 @@ void Page::SetMiniHandler(TrecSubPointer<EventHandler, MiniHandler> mh)
 	}
 }
 
+void Page::AddStory(TString& story, bool persistent)
+{
+	if (persistent)
+		persistentStoryBoards.push_back(story);
+	else
+		basicStoryBoards.push_back(story);
+}
+
+void Page::AddAnimations(TrecPointer<AnimationBuilder> builder)
+{
+	if (builder.Get())
+		animations.push_back(builder);
+}
+
 
 
 
@@ -511,7 +528,9 @@ TrecPointer<TArenaEngine> Page::GetArenaEngine()
 void Page::CreateLayout()
 {
 	if (rootControl.Get() && windowHandle.Get())
+	{
 		rootControl->onCreate(area, windowHandle->GetWindowEngine());
+	}
 }
 
 void Page::Draw(TWindowEngine* twe)

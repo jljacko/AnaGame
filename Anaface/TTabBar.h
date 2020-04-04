@@ -4,7 +4,7 @@
 
 class TTabBar;
 
-class Tab : public Dragable
+class Tab 
 {
 	friend class TTabBar;
 public:
@@ -19,7 +19,7 @@ public:
 
 	void Draw();
 
-	virtual void MovePoint(float x, float y) override;
+	virtual void MovePoint(float x, float y);
 
 private:
 	TrecPointer<TText> text;

@@ -2010,6 +2010,7 @@ void TControl::RegisterAnimations(TDataArray<TrecPointer<AnimationData>>& aData)
 	{
 		aData.push_back(animateData[Rust]);
 	}
+	animateData.RemoveAll();
 }
 
 /*

@@ -30,6 +30,7 @@ public:
 	
 
 	void SetPersistant();
+	bool IsPersistant();
 
 	bool Run();
 	bool Pause();

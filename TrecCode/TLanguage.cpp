@@ -3,7 +3,7 @@
 #include <stack>
 #include <DirectoryInterface.h>
 
-static TString languageFolder = GetDirectoryWithSlash(cd_Executable) + TString(L"Languages");
+static TString languageFolder = GetDirectoryWithSlash(CentralDirectories::cd_Executable) + TString(L"Languages");
 TString tStringSemiColon(L";");
 
 TrecPointer<TLanguage> TLanguage::getLanguage(TString& langName)

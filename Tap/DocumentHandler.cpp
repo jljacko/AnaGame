@@ -19,7 +19,7 @@ void DocumentHandler::OnSave()
 	if (!file.Get() && page.Get() && (this->page->GetWindowHandle()).Get() && instance.Get())
 	{
 		win = this->page->GetWindowHandle();
-		TString initialSearch(GetDirectory(cd_Documents));
+		TString initialSearch(GetDirectory(CentralDirectories::cd_Documents));
 
 		OPENFILENAMEW fileInfo;
 		ZeroMemory(&fileInfo, sizeof(fileInfo));

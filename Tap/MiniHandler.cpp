@@ -38,7 +38,7 @@ void MiniHandler::OnSave()
 {
 	TFile saver(filePath, TFile::t_file_write | TFile::t_file_create_always);
 
-	TString initialSearch(GetDirectory(cd_Documents));
+	TString initialSearch(GetDirectory(CentralDirectories::cd_Documents));
 
 	if (!saver.IsOpen())
 	{
@@ -76,7 +76,7 @@ void MiniHandler::OnLoad()
 	OPENFILENAMEW fileInfo;
 	ZeroMemory(&fileInfo, sizeof(fileInfo));
 
-	TString initialSearch(GetDirectory(cd_Documents));
+	TString initialSearch(GetDirectory(CentralDirectories::cd_Documents));
 
 	fileInfo.lStructSize = sizeof(OPENFILENAMEW);
 	fileInfo.hwndOwner = this->window->GetWindowHandle();

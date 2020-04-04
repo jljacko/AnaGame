@@ -15,7 +15,7 @@ NameDialog::~NameDialog()
 
 int NameDialog::CompileView(TrecComPointer<ID2D1Factory1> fact)
 {
-	TString file = GetDirectoryWithSlash(cd_Executable);
+	TString file = GetDirectoryWithSlash(CentralDirectories::cd_Executable);
 
 	file.Append(L"Resources\\TextDialog.tml");
 

@@ -9,7 +9,7 @@
 */
 TShell::TShell()
 {
-	workingDirectory.Set(GetDirectoryWithSlash(cd_Documents));
+	workingDirectory.Set(GetDirectoryWithSlash(CentralDirectories::cd_Documents));
 	stdOutRd = stdInRd = stdErrRd = nullptr;
 	stdOutWt = stdInWt = stdErrWt = nullptr;
 
@@ -233,7 +233,7 @@ void TShell::Process_cd(TString& command)
 {
 	// If cd is alone, set to Home Directory
 	if (!command.CompareNoCase(TString(L"cd")))
-		workingDirectory.Set(GetDirectory(cd_User));
+		workingDirectory.Set(GetDirectory(CentralDirectories::cd_User));
 	else
 	{
 		// To:Do: Implement change Directory code

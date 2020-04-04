@@ -1,6 +1,7 @@
 #include "SwitchHandler.h"
 #include <Page.h>
 #include <TWindow.h>
+#include <DirectoryInterface.h>
 
 SwitchHandler::SwitchHandler(TrecPointer<TInstance> ins): EventHandler(ins)
 { 
@@ -65,6 +66,11 @@ SwitchHandler::SwitchHandler(TrecPointer<TInstance> ins): EventHandler(ins)
 	events.push_back(enid);
 	handlers[enid.eventID] = &SwitchHandler::OnSelectScroll;
 
+	enid.eventID = 11;
+	enid.name.Set(L"OnSelectGif");
+	events.push_back(enid);
+	handlers[enid.eventID] = &SwitchHandler::OnSelectGif;
+
 }
 
 SwitchHandler::~SwitchHandler()
@@ -91,6 +97,15 @@ void SwitchHandler::Initialize(TrecPointer<Page> page)
 	{
 		throw L"Error! Expected A TControl to change";
 	}
+
+	TString gifStr(L"GifRunner");
+	page->AddStory(gifStr,true);
+
+	auto gifBuilder = TrecPointerKey::GetNewTrecPointer<AnimationBuilder>();
+	gifBuilder->SetName(TString(L"Gif"));
+	gifBuilder->SetType(TString(L"Gif"));
+	gifBuilder->SetAttribute(TString(L"|RefreshRate"), TrecPointerKey::GetNewTrecPointer<TString>(L"100"));
+	page->AddAnimations(gifBuilder);
 }
 
 void SwitchHandler::HandleEvents(TDataArray<EventID_Cred>& eventAr)
@@ -919,6 +934,22 @@ void SwitchHandler::OnSelectScroll(TControl* tc, EventArgs ea)
 	changeControl->addChild(TrecPointer<TControl>(childControl));
 	this->rootLayout->addChild(changeControl, 1, 0);
 	page->CreateLayout();
+}
+
+void SwitchHandler::OnSelectGif(TControl* tc, EventArgs ea)
+{
+	auto window = page->GetWindowHandle();
+	TrecPointer<DrawingBoard> rtb = window->GetDrawingBoard();
+
+	changeControl = TrecPointerKey::GetNewSelfTrecPointer<TControl>(rtb, TrecPointer<TArray<styleTable>>());
+	TString gifPath(GetDirectoryWithSlash(CentralDirectories::cd_Executable));
+	gifPath.Append(L"Resources\\giphy.gif");
+
+	changeControl->addAttribute(TString(L"|ImageSource"), TrecPointerKey::GetNewTrecPointer<TString>(gifPath));
+	rootLayout->addChild(changeControl, 1, 0);
+	page->CreateLayout();
+
+	window->PrepAnimations(page);
 }
 
 bool SwitchHandler::ShouldProcessMessageByType(TrecPointer<HandlerMessage> message)

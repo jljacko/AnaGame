@@ -87,6 +87,7 @@ int TWindow::CompileView(TString& file, TrecPointer<EventHandler> eh)
 	mainPage->PrepAnimations(animationCentral);
 
 	animationCentral.StartBegin();
+	animationCentral.StartNewPersistant();
 	safeToDraw = 1;
 	Draw();
 
@@ -508,6 +509,7 @@ bool TWindow::PrepAnimations(TrecPointer<Page> page)
 		return false;
 	page->PrepAnimations(animationCentral);
 	animationCentral.StartBegin();
+	animationCentral.StartNewPersistant();
 	return true;
 }
 

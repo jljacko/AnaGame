@@ -24,6 +24,7 @@ public:
 	void StartBegin();
 	void StartEnd();
 	void StartStory(TString& name);
+	void StartNewPersistant();
 
 	void StopStory(TString& name);
 	void Stop();
@@ -38,6 +39,7 @@ protected:
 	bool beginPaused, endPaused;
 
 	TMap<TStoryBoard> stories;
+	TTrecPointerArray<TStoryBoard> newPersistantStoryBoards;
 	TTrecPointerArray<TStoryBoard> pausedStories;
 	TrecPointer<TWindow> window;
 };

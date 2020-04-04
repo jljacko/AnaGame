@@ -30,8 +30,13 @@ void TAnimationManager::AddAnimationEnd(TrecPointer<Animation> a)
 
 void TAnimationManager::AddStoryBoard(TString& name, TrecPointer<TStoryBoard> story)
 {
-	if(name.GetSize() && story.Get())
+	if (name.GetSize() && story.Get())
+	{
 		stories.addEntry(name, story);
+		if (story->IsPersistant())
+			newPersistantStoryBoards.push_back(story);
+	}
+
 }
 
 void TAnimationManager::CleanBegin()
@@ -56,6 +61,16 @@ void TAnimationManager::StartStory(TString& name)
 
 	if (story.Get())
 		story->Run();
+}
+
+void TAnimationManager::StartNewPersistant()
+{
+	for (UINT Rust = 0; Rust < newPersistantStoryBoards.Size(); Rust++)
+	{
+		if (newPersistantStoryBoards[Rust].Get())
+			newPersistantStoryBoards[Rust]->Run();
+	}
+	newPersistantStoryBoards.RemoveAll();
 }
 
 void TAnimationManager::StopStory(TString& name)

@@ -1510,7 +1510,7 @@ int TString::Find(const TString& sub, int start)
 	return -1;
 }
 
-int TString::Find(WCHAR sub, int start, bool ignoreEscape = true)
+int TString::Find(WCHAR sub, int start, bool ignoreEscape)
 {
 	if (start < 0)
 		return -1;

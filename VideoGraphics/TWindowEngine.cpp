@@ -401,7 +401,7 @@ int TWindowEngine::InitializeDefaultShaders()
 		return 0;
 
 
-	TString tDirectory = GetDirectoryWithSlash(cd_Executable);
+	TString tDirectory = GetDirectoryWithSlash(CentralDirectories::cd_Executable);
 
 	tDirectory.Append(L"\\Resources\\DefaultShaders");
 

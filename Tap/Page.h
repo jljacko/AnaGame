@@ -89,6 +89,9 @@ public:
 
 	void SetMiniHandler(TrecSubPointer<EventHandler, MiniHandler> mh);
 
+	void AddStory(TString& story, bool persistent = false);
+	void AddAnimations(TrecPointer<AnimationBuilder> builder);
+
 protected:
 	Page(TrecPointer<DrawingBoard>);
 
