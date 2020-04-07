@@ -247,6 +247,17 @@ void TWindow::OnMouseMove(UINT nFlags, TPoint point)
 {
 	if (locked) return;
 	messageOutput mOut = messageOutput::negative;
+	if (currentScrollBar.Get())
+	{
+
+		currentScrollBar->OnMouseMove(nFlags, point, &mOut);
+		if (mOut == messageOutput::negativeUpdate || mOut == messageOutput::positiveContinueUpdate || mOut == messageOutput::positiveOverrideUpdate)
+			Draw();
+		return;
+	}
+
+
+
 	for(UINT c = 0; c < pages.Size() && (mOut == messageOutput::negative || mOut == messageOutput::negativeUpdate); c++)
 	{
 		if(pages[c].Get())
@@ -273,6 +284,10 @@ void TWindow::OnLButtonDblClk(UINT nFlags, TPoint point)
 
 void TWindow::OnLButtonUp(UINT nFlags, TPoint point)
 {
+	if (currentScrollBar.Get())
+		currentScrollBar.Nullify();
+
+
 	if (locked) return;
 	messageOutput mOut = messageOutput::negative;
 	for(UINT c = 0; c < pages.Size() && (mOut == messageOutput::negative || mOut == messageOutput::negativeUpdate); c++)

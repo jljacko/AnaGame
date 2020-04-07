@@ -10,6 +10,7 @@ bool IsD2D1RectEqual(const D2D1_RECT_F& r1, const  D2D1_RECT_F& r2, float differ
 
 class _TAP_DLL TWindow :	public Drawer
 {
+	friend class Page;
 public:
 	TWindow(TString& name, TString& winClass, UINT style, HWND parent, int commandShow, TrecPointer<TInstance> ins);
 	virtual ~TWindow();
@@ -96,5 +97,8 @@ protected:
 
 	TAnimationManager animationCentral;
 	TrecPointer<DrawingBoard> drawingBoard;
+
+	// Managing Scrolling
+	TrecPointer<TScrollBar> currentScrollBar;
 };
 

@@ -18,7 +18,7 @@ void TScrollerControl::onDraw(TObject* obj)
 	RefreshScroll();
 
 
-	if (vScroll || hScroll)
+	if (vScroll.Get() || hScroll.Get())
 	{
 
 		D2D1_RECT_F clipRect = location;
@@ -28,20 +28,20 @@ void TScrollerControl::onDraw(TObject* obj)
 		// Need to generate a geometry
 		drawingBoard->AddLayer(clipRect);
 
-		if (vScroll)
+		if (vScroll.Get())
 			vScroll->Refresh(clipRect, childControl->getLocation());
-		if (hScroll)
+		if (hScroll.Get())
 			hScroll->Refresh(clipRect, childControl->getLocation());
 	}
 	childControl->onDraw(obj);
 
-	if (vScroll || hScroll)
+	if (vScroll.Get() || hScroll.Get())
 	{
 		drawingBoard->PopLayer();
 	}
-	if (vScroll)
+	if (vScroll.Get())
 		vScroll->onDraw(drawingBoard->GetRenderer().Get());
-	if (hScroll)
+	if (hScroll.Get())
 		hScroll->onDraw(drawingBoard->GetRenderer().Get());
 
 }
@@ -64,26 +64,44 @@ void TScrollerControl::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* m
 	if (!isContained(&point, &location))
 		return;
 
-	if (vScroll && vScroll->OnLButtonDown(nFlags, point, mOut))
+	if (vScroll.Get() && vScroll->OnLButtonDown(nFlags, point, mOut))
 	{
-		onScrollFocus = true;
+		resetArgs();
+		args.eventType = R_Message_Type::On_Select_Scroller;
+		args.point = point;
+		args.methodID = -1;
+		args.isClick = args.isLeftClick = true;
+		args.control = nullptr;
+
+		eventAr.push_back(EventID_Cred(R_Message_Type::On_Click, this, vScroll));
 		return;
 	}
 
-	if (hScroll && hScroll->OnLButtonDown(nFlags, point, mOut))
+
+	if (hScroll.Get() && hScroll->OnLButtonDown(nFlags, point, mOut))
 	{
-		onScrollFocus = true;
+		resetArgs();
+		args.eventType = R_Message_Type::On_Select_Scroller;
+		args.point = point;
+		args.methodID = -1;
+		args.isClick = args.isLeftClick = true;
+		args.control = nullptr;
+
+		eventAr.push_back(EventID_Cred(R_Message_Type::On_Click, this, hScroll));
 		return;
 	}
+
+	if (childControl.Get())
+		childControl->OnLButtonDown(nFlags, point, mOut, eventAr, clickedButtons);
 }
 
 void TScrollerControl::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
 	if (onScrollFocus)
 	{
-		if (vScroll)
+		if (vScroll.Get())
 			vScroll->OnMouseMove(nFlags, point, mOut);
-		if (hScroll)
+		if (hScroll.Get())
 			hScroll->OnMouseMove(nFlags, point, mOut);
 		return;
 	}
@@ -94,9 +112,9 @@ void TScrollerControl::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOu
 
 void TScrollerControl::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
-	if (vScroll)
+	if (vScroll.Get())
 		vScroll->OnLButtonUp(nFlags, point, mOut);
-	if (hScroll)
+	if (hScroll.Get())
 		hScroll->OnLButtonUp(nFlags, point, mOut);
 
 	if (childControl.Get())
@@ -114,16 +132,16 @@ void TScrollerControl::RefreshScroll()
 	if (!childControl.Get())
 		return;
 	D2D1_RECT_F childLocation = childControl->getLocation();
-	if (!vScroll && ((location.bottom - location.top) < (childLocation.bottom - childLocation.top)))
+	if (!vScroll.Get() && ((location.bottom - location.top) < (childLocation.bottom - childLocation.top)))
 	{
 		// We need to create the Vertical ScrollBar
-		vScroll = new TScrollBar(*this, ScrollOrient::so_vertical);
+		vScroll =  TrecPointerKey::GetNewTrecPointer<TScrollBar>(*this, ScrollOrient::so_vertical);
 	}
 
-	if (!hScroll && ((location.right - location.left) < (childLocation.right - childLocation.left)))
+	if (!hScroll.Get() && ((location.right - location.left) < (childLocation.right - childLocation.left)))
 	{
 		// We need to create the horizontal ScrollBar
-		hScroll = new TScrollBar(*this, ScrollOrient::so_horizontal);
+		hScroll =  TrecPointerKey::GetNewTrecPointer<TScrollBar>(*this, ScrollOrient::so_horizontal);
 	}
 
 	//if (vScroll && ((location.bottom - location.top) > (childLocation.bottom - childLocation.top)))
@@ -133,13 +151,13 @@ void TScrollerControl::RefreshScroll()
 
 
 	D2D1_RECT_F clipRect = location;
-	if(vScroll)
+	if(vScroll.Get())
 		clipRect.bottom -= GetScrollbarBoxSize();
-	if(hScroll)
+	if(hScroll.Get())
 		clipRect.right -= GetScrollbarBoxSize();
 	
-	if (vScroll)
+	if (vScroll.Get())
 		vScroll->Refresh(clipRect, childLocation);
-	if (hScroll)
+	if (hScroll.Get())
 		hScroll->Refresh(clipRect, childLocation);
 }

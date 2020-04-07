@@ -279,6 +279,19 @@ void Page::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
 	TDataArray<EventID_Cred> eventAr;
 	OnRButtonDown(nFlags, point, mOut, eventAr);
 	
+	if (*mOut == messageOutput::positiveScroll && eventAr.Size() && windowHandle.Get())
+	{
+		for (UINT Rust = 0; Rust < eventAr.Size(); Rust++)
+		{
+			if (eventAr[Rust].scroll.Get())
+			{
+				windowHandle->currentScrollBar = eventAr[Rust].scroll;
+				break;
+			}
+		}
+	}
+
+
 	if(handler.Get())
 		handler->HandleEvents(eventAr);
 
@@ -321,6 +334,7 @@ void Page::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
 {
 	TDataArray<EventID_Cred> eventAr;
 	OnLButtonUp(nFlags, point, mOut, eventAr);
+
 
 	if (handler.Get())
 		handler->HandleEvents(eventAr);

@@ -665,7 +665,7 @@ parentCall:
 				args.isLeftClick = false;
 				args.control = this;
 
-				eventAr.push_back(EventID_Cred{ R_Message_Type::On_Text_Change, this });
+				eventAr.push_back(EventID_Cred( R_Message_Type::On_Text_Change, this ));
 			}
 		}
 		else if (isNumber && isContained(&point, &botBut))
@@ -683,7 +683,7 @@ parentCall:
 				args.isLeftClick = false;
 				args.control = this;
 
-				eventAr.push_back(EventID_Cred{ R_Message_Type::On_Text_Change, this });
+				eventAr.push_back(EventID_Cred( R_Message_Type::On_Text_Change, this ));
 			}
 		}
 

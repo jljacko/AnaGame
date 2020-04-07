@@ -27,7 +27,6 @@ TControl::TControl(TrecPointer<DrawingBoard> db,TrecPointer<TArray<styleTable>> 
 	eventHandler = NULL;
 	isActive = true;
 	treeLevel = 0;
-	vScroll = hScroll = nullptr;
 	drawingBoard = db;
 	styles = styTab;
 	location.bottom = 0;
@@ -191,7 +190,6 @@ TControl::TControl()
 	isActive = true;
 	flyout = nullptr;
 
-	vScroll = hScroll = nullptr;
 	treeLevel = 0;
 
 	location.bottom = 0;
@@ -323,12 +321,12 @@ void TControl::storeInTML(TFile * ar, int childLevel, bool overrideChildren)
 		resetAttributeString(&appendable, childLevel + 1);
 	}
 	appendable.Append(L"|VerticalScroll:"); 
-	appendable.Append(boolToString(vScroll));
+	appendable.Append(boolToString(vScroll.Get()));
 	ar->WriteString(appendable);
 	ar->WriteString(L"\n");
 	resetAttributeString(&appendable, childLevel + 1);
 	appendable.Append(L"|HorizontalScroll:");
-	appendable.Append(boolToString(hScroll));
+	appendable.Append(boolToString(hScroll.Get()));
 	ar->WriteString(appendable);
 	ar->WriteString(L"\n");
 	resetAttributeString(&appendable, childLevel + 1);
@@ -481,17 +479,17 @@ bool TControl::onCreate(D2D1_RECT_F contain, TrecPointer<TWindowEngine> d3d)
 	 * actual size of the TControl, represented by it's location, could theoretically
 	 * be as large as the developer desires. The Snip will serve as the location to draw */
 	TrecPointer<TString> valpoint = attributes.retrieveEntry(TString(L"|VerticalScroll"));
-	if (valpoint.Get() && !valpoint->Compare(L"True") && !vScroll) // don't make a new one if one already exists
-		vScroll = new TScrollBar(*this,ScrollOrient::so_vertical);
+	if (valpoint.Get() && !valpoint->Compare(L"True") && !vScroll.Get()) // don't make a new one if one already exists
+		vScroll = TrecPointerKey::GetNewTrecPointer<TScrollBar>(*this,ScrollOrient::so_vertical);
 
 	valpoint = attributes.retrieveEntry(TString(L"|HorizontalScroll"));
-	if(valpoint.Get() && !valpoint->Compare(L"True") && !hScroll)
-		hScroll = new TScrollBar(*this,ScrollOrient::so_horizontal);
+	if(valpoint.Get() && !valpoint->Compare(L"True") && !hScroll.Get())
+		hScroll = TrecPointerKey::GetNewTrecPointer<TScrollBar>(*this,ScrollOrient::so_horizontal);
 
 	checkMargin(contain);
 	checkHeightWidth(contain);
 
-	if (!marginPriority && dimensions && !vScroll && !hScroll)
+	if (!marginPriority && dimensions && !vScroll.Get() && !hScroll.Get())
 	{
 		int heightOffset = 0;
 		int widthOffset =0;
@@ -523,7 +521,7 @@ bool TControl::onCreate(D2D1_RECT_F contain, TrecPointer<TWindowEngine> d3d)
 		}
 	}
 
-	if (vScroll)
+	if (vScroll.Get())
 	{
 		if (dimensions && dimensions->height)
 		{
@@ -545,7 +543,7 @@ bool TControl::onCreate(D2D1_RECT_F contain, TrecPointer<TWindowEngine> d3d)
 			dimensions->height = location.bottom - location.top;
 	}
 
-	if (hScroll)
+	if (hScroll.Get())
 	{
 		if (dimensions && dimensions->width)
 		{
@@ -1209,7 +1207,7 @@ void TControl::scroll(RECT& loc)
 	// Test for need to Vertically Scroll
 	if (loc.bottom < location.top)
 	{
-		if (!vScroll && sh_parent)
+		if (!vScroll.Get() && sh_parent)
 		{
 			sh_parent->scroll(loc);
 			return;
@@ -1218,7 +1216,7 @@ void TControl::scroll(RECT& loc)
 	}
 	else if (loc.top > location.bottom)
 	{
-		if (!vScroll && sh_parent)
+		if (!vScroll.Get() && sh_parent)
 		{
 			sh_parent->scroll(loc);
 			return;
@@ -1227,7 +1225,7 @@ void TControl::scroll(RECT& loc)
 
 	if (loc.left > location.right)
 	{
-		if (!hScroll && sh_parent)
+		if (!hScroll.Get() && sh_parent)
 		{
 			sh_parent->scroll(loc);
 			return;
@@ -1235,7 +1233,7 @@ void TControl::scroll(RECT& loc)
 	}
 	else if (loc.right < location.left)
 	{
-		if (!hScroll && sh_parent)
+		if (!hScroll.Get() && sh_parent)
 		{
 			sh_parent->scroll(loc);
 			return;
@@ -1403,7 +1401,7 @@ void TControl::onDraw(TObject* obj)
 
 	ID2D1Layer* layer = nullptr;
 
-	if (vScroll || hScroll)
+	if (vScroll.Get() || hScroll.Get())
 	{
 		drawingBoard->AddLayer(location);
 	}
@@ -1462,9 +1460,9 @@ void TControl::onDraw(TObject* obj)
 			text1->onDraw(location, obj);
 	}
 
-	if (vScroll)
+	if (vScroll.Get())
 		vScroll->onDraw(drawingBoard->GetRenderer().Get());
-	if (hScroll)
+	if (hScroll.Get())
 		hScroll->onDraw(drawingBoard->GetRenderer().Get());
 
 	for (int c = 0; c < children.Count(); c++)
@@ -1477,7 +1475,7 @@ void TControl::onDraw(TObject* obj)
 		drawingBoard->SetTransform(curTransform);
 	}
 
-	if (vScroll || hScroll)
+	if (vScroll.Get() || hScroll.Get())
 	{
 		drawingBoard->PopLayer();
 	}
@@ -2918,26 +2916,24 @@ void TControl::CheckScroll()
 
 	if (needV)
 	{
-		if (!vScroll)
-			vScroll = new TScrollBar(*this,ScrollOrient::so_vertical);
+		if (!vScroll.Get())
+			vScroll = TrecPointerKey::GetNewTrecPointer<TScrollBar>(*this,ScrollOrient::so_vertical);
 		vScroll->Refresh(location, area);
 	}
-	else if (vScroll)
+	else if (vScroll.Get())
 	{
-		delete vScroll;
-		vScroll = nullptr;
+		vScroll.Delete();
 	}
 
 	if (needH)
 	{
-		if (!hScroll)
-			hScroll = new TScrollBar(*this,ScrollOrient::so_horizontal);
+		if (!hScroll.Get())
+			hScroll = TrecPointerKey::GetNewTrecPointer<TScrollBar>(*this,ScrollOrient::so_horizontal);
 		hScroll->Refresh(location, area);
 	}
-	else if (hScroll)
+	else if (hScroll.Get())
 	{
-		delete hScroll;
-		hScroll = nullptr;
+		hScroll.Delete();
 	}
 }
 
@@ -3060,9 +3056,9 @@ void TControl::checkHeightWidth(D2D1_RECT_F r)
 	}
 	if (dimensions)
 	{
-		if (dimensions->height > r.bottom - r.top && !vScroll)
+		if (dimensions->height > r.bottom - r.top && !vScroll.Get())
 			dimensions->height = r.bottom - r.top;
-		if (dimensions->width > r.right - r.left && !hScroll)
+		if (dimensions->width > r.right - r.left && !hScroll.Get())
 			dimensions->width = r.right - r.left;
 	}
 }
@@ -3235,7 +3231,7 @@ afx_msg void TControl::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOu
 				args.isLeftClick = false;
 				args.control = this;
 
-				eventAr.push_back(EventID_Cred{ R_Message_Type::On_Right_Release, this });
+				eventAr.push_back(EventID_Cred( R_Message_Type::On_Right_Release, this ));
 			}
 		}
 	}
@@ -3255,6 +3251,34 @@ afx_msg void TControl::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* m
 {
 	if (!isActive)
 		return;
+
+	if (vScroll.Get() && vScroll->OnLButtonDown(nFlags, point, mOut))
+	{
+		*mOut = messageOutput::positiveScroll;
+		resetArgs();
+		args.eventType = R_Message_Type::On_Select_Scroller;
+		args.point = point;
+		args.methodID = -1;
+		args.isClick = args.isLeftClick = true;
+		args.control = nullptr;;
+
+		eventAr.push_back(EventID_Cred(R_Message_Type::On_Click, this, vScroll));
+		return;
+	}
+
+
+	if (hScroll.Get() && hScroll->OnLButtonDown(nFlags, point, mOut))
+	{
+		*mOut = messageOutput::positiveScroll;
+		resetArgs();
+		args.eventType = R_Message_Type::On_Select_Scroller;
+		args.point = point;
+		args.methodID = -1;
+		args.isClick = args.isLeftClick = true;
+		args.control = nullptr;
+
+		eventAr.push_back(EventID_Cred(R_Message_Type::On_Click, this, hScroll));
+	}
 
 	if (!isContained(&point, &location))
 	{
@@ -3308,9 +3332,8 @@ afx_msg void TControl::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* m
 		args.isLeftClick = true;
 		args.control = this;
 
-		eventAr.push_back(EventID_Cred{ R_Message_Type::On_Click,this });
+		eventAr.push_back(EventID_Cred(R_Message_Type::On_Click,this ));
 	}
-
 
 
 
@@ -3395,7 +3418,7 @@ afx_msg void TControl::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* m
 		args.isClick = true;
 		args.isLeftClick = false;
 		args.control = this;
-		eventAr.push_back(EventID_Cred{ R_Message_Type::On_Right_Click,this });
+		eventAr.push_back(EventID_Cred( R_Message_Type::On_Right_Click,this ));
 	}
 
 	if (contextMenu)
@@ -3468,7 +3491,7 @@ afx_msg void TControl::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOu
 		args.point = point;
 		args.methodID = getEventID(R_Message_Type::On_Hover);
 		args.control = this;
-		eventAr.push_back(EventID_Cred{ R_Message_Type::On_Hover,this });
+		eventAr.push_back(EventID_Cred( R_Message_Type::On_Hover,this ));
 	}
 }
 
@@ -3558,7 +3581,7 @@ afx_msg void TControl::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOu
 		args.isClick = true;
 		args.isLeftClick = true;
 		args.control = this;
-		eventAr.push_back(EventID_Cred{ R_Message_Type::On_Click_Release, this });
+		eventAr.push_back(EventID_Cred( R_Message_Type::On_Click_Release, this ));
 	}
 }
 
@@ -3594,7 +3617,7 @@ afx_msg bool TControl::OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlag
 				args.methodID = getEventID(R_Message_Type::On_Char);
 				args.type = static_cast<WCHAR>(LOWORD(nChar));
 				args.control = this;
-				eventAr.push_back(EventID_Cred{ R_Message_Type::On_Char, this });
+				eventAr.push_back(EventID_Cred( R_Message_Type::On_Char, this ));
 			}
 
 			return true;
@@ -6363,4 +6386,30 @@ RECT convertD2DRectToRECT(D2D1_RECT_F f)
 	ret.right = static_cast<LONG>(f.right);
 	ret.bottom = static_cast<LONG>(f.bottom);
 	return ret;
+}
+
+EventID_Cred::EventID_Cred()
+{
+	eventType = R_Message_Type::On_Click;
+	control = nullptr;
+}
+
+EventID_Cred::EventID_Cred(const EventID_Cred& copy)
+{
+	eventType = copy.eventType;
+	control = copy.control;
+	scroll = copy.scroll;
+}
+
+EventID_Cred::EventID_Cred(R_Message_Type t, TControl* c)
+{
+	eventType = t;
+	control = c;
+}
+
+EventID_Cred::EventID_Cred(R_Message_Type t, TControl* c, TrecPointer<TScrollBar> sb)
+{
+	eventType = t;
+	control = c;
+	scroll = sb;
 }

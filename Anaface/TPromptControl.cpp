@@ -192,7 +192,7 @@ parentCall:
 				args.isLeftClick = false;
 				args.control = this;
 
-				eventAr.push_back(EventID_Cred{ R_Message_Type::On_Text_Change, this });
+				eventAr.push_back(EventID_Cred( R_Message_Type::On_Text_Change, this ));
 			}
 		}
 		else if (isNumber && isContained(&point, &botBut))
@@ -210,7 +210,7 @@ parentCall:
 				args.isLeftClick = false;
 				args.control = this;
 
-				eventAr.push_back(EventID_Cred{ R_Message_Type::On_Text_Change, this });
+				eventAr.push_back(EventID_Cred( R_Message_Type::On_Text_Change, this ));
 			}
 		}
 
@@ -295,7 +295,7 @@ bool TPromptControl::OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags
 		args.methodID = getEventID(R_Message_Type::On_Char);
 		args.type = static_cast<WCHAR>(LOWORD(nChar));
 		args.control = this;
-		eventAr.push_back({ R_Message_Type::On_Text_Change, this });
+		eventAr.push_back(EventID_Cred( R_Message_Type::On_Text_Change, this ));
 
 		if (text1.Get() && text1->text.GetSize())
 		{

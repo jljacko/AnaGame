@@ -79,7 +79,8 @@ typedef enum class R_Message_Type
 	On_radio_change,
 	On_Char,
 	On_Focus,
-	On_Lose_Focus
+	On_Lose_Focus,
+	On_Select_Scroller
 }R_Message_Type;
 
 // Event Arguements, used to supply Event Handlers with the necessary information to 
@@ -99,11 +100,18 @@ typedef struct EventArgs
 } EventArgs;
 
 // Used by controls to register themselves in the message queue if they have a message handler
-typedef struct EventID_Cred
+class _ANAFACE_DLL EventID_Cred
 {
+public:
+	EventID_Cred();
+	EventID_Cred(const EventID_Cred& copy);
+	EventID_Cred(R_Message_Type t, TControl* c);
+	EventID_Cred(R_Message_Type t, TControl* c, TrecPointer<TScrollBar> sb);
+
 	R_Message_Type eventType;
 	TControl* control;
-}EventID_Cred;
+	TrecPointer<TScrollBar> scroll;
+};
 
 // Stored by Controls for checking whether or not they actually have a message handler
 typedef struct EventTypeID
@@ -539,7 +547,7 @@ protected:
 	TString className;
 	TString ID;
 	D2D1_RECT_F location, margin;
-	TScrollBar *vScroll, *hScroll;
+	TrecPointer<TScrollBar> vScroll, hScroll;
 	TrecPointer<DrawingBoard> drawingBoard;
 	
 	TrecPointerSoft<TControl> parent;

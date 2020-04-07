@@ -518,12 +518,12 @@ bool TLayout::onCreate(D2D1_RECT_F margin, TrecPointer<TWindowEngine> d3d)
 	}
 
 	valpoint = attributes.retrieveEntry(TString(L"|VerticalScroll"));
-	if (valpoint.Get() && !valpoint->Compare(L"True") && !vScroll) // don't make a new one if one already exists
-		vScroll = new TScrollBar(*this, ScrollOrient::so_vertical);
+	if (valpoint.Get() && !valpoint->Compare(L"True") && !vScroll.Get()) // don't make a new one if one already exists
+		vScroll = TrecPointerKey::GetNewTrecPointer<TScrollBar>(*this, ScrollOrient::so_vertical);
 
 	valpoint = attributes.retrieveEntry(TString(L"|HorizontalScroll"));
-	if (valpoint.Get() && !valpoint->Compare(L"True") && !hScroll)
-		hScroll = new TScrollBar(*this, ScrollOrient::so_horizontal);
+	if (valpoint.Get() && !valpoint->Compare(L"True") && !hScroll.Get())
+		hScroll = TrecPointerKey::GetNewTrecPointer<TScrollBar>(*this, ScrollOrient::so_horizontal);
 	
 	
 	int marginWidth = (margin.right - marge.right) - (margin.left + marge.left);
@@ -534,11 +534,11 @@ bool TLayout::onCreate(D2D1_RECT_F margin, TrecPointer<TWindowEngine> d3d)
 	int currentHeight = GetTotalFlexRow();
 
 	int newValue = 0;
-	if (!hScroll && flexMarginWidth < 0)
+	if (!hScroll.Get() && flexMarginWidth < 0)
 	{
-		hScroll = new TScrollBar(*this, ScrollOrient::so_horizontal);
+		hScroll = TrecPointerKey::GetNewTrecPointer<TScrollBar>(*this, ScrollOrient::so_horizontal);
 	}
-	else if (!hScroll || (organization != orgLayout::HStack)) // If Layout has a horizontal scroll bar, then no need to resize the columns
+	else if (!hScroll.Get() || (organization != orgLayout::HStack)) // If Layout has a horizontal scroll bar, then no need to resize the columns
 	{
 		
 
@@ -552,11 +552,11 @@ bool TLayout::onCreate(D2D1_RECT_F margin, TrecPointer<TWindowEngine> d3d)
 		}
 	}
 	 
-	if (!vScroll && flexMarginHeight < 0)
+	if (!vScroll.Get() && flexMarginHeight < 0)
 	{
-		vScroll = new TScrollBar(*this, ScrollOrient::so_vertical);
+		vScroll = TrecPointerKey::GetNewTrecPointer<TScrollBar>(*this, ScrollOrient::so_vertical);
 	}
-	if (!vScroll || (organization != orgLayout::VStack)) // Ditto with a vertical Scroll bar and rows
+	if (!vScroll.Get() || (organization != orgLayout::VStack)) // Ditto with a vertical Scroll bar and rows
 	{
 		for (int c = 0; c < rowLines.Size(); c++)
 		{
@@ -574,7 +574,7 @@ bool TLayout::onCreate(D2D1_RECT_F margin, TrecPointer<TWindowEngine> d3d)
 	location.right = margin.right - marge.right;
 	location.top = margin.top + marge.top;
 
-	if (vScroll)
+	if (vScroll.Get())
 	{
 		if (rowLines.Size())
 		{
@@ -584,7 +584,7 @@ bool TLayout::onCreate(D2D1_RECT_F margin, TrecPointer<TWindowEngine> d3d)
 		}
 	}
 
-	if (hScroll)
+	if (hScroll.Get())
 	{
 		if (columnLines.Size())
 		{
