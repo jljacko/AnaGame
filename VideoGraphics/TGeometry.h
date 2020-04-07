@@ -8,7 +8,7 @@
  * enum geo_type
  * Purpose: Helps the TGeomatry object track how it was created
  */
-typedef enum geo_type
+typedef enum class geo_type
 {
 	geo_type_rect,
 	geo_type_rounded_rect,

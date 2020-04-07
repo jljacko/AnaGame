@@ -228,22 +228,22 @@ bool TShaderHost::assignShader(UINT shaderIndex, DirectX::XMMATRIX& camera, Dire
 		switch (shaderType)
 		{
 		case 1: // PixelShader
-			UpdateConstantBuffer(contextDevice, cbm.buff, sp_Pixel, slot);
+			UpdateConstantBuffer(contextDevice, cbm.buff, ShaderPhase::sp_Pixel, slot);
 			break;
 		case 2: // GeometryShader
-			UpdateConstantBuffer(contextDevice, cbm.buff, sp_Geometry, slot);
+			UpdateConstantBuffer(contextDevice, cbm.buff, ShaderPhase::sp_Geometry, slot);
 			break;
 		case 3: // HULL Shader
-			UpdateConstantBuffer(contextDevice, cbm.buff, sp_Hull, slot);
+			UpdateConstantBuffer(contextDevice, cbm.buff, ShaderPhase::sp_Hull, slot);
 			break;
 		case 4: // Compute Shader
-			UpdateConstantBuffer(contextDevice, cbm.buff, sp_Compute, slot);
+			UpdateConstantBuffer(contextDevice, cbm.buff, ShaderPhase::sp_Compute, slot);
 			break;
 		case 5: // Domain Shader
-			UpdateConstantBuffer(contextDevice, cbm.buff, sp_Domain, slot);
+			UpdateConstantBuffer(contextDevice, cbm.buff, ShaderPhase::sp_Domain, slot);
 			break;
 		default: // Vertex Shader
-			UpdateConstantBuffer(contextDevice, cbm.buff, sp_Vertex, slot);
+			UpdateConstantBuffer(contextDevice, cbm.buff, ShaderPhase::sp_Vertex, slot);
 		}
 	}
 
@@ -499,22 +499,22 @@ bool TShaderHost::SetNewConstantBuffer(TrecComPointer<ID3D11Buffer>& buff, int s
 
 	switch (sp)
 	{
-	case sp_Vertex:
+	case ShaderPhase::sp_Vertex:
 		cbm.label = 0;
 		break;
-	case sp_Pixel:
+	case ShaderPhase::sp_Pixel:
 		cbm.label = 1;
 		break;
-	case sp_Geometry:
+	case ShaderPhase::sp_Geometry:
 		cbm.label = 2;
 		break;
-	case sp_Hull:
+	case ShaderPhase::sp_Hull:
 		cbm.label = 3;
 		break;
-	case sp_Compute:
+	case ShaderPhase::sp_Compute:
 		cbm.label = 4;
 		break;
-	case sp_Domain:
+	case ShaderPhase::sp_Domain:
 		cbm.label = 5;
 		break;
 	}
@@ -727,22 +727,22 @@ void TShaderHost::UpdateConstantBuffer(TrecComPointer<ID3D11DeviceContext> conte
 
 	switch (sp)
 	{
-	case sp_Compute:
+	case ShaderPhase::sp_Compute:
 		contextDevice->CSSetConstantBuffers(slot, 1, buffHolder.GetPointerAddress());
 		break;
-	case sp_Domain:
+	case ShaderPhase::sp_Domain:
 		contextDevice->DSSetConstantBuffers(slot, 1, buffHolder.GetPointerAddress());
 		break;
-	case sp_Geometry:
+	case ShaderPhase::sp_Geometry:
 		contextDevice->GSSetConstantBuffers(slot, 1, buffHolder.GetPointerAddress());
 		break;
-	case sp_Hull:
+	case ShaderPhase::sp_Hull:
 		contextDevice->HSSetConstantBuffers(slot, 1, buffHolder.GetPointerAddress());
 		break;
-	case sp_Pixel:
+	case ShaderPhase::sp_Pixel:
 		contextDevice->PSSetConstantBuffers(slot, 1, buffHolder.GetPointerAddress());
 		break;
-	case sp_Vertex:
+	case ShaderPhase::sp_Vertex:
 		contextDevice->VSSetConstantBuffers(slot, 1, buffHolder.GetPointerAddress());
 		break;
 	}

@@ -3,7 +3,7 @@
 
 
 
-typedef enum ide_page_type
+typedef enum class ide_page_type
 {
 	ide_page_type_body,
 	ide_page_type_basic_console,
@@ -16,7 +16,7 @@ typedef enum ide_page_type
 }ide_page_type;
 
 
-typedef enum anagame_page
+typedef enum class anagame_page
 {
 	anagame_page_custom,
 	anagame_page_file_node,

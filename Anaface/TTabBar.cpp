@@ -130,13 +130,13 @@ void TTabBar::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataA
 		{
 			startTab--;
 			SetTabSizes();
-			*mOut = positiveOverrideUpdate;
+			*mOut = messageOutput::positiveOverrideUpdate;
 		}
 		else if (isContained(point, rightTab.location))
 		{
 			startTab++;
 			SetTabSizes();
-			*mOut = positiveOverrideUpdate;
+			*mOut = messageOutput::positiveOverrideUpdate;
 		}
 		else
 		{

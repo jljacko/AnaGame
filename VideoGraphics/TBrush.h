@@ -11,7 +11,7 @@ class TGeometry;
 /**
  * Helps the TBrush keep track of the brush type it has
  */
-typedef enum brush_type
+typedef enum class brush_type
 {
 	brush_type_solid,
 	brush_type_linear,

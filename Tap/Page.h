@@ -12,7 +12,7 @@ class TWindow;
 class MiniHandler;
 class TAnimationManager;
 
-typedef enum RenderTargetType
+typedef enum class RenderTargetType
 {
 	render_target_unknown,
 	render_target_device_context,

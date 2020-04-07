@@ -255,7 +255,7 @@ void Page::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
 	if (miniHandler.Get())
 		miniHandler->OnRButtonUp(nFlags, point, mOut);
 
-	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
+	if( *mOut == messageOutput::negativeUpdate || *mOut == messageOutput::positiveContinueUpdate || *mOut == messageOutput::positiveOverrideUpdate)
 		if (windowHandle.Get())windowHandle->Draw(); else return;
 }
 
@@ -270,7 +270,7 @@ void Page::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
 	if (miniHandler.Get())
 		miniHandler->OnLButtonDown(nFlags, point, mOut);
 
-	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
+	if( *mOut == messageOutput::negativeUpdate || *mOut == messageOutput::positiveContinueUpdate || *mOut == messageOutput::positiveOverrideUpdate)
 		if (windowHandle.Get())windowHandle->Draw(); else return;
 }
 
@@ -284,7 +284,7 @@ void Page::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
 
 	if (miniHandler.Get())
 		miniHandler->OnRButtonDown(nFlags, point, mOut);
-	if (*mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
+	if (*mOut == messageOutput::negativeUpdate || *mOut == messageOutput::positiveContinueUpdate || *mOut == messageOutput::positiveOverrideUpdate)
 		if (windowHandle.Get())windowHandle->Draw(); else return;
 }
 
@@ -298,7 +298,7 @@ void Page::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut)
 
 	if (miniHandler.Get())
 		miniHandler->OnMouseMove(nFlags, point, mOut);
-	if (*mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
+	if (*mOut == messageOutput::negativeUpdate || *mOut == messageOutput::positiveContinueUpdate || *mOut == messageOutput::positiveOverrideUpdate)
 		if (windowHandle.Get())windowHandle->Draw(); else return;
 }
 
@@ -313,7 +313,7 @@ void Page::OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut)
 	if (miniHandler.Get())
 		miniHandler->OnLButtonDblClk(nFlags, point, mOut);
 
-	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
+	if( *mOut == messageOutput::negativeUpdate || *mOut == messageOutput::positiveContinueUpdate || *mOut == messageOutput::positiveOverrideUpdate)
 		if (windowHandle.Get())windowHandle->Draw(); else return;
 }
 
@@ -328,7 +328,7 @@ void Page::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
 	if (miniHandler.Get())
 		miniHandler->OnLButtonUp(nFlags, point, mOut);
 
-	if (*mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
+	if (*mOut == messageOutput::negativeUpdate || *mOut == messageOutput::positiveContinueUpdate || *mOut == messageOutput::positiveOverrideUpdate)
 		if (windowHandle.Get())windowHandle->Draw(); else return;
 }
 
@@ -344,7 +344,7 @@ bool Page::OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlags, messageOu
 	if(!returnable)
 		returnable = OnChar(fromChar, nChar, nRepCnt, nFlags, mOut, eventAr);
 
-	if (*mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
+	if (*mOut == messageOutput::negativeUpdate || *mOut == messageOutput::positiveContinueUpdate || *mOut == messageOutput::positiveOverrideUpdate)
 		if (windowHandle.Get())windowHandle->Draw(); else return false;
 	return returnable;
 }
@@ -432,14 +432,14 @@ void Page::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArra
 	{
 		switch (*mOut)
 		{
-		case negative:
-			*mOut = negativeUpdate;
+		case messageOutput::negative:
+			*mOut = messageOutput::negativeUpdate;
 			break;
-		case positiveContinue:
-			*mOut = positiveContinueUpdate;
+		case messageOutput::positiveContinue:
+			*mOut = messageOutput::positiveContinueUpdate;
 			break;
-		case positiveOverride:
-			*mOut = positiveOverrideUpdate;
+		case messageOutput::positiveOverride:
+			*mOut = messageOutput::positiveOverrideUpdate;
 		}
 	}
 }

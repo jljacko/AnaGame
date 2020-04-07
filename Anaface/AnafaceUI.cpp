@@ -137,9 +137,9 @@ void AnafaceUI::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, T
 			if (!tcon.Get())
 				continue;
 			
-			messageOutput tempOut = negative;
+			messageOutput tempOut = messageOutput::negative;
 			tcon->OnLButtonDown(nFlags, point, &tempOut, eventAr, clickedControl);
-			if (tempOut != negative && tempOut != negativeUpdate)
+			if (tempOut != messageOutput::negative && tempOut != messageOutput::negativeUpdate)
 			{
 				if (children.Count() > c && children.ElementAt(c).Get())
 				{
@@ -153,7 +153,7 @@ void AnafaceUI::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, T
 					args.isLeftClick = true;
 					args.control = this;
 					args.arrayLabel = c;
-					eventAr.push_back(EventID_Cred{ On_Click,this });
+					eventAr.push_back(EventID_Cred{ R_Message_Type::On_Click,this });
 					return;
 				}
 			}
@@ -176,9 +176,9 @@ void AnafaceUI::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TD
 			if (!tcon.Get())
 				continue;
 
-			messageOutput tempOut = negative;
+			messageOutput tempOut = messageOutput::negative;
 			tcon->OnRButtonDown(nFlags, point, &tempOut, eventAr);
-			if (tempOut != negative && tempOut != negativeUpdate)
+			if (tempOut != messageOutput::negative && tempOut != messageOutput::negativeUpdate)
 			{
 				if (children.Count() > c && children.ElementAt(c).Get())
 				{
@@ -206,9 +206,9 @@ void AnafaceUI::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDat
 			if (!tcon.Get())
 				continue;
 
-			messageOutput tempOut = negative;
+			messageOutput tempOut = messageOutput::negative;
 			tcon->OnMouseMove(nFlags, point, &tempOut, eventAr);
-			if (tempOut != negative && tempOut != negativeUpdate)
+			if (tempOut != messageOutput::negative && tempOut != messageOutput::negativeUpdate)
 			{
 				if (children.Count() > c && children.ElementAt(c).Get())
 				{
@@ -236,9 +236,9 @@ void AnafaceUI::OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut, 
 			if (!tcon.Get())
 				continue;
 
-			messageOutput tempOut = negative;
+			messageOutput tempOut = messageOutput::negative;
 			tcon->OnLButtonDblClk(nFlags, point, &tempOut, eventAr);
-			if (tempOut != negative && tempOut != negativeUpdate)
+			if (tempOut != messageOutput::negative && tempOut != messageOutput::negativeUpdate)
 			{
 				if (children.Count() > c && children.ElementAt(c).Get())
 				{
@@ -266,9 +266,9 @@ void AnafaceUI::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDat
 			if (!tcon.Get())
 				continue;
 
-			messageOutput tempOut = negative;
+			messageOutput tempOut = messageOutput::negative;
 			tcon->OnLButtonUp(nFlags, point, &tempOut, eventAr);
-			if (tempOut != negative && tempOut != negativeUpdate)
+			if (tempOut != messageOutput::negative && tempOut != messageOutput::negativeUpdate)
 			{
 				if (children.Count() > c && children.ElementAt(c).Get())
 				{
@@ -296,9 +296,9 @@ bool AnafaceUI::OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags, mes
 			if (!tcon.Get())
 				continue;
 
-			messageOutput tempOut = negative;
+			messageOutput tempOut = messageOutput::negative;
 			tcon->OnChar(fromChar, nChar, nRepCnt, nFlags, mOut, eventAr);
-			if (tempOut != negative && tempOut != negativeUpdate)
+			if (tempOut != messageOutput::negative && tempOut != messageOutput::negativeUpdate)
 			{
 				if (children.Count() > c && children.ElementAt(c).Get())
 				{
@@ -331,7 +331,7 @@ bool AnafaceUI::onCreate(D2D1_RECT_F container, TrecPointer<TWindowEngine> d3d)
 	{
 		tabs_base = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TLayoutEx>(drawingBoard, styles);
 		tabs = dynamic_cast<TLayoutEx*>(tabs_base.Get());
-		tabs->setLayout(HStack);
+		tabs->setLayout(orgLayout::HStack);
 		if (valpoint->ConvertToInt(&tabHeight))
 			tabHeight = 30;
 
@@ -515,7 +515,7 @@ void AnafaceUI::onDraw(TObject* obj)
 	//TControl::onDraw();
 	if (!isActive)
 		return;
-	if (mState == mouseLClick)
+	if (mState == messageState::mouseLClick)
 	{
 		if (content3.Get())
 			content3->onDraw(location);
@@ -530,7 +530,7 @@ void AnafaceUI::onDraw(TObject* obj)
 		else if (text1.Get())
 			text1->onDraw(location, obj);
 	}
-	else if (mState == mouseHover)
+	else if (mState == messageState::mouseHover)
 	{
 		if (content2.Get())
 			content2->onDraw(location);

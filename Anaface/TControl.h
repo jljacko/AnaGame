@@ -44,7 +44,7 @@ class TContextMenu;
 	resetAttributeString(&appendable, childLevel + 1);
 
 /* Used by the control to determine which to draw */
-typedef enum messageState
+typedef enum class  messageState
 {
 	normal,
 	mouseHover,
@@ -64,7 +64,7 @@ typedef enum messageOutput
 }messageOutput;*/
 
 // Determines the message type for UI Responsiveness
-typedef enum R_Message_Type
+typedef enum class R_Message_Type
 {
 	On_Click,
 	On_Hold_Click,
@@ -126,7 +126,7 @@ typedef struct sizeControl
 
 // Determines the basic size of the TControl
 //	NOTE: Feature is unstable, stick with T_Rect for now
-typedef enum TShape {
+typedef enum class TShape {
 	T_Rect,
 	T_Rounded_Rect,
 	T_Ellipse,
@@ -134,7 +134,7 @@ typedef enum TShape {
 }TShape;
 
 // Allows TControls to draw with special styles if specified in the ML
-typedef enum BrushMarker
+typedef enum class BrushMarker
 {
 	BM_SolidBrush,
 	BM_RadientBrush,

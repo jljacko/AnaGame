@@ -338,5 +338,5 @@ bool MainLayoutHandler::ShouldProcessMessageByType(TrecPointer<HandlerMessage> m
 {
 	if(!message.Get())
 		return false;
-	return message->GetHandlerType() == handler_type_other;
+	return message->GetHandlerType() == handler_type::handler_type_other;
 }

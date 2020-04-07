@@ -10,29 +10,29 @@ TFile pntLogger;
 TFile bnfLogger;
 
 bool openLog(LogType lt) {
-	if(lt != lt_bnf) return false;
+	if(lt != LogType::lt_bnf) return false;
 	TString fileName(GetDirectoryWithSlash(CentralDirectories::cd_AppData));
 	fileName.Append(L"Logs\\");
 	ForgeDirectory(fileName);
 	
 	TFile* logFile = nullptr;
 	switch (lt) {
-	case lt_bnf:
+	case LogType::lt_bnf:
 		logFile = &bnfLogger;
 		if (logFile->IsOpen()) return true;
 		fileName.Append(L"Bnf_");
 		break;
-	case lt_code:
+	case LogType::lt_code:
 		logFile = &lanLogger;
 		if (logFile->IsOpen()) return true;
 		fileName.Append(L"Lan_");
 		break;
-	case lt_memory:
+	case LogType::lt_memory:
 		logFile = &memLogger;
 		if (logFile->IsOpen()) return true;
 		fileName.Append(L"Mem_");
 		break;
-	case lt_pointer:
+	case LogType::lt_pointer:
 		logFile = &pntLogger;
 		if (logFile->IsOpen()) return true;
 		fileName.Append(L"Pnt_");
@@ -66,16 +66,16 @@ void _TREC_LIB_DLL Log(LogType lt, TString& logMessage)
 
 	switch (lt)
 	{
-	case lt_code:
+	case LogType::lt_code:
 		lanLogger.WriteString(fileName2 + logMessage + TString(L"\n"));
 		break;
-	case lt_memory:
+	case LogType::lt_memory:
 		memLogger.WriteString(fileName2 + logMessage + TString(L"\n"));
 		break;
-	case lt_pointer:
+	case LogType::lt_pointer:
 		pntLogger.WriteString(fileName2 + logMessage + TString(L"\n"));
 		break;
-	case lt_bnf:
+	case LogType::lt_bnf:
 		bnfLogger.WriteString(logMessage + TString("\n"));
 	}
 }

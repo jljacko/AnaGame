@@ -4,7 +4,7 @@
 
 
 // Allows TTextControls to keep track of numbers whether they are int or float
-typedef enum _ANAFACE_DLL iControlType
+typedef enum class _ANAFACE_DLL iControlType
 {
 	t_none,  // the type has not been determined
 	t_float, // the type is a float

@@ -7,7 +7,7 @@ TSpreadSheet::TSpreadSheet(TrecPointer<DrawingBoard> rt, TrecPointer<TArray<styl
 	window = w;
 	drawLines = true;
 	stickToNums = false;
-	organization = grid;
+	organization = orgLayout::grid;
 	hasTitle = false;
 }
 

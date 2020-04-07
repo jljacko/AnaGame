@@ -7,7 +7,7 @@
 
 AnimationBuilder::AnimationBuilder()
 {
-	phase = animation_phase_middle;
+	phase = animation_phase::animation_phase_middle;
 }
 
 void AnimationBuilder::SetName(const TString& name)
@@ -27,11 +27,11 @@ void AnimationBuilder::SetAttribute(const TString& key, TrecPointer<TString> val
 		if (value.Get())
 		{
 			if (!value->Compare(L"Begin"))
-				phase = animation_pase_beginning;
+				phase = animation_phase::animation_pase_beginning;
 			else if (!value->Compare(L"End"))
-				phase = animation_phase_end;
+				phase = animation_phase::animation_phase_end;
 			else if (!value->Compare(L"Persistent"))
-				phase = animation_phase_persistant;
+				phase = animation_phase::animation_phase_persistant;
 		}
 		return;
 	}
@@ -77,43 +77,43 @@ TrecPointer<Animation> AnimationBuilder::Build()
 		float value = 0.0f;
 		if (!entry->key.Compare(L"|BeginColor") && entry->object->ConvertToColor(color, cFormat))
 		{
-			ret->SetAnimationValue(color.a, animation_value_type_alpha);
-			ret->SetAnimationValue(color.b, animation_value_type_blue);
-			ret->SetAnimationValue(color.g, animation_value_type_green);
-			ret->SetAnimationValue(color.r, animation_value_type_red);
+			ret->SetAnimationValue(color.a, animation_value_type::animation_value_type_alpha);
+			ret->SetAnimationValue(color.b, animation_value_type::animation_value_type_blue);
+			ret->SetAnimationValue(color.g, animation_value_type::animation_value_type_green);
+			ret->SetAnimationValue(color.r, animation_value_type::animation_value_type_red);
 		}
 		else if (!entry->key.Compare(L"|EndColor") && entry->object->ConvertToColor(color, cFormat))
 		{
-			ret->SetAnimationValue(color.a, animation_value_type_alpha2);
-			ret->SetAnimationValue(color.b, animation_value_type_blue2);
-			ret->SetAnimationValue(color.g, animation_value_type_green2);
-			ret->SetAnimationValue(color.r, animation_value_type_red2);
+			ret->SetAnimationValue(color.a, animation_value_type::animation_value_type_alpha2);
+			ret->SetAnimationValue(color.b, animation_value_type::animation_value_type_blue2);
+			ret->SetAnimationValue(color.g, animation_value_type::animation_value_type_green2);
+			ret->SetAnimationValue(color.r, animation_value_type::animation_value_type_red2);
 		}
 		else if (!entry->key.Compare(L"|IsRadian"))
 		{
 			// Value could be anything, all this does is set animation to radian mode (default is degrees)
-			ret->SetAnimationValue(0.0f, animation_value_type_radian);
+			ret->SetAnimationValue(0.0f, animation_value_type::animation_value_type_radian);
 		}
 		else if (!entry->key.Compare(L"|BeginRotate") && !entry->object->ConvertToFloat(&value))
 		{
-			ret->SetAnimationValue(value, animation_value_type_rotate_start);
+			ret->SetAnimationValue(value, animation_value_type::animation_value_type_rotate_start);
 		}
 		else if (!entry->key.Compare(L"|EndRotate") && !entry->object->ConvertToFloat(&value))
 		{
-			ret->SetAnimationValue(value, animation_value_type_rotate_end);
+			ret->SetAnimationValue(value, animation_value_type::animation_value_type_rotate_end);
 		}
 		else if (!entry->key.Compare(L"|RotateDirection"))
 		{
 			entry->object->ConvertToFloat(&value);
-			ret->SetAnimationValue(value, animation_value_type_direction);
+			ret->SetAnimationValue(value, animation_value_type::animation_value_type_direction);
 		}
 		else if (!entry->key.Compare(L"|Location"))
 		{
 			auto rect = convertStringToD2D1Rect(entry->object.Get());
-			ret->SetAnimationValue(rect.bottom, animation_value_type_bottom_location);
-			ret->SetAnimationValue(rect.left, animation_value_type_left_location);
-			ret->SetAnimationValue(rect.top, animation_value_type_top_location);
-			ret->SetAnimationValue(rect.right, animation_value_type_right_location);
+			ret->SetAnimationValue(rect.bottom, animation_value_type::animation_value_type_bottom_location);
+			ret->SetAnimationValue(rect.left, animation_value_type::animation_value_type_left_location);
+			ret->SetAnimationValue(rect.top, animation_value_type::animation_value_type_top_location);
+			ret->SetAnimationValue(rect.right, animation_value_type::animation_value_type_right_location);
 
 		}
 		else if (!entry->key.Compare(L"|Length"))

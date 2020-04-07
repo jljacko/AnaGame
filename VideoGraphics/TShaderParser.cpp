@@ -121,11 +121,11 @@ bool TShaderParser::Attribute(TrecPointer<TString> v, TString& e)
 			sh_str->Append(L"\\");
 			sh_str->Append(v.Get());
 			shaderFile = sh_str;
-			phase = sp_Domain;
+			phase =ShaderPhase::sp_Domain;
 		}
 		else if (!TString::Compare(e, L"|DomainFunction"))
 		{
-			if (phase == sp_Domain)
+			if (phase ==ShaderPhase::sp_Domain)
 				return AddShaderToProgram(*v.Get());
 		}
 		else if (!TString::Compare(e, L"|ComputeFile"))
@@ -134,11 +134,11 @@ bool TShaderParser::Attribute(TrecPointer<TString> v, TString& e)
 			sh_str->Append(L"\\");
 			sh_str->Append(v.Get());
 			shaderFile = sh_str;
-			phase = sp_Compute;
+			phase =ShaderPhase::sp_Compute;
 		}
 		else if (!TString::Compare(e, L"|ComputeFunction"))
 		{
-			if (phase == sp_Compute)
+			if (phase ==ShaderPhase::sp_Compute)
 				return AddShaderToProgram(*v.Get());
 		}
 		if (!TString::Compare(e, L"|HullFile"))
@@ -147,11 +147,11 @@ bool TShaderParser::Attribute(TrecPointer<TString> v, TString& e)
 			sh_str->Append(L"\\");
 			sh_str->Append(v.Get());
 			shaderFile = sh_str;
-			phase = sp_Hull;
+			phase =ShaderPhase::sp_Hull;
 		}
 		else if (!TString::Compare(e, L"|HullFunction"))
 		{
-			if (phase == sp_Hull)
+			if (phase ==ShaderPhase::sp_Hull)
 				return AddShaderToProgram(*v.Get());
 		}
 		if (!TString::Compare(e, L"|GeometryFile"))
@@ -160,11 +160,11 @@ bool TShaderParser::Attribute(TrecPointer<TString> v, TString& e)
 			sh_str->Append(L"\\");
 			sh_str->Append(v.Get());
 			shaderFile = sh_str;
-			phase = sp_Geometry;
+			phase =ShaderPhase::sp_Geometry;
 		}
 		else if (!TString::Compare(e, L"|GeometryFunction"))
 		{
-			if (phase == sp_Geometry)
+			if (phase ==ShaderPhase::sp_Geometry)
 				return AddShaderToProgram(*v.Get());
 		}
 		else if (!TString::Compare(e, L"|TextureCount"))
@@ -191,27 +191,27 @@ bool TShaderParser::Attribute(TrecPointer<TString> v, TString& e)
 		{
 			if (!v->Compare(L"Pixel") || !v->Compare(L"Fragment"))
 			{
-				cbd.sp = sp_Pixel;
+				cbd.sp =ShaderPhase::sp_Pixel;
 			}
 			else if (!v->Compare(L"Hull"))
 			{
-				cbd.sp = sp_Hull;
+				cbd.sp =ShaderPhase::sp_Hull;
 			}
 			else if (!v->Compare(L"Domain"))
 			{
-				cbd.sp = sp_Domain;
+				cbd.sp =ShaderPhase::sp_Domain;
 			}
 			else if (!v->Compare(L"Compute"))
 			{
-				cbd.sp = sp_Compute;
+				cbd.sp =ShaderPhase::sp_Compute;
 			}
 			else if (!v->Compare(L"Geometry"))
 			{
-				cbd.sp = sp_Geometry;
+				cbd.sp = ShaderPhase::sp_Geometry;
 			}
 			else
 			{
-				cbd.sp = sp_Vertex;
+				cbd.sp = ShaderPhase::sp_Vertex;
 			}
 
 		}
@@ -288,16 +288,16 @@ bool TShaderParser::AddShaderToProgram(TString& str)
 
 	switch (phase)
 	{
-	case sp_Domain:
+	case ShaderPhase::sp_Domain:
 		err = shaderHost->AddDomainShader(device, shaderIndex, *shaderFile.Get(), cStr.c_str());
 		break;
-	case sp_Compute:
+	case ShaderPhase::sp_Compute:
 		err = shaderHost->AddComputeShader(device, shaderIndex, *shaderFile.Get(), cStr.c_str());
 		break;
-	case sp_Hull:
+	case ShaderPhase::sp_Hull:
 		err = shaderHost->AddHullShader(device, shaderIndex, *shaderFile.Get(), cStr.c_str());
 		break;
-	case sp_Geometry:
+	case ShaderPhase::sp_Geometry:
 		err = shaderHost->AddGeometryShader(device, shaderIndex, *shaderFile.Get(), cStr.c_str());
 		break;
 	}

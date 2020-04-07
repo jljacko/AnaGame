@@ -205,100 +205,100 @@ void TWindow::InduceDraw()
 void TWindow::OnRButtonUp(UINT nFlags, TPoint point)
 {
 	if (locked) return;
-	messageOutput mOut = negative;
-	for(UINT c = 0; c < pages.Size() && (mOut == negative || mOut == negativeUpdate); c++)
+	messageOutput mOut = messageOutput::negative;
+	for(UINT c = 0; c < pages.Size() && (mOut == messageOutput::negative || mOut == messageOutput::negativeUpdate); c++)
 	{
 		if(pages[c].Get())
 			pages[c]->OnRButtonUp(nFlags, point, &mOut);
 	}
 
-	if(mOut == negative || mOut == negativeUpdate)
+	if(mOut == messageOutput::negative || mOut == messageOutput::negativeUpdate)
 		mainPage->OnRButtonUp(nFlags, point, &mOut);
 }
 
 void TWindow::OnLButtonDown(UINT nFlags, TPoint point)
 {
 	if (locked) return;
-	messageOutput mOut = negative;
-	for(UINT c = 0; c < pages.Size() && (mOut == negative || mOut == negativeUpdate); c++)
+	messageOutput mOut = messageOutput::negative;
+	for(UINT c = 0; c < pages.Size() && (mOut == messageOutput::negative || mOut == messageOutput::negativeUpdate); c++)
 	{
 		if(pages[c].Get())
 			pages[c]->OnLButtonDown(nFlags, point, &mOut);
 	}
 
-	if(mOut == negative || mOut == negativeUpdate)
+	if(mOut == messageOutput::negative || mOut == messageOutput::negativeUpdate)
 		mainPage->OnLButtonDown(nFlags, point, &mOut);
 }
 
 void TWindow::OnRButtonDown(UINT nFlags, TPoint point)
 {
 	if (locked) return;
-	messageOutput mOut = negative;
-	for(UINT c = 0; c < pages.Size() && (mOut == negative || mOut == negativeUpdate); c++)
+	messageOutput mOut = messageOutput::negative;
+	for(UINT c = 0; c < pages.Size() && (mOut == messageOutput::negative || mOut == messageOutput::negativeUpdate); c++)
 	{
 		if(pages[c].Get())
 			pages[c]->OnRButtonDown(nFlags, point, &mOut);
 	}
 
-	if(mOut == negative || mOut == negativeUpdate)
+	if(mOut == messageOutput::negative || mOut == messageOutput::negativeUpdate)
 		mainPage->OnRButtonDown(nFlags, point, &mOut);
 }
 void TWindow::OnMouseMove(UINT nFlags, TPoint point)
 {
 	if (locked) return;
-	messageOutput mOut = negative;
-	for(UINT c = 0; c < pages.Size() && (mOut == negative || mOut == negativeUpdate); c++)
+	messageOutput mOut = messageOutput::negative;
+	for(UINT c = 0; c < pages.Size() && (mOut == messageOutput::negative || mOut == messageOutput::negativeUpdate); c++)
 	{
 		if(pages[c].Get())
 			pages[c]->OnMouseMove(nFlags, point, &mOut);
 	}
 
-	if(mOut == negative || mOut == negativeUpdate)
+	if(mOut == messageOutput::negative || mOut == messageOutput::negativeUpdate)
 		mainPage->OnMouseMove(nFlags, point, &mOut);
 }
 
 void TWindow::OnLButtonDblClk(UINT nFlags, TPoint point)
 {
 	if (locked) return;
-	messageOutput mOut = negative;
-	for(UINT c = 0; c < pages.Size() && (mOut == negative || mOut == negativeUpdate); c++)
+	messageOutput mOut = messageOutput::negative;
+	for(UINT c = 0; c < pages.Size() && (mOut == messageOutput::negative || mOut == messageOutput::negativeUpdate); c++)
 	{
 		if(pages[c].Get())
 			pages[c]->OnLButtonDblClk(nFlags, point, &mOut);
 	}
 
-	if(mOut == negative || mOut == negativeUpdate)
+	if(mOut == messageOutput::negative || mOut == messageOutput::negativeUpdate)
 		mainPage->OnLButtonDblClk(nFlags, point, &mOut);
 }
 
 void TWindow::OnLButtonUp(UINT nFlags, TPoint point)
 {
 	if (locked) return;
-	messageOutput mOut = negative;
-	for(UINT c = 0; c < pages.Size() && (mOut == negative || mOut == negativeUpdate); c++)
+	messageOutput mOut = messageOutput::negative;
+	for(UINT c = 0; c < pages.Size() && (mOut == messageOutput::negative || mOut == messageOutput::negativeUpdate); c++)
 	{
 		if(pages[c].Get())
 			pages[c]->OnLButtonUp(nFlags, point, &mOut);
 	}
 
-	if(mOut == negative || mOut == negativeUpdate)
+	if(mOut == messageOutput::negative || mOut == messageOutput::negativeUpdate)
 		mainPage->OnLButtonUp(nFlags, point, &mOut);
 }
 
 bool TWindow::OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	if (locked) return false;
-	messageOutput mOut = negative;
+	messageOutput mOut = messageOutput::negative;
 
 	bool returnable = false;
 
-	for(UINT c = 0; c < pages.Size() && (mOut == negative || mOut == negativeUpdate); c++)
+	for(UINT c = 0; c < pages.Size() && (mOut == messageOutput::negative || mOut == messageOutput::negativeUpdate); c++)
 	{
 		if(pages[c].Get())
 			returnable = pages[c]->OnChar(fromChar, nChar, nRepCnt, nFlags, &mOut);
 	}
 
-	if(mOut == negative || mOut == negativeUpdate)
+	if(mOut == messageOutput::negative || mOut == messageOutput::negativeUpdate)
 		returnable = mainPage->OnChar(fromChar, nChar, nRepCnt, nFlags, &mOut);
 	return returnable;
 }

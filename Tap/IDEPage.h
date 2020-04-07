@@ -2,7 +2,7 @@
 #include "Page.h"
 #include "TIdeWindow.h"
 
-typedef enum page_move_mode
+typedef enum class page_move_mode
 {
 	page_move_mode_normal,
 	page_move_mode_drag,

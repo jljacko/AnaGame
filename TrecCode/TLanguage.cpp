@@ -176,9 +176,9 @@ TrecPointer<TLanguage> TLanguage::getLanguage(TMap<TString>& langProps, TrecPoin
 	}
 
 	val = langProps.retrieveEntry(TString(L"Default String Encoding"));
-	lang->defaultencoding = (val.Get() && !val->Compare(L"Ascii")) ? ldse_acsii : ldse_unicode;
+	lang->defaultencoding = (val.Get() && !val->Compare(L"Ascii")) ? LanguageDefaultStringEncoding::ldse_acsii : LanguageDefaultStringEncoding::ldse_unicode;
 
-	if(lang->defaultencoding == ldse_acsii)
+	if(lang->defaultencoding == LanguageDefaultStringEncoding::ldse_acsii)
 		val = langProps.retrieveEntry(TString(L"Unicode Marker"));
 	else
 		val = langProps.retrieveEntry(TString(L"ACSII Marker"));
@@ -189,16 +189,16 @@ TrecPointer<TLanguage> TLanguage::getLanguage(TMap<TString>& langProps, TrecPoin
 	// Aftre String Encoding
 	val = langProps.retrieveEntry(TString(L"Block Type"));
 	if (!val.Get())
-		lang->blockType = lbt_curly;
+		lang->blockType = LanguageBlockType::lbt_curly;
 	else
 	{
 		val->Trim();
 		if (!val->Compare(L"Indent"))
-			lang->blockType = lbt_indent;
+			lang->blockType = LanguageBlockType::lbt_indent;
 		else if (!val->Compare(L"Tokens"))
-			lang->blockType = lbt_tokens;
+			lang->blockType = LanguageBlockType::lbt_tokens;
 		else
-			lang->blockType = lbt_curly;
+			lang->blockType = LanguageBlockType::lbt_curly;
 	}
 
 	val = langProps.retrieveEntry(TString(L"External File Access"));
@@ -212,11 +212,11 @@ TrecPointer<TLanguage> TLanguage::getLanguage(TMap<TString>& langProps, TrecPoin
 		for (UINT Rust = 0; Rust < reqModuleHeaders->Size(); Rust++)
 		{
 			if (!reqModuleHeaders->at(Rust).Compare(L"Yes"))
-				lang->requireModHeader = rmh_yes;
+				lang->requireModHeader = RequireModuleHeader::rmh_yes;
 			else if (!reqModuleHeaders->at(Rust).Compare(L"No"))
-				lang->requireModHeader = rmh_yes;
+				lang->requireModHeader = RequireModuleHeader::rmh_yes;
 			else if (!reqModuleHeaders->at(Rust).Compare(L"NoinDefault"))
-				lang->requireModHeader = rmh_yes;
+				lang->requireModHeader = RequireModuleHeader::rmh_yes;
 			else if (!reqModuleHeaders->at(Rust).Compare(L"First"))
 				lang->moduleHeaderFirst = true;
 			else if (!reqModuleHeaders->at(Rust).Compare(L"Block"))
@@ -229,34 +229,34 @@ TrecPointer<TLanguage> TLanguage::getLanguage(TMap<TString>& langProps, TrecPoin
 
 	val = langProps.retrieveEntry(TString(L"Inheritance"));
 	if (!val.Get())
-		lang->inheritenceModel = li_not_supported;
+		lang->inheritenceModel = LanguageInheritence::li_not_supported;
 	else
 	{
 		val->Trim();
 		if (!val->Compare(L"Multiple"))
-			lang->inheritenceModel = li_mulitple;
+			lang->inheritenceModel = LanguageInheritence::li_mulitple;
 		else if (!val->Compare(L"MultipleInterface"))
-			lang->inheritenceModel = li_multiple_interface;
+			lang->inheritenceModel = LanguageInheritence::li_multiple_interface;
 		else if (!val->Compare(L"Single"))
-			lang->inheritenceModel = li_single;
+			lang->inheritenceModel = LanguageInheritence::li_single;
 		else
-			lang->inheritenceModel = li_not_supported;
+			lang->inheritenceModel = LanguageInheritence::li_not_supported;
 	}
 
 	val = langProps.retrieveEntry(TString(L"Enum Implementation"));
 	if (!val.Get())
-		lang->enumModel = ei_not_supported;
+		lang->enumModel = EnumImplementation::ei_not_supported;
 	else
 	{
 		val->Trim();
 		if (!val->Compare(L"Primitive"))
-			lang->enumModel = ei_primitive;
+			lang->enumModel = EnumImplementation::ei_primitive;
 		else if (!val->Compare(L"Class"))
-			lang->enumModel = ei_class;
+			lang->enumModel = EnumImplementation::ei_class;
 		else if (!val->Compare(L"LabelledUnion "))
-			lang->enumModel = ei_labelledUnion;
+			lang->enumModel = EnumImplementation::ei_labelledUnion;
 		else
-			lang->enumModel = ei_not_supported;
+			lang->enumModel = EnumImplementation::ei_not_supported;
 	}
 
 	val = langProps.retrieveEntry(TString(L"Method Implementation"));
@@ -378,7 +378,7 @@ bool TLanguage::RunCommentFilter(TrecPointer<TFile> file, TString& newFileName)
 
 	TString outbuffer;
 
-	CodeMode sourceMode = cm_reg;
+	CodeMode sourceMode = CodeMode::cm_reg;
 
 	UINT readData = 0, strIndex = 0;
 	int  nextSinCom = -1, nextLine = -1, nextMulCom = -1, endMulCom = -1;
@@ -395,25 +395,25 @@ bool TLanguage::RunCommentFilter(TrecPointer<TFile> file, TString& newFileName)
 
 			switch (sourceMode)
 			{
-			case cm_reg:
+			case CodeMode::cm_reg:
 				if (c == sinCom.strInd)
 				{
-					sourceMode = cm_sinCom;
+					sourceMode = CodeMode::cm_sinCom;
 				}
 				else if (c == multiCom.strInd)
 				{
-					sourceMode = cm_mulCom;
+					sourceMode = CodeMode::cm_mulCom;
 				}
 				else if (c == sinStr.strInd)
 				{
-					sourceMode = cm_sinStr;
+					sourceMode = CodeMode::cm_sinStr;
 					outbuffer += sinStr.stringQ;
 					c += sinStr.stringQ.GetSize() - 1;
 					sinStr = getNextSingleString(inBuffer, c + 1);
 				}
 				else if (c == mulStr.strInd)
 				{
-					sourceMode = cm_mulStr;
+					sourceMode = CodeMode::cm_mulStr;
 					outbuffer += mulStr.stringQ;
 					c += mulStr.stringQ.GetSize() - 1;
 					mulStr = getNextMultiString(inBuffer, c + 1);
@@ -421,18 +421,18 @@ bool TLanguage::RunCommentFilter(TrecPointer<TFile> file, TString& newFileName)
 				else
 					outbuffer += inBuffer[c];
 				break;
-			case cm_sinCom:
+			case CodeMode::cm_sinCom:
 				if (newL.strInd == -1 || newL.strInd < c)
 					newL = getNextNewline(inBuffer, c);
 				if (newL.strInd != -1)
 				{
 					outbuffer += L'\n';
 					c = newL.strInd;
-					sourceMode = cm_reg;
+					sourceMode = CodeMode::cm_reg;
 					UpdateDoubIndex(inBuffer, c + 1, sinCom, newL, multiCom, multiComE, sinStr, mulStr);
 				}
 				break;
-			case cm_mulCom:
+			case CodeMode::cm_mulCom:
 				newL = getNextNewline(inBuffer, c);
 				while (newL.strInd != -1 && (multiComE.strInd == -1 || newL.strInd < multiComE.strInd))
 				{
@@ -443,16 +443,16 @@ bool TLanguage::RunCommentFilter(TrecPointer<TFile> file, TString& newFileName)
 				if (multiComE.strInd != -1)
 				{
 					c = multiComE.strInd + multiComE.stringQ.GetSize() - 1;
-					sourceMode = cm_reg;
+					sourceMode = CodeMode::cm_reg;
 					UpdateDoubIndex(inBuffer, c + 1, sinCom, newL, multiCom, multiComE, sinStr, mulStr);
 				}
 				break;
-			case cm_sinStr:
+			case CodeMode::cm_sinStr:
 				if (c == sinStr.strInd)
 				{
 					outbuffer += sinStr.stringQ;
 					c += sinStr.stringQ.GetSize() - 1;
-					sourceMode = cm_reg;
+					sourceMode = CodeMode::cm_reg;
 					UpdateDoubIndex(inBuffer, c + 1, sinCom, newL, multiCom, multiComE, sinStr, mulStr);
 				}
 				else
@@ -460,19 +460,19 @@ bool TLanguage::RunCommentFilter(TrecPointer<TFile> file, TString& newFileName)
 					if (c == newL.strInd)
 					{
 						sinStr = getNextSingleString(inBuffer, c);
-						sourceMode = cm_reg;
+						sourceMode = CodeMode::cm_reg;
 						UpdateDoubIndex(inBuffer, c + 1, sinCom, newL, multiCom, multiComE, sinStr, mulStr);
 					}
 					outbuffer += inBuffer[c];
 				}
 
 				break;
-			case cm_mulStr:
+			case CodeMode::cm_mulStr:
 				if (c == mulStr.strInd)
 				{
 					outbuffer += mulStr.stringQ;
 					c += mulStr.stringQ.GetSize() - 1;
-					sourceMode = cm_reg;
+					sourceMode = CodeMode::cm_reg;
 					UpdateDoubIndex(inBuffer, c + 1, sinCom, newL, multiCom, multiComE, sinStr, mulStr);
 				}
 				else
@@ -498,12 +498,12 @@ bool TLanguage::RunBlockFilter(TrecPointer<TFile> file, TString& newFileName)
 	if (!file.Get() || !file->IsOpen())
 		return false;
 
-	if (blockType == lbt_curly)
+	if (blockType == LanguageBlockType::lbt_curly)
 	{
 		newFileName = file->GetFileName();
 	}
 
-	if (blockType == lbt_indent)
+	if (blockType == LanguageBlockType::lbt_indent)
 	{
 		TString sourceName = file->GetFileDirectory();
 		newFileName = file->GetFileName();
@@ -586,7 +586,7 @@ bool TLanguage::RunBlockFilter(TrecPointer<TFile> file, TString& newFileName)
 		sourceFile->Close();
 	}
 
-	if (blockType == lbt_indent)
+	if (blockType == LanguageBlockType::lbt_indent)
 	{
 		TString sourceName = file->GetFileDirectory();
 		newFileName = file->GetFileName();

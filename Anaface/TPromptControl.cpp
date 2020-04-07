@@ -180,41 +180,41 @@ parentCall:
 		if (isNumber && isContained(&point, &topBut))
 		{
 			updateNumber(true);
-			*mOut = positiveContinueUpdate;
-			if (hasEvent(On_Text_Change))
+			*mOut = messageOutput::positiveContinueUpdate;
+			if (hasEvent(R_Message_Type::On_Text_Change))
 			{
 				// Set args
 				resetArgs();
-				args.eventType = On_Text_Change;
+				args.eventType = R_Message_Type::On_Text_Change;
 				args.point = point;
-				args.methodID = getEventID(On_Text_Change);
+				args.methodID = getEventID(R_Message_Type::On_Text_Change);
 				args.isClick = true;
 				args.isLeftClick = false;
 				args.control = this;
 
-				eventAr.push_back(EventID_Cred{ On_Text_Change, this });
+				eventAr.push_back(EventID_Cred{ R_Message_Type::On_Text_Change, this });
 			}
 		}
 		else if (isNumber && isContained(&point, &botBut))
 		{
 			updateNumber(false);
-			*mOut = positiveContinueUpdate;
-			if (hasEvent(On_Text_Change))
+			*mOut = messageOutput::positiveContinueUpdate;
+			if (hasEvent(R_Message_Type::On_Text_Change))
 			{
 				// Set args
 				resetArgs();
-				args.eventType = On_Text_Change;
+				args.eventType = R_Message_Type::On_Text_Change;
 				args.point = point;
-				args.methodID = getEventID(On_Text_Change);
+				args.methodID = getEventID(R_Message_Type::On_Text_Change);
 				args.isClick = true;
 				args.isLeftClick = false;
 				args.control = this;
 
-				eventAr.push_back(EventID_Cred{ On_Text_Change, this });
+				eventAr.push_back(EventID_Cred{ R_Message_Type::On_Text_Change, this });
 			}
 		}
 
-		*mOut = positiveContinueUpdate;
+		*mOut = messageOutput::positiveContinueUpdate;
 	}
 	TControl::OnLButtonDown(nFlags, point, mOut, eventAr, clickedControl);
 
@@ -287,15 +287,15 @@ bool TPromptControl::OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags
 				}
 			}
 		}
-		*mOut = positiveOverrideUpdate;
+		*mOut = messageOutput::positiveOverrideUpdate;
 		updateTextString();
 		resetArgs();
-		args.eventType = On_Char;
+		args.eventType = R_Message_Type::On_Char;
 		args.control = this;
-		args.methodID = getEventID(On_Char);
+		args.methodID = getEventID(R_Message_Type::On_Char);
 		args.type = static_cast<WCHAR>(LOWORD(nChar));
 		args.control = this;
-		eventAr.push_back({ On_Text_Change, this });
+		eventAr.push_back({ R_Message_Type::On_Text_Change, this });
 
 		if (text1.Get() && text1->text.GetSize())
 		{

@@ -130,7 +130,7 @@ void TIdeWindow::OnLButtonUp(UINT nFlags, TPoint point)
 void TIdeWindow::OnMouseMove(UINT nFlags, TPoint point)
 { 
 	if (locked) return;
-	messageOutput output = negative;
+	messageOutput output = messageOutput::negative;
 
 	if (focusPage.Get())
 	{
@@ -195,14 +195,14 @@ finish:
 	}
 
 
-	if (output == positiveContinueUpdate || output == positiveOverrideUpdate || output == negativeUpdate)
+	if (output == messageOutput::positiveContinueUpdate || output == messageOutput::positiveOverrideUpdate || output == messageOutput::negativeUpdate)
 		Draw();
 }
 
 void TIdeWindow::OnLButtonDown(UINT nFlags, TPoint point)
 {
 	if (locked) return;
-	messageOutput output = negative;
+	messageOutput output = messageOutput::negative;
 
 
 	auto curFocusPage = focusPage;
@@ -267,7 +267,7 @@ finish:
 
 
 
-	if (output == positiveContinueUpdate || output == positiveOverrideUpdate || output == negativeUpdate)
+	if (output == messageOutput::positiveContinueUpdate || output == messageOutput::positiveOverrideUpdate || output == messageOutput::negativeUpdate)
 		Draw();
 }
 
@@ -283,10 +283,10 @@ void TIdeWindow::AddNewPage(anagame_page pageType, ide_page_type pageLoc, TStrin
 
 	switch (pageType)
 	{
-	case anagame_page_code_explorer:
+	case anagame_page::anagame_page_code_explorer:
 
 		break;
-	case anagame_page_code_file:
+	case anagame_page::anagame_page_code_file:
 		uiFile->Open(GetDirectoryWithSlash(CentralDirectories::cd_Executable) + L"Resources\\LineTextEditor.txt", TFile::t_file_read | TFile::t_file_share_read | TFile::t_file_open_always);
 		fileShell = TFileShell::GetFileInfo(tmlLoc);
 		if (!handler.Get())
@@ -294,7 +294,7 @@ void TIdeWindow::AddNewPage(anagame_page pageType, ide_page_type pageLoc, TStrin
 		else
 			pageHandler = handler;
 		break;
-	case anagame_page_command_prompt:
+	case anagame_page::anagame_page_command_prompt:
 		uiFile->Open(GetDirectoryWithSlash(CentralDirectories::cd_Executable) + L"Resources\\IDEPrompt.tml", TFile::t_file_read | TFile::t_file_share_read | TFile::t_file_open_always);
 		fileShell = TFileShell::GetFileInfo(tmlLoc);
 		if (!handler.Get())
@@ -302,14 +302,14 @@ void TIdeWindow::AddNewPage(anagame_page pageType, ide_page_type pageLoc, TStrin
 		else
 			pageHandler = handler;
 		break;
-	case anagame_page_file_node:
+	case anagame_page::anagame_page_file_node:
 		uiFile->Open(GetDirectoryWithSlash(CentralDirectories::cd_Executable) + L"Resources\\FileBrowser.tml", TFile::t_file_read | TFile::t_file_share_read | TFile::t_file_open_always);
 		fileShell = TFileShell::GetFileInfo(tmlLoc);
 		break;
-	case anagame_page_object_explorer:
+	case anagame_page::anagame_page_object_explorer:
 
 		break;
-	case anagame_page_custom:
+	case anagame_page::anagame_page_custom:
 		if (!handler.Get())
 			return;
 		pageHandler = handler;
@@ -330,22 +330,22 @@ void TIdeWindow::AddNewPage(anagame_page pageType, ide_page_type pageLoc, TStrin
 	TrecSubPointer<Page, IDEPage> targetPage = body;
 	switch (pageLoc)
 	{
-	case ide_page_type_basic_console:
+	case ide_page_type::ide_page_type_basic_console:
 		targetPage = basicConsole;
 		break;
-	case ide_page_type_deep_console:
+	case ide_page_type::ide_page_type_deep_console:
 		targetPage = deepConsole;
 		break;
-	case ide_page_type_lower_left:
+	case ide_page_type::ide_page_type_lower_left:
 		targetPage = lowerLeft;
 		break;
-	case ide_page_type_lower_right:
+	case ide_page_type::ide_page_type_lower_right:
 		targetPage = lowerRight;
 		break;
-	case ide_page_type_upper_left:
+	case ide_page_type::ide_page_type_upper_left:
 		targetPage = upperLeft;
 		break;
-	case ide_page_type_upper_right:
+	case ide_page_type::ide_page_type_upper_right:
 		targetPage = upperRight;
 	}
 

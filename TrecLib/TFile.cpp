@@ -12,7 +12,7 @@ UCHAR TFileType[] = { 2, 0b10000000, 2 };
 */
 TFile::TFile()
 {
-	fileEncode = fet_unknown;
+	fileEncode = FileEncodingType::fet_unknown;
 	fileHandle = 0;
 	position = 0ULL;
 }
@@ -51,7 +51,7 @@ TFile::~TFile()
 */
 bool TFile::Open(const TString& lpszFileName, UINT nOpenFlags)
 {
-	fileEncode = fet_unknown;
+	fileEncode = FileEncodingType::fet_unknown;
 
 	WCHAR* fName = lpszFileName.GetBufferCopy();
 	UINT readWrite = 0, sharing = 0, atts = 0;
@@ -97,7 +97,7 @@ BOOL TFile::ReadString(TString & rString)
 	WCHAR wLetter;
 	switch (fileEncode)
 	{
-	case fet_acsii:
+	case FileEncodingType::fet_acsii:
 		
 		while (Read(&letter[0], 1))
 		{
@@ -108,7 +108,7 @@ BOOL TFile::ReadString(TString & rString)
 		}
 		
 		break;
-	case fet_unicode:
+	case FileEncodingType::fet_unicode:
 		
 		while (Read(letter2, 2))
 		{
@@ -123,7 +123,7 @@ BOOL TFile::ReadString(TString & rString)
 		}
 
 		break;
-	case fet_unicode_little:
+	case FileEncodingType::fet_unicode_little:
 		
 		while (Read(&wLetter, 2))
 		{
@@ -142,12 +142,12 @@ UINT TFile::ReadString(TString & rString, UINT nMax)
 	rString.Empty();
 	UINT rust = 0;
 
-	if (fileEncode == fet_unknown)
+	if (fileEncode == FileEncodingType::fet_unknown)
 		DeduceEncodingType();
 
 	switch (fileEncode)
 	{
-	case fet_acsii:
+	case FileEncodingType::fet_acsii:
 		char letter[1];
 		for ( ; rust <= nMax && Read(&letter, 1); rust++)
 		{
@@ -155,7 +155,7 @@ UINT TFile::ReadString(TString & rString, UINT nMax)
 		}
 
 		break;
-	case fet_unicode:
+	case FileEncodingType::fet_unicode:
 		UCHAR letter2[2];
 		
 		for (; rust <= nMax && Read(&letter2, 2); rust++)
@@ -170,7 +170,7 @@ UINT TFile::ReadString(TString & rString, UINT nMax)
 		}
 
 		break;
-	case fet_unicode_little:
+	case FileEncodingType::fet_unicode_little:
 		WCHAR wLetter;
 		
 		for( ; rust <= nMax && Read(&wLetter, 2); rust++ )
@@ -189,7 +189,7 @@ UINT TFile::ReadString(TString & rString, WCHAR chara)
 	rString.Empty();
 	switch (fileEncode)
 	{
-	case fet_acsii:
+	case FileEncodingType::fet_acsii:
 		char letter[1];
 		while (Read(&letter, 1))
 		{
@@ -200,7 +200,7 @@ UINT TFile::ReadString(TString & rString, WCHAR chara)
 		}
 
 		break;
-	case fet_unicode:
+	case FileEncodingType::fet_unicode:
 		UCHAR letter2[2];
 		while (Read(&letter2, 2))
 		{
@@ -216,7 +216,7 @@ UINT TFile::ReadString(TString & rString, WCHAR chara)
 		}
 
 		break;
-	case fet_unicode_little:
+	case FileEncodingType::fet_unicode_little:
 		WCHAR wLetter;
 		while (Read(&wLetter, 2))
 		{
@@ -245,12 +245,12 @@ void TFile::WriteString(const TString& lpsz)
 	UCHAR bytes[2];
 	UCHAR temp = 0;
 	WCHAR* bufferString = lpsz.GetBufferCopy();
-	if (fileEncode == fet_unknown)
-		fileEncode = fet_unicode_little;
+	if (fileEncode == FileEncodingType::fet_unknown)
+		fileEncode = FileEncodingType::fet_unicode_little;
 	switch (fileEncode)
 	{
-	case fet_acsii:
-	case fet_unicode8:
+	case FileEncodingType::fet_acsii:
+	case FileEncodingType::fet_unicode8:
 		size = lpsz.GetSize();
 		acsiiText = new CHAR[size * 2 + 1];
 		wBytes = WideCharToMultiByte(CP_ACP,
@@ -259,7 +259,7 @@ void TFile::WriteString(const TString& lpsz)
 			NULL);
 		Write(acsiiText, wBytes);
 		break;
-	case fet_unicode:
+	case FileEncodingType::fet_unicode:
 		for (UINT c = 0; lpsz[c] != L'\0'; c++)
 		{
 			cLetter = lpsz[c];
@@ -271,7 +271,7 @@ void TFile::WriteString(const TString& lpsz)
 			Write(bytes, 2);
 		}
 		break;
-	case fet_unicode_little:
+	case FileEncodingType::fet_unicode_little:
 		for (UINT c = 0; lpsz[c] != L'\0'; c++)
 		{
 			Write(&bufferString[c], 2);
@@ -300,7 +300,7 @@ bool TFile::IsOpen()
 */
 bool TFile::SetEncoding(FileEncodingType fet)
 {
-	if (fileEncode == fet_unknown && fet != fet_unknown)
+	if (fileEncode == FileEncodingType::fet_unknown && fet != FileEncodingType::fet_unknown)
 	{
 		fileEncode = fet;
 		return true;
@@ -400,9 +400,9 @@ FileEncodingType TFile::GetEncodingType()
 FileEncodingType TFile::DeduceEncodingType()
 {
 	if (!IsOpen())
-		return fet_unknown;
+		return FileEncodingType::fet_unknown;
 	if (GetLength() < 2)
-		return fet_unknown;
+		return FileEncodingType::fet_unknown;
 	UCHAR twoBytes[30];
 	UINT bytes = Read(&twoBytes, 30);
 
@@ -426,23 +426,23 @@ FileEncodingType TFile::DeduceEncodingType()
 				twoBytes[2] == 0x76 &&
 				twoBytes[3] == 0x38 &&
 				twoBytes[4] == 0x2d)
-				return fet_unicode7;
+				return FileEncodingType::fet_unicode7;
 
 			// Now check for UTF-8
 			if (twoBytes[0] == 0xef &&
 				twoBytes[1] == 0xbb &&
 				twoBytes[2] == 0xbf)
-				return fet_unicode8;
+				return FileEncodingType::fet_unicode8;
 
 			// Check for big endian unicode
 			if (twoBytes[0] == 0xfe &&
 				twoBytes[1] == 0xff)
-				return fet_unicode;
+				return FileEncodingType::fet_unicode;
 
 			// Check for little-endian unicode
 			if (twoBytes[0] == 0xff &&
 				twoBytes[1] == 0xfe)
-				return fet_unicode_little;
+				return FileEncodingType::fet_unicode_little;
 			
 
 			// There is no BOM to tell us the encoding, need to guess
@@ -450,33 +450,33 @@ FileEncodingType TFile::DeduceEncodingType()
 			if (twoBytes[0] == 0x00 &&
 				twoBytes[2] == 0x00 &&
 				twoBytes[4] == 0x00)
-				return fet_unicode;
+				return FileEncodingType::fet_unicode;
 
 			if (twoBytes[1] == 0x00 &&
 				twoBytes[3] == 0x00)
-				return fet_unicode_little;
+				return FileEncodingType::fet_unicode_little;
 
-			return fet_acsii;
+			return FileEncodingType::fet_acsii;
 		}
 		else
-			return fet_unknown;
+			return FileEncodingType::fet_unknown;
 	}
 	else
 	{
 		if (value & IS_TEXT_UNICODE_STATISTICS ||
 			value & IS_TEXT_UNICODE_CONTROLS ||
 			value & IS_TEXT_UNICODE_ASCII16)
-			return fet_unicode_little;
+			return FileEncodingType::fet_unicode_little;
 
 		if (value & IS_TEXT_UNICODE_REVERSE_STATISTICS ||
 			value & IS_TEXT_UNICODE_REVERSE_CONTROLS ||
 			value & IS_TEXT_UNICODE_REVERSE_ASCII16)
-			return fet_unicode;
+			return FileEncodingType::fet_unicode;
 
 		if (value & IS_TEXT_UNICODE_NOT_UNICODE_MASK)
-			return fet_acsii;
+			return FileEncodingType::fet_acsii;
 	}
-	return fet_unknown;
+	return FileEncodingType::fet_unknown;
 }
 
 void TFile::ConvertFlags(UINT& input, UINT& open, UINT& security, UINT& creation)

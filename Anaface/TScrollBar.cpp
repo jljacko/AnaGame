@@ -35,7 +35,7 @@ void TScrollBar::onDraw(ID2D1RenderTarget* target)
 	target->FillRectangle(d_box, brush);
 
 	brush->SetColor(end_box);
-	if (scrollAlignment == so_horizontal)
+	if (scrollAlignment == ScrollOrient::so_horizontal)
 	{
 		d_box.right = d_box.left + BOX_SIZE;
 
@@ -72,7 +72,7 @@ bool TScrollBar::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
 	if (isContained(&point, &body_rect))
 	{
 		onFocus = true;
-		*mOut = positiveScroll;
+		*mOut = messageOutput::positiveScroll;
 		prevPoint = point;
 	}
 	else
@@ -90,7 +90,7 @@ void TScrollBar::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut)
 {
 	if (!onFocus) return;
 
-	if (scrollAlignment == so_horizontal)
+	if (scrollAlignment == ScrollOrient::so_horizontal)
 	{
 		float move = MovedContent(point.x - prevPoint.x);
 		parent->onScroll(move / widthFactor, 0);
@@ -128,7 +128,7 @@ void TScrollBar::Refresh(const D2D1_RECT_F& location, const D2D1_RECT_F& area)
 {
 	body_rect = location;
 
-	if (scrollAlignment == so_horizontal)
+	if (scrollAlignment == ScrollOrient::so_horizontal)
 	{
 		body_rect.top = body_rect.bottom - BOX_SIZE;
 

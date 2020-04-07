@@ -1,7 +1,7 @@
 #pragma once
 #include "TLayout.h"
 
-typedef enum DropMenuType
+typedef enum class  DropMenuType
 {
 	dmt_File,
 	dmt_Class,

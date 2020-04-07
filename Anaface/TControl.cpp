@@ -37,7 +37,7 @@ TControl::TControl(TrecPointer<DrawingBoard> db,TrecPointer<TArray<styleTable>> 
 	
 	boundsPreset = false;
 	location = D2D1_RECT_F{ 0.0f,0.0f,0.0f,0.0f };
-	mState = normal;
+	mState = messageState::normal;
 	overrideParent = true;
 	marginPriority = true;
 	dimensions = NULL;
@@ -53,7 +53,7 @@ TControl::TControl(TrecPointer<DrawingBoard> db,TrecPointer<TArray<styleTable>> 
 
 	contextMenu = NULL;
 	flyout = NULL;
-	shape = T_Rect;
+	shape =TShape::T_Rect;
 	fixHeight = fixWidth = false;
 	rightBorder = leftBorder = topBorder = bottomBorder = onFocus = onClickFocus = false;
 
@@ -66,7 +66,7 @@ TControl::TControl(TrecPointer<DrawingBoard> db,TrecPointer<TArray<styleTable>> 
 	TString logMessage;
 	logMessage.Format(L"CREATE %p TControl(TrecComPointer<ID2D1RenderTarget>,TrecPointer<TArray<styleTable>>, bool)", this);
 
-	Log(lt_memory, logMessage);
+	Log(LogType::lt_memory, logMessage);
 }
 
 /*
@@ -173,7 +173,7 @@ TControl::TControl(TControl & rCont)
 	TString logMessage;
 	logMessage.Format(L"CREATE %p TControl(TControl&)", this);
 
-	Log(lt_memory, logMessage);
+	Log(LogType::lt_memory, logMessage);
 }
 
 /*
@@ -201,7 +201,7 @@ TControl::TControl()
 	//parent = NULL;
 	boundsPreset = false;
 	location = D2D1_RECT_F{ 0.0f,0.0f,0.0f,0.0f };
-	mState = normal;
+	mState = messageState::normal;
 	overrideParent = true;
 	marginPriority = true;
 	dimensions = NULL;
@@ -214,7 +214,7 @@ TControl::TControl()
 	flyout = nullptr;
 	contextMenu = nullptr;
 	//PointerCase =TrecPointer<TControl>(this);
-	shape = T_Rect;
+	shape =TShape::T_Rect;
 	fixHeight = fixWidth = false;
 	rightBorder = leftBorder = topBorder = bottomBorder = onFocus = onClickFocus = false;
 
@@ -224,7 +224,7 @@ TControl::TControl()
 	TString logMessage;
 	logMessage.Format(L"CREATE %p TControl()", this);
 
-	Log(lt_memory, logMessage);
+	Log(LogType::lt_memory, logMessage);
 }
 
 /*
@@ -255,7 +255,7 @@ TControl::~TControl()
 	TString logMessage;
 	logMessage.Format(L"DELETE %p TControl", this);
 
-	Log(lt_memory, logMessage);
+	Log(LogType::lt_memory, logMessage);
 }
 
 void TControl::SetSelf(TrecPointer<TControl> self)
@@ -394,12 +394,12 @@ void TControl::storeInTML(TFile * ar, int childLevel, bool overrideChildren)
 
 	resetAttributeString(&appendable, childLevel + 1);
 
-	if (shape == T_Ellipse)
+	if (shape ==TShape::T_Ellipse)
 	{
 		appendable.Append(L"|Shape:Ellipse");
 		_WRITE_THE_STRING;
 	}
-	else if (shape == T_Rounded_Rect)
+	else if (shape ==TShape::T_Rounded_Rect)
 	{
 		appendable.Append(L"|Shape:RoundedRectangle");
 		_WRITE_THE_STRING;
@@ -414,30 +414,30 @@ void TControl::storeInTML(TFile * ar, int childLevel, bool overrideChildren)
 
 	if (border1.Get())
 	{
-		border1->storeInTML(ar, childLevel,normal);
+		border1->storeInTML(ar, childLevel, messageState::normal);
 	}
 	if (border2.Get())
 	{
-		border2->storeInTML(ar, childLevel,mouseHover);
+		border2->storeInTML(ar, childLevel, messageState::mouseHover);
 	}
 	if (border3.Get())
-		border3->storeInTML(ar, childLevel,mouseLClick);
+		border3->storeInTML(ar, childLevel, messageState::mouseLClick);
 	if (text1.Get())
 	{
-		text1->storeInTML(ar, childLevel,normal);
+		text1->storeInTML(ar, childLevel, messageState::normal);
 	}
 	if (text2.Get())
 	{
-		text2->storeInTML(ar, childLevel,mouseHover);
+		text2->storeInTML(ar, childLevel, messageState::mouseHover);
 	}
 	if (text3.Get())
-		text3->storeInTML(ar, childLevel,mouseLClick);
+		text3->storeInTML(ar, childLevel, messageState::mouseLClick);
 	if (content1.Get())
-		content1->storeInTML(ar, childLevel,normal);
+		content1->storeInTML(ar, childLevel, messageState::normal);
 	if (content2.Get())
-		content2->storeInTML(ar, childLevel,mouseHover);
+		content2->storeInTML(ar, childLevel, messageState::mouseHover);
 	if (content3.Get())
-		content3->storeInTML(ar, childLevel,mouseLClick);
+		content3->storeInTML(ar, childLevel, messageState::mouseLClick);
 
 
 	if (!overrideChildren)
@@ -482,11 +482,11 @@ bool TControl::onCreate(D2D1_RECT_F contain, TrecPointer<TWindowEngine> d3d)
 	 * be as large as the developer desires. The Snip will serve as the location to draw */
 	TrecPointer<TString> valpoint = attributes.retrieveEntry(TString(L"|VerticalScroll"));
 	if (valpoint.Get() && !valpoint->Compare(L"True") && !vScroll) // don't make a new one if one already exists
-		vScroll = new TScrollBar(*this, so_vertical);
+		vScroll = new TScrollBar(*this,ScrollOrient::so_vertical);
 
 	valpoint = attributes.retrieveEntry(TString(L"|HorizontalScroll"));
 	if(valpoint.Get() && !valpoint->Compare(L"True") && !hScroll)
-		hScroll = new TScrollBar(*this, so_horizontal);
+		hScroll = new TScrollBar(*this,ScrollOrient::so_horizontal);
 
 	checkMargin(contain);
 	checkHeightWidth(contain);
@@ -594,14 +594,14 @@ bool TControl::onCreate(D2D1_RECT_F contain, TrecPointer<TWindowEngine> d3d)
 	{
 		if (valpoint->Compare(L"Ellipse"))
 		{
-			shape = T_Ellipse;
+			shape =TShape::T_Ellipse;
 			ellipse.point = D2D1::Point2F((location.right + location.left) / 2, (location.top + location.bottom) / 2);
 			ellipse.radiusX = (location.right - location.left) / 2;
 			ellipse.radiusY = (location.bottom - location.top) / 2;
 		}
 		else if (valpoint->Compare(L"RoundedRectangle"))
 		{
-			shape = T_Rounded_Rect;
+			shape =TShape::T_Rounded_Rect;
 			float xRound = (location.left - location.right) / 10;
 			float yRound = (location.bottom - location.top) / 10;
 			valpoint = attributes.retrieveEntry(TString(L"|RoundedRectX"));
@@ -702,16 +702,16 @@ TrecPointer<styleTable> classy;
 	{
 		switch (shape)
 		{
-		case T_Rect:
+		case TShape::T_Rect:
 			border1->onCreate(location);
 			break;
-		case T_Rounded_Rect:
+		case TShape::T_Rounded_Rect:
 			border1->onCreate(roundedRect);
 			break;
-		case T_Ellipse:
+		case TShape::T_Ellipse:
 			border1->onCreate(ellipse);
 			break;
-		case T_Custom_shape:
+		case TShape::T_Custom_shape:
 			break;
 		}
 
@@ -739,16 +739,16 @@ TrecPointer<styleTable> classy;
 	{
 		switch (shape)
 		{
-		case T_Rect:
+		case TShape::T_Rect:
 			content1->onCreate(location);
 			break;
-		case T_Rounded_Rect:
+		case TShape::T_Rounded_Rect:
 			content1->onCreate(roundedRect);
 			break;
-		case T_Ellipse:
+		case TShape::T_Ellipse:
 			content1->onCreate(ellipse);
 			break;
-		case T_Custom_shape:
+		case TShape::T_Custom_shape:
 			break;
 		}
 
@@ -797,16 +797,16 @@ TrecPointer<styleTable> classy;
 	{
 		switch (shape)
 		{
-		case T_Rect:
+		case TShape::T_Rect:
 			border2->onCreate(location);
 			break;
-		case T_Rounded_Rect:
+		case TShape::T_Rounded_Rect:
 			border2->onCreate(roundedRect);
 			break;
-		case T_Ellipse:
+		case TShape::T_Ellipse:
 			border2->onCreate(ellipse);
 			break;
-		case T_Custom_shape:
+		case TShape::T_Custom_shape:
 			break;
 		}
 
@@ -831,16 +831,16 @@ TrecPointer<styleTable> classy;
 	{
 		switch (shape)
 		{
-		case T_Rect:
+		case TShape::T_Rect:
 			content2->onCreate(location);
 			break;
-		case T_Rounded_Rect:
+		case TShape::T_Rounded_Rect:
 			content2->onCreate(roundedRect);
 			break;
-		case T_Ellipse:
+		case TShape::T_Ellipse:
 			content2->onCreate(ellipse);
 			break;
-		case T_Custom_shape:
+		case TShape::T_Custom_shape:
 
 			break;
 		}
@@ -888,16 +888,16 @@ TrecPointer<styleTable> classy;
 	{
 		switch (shape)
 		{
-		case T_Rect:
+		case TShape::T_Rect:
 			border3->onCreate(location);
 			break;
-		case T_Rounded_Rect:
+		case TShape::T_Rounded_Rect:
 			border3->onCreate(roundedRect);
 			break;
-		case T_Ellipse:
+		case TShape::T_Ellipse:
 			border3->onCreate(ellipse);
 			break;
-		case T_Custom_shape:
+		case TShape::T_Custom_shape:
 			break;
 		}
 
@@ -922,16 +922,16 @@ TrecPointer<styleTable> classy;
 	{
 		switch (shape)
 		{
-		case T_Rect:
+		case TShape::T_Rect:
 			content3->onCreate(location);
 			break;
-		case T_Rounded_Rect:
+		case TShape::T_Rounded_Rect:
 			content3->onCreate(roundedRect);
 			break;
-		case T_Ellipse:
+		case TShape::T_Ellipse:
 			content3->onCreate(ellipse);
 			break;
-		case T_Custom_shape:
+		case TShape::T_Custom_shape:
 			break;
 		}
 
@@ -1336,7 +1336,7 @@ UCHAR * TControl::GetAnaGameType()
 
 void TControl::SetNormalMouseState()
 {
-	mState = normal;
+	mState = messageState::normal;
 }
 
 TDataArray<TString> TControl::GetMultiData(const TString& key)
@@ -1422,7 +1422,7 @@ void TControl::onDraw(TObject* obj)
 	}
 
 
-	if (mState == mouseLClick)
+	if (mState == messageState::mouseLClick)
 	{
 		if (content3.Get())
 			content3->onDraw(location);
@@ -1437,7 +1437,7 @@ void TControl::onDraw(TObject* obj)
 		else if (text1.Get())
 			text1->onDraw(location, obj);
 	}
-	else if (mState == mouseHover)
+	else if (mState == messageState::mouseHover)
 	{
 		if (content2.Get())
 			content2->onDraw(location);
@@ -2258,7 +2258,7 @@ bool TControl::onCreate(TMap<TString>* att, D2D1_RECT_F loc)
 
 /*
 * Method: TControl - onCreate2
-* Purpose: Sets up the mouse hover components based off of the available attributes
+* Purpose: Sets up themessageState::mouse hover components based off of the available attributes
 * Parameters: TMap<TString>* att - list of attributes
 *				RECT loc - the location ot use
 * Returns: bool - false
@@ -2919,7 +2919,7 @@ void TControl::CheckScroll()
 	if (needV)
 	{
 		if (!vScroll)
-			vScroll = new TScrollBar(*this, so_vertical);
+			vScroll = new TScrollBar(*this,ScrollOrient::so_vertical);
 		vScroll->Refresh(location, area);
 	}
 	else if (vScroll)
@@ -2931,7 +2931,7 @@ void TControl::CheckScroll()
 	if (needH)
 	{
 		if (!hScroll)
-			hScroll = new TScrollBar(*this, so_horizontal);
+			hScroll = new TScrollBar(*this,ScrollOrient::so_horizontal);
 		hScroll->Refresh(location, area);
 	}
 	else if (hScroll)
@@ -3198,7 +3198,7 @@ void TControl::addEventID(R_Message_Type rmt, int e_id)
 
 /*
 * Method: TControl - OnRButtonUp
-* Purpose: Allows Control to catch the Right Mouse button release event and act accordingly
+* Purpose: Allows Control to catch the RightmessageState::mouse button release event and act accordingly
 * Parameters: UINT nFlags - flags provided by MFC's Message system, not used
 *				TPoint point - the point on screen where the event occured
 *				messageOutput* mOut - allows controls to keep track of whether ohter controls have caught the event
@@ -3216,35 +3216,35 @@ afx_msg void TControl::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOu
 	}
 	if (!isContained(&point, &location))
 	{
-		mState = normal;
+		mState = messageState::normal;
 		return;
 	}
-	if (*mOut == positiveContinue)
+	if (*mOut == messageOutput::positiveContinue)
 	{
-		if (mState == mouseRClick)
+		if (mState ==messageState::mouseRClick)
 		{
-			*mOut = positiveContinueUpdate;
-			if (hasEvent(On_Right_Release))
+			*mOut = messageOutput::positiveContinueUpdate;
+			if (hasEvent(R_Message_Type::On_Right_Release))
 			{
 				// Set args
 				resetArgs();
-				args.eventType = On_Right_Release;
+				args.eventType = R_Message_Type::On_Right_Release;
 				args.point = point;
-				args.methodID = getEventID(On_Right_Release);
+				args.methodID = getEventID(R_Message_Type::On_Right_Release);
 				args.isClick = true;
 				args.isLeftClick = false;
 				args.control = this;
 
-				eventAr.push_back(EventID_Cred{ On_Right_Release, this });
+				eventAr.push_back(EventID_Cred{ R_Message_Type::On_Right_Release, this });
 			}
 		}
 	}
-	mState = mouseHover;
+	mState =messageState::mouseHover;
 }
 
 /*
 * Method: TControl - OnLButtonDown
-* Purpose: Allows Control to catch the Left Mouse Button Down event and act accordingly
+* Purpose: Allows Control to catch the LeftmessageState::mouse Button Down event and act accordingly
 * Parameters: UINT nFlags - flags provided by MFC's Message system, not used
 *				TPoint point - the point on screen where the event occured
 *				messageOutput* mOut - allows controls to keep track of whether ohter controls have caught the event
@@ -3258,13 +3258,13 @@ afx_msg void TControl::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* m
 
 	if (!isContained(&point, &location))
 	{
-		if (mState != normal)
+		if (mState != messageState::normal)
 		{
-			mState = normal;
-			*mOut = negativeUpdate;
+			mState = messageState::normal;
+			*mOut = messageOutput::negativeUpdate;
 		}
 		else
-			*mOut = negative;
+			*mOut = messageOutput::negative;
 		return;
 	}
 
@@ -3274,41 +3274,41 @@ afx_msg void TControl::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* m
 			children.ElementAt(c)->OnLButtonDown(nFlags, point, mOut,eventAr, clickedControls);
 	}
 
-	if (*mOut == positiveOverride || *mOut == positiveOverrideUpdate)
+	if (*mOut == messageOutput::positiveOverride || *mOut == messageOutput::positiveOverrideUpdate)
 	{
-		mState = normal;
+		mState = messageState::normal;
 		return;
 	}
 
-	if (mState != mouseLClick)
+	if (mState !=messageState::mouseLClick)
 	{
 		if (overrideParent)
-			*mOut = positiveOverrideUpdate;
+			*mOut = messageOutput::positiveOverrideUpdate;
 		else
-			*mOut = positiveContinueUpdate;
+			*mOut = messageOutput::positiveContinueUpdate;
 	}
-	else if (*mOut != positiveContinueUpdate && *mOut != positiveOverrideUpdate && *mOut != negativeUpdate)
+	else if (*mOut != messageOutput::positiveContinueUpdate && *mOut != messageOutput::positiveOverrideUpdate && *mOut != messageOutput::negativeUpdate)
 	{
 		if (overrideParent)
-			*mOut = positiveOverride;
+			*mOut = messageOutput::positiveOverride;
 		else
-			*mOut = positiveContinue;
+			*mOut = messageOutput::positiveContinue;
 	}
-	mState = mouseLClick;
+	mState =messageState::mouseLClick;
 	clickedControls.push_back(this);
 	
-	if (hasEvent(On_Click))
+	if (hasEvent(R_Message_Type::On_Click))
 	{
 		// Set args
 		resetArgs();
-		args.eventType = On_Click;
+		args.eventType = R_Message_Type::On_Click;
 		args.point = point;
-		args.methodID = getEventID(On_Click);
+		args.methodID = getEventID(R_Message_Type::On_Click);
 		args.isClick = true;
 		args.isLeftClick = true;
 		args.control = this;
 
-		eventAr.push_back(EventID_Cred{ On_Click,this });
+		eventAr.push_back(EventID_Cred{ R_Message_Type::On_Click,this });
 	}
 
 
@@ -3331,21 +3331,21 @@ afx_msg void TControl::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* m
 		children.ElementAt(c)->child->OnLButtonDown(nFlags, point, mOut);
 		if (*mOut == negative)
 			continue;
-		if (*mOut == positiveOverride || *mOut == positiveOverrideUpdate)
+		if (*mOut == messageOutput::positiveOverride || *mOut == messageOutput::positiveOverrideUpdate)
 			return;
 	}
-	if (*mOut == positiveContinue)
+	if (*mOut == messageOutput::positiveContinue)
 	{
-		if (mState != mouseLClick)
-			*mOut = positiveContinueUpdate;
+		if (mState !=messageState::mouseLClick)
+			*mOut = messageOutput::positiveContinueUpdate;
 		
 	}
-	mState = mouseLClick;*/
+	mState =messageState::mouseLClick;*/
 }
 
 /*
 * Method: TControl - OnRButtonDown
-* Purpose: Allows Control to catch the Right Mouse button down event and act accordingly
+* Purpose: Allows Control to catch the RightmessageState::mouse button down event and act accordingly
 * Parameters: UINT nFlags - flags provided by MFC's Message system, not used
 *				TPoint point - the point on screen where the event occured
 *				messageOutput* mOut - allows controls to keep track of whether ohter controls have caught the event
@@ -3360,54 +3360,54 @@ afx_msg void TControl::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* m
 
 	if (!isContained(&point, &location))
 	{
-		if (mState != normal)
+		if (mState != messageState::normal)
 		{
-			mState = normal;
-			*mOut = negativeUpdate;
+			mState = messageState::normal;
+			*mOut = messageOutput::negativeUpdate;
 		}
 		else
-			*mOut = negative;
+			*mOut = messageOutput::negative;
 		return;
 	}
 	for (int c = 0; c < children.Count();c++)
 	{
 		children.ElementAt(c)->OnRButtonDown(nFlags, point, mOut,eventAr);
-		if (*mOut == negative)
+		if (*mOut == messageOutput::negative)
 			continue;
-		if (*mOut == positiveOverride || *mOut == positiveOverrideUpdate)
+		if (*mOut == messageOutput::positiveOverride || *mOut == messageOutput::positiveOverrideUpdate)
 			return;
 	}
-	if (*mOut == positiveContinue || *mOut == positiveContinueUpdate)
+	if (*mOut == messageOutput::positiveContinue || *mOut == messageOutput::positiveContinueUpdate)
 	{
-		if (mState != mouseRClick)
-			*mOut = positiveContinueUpdate;
+		if (mState !=messageState::mouseRClick)
+			*mOut = messageOutput::positiveContinueUpdate;
 		
 	}
-	mState = mouseRClick;
+	mState =messageState::mouseRClick;
 
-	if (hasEvent(On_Right_Click))
+	if (hasEvent(R_Message_Type::On_Right_Click))
 	{	
 		// Set args
 		resetArgs();
-		args.eventType = On_Right_Click;
+		args.eventType = R_Message_Type::On_Right_Click;
 		args.point = point;
-		args.methodID = getEventID(On_Right_Click);
+		args.methodID = getEventID(R_Message_Type::On_Right_Click);
 		args.isClick = true;
 		args.isLeftClick = false;
 		args.control = this;
-		eventAr.push_back(EventID_Cred{ On_Right_Click,this });
+		eventAr.push_back(EventID_Cred{ R_Message_Type::On_Right_Click,this });
 	}
 
 	if (contextMenu)
 	{
-		contextMenu->Show(appear_onRightClick);
+		contextMenu->Show(appearCondition::appear_onRightClick);
 	}
 
 }
 
 /*
 * Method: TControl - OnMouseMove
-* Purpose: Allows Controls to catch the Mouse Move event and deduce if the cursor has hovered over it
+* Purpose: Allows Controls to catch themessageState::mouse Move event and deduce if the cursor has hovered over it
 * Parameters: UINT nFlags - flags provided by MFC's Message system, not used
 *				TPoint point - the point on screen where the event occured
 *				messageOutput* mOut - allows controls to keep track of whether ohter controls have caught the event
@@ -3421,16 +3421,16 @@ afx_msg void TControl::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOu
 
 	if (!isContained(&point, &location))
 	{
-		if (mState != normal)
+		if (mState != messageState::normal)
 		{
-			*mOut = negativeUpdate;
+			*mOut = messageOutput::negativeUpdate;
 		}
 		else
-			*mOut = negative;
+			*mOut = messageOutput::negative;
 		return;
 	}
 
-	*mOut = positiveContinueUpdate;
+	*mOut = messageOutput::positiveContinueUpdate;
 
 	for (int c = 0; c < children.Count();c++)
 	{
@@ -3438,37 +3438,37 @@ afx_msg void TControl::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOu
 			children.ElementAt(c)->OnMouseMove(nFlags, point, mOut, eventAr);
 	}
 
-	if (*mOut == positiveOverride || *mOut == positiveOverrideUpdate)
+	if (*mOut == messageOutput::positiveOverride || *mOut == messageOutput::positiveOverrideUpdate)
 	{
 		return;
 	}
 
-	if (mState != mouseHover)
+	if (mState !=messageState::mouseHover)
 	{
 		if (overrideParent)
-			*mOut = positiveOverrideUpdate;
+			*mOut = messageOutput::positiveOverrideUpdate;
 		else
-			*mOut = positiveContinueUpdate;
+			*mOut = messageOutput::positiveContinueUpdate;
 	}
-	else if (*mOut != positiveContinueUpdate && *mOut != positiveOverrideUpdate && *mOut != negativeUpdate)
+	else if (*mOut != messageOutput::positiveContinueUpdate && *mOut != messageOutput::positiveOverrideUpdate && *mOut != messageOutput::negativeUpdate)
 	{
 		if (overrideParent)
-			*mOut = positiveOverride;
+			*mOut = messageOutput::positiveOverride;
 		else
-			*mOut = positiveContinue;
+			*mOut = messageOutput::positiveContinue;
 	}
-	if(mState != mouseLClick)
-		mState = mouseHover;
+	if(mState !=messageState::mouseLClick)
+		mState =messageState::mouseHover;
 
-	if (hasEvent(On_Hover))
+	if (hasEvent(R_Message_Type::On_Hover))
 	{
 		// Set args
 		resetArgs();
-		args.eventType = On_Hover;
+		args.eventType = R_Message_Type::On_Hover;
 		args.point = point;
-		args.methodID = getEventID(On_Hover);
+		args.methodID = getEventID(R_Message_Type::On_Hover);
 		args.control = this;
-		eventAr.push_back(EventID_Cred{ On_Hover,this });
+		eventAr.push_back(EventID_Cred{ R_Message_Type::On_Hover,this });
 	}
 }
 
@@ -3532,33 +3532,33 @@ afx_msg void TControl::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOu
 		TControl* tc_temp = children.ElementAt(c).Get();
 		if(tc_temp)
 		tc_temp->OnLButtonUp(nFlags, point, mOut,eventAr);
-		if (*mOut != negative && *mOut != negativeUpdate)
+		if (*mOut != messageOutput::negative && *mOut != messageOutput::negativeUpdate)
 			break;
 	}
 	if (!isContained(&point, &location))
 	{
-		mState = normal;
-		*mOut = negative;
+		mState = messageState::normal;
+		*mOut = messageOutput::negative;
 		return;
 	}
 
-	*mOut = positiveContinue;
-	if (mState == mouseLClick)
-		*mOut = positiveContinueUpdate;
+	*mOut = messageOutput::positiveContinue;
+	if (mState ==messageState::mouseLClick)
+		*mOut = messageOutput::positiveContinueUpdate;
 
-	mState = mouseHover;
+	mState =messageState::mouseHover;
 
-	if (hasEvent(On_Click_Release))
+	if (hasEvent(R_Message_Type::On_Click_Release))
 	{
 		// Set args
 		resetArgs();
-		args.eventType = On_Click_Release;
+		args.eventType = R_Message_Type::On_Click_Release;
 		args.point = point;
-		args.methodID = getEventID(On_Click_Release);
+		args.methodID = getEventID(R_Message_Type::On_Click_Release);
 		args.isClick = true;
 		args.isLeftClick = true;
 		args.control = this;
-		eventAr.push_back(EventID_Cred{ On_Click_Release, this });
+		eventAr.push_back(EventID_Cred{ R_Message_Type::On_Click_Release, this });
 	}
 }
 
@@ -3586,15 +3586,15 @@ afx_msg bool TControl::OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlag
 
 		if (tcCall && tcCall->OnChar(fromChar, nChar, nRepCnt, nFlags, mOut, eventAr))
 		{
-			if (hasEvent(On_Char))
+			if (hasEvent(R_Message_Type::On_Char))
 			{
 				resetArgs();
-				args.eventType = On_Char;
+				args.eventType = R_Message_Type::On_Char;
 				args.control = this;
-				args.methodID = getEventID(On_Char);
+				args.methodID = getEventID(R_Message_Type::On_Char);
 				args.type = static_cast<WCHAR>(LOWORD(nChar));
 				args.control = this;
-				eventAr.push_back(EventID_Cred{ On_Char, this });
+				eventAr.push_back(EventID_Cred{ R_Message_Type::On_Char, this });
 			}
 
 			return true;
@@ -3644,7 +3644,7 @@ afx_msg void TControl::Builder_OnLButtonDown(UINT flags, TPoint point, TControl*
 			continue;
 		TControl* tc = children.ElementAt(c).Get();
 		tc->Builder_OnLButtonDown(flags, point, mOut, o);
-		if (*o != negative && *o != negativeUpdate)
+		if (*o != messageOutput::negative && *o != messageOutput::negativeUpdate)
 		{
 			onFocus = onClickFocus = leftBorder = rightBorder = topBorder = bottomBorder = false; // other focus flags rendered false by LButtonUp method
 			return;
@@ -3653,7 +3653,7 @@ afx_msg void TControl::Builder_OnLButtonDown(UINT flags, TPoint point, TControl*
 	
 	if (isContained(&point, &location))
 	{
-		*o = positiveOverrideUpdate;
+		*o = messageOutput::positiveOverrideUpdate;
 		onClickFocus = true;
 		onFocus = true;
 		*mOut = (this);
@@ -3661,11 +3661,11 @@ afx_msg void TControl::Builder_OnLButtonDown(UINT flags, TPoint point, TControl*
 	else
 	{
 		onClickFocus = onFocus = leftBorder = rightBorder = topBorder = bottomBorder = false;
-		*o = negativeUpdate;
+		*o = messageOutput::negativeUpdate;
 	}
 	if (abs((double)point.x - (double)location.left) < 5)
 	{
-		*o = positiveOverrideUpdate;
+		*o = messageOutput::positiveOverrideUpdate;
 		onClickFocus = true;
 		onFocus = true;
 		leftBorder = true;
@@ -3676,7 +3676,7 @@ afx_msg void TControl::Builder_OnLButtonDown(UINT flags, TPoint point, TControl*
 	}
 	if (abs((double)point.x - (double)location.right) < 5)
 	{
-		*o = positiveOverrideUpdate;
+		*o = messageOutput::positiveOverrideUpdate;
 		onClickFocus = true;
 		onFocus = true;
 		rightBorder = true;
@@ -3687,7 +3687,7 @@ afx_msg void TControl::Builder_OnLButtonDown(UINT flags, TPoint point, TControl*
 	}
 	if (abs((double)point.y - (double)location.top) < 5)
 	{
-		*o = positiveOverrideUpdate;
+		*o = messageOutput::positiveOverrideUpdate;
 		onClickFocus = true;
 		onFocus = true;
 		rightBorder = false;
@@ -3698,7 +3698,7 @@ afx_msg void TControl::Builder_OnLButtonDown(UINT flags, TPoint point, TControl*
 	}
 	if (abs((double)point.y - (double)location.bottom) < 5)
 	{
-		*o = positiveOverrideUpdate;
+		*o = messageOutput::positiveOverrideUpdate;
 		onClickFocus = true;
 		onFocus = true;
 		rightBorder = false;
@@ -3733,7 +3733,7 @@ afx_msg void TControl::Builder_OnMouseMove(UINT flags, TPoint cp, TControl** mOu
 				//const TControlHolder** hold = &PointerCase;
 				//point->Builder_OnMouseMove(flags, cp, mOut, location, o);
 			}
-			if (*o == negative && *o == negativeUpdate) // then it is positive
+			if (*o == messageOutput::negative && *o == messageOutput::negativeUpdate) // then it is positive
 				return;
 		}
 	}
@@ -3749,7 +3749,7 @@ afx_msg void TControl::Builder_OnMouseMove(UINT flags, TPoint cp, TControl** mOu
 			location.left = cp.x;
 			//if (location.left > location.right)
 				//switchLongs(location.left, location.right);
-			*o = positiveOverrideUpdate;
+			*o = messageOutput::positiveOverrideUpdate;
 
 
 			if (content1.Get())
@@ -3788,7 +3788,7 @@ afx_msg void TControl::Builder_OnMouseMove(UINT flags, TPoint cp, TControl** mOu
 			location.right = cp.x;
 			//if (location.left > location.right)
 				//switchLongs(location.left, location.right);
-			*o = positiveOverrideUpdate;
+			*o = messageOutput::positiveOverrideUpdate;
 
 			if (content1.Get())
 			{
@@ -3827,7 +3827,7 @@ afx_msg void TControl::Builder_OnMouseMove(UINT flags, TPoint cp, TControl** mOu
 			///if (location.top > location.bottom)
 				//switchLongs(location.top, location.bottom);
 
-			*o = positiveOverrideUpdate;
+			*o = messageOutput::positiveOverrideUpdate;
 
 			if (content1.Get())
 			{
@@ -3864,7 +3864,7 @@ afx_msg void TControl::Builder_OnMouseMove(UINT flags, TPoint cp, TControl** mOu
 			//if (location.top > location.bottom)
 				//switchLongs(location.top, location.bottom);
 
-			*o = positiveOverrideUpdate;
+			*o = messageOutput::positiveOverrideUpdate;
 
 
 			if (content1.Get())
@@ -3957,7 +3957,7 @@ TBorder::TBorder(TrecPointer<DrawingBoard>rtp, TControl*tc)
 	TString logMessage;
 	logMessage.Format(L"CREATE %p TBorder(TrecComPointer<ID2D1RenderTarget>, TControl*)", this);
 
-	Log(lt_memory, logMessage);
+	Log(LogType::lt_memory, logMessage);
 }
 
 /*
@@ -3989,7 +3989,7 @@ TBorder::TBorder(TrecPointer<TBorder> & rBord,TControl* tc_holder)
 	TString logMessage;
 	logMessage.Format(L"CREATE %p TBorder(TrecPointer<TBorder>&,TControl*)", this);
 
-	Log(lt_memory, logMessage);
+	Log(LogType::lt_memory, logMessage);
 }
 
 /*
@@ -4006,7 +4006,7 @@ TBorder::TBorder()
 	TString logMessage;
 	logMessage.Format(L"CREATE %p TBorder()", this);
 
-	Log(lt_memory, logMessage);
+	Log(LogType::lt_memory, logMessage);
 }
 
 /*
@@ -4025,7 +4025,7 @@ TBorder::~TBorder()
 	TString logMessage;
 	logMessage.Format(L"DELETE %p TBorder", this);
 
-	Log(lt_memory, logMessage);
+	Log(LogType::lt_memory, logMessage);
 }
 
 /*
@@ -4043,7 +4043,7 @@ bool TBorder::onCreate(D2D1_RECT_F location)
 
 
 	TrecComPointer<ID2D1GradientStopCollection>::TrecComHolder stopCollRaw;
-	shape = T_Rect;
+	shape =TShape::T_Rect;
 	loci.bottom = location.bottom;
 	loci.left = location.left;
 	loci.right = location.right;
@@ -4065,7 +4065,7 @@ bool TBorder::onCreate(D2D1_ELLIPSE e)
 {
 
 
-	shape = T_Ellipse;
+	shape =TShape::T_Ellipse;
 	if (!drawingBoard.Get())
 		return false;
 	loci.left = e.point.x - e.radiusX;
@@ -4087,7 +4087,7 @@ bool TBorder::onCreate(D2D1_ELLIPSE e)
 bool TBorder::onCreate(D2D1_ROUNDED_RECT rr)
 {
 
-	shape = T_Rounded_Rect;
+	shape =TShape::T_Rounded_Rect;
 	if (!drawingBoard.Get())
 		return false;
 	roundedRect = rr;
@@ -4121,20 +4121,20 @@ void TBorder::onDraw(D2D1_RECT_F& f_loc)
 
 		switch(shape)
 		{
-		case T_Rect:
+		case TShape::T_Rect:
 			brush->DrawRectangle(loci, thickness);
 			break;
-		case T_Rounded_Rect:
+		case TShape::T_Rounded_Rect:
 			brush->DrawRoundedRectangle(roundedRect, thickness);
 			break;
-		case T_Ellipse:
+		case TShape::T_Ellipse:
 			circle.point.x = (f_loc.right + f_loc.left) / 2;
 			circle.point.y = (f_loc.bottom + f_loc.top) / 2;
 			circle.radiusX = f_loc.right - f_loc.left;
 			circle.radiusY = f_loc.bottom - f_loc.top;
 			brush->DrawEllipse(circle, thickness);
 			break;
-		case T_Custom_shape:
+		case TShape::T_Custom_shape:
 			break;
 		}
 		
@@ -4144,16 +4144,16 @@ void TBorder::onDraw(D2D1_RECT_F& f_loc)
 			{
 				switch (shape)
 				{
-				case T_Rect:
+				case TShape::T_Rect:
 					rt->DrawRectangle(&loci, BuilderFocusBrush.Get(), 10.0);
 					break;
-				case T_Rounded_Rect:
+				case TShape::T_Rounded_Rect:
 					rt->DrawRoundedRectangle(&roundedRect, BuilderFocusBrush.Get(), 10.0);
 					break;
-				case T_Ellipse:
+				case TShape::T_Ellipse:
 					rt->DrawEllipse(&circle, BuilderFocusBrush.Get(), 10.0);
 					break;
-				case T_Custom_shape:
+				case TShape::T_Custom_shape:
 					break;
 				}
 			}
@@ -4161,17 +4161,17 @@ void TBorder::onDraw(D2D1_RECT_F& f_loc)
 			{
 				switch (shape)
 				{
-				case T_Rect:
+				case TShape::T_Rect:
 
 					rt->DrawRectangle(&loci, brush.Get(), thickness);
 					break;
-				case T_Rounded_Rect:
+				case TShape::T_Rounded_Rect:
 					rt->DrawRoundedRectangle(&roundedRect, brush.Get(), thickness);
 					break;
-				case T_Ellipse:
+				case TShape::T_Ellipse:
 					rt->DrawEllipse(&circle, brush.Get(), thickness);
 					break;
-				case T_Custom_shape:
+				case TShape::T_Custom_shape:
 					break;
 				}
 			}
@@ -4365,13 +4365,13 @@ int TBorder::storeInTML(TFile * ar, int childLevel,messageState ms)
 	ar->WriteString(writable);
 	switch (ms)
 	{
-	case normal:
+	case messageState::normal:
 		ar->WriteString(L"|BorderThickness:");
 		break;
-	case mouseHover:
+	case messageState::mouseHover:
 		ar->WriteString(L"|HoverBorderThickness:");
 		break;
-	case mouseLClick:
+	case messageState::mouseLClick:
 		ar->WriteString(L"|ClickBorderThickness:");
 		break;
 	}
@@ -4385,13 +4385,13 @@ int TBorder::storeInTML(TFile * ar, int childLevel,messageState ms)
 
 	switch (ms)
 	{
-	case normal:
+	case messageState::normal:
 		writable.Append(L"|BorderColor:");
 		break;
-	case mouseHover:
+	case messageState::mouseHover:
 		writable.Append(L"|HoverBorderColor:");
 		break;
-	case mouseLClick:
+	case messageState::mouseLClick:
 		writable.Append(L"|ClickBorderColor:");
 	}
 	ar->WriteString(writable);
@@ -4437,7 +4437,7 @@ TText::TText(TrecPointer<DrawingBoard>rtp,TControl* tc)
 	TString logMessage;
 	logMessage.Format(L"CREATE %p TText(TrecComPointer<ID2D1RenderTarget>, TControl*)", this);
 
-	Log(lt_memory, logMessage);
+	Log(LogType::lt_memory, logMessage);
 }
 
 /*
@@ -4480,7 +4480,7 @@ TText::TText(TrecPointer<TText> & rText, TControl* tc_holder)
 	TString logMessage;
 	logMessage.Format(L"CREATE %p TText(TrecPointer<TText> &, TControl*)", this);
 
-	Log(lt_memory, logMessage);
+	Log(LogType::lt_memory, logMessage);
 }
 
 /*
@@ -4506,7 +4506,7 @@ TText::TText()
 	TString logMessage;
 	logMessage.Format(L"CREATE %p TText()", this);
 
-	Log(lt_memory, logMessage);
+	Log(LogType::lt_memory, logMessage);
 }
 
 /*
@@ -4521,7 +4521,7 @@ TText::~TText()
 	TString logMessage;
 	logMessage.Format(L"DELETE %p TText - %S", this, this->text);
 
-	Log(lt_memory, logMessage);
+	Log(LogType::lt_memory, logMessage);
 
 	writeFact.Nullify();
 
@@ -5016,13 +5016,13 @@ int TText::storeInTML(TFile * ar, int childLevel,messageState ms)
 	ar->WriteString(writable);
 	switch (ms)
 	{
-	case normal:
+	case messageState::normal:
 		ar->WriteString(L"|Caption:");
 		break;
-	case mouseHover:
+	case messageState::mouseHover:
 		ar->WriteString(L"|HoverCaption:");
 		break;
-	case mouseLClick:
+	case messageState::mouseLClick:
 		ar->WriteString(L"|ClickCaption:");
 	}
 
@@ -5033,13 +5033,13 @@ int TText::storeInTML(TFile * ar, int childLevel,messageState ms)
 
 	switch (ms)
 	{
-	case normal:
+	case messageState::normal:
 		ar->WriteString(L"|CaptionLocale:");
 		break;
-	case mouseHover:
+	case messageState::mouseHover:
 		ar->WriteString(L"|HoverCaptionLocale:");
 		break;
-	case mouseLClick:
+	case messageState::mouseLClick:
 		ar->WriteString(L"|ClickCaptionLocale:");
 	}
 	ar->WriteString(locale);
@@ -5048,13 +5048,13 @@ int TText::storeInTML(TFile * ar, int childLevel,messageState ms)
 	ar->WriteString(writable);
 	switch (ms)
 	{
-	case normal:
+	case messageState::normal:
 		ar->WriteString(L"|Font:");
 		break;
-	case mouseHover:
+	case messageState::mouseHover:
 		ar->WriteString(L"|HoverFont:");
 		break;
-	case mouseLClick:
+	case messageState::mouseLClick:
 		ar->WriteString(L"|ClickFont:");
 	}
 
@@ -5065,13 +5065,13 @@ int TText::storeInTML(TFile * ar, int childLevel,messageState ms)
 	ar->WriteString(writable);
 	switch (ms)
 	{
-	case normal:
+	case messageState::normal:
 		ar->WriteString(L"|FontColor:");
 		break;
-	case mouseHover:
+	case messageState::mouseHover:
 		ar->WriteString(L"|HoverFontColor:");
 		break;
-	case mouseLClick:
+	case messageState::mouseLClick:
 		ar->WriteString(L"|ClickFontColor:");
 	}
 
@@ -5081,13 +5081,13 @@ int TText::storeInTML(TFile * ar, int childLevel,messageState ms)
 	ar->WriteString(writable);
 	switch (ms)
 	{
-	case normal:
+	case messageState::normal:
 		ar->WriteString(L"|FontSize:");
 		break;
-	case mouseHover:
+	case messageState::mouseHover:
 		ar->WriteString(L"|HoverFontSize:");
 		break;
-	case mouseLClick:
+	case messageState::mouseLClick:
 		ar->WriteString(L"|ClickFontSize:");
 	}
 
@@ -5097,13 +5097,13 @@ int TText::storeInTML(TFile * ar, int childLevel,messageState ms)
 	ar->WriteString(writable);
 	switch (ms)
 	{
-	case normal:
+	case messageState::normal:
 		ar->WriteString(L"|VerticalAlignment:");
 		break;
-	case mouseHover:
+	case messageState::mouseHover:
 		ar->WriteString(L"|HoverVerticalAlignment:");
 		break;
-	case mouseLClick:
+	case messageState::mouseLClick:
 		ar->WriteString(L"|ClickVerticalAlignment:");
 	}
 	switch (verticalAlignment)
@@ -5120,13 +5120,13 @@ int TText::storeInTML(TFile * ar, int childLevel,messageState ms)
 	ar->WriteString(writable);
 	switch (ms)
 	{
-	case normal:
+	case messageState::normal:
 		ar->WriteString(L"|HorizontalAlignment:");
 		break;
-	case mouseHover:
+	case messageState::mouseHover:
 		ar->WriteString(L"|HoverHorizontalAlignment:");
 		break;
-	case mouseLClick:
+	case messageState::mouseLClick:
 		ar->WriteString(L"|ClickHorizontalAlignment:");
 	}
 	switch (horizontalAlignment)
@@ -5179,7 +5179,7 @@ TContent::TContent(TrecPointer<DrawingBoard>rtp, TControl* tc)
 	TString logMessage;
 	logMessage.Format(L"CREATE %p TContent(TrecComPointer<ID2D1RenderTarget>, TControl*)", this);
 
-	Log(lt_memory, logMessage);
+	Log(LogType::lt_memory, logMessage);
 }
 
 /*
@@ -5196,7 +5196,7 @@ TContent::TContent()
 	TString logMessage;
 	logMessage.Format(L"CREATE %p TContent()", this);
 
-	Log(lt_memory, logMessage);
+	Log(LogType::lt_memory, logMessage);
 }
 
 /*
@@ -5229,7 +5229,7 @@ TContent::TContent(TrecPointer<TContent> &rCont, TControl* tc_holder)
 	TString logMessage;
 	logMessage.Format(L"CREATE %p TContent(TrecPointer<TContent> &rCont, TControl*)", this);
 
-	Log(lt_memory, logMessage);
+	Log(LogType::lt_memory, logMessage);
 }
 
 /*
@@ -5246,7 +5246,7 @@ TContent::~TContent()
 	TString logMessage;
 	logMessage.Format(L"DELETE %p TContent", this);
 
-	Log(lt_memory, logMessage);
+	Log(LogType::lt_memory, logMessage);
 }
 
 /*
@@ -5357,22 +5357,22 @@ void TContent::onDraw(D2D1_RECT_F& f_snip)
 	{
 		switch (shape)
 		{
-		case T_Rect:
+		case TShape::T_Rect:
 			brush->FillRectangle(f_snip);
 			break;
-		case T_Rounded_Rect:
+		case TShape::T_Rounded_Rect:
 			roundedRect.rect = f_snip;
 			brush->FillRoundedRectangle(roundedRect);
 
 			break;
-		case T_Ellipse:
+		case TShape::T_Ellipse:
 			circle.point.x = (f_snip.right + f_snip.left) / 2;
 			circle.point.y = (f_snip.bottom + f_snip.top) / 2;
 			circle.radiusX = f_snip.right - f_snip.left;
 			circle.radiusY = f_snip.bottom - f_snip.top;
 			brush->FillEllipse(circle);
 			break;
-		case T_Custom_shape:
+		case TShape::T_Custom_shape:
 			break;
 		}
 	}
@@ -5595,10 +5595,10 @@ int TContent::storeInTML(TFile * ar, int childLevel,messageState ms)
 	//case normal:
 	//	ar->WriteString(L"|ContentThickness:");
 	//	break;
-	//case mouseHover:
+	//casemessageState::mouseHover:
 	//	ar->WriteString(L"|HoverContentThickness:");
 	//	break;
-	//case mouseLClick:
+	//casemessageState::mouseLClick:
 	//	ar->WriteString(L"|ClickContentThickness:");
 	//}
 
@@ -5611,10 +5611,10 @@ int TContent::storeInTML(TFile * ar, int childLevel,messageState ms)
 	//case normal:
 	//	ar->WriteString(L"|ContentColor:");
 	//	break;
-	//case mouseHover:
+	//casemessageState::mouseHover:
 	//	ar->WriteString(L"|HoverContentColor:");
 	//	break;
-	//case mouseLClick:
+	//casemessageState::mouseLClick:
 	//	ar->WriteString(L"|ClickContentColor:");
 	//}
 
@@ -5817,7 +5817,7 @@ void TContainer::OnLButtonUp(UINT u, TPoint cp, messageOutput * mo, TDataArray<E
 
 /*
 * Method: TContainer - OnLButtonDown
-* Purpose: Allows Control to catch the Left Mouse Button Down event and act accordingly
+* Purpose: Allows Control to catch the LeftmessageState::mouse Button Down event and act accordingly
 * Parameters: UINT u - flags provided by MFC's Message system, not used
 *				TPoint point - the point on screen where the event occured
 *				messageOutput* mOut - allows controls to keep track of whether ohter controls have caught the event
@@ -5834,7 +5834,7 @@ void TContainer::OnLButtonDown(UINT u, TPoint cp, messageOutput* mo, TDataArray<
 
 /*
 * Method: TContainer - OnMouseMove
-* Purpose: Allows Controls to catch the Mouse Move event and deduce if the cursor has hovered over it
+* Purpose: Allows Controls to catch themessageState::mouse Move event and deduce if the cursor has hovered over it
 * Parameters: UINT u - flags provided by MFC's Message system, not used
 *				TPoint point - the point on screen where the event occured
 *				messageOutput* mOut - allows controls to keep track of whether ohter controls have caught the event

@@ -535,12 +535,12 @@ bool TString::ConvertToColor(D2D1_COLOR_F & color, ColorFormat& cf)
 
 		if (c == 7) // we have cform_hex
 		{
-			cf = cform_hex;
+			cf = ColorFormat::cform_hex;
 			value = value | 255; // Make alpha completly transparent
 		}
 		else if (c == 9) // we have cform_hexa
 		{
-			cf = cform_hexa;
+			cf = ColorFormat::cform_hexa;
 		}
 		else // Supposed to be hex, but invalid length encountered
 		{
@@ -578,12 +578,12 @@ bool TString::ConvertToColor(D2D1_COLOR_F & color, ColorFormat& cf)
 			if (!values->at(3).GetSize() || values->at(3).ConvertToFloat(&tempColor.a))
 				works = false;
 			else
-				cf = cform_ana_a;
+				cf = ColorFormat::cform_ana_a;
 		}
 		else if (works)
 		{
 			tempColor.a = 1.0f;
-			cf = cform_ana;
+			cf = ColorFormat::cform_ana;
 		}
 
 		if (works)
@@ -622,12 +622,12 @@ bool TString::ConvertToColor(D2D1_COLOR_F & color, ColorFormat& cf)
 		// Try to see if alpha is available
 		if (values->Size() > 4 && values->at(4).GetSize() && !values->at(4).ConvertToFloat(&color.a))
 		{
-			cf = cform_rgba;
+			cf = ColorFormat::cform_rgba;
 			return true;
 		}
 
 		// Alpha didn't work, set to default of 1.0f
-		cf = cform_rgb;
+		cf = ColorFormat::cform_rgb;
 		color.a = 1.0f;
 		return true;
 
@@ -684,12 +684,12 @@ bool TString::ConvertToColor(D2D1_COLOR_F & color, ColorFormat& cf)
 		// Try to see if alpha is available
 		if (values->Size() > 4 && !values->at(4).ConvertToFloat(&color.a))
 		{
-			cf = cform_hsla;
+			cf = ColorFormat::cform_hsla;
 			return true;
 		}
 
 		// Alpha didn't work, set to default of 1.0f
-		cf = cform_hsl;
+		cf = ColorFormat::cform_hsl;
 		color.a = 1.0f;
 		return true;
 	}

@@ -13,7 +13,7 @@
 * ColorFormat
 * Used to keep track of how the color originally was presented
 */
-typedef enum _TREC_LIB_DLL ColorFormat
+typedef enum class _TREC_LIB_DLL ColorFormat
 {
 	cform_hex,
 	cform_hexa,

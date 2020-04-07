@@ -217,7 +217,7 @@ void MainLayoutHandler::HandleEvents(TDataArray<EventID_Cred>& eventAr)
 		{
 			(this->*calls[ea_id])(cont, ea);
 		}
-		else if (ea_id == -1 && ea.control == body.Get() && ea.eventType == On_sel_change)
+		else if (ea_id == -1 && ea.control == body.Get() && ea.eventType == R_Message_Type::On_sel_change)
 		{
 			OnSwitchTab(cont, ea);
 		}

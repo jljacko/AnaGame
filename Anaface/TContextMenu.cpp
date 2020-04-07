@@ -10,8 +10,8 @@
 */
 TContextMenu::TContextMenu(TrecPointer<DrawingBoard> rt, TrecPointer<TArray<styleTable>> ta):TFlyout(rt,ta)
 {
-	appearWhen = appear_onRightClick;
-	organization = VStack;
+	appearWhen = appearCondition::appear_onRightClick;
+	organization = orgLayout::VStack;
 }
 
 /*

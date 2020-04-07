@@ -199,7 +199,7 @@ void TComboBox::onDraw(TObject* obj)
 	// Although this code is seen in the TControl implementation of onDraw, 
 	// that method also calls on Draw on it's children. we don't want to do that
 	// here unless showExtended is true.
-	if (mState == mouseLClick)
+	if (mState == messageState::mouseLClick)
 	{
 		if (content3.Get())
 			content3.Get()->onDraw(location);
@@ -214,7 +214,7 @@ void TComboBox::onDraw(TObject* obj)
 		else if (text1.Get())
 			text1->onDraw(location, obj);
 	}
-	else if (mState == mouseHover)
+	else if (mState == messageState::mouseHover)
 	{
 		if (content2.Get())
 			content2->onDraw(location);
@@ -409,7 +409,7 @@ void TComboBox::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, T
 
 	if (showExtended && isContained(&point, &MFC_extended_Space))
 	{
-		*mOut = negativeUpdate;
+		*mOut = messageOutput::negativeUpdate;
 		TrecPointer<TControl> tc;
 		for (int c = 0; c < children.Count(); c++)
 		{
@@ -418,7 +418,7 @@ void TComboBox::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, T
 			if (tc.Get())
 			{
 				tc->OnLButtonDown(nFlags, point, mOut,eventAr, clickedControl);
-				if (*mOut == negative || *mOut == negativeUpdate)
+				if (*mOut == messageOutput::negative || *mOut == messageOutput::negativeUpdate)
 					continue;
 
 				if (text1.Get())
@@ -432,20 +432,20 @@ void TComboBox::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, T
 					text1->reCreateLayout();
 				}
 				prepShowExtended = false;
-				*mOut = positiveOverrideUpdate;
+				*mOut = messageOutput::positiveOverrideUpdate;
 
 				// Set args
 				resetArgs();
-				args.eventType = On_sel_change;
+				args.eventType = R_Message_Type::On_sel_change;
 				args.point = point;
-				args.methodID = getEventID(On_sel_change);
+				args.methodID = getEventID(R_Message_Type::On_sel_change);
 				args.isClick = false;
 				args.isLeftClick = false;
 				args.control = this;
 				if (text1.Get() && text1->getCaption().GetSize())
 					args.text.Set(text1->getCaption());
 
-				eventAr.push_back({On_sel_change,this});
+				eventAr.push_back({ R_Message_Type::On_sel_change,this});
 
 
 

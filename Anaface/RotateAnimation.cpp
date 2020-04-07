@@ -31,16 +31,16 @@ void RotateAnimation::SetAnimationValue(float value, animation_value_type type)
 {
 	switch (type)
 	{
-	case animation_value_type_radian:
+	case animation_value_type::animation_value_type_radian:
 		degrees = false;
 		break;
-	case animation_value_type_rotate_start:
+	case animation_value_type::animation_value_type_rotate_start:
 		rotateStart = value;
 		break;
-	case animation_value_type_rotate_end:
+	case animation_value_type::animation_value_type_rotate_end:
 		rotateEnd = value;
 		break;
-	case animation_value_type_direction:
+	case animation_value_type::animation_value_type_direction:
 		if (value == 0.0f)
 		{
 			if (rotateEnd > rotateStart)

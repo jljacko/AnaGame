@@ -11,7 +11,7 @@
 * enum ShaderPhase
 * Used to keep track of what shader type is being discussed
 */
-typedef enum ShaderPhase
+typedef enum class ShaderPhase
 {
 	sp_Vertex,
 	sp_Compute,
@@ -25,7 +25,7 @@ typedef enum ShaderPhase
 * enum DefaultShader
 * Mark for a built-in AnaGame Shader
 */
-typedef enum _VIDEO_GRAPHICS DefaultShader
+typedef enum class _VIDEO_GRAPHICS DefaultShader
 {
 	default_shader_Single_Color = 0,
 	default_shader_3D_Color = 1,

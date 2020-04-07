@@ -13,7 +13,7 @@ TDataArray<TFlyout*> flyouts;
 */
 TFlyout::TFlyout(TrecPointer<DrawingBoard>cd, TrecPointer<TArray<styleTable>> ta):TLayout(cd,ta)
 {
-	appearWhen = appear_unset;
+	appearWhen = appearCondition::appear_unset;
 	isShown = false;
 	arrayLoc = flyouts.push_back(this);
 }
@@ -45,16 +45,16 @@ bool TFlyout::onCreate(D2D1_RECT_F r, TrecPointer<TWindowEngine> d3d)
 
 	if (!valpoint.Get() || valpoint->Compare(L"TCanvas"))
 	{
-		organization = tCanvas;
+		organization = orgLayout::tCanvas;
 	}
 	else
 	{
 		if (valpoint->Compare(L"TGrid"))
-			organization = grid;
+			organization = orgLayout::grid;
 		else if (valpoint->Compare(L"TStack"))
-			organization = VMix;
+			organization = orgLayout::VMix;
 		else if (valpoint->Compare(L"TGallary"))
-			organization = HMix;
+			organization = orgLayout::HMix;
 		/*else if(valpoint->Compare(L""))
 
 		else if(valpoint->Compare(L""))
@@ -62,33 +62,33 @@ bool TFlyout::onCreate(D2D1_RECT_F r, TrecPointer<TWindowEngine> d3d)
 		else if(valpoint->Compare(L""))*/
 	}
 
-	if (appearWhen == appear_unset) // this should change in the context menu
+	if (appearWhen == appearCondition::appear_unset) // this should change in the context menu
 	{
 		valpoint = attributes.retrieveEntry(TString(L"|OnAppear"));
 
 		if (!valpoint.Get())
 		{
-			appearWhen = appear_onClick;
+			appearWhen = appearCondition::appear_onClick;
 
 		}
 		else
 		{
 			if (valpoint->Compare(L"Click"))
-				appearWhen = appear_onClick;
+				appearWhen = appearCondition::appear_onClick;
 			else if (valpoint->Compare(L"Hover"))
-				appearWhen = appear_onHover;
+				appearWhen = appearCondition::appear_onHover;
 			else if (valpoint->Compare(L"Click_Hover"))
-				appearWhen = appear_onClickOrHover;
+				appearWhen = appearCondition::appear_onClickOrHover;
 			else if (valpoint->Compare(L"R"))
-				appearWhen = appear_onRightClick;
+				appearWhen = appearCondition::appear_onRightClick;
 			else if (valpoint->Compare(L"Click_R"))
-				appearWhen = appear_onEitherClick;
+				appearWhen = appearCondition::appear_onEitherClick;
 			else if (valpoint->Compare(L"Hover_R"))
-				appearWhen = appear_onRClickOrHover;
+				appearWhen = appearCondition::appear_onRClickOrHover;
 			else if (valpoint->Compare(L"Click_Hover_R"))
-				appearWhen = appear_onEitherClickOrHover;
+				appearWhen = appearCondition::appear_onEitherClickOrHover;
 			else if (valpoint->Compare(L"SriptOnly"))
-				appearWhen = appear_onScript;
+				appearWhen = appearCondition::appear_onScript;
 		}
 	}
 
@@ -103,7 +103,7 @@ bool TFlyout::onCreate(D2D1_RECT_F r, TrecPointer<TWindowEngine> d3d)
 
 	r.top = exitRect.bottom;
 
-	if (organization == tCanvas)
+	if (organization == orgLayout::tCanvas)
 		TControl::onCreate(r,d3d);
 	else
 		TLayout::onCreate(r,d3d);
@@ -125,7 +125,7 @@ void TFlyout::onDraw(TObject* obj)
 	{
 		TrecPointer<TBrush> redBrush; 
 		D2D1::ColorF redColor = D2D1::ColorF(D2D1::ColorF::Enum::Red);
-		if (mState != mouseHover || mState == mouseLClick ||mState == mouseRClick)
+		if (mState != messageState::mouseHover || mState == messageState::mouseLClick ||mState == messageState::mouseRClick)
 			redColor.a = 0.5;
 
 		redBrush = drawingBoard->GetBrush(redColor);
@@ -140,7 +140,7 @@ void TFlyout::onDraw(TObject* obj)
 
 		redBrush->DrawLine(D2D1::Point2F(exitRect.right, exitRect.top), D2D1::Point2F(exitRect.left, exitRect.bottom), 2.0f);
 
-		if (organization == tCanvas)
+		if (organization == orgLayout::tCanvas)
 			TControl::onDraw(obj);
 		else
 			TLayout::onDraw(obj);
@@ -155,26 +155,26 @@ void TFlyout::onDraw(TObject* obj)
 */
 bool TFlyout::Show(appearCondition ac)
 {
-	if (ac == appear_onScript)
+	if (ac == appearCondition::appear_onScript)
 		isShown = true;
 	else
 	{
 		switch (ac)
 		{
-		case appear_onClick:
-			if (appearWhen == 2 || appearWhen == 4 || appearWhen == 6 || appearWhen == 0)
+		case appearCondition::appear_onClick:
+			if (static_cast<UINT>(appearWhen) == 2 || static_cast<UINT>(appearWhen) == 4 || static_cast<UINT>(appearWhen) == 6 || static_cast<UINT>(appearWhen) == 0)
 				isShown = false;
 			else
 				isShown = true;
 			break;
-		case appear_onHover:
-			if (appearWhen == 1 || appearWhen == 4 || appearWhen == 5 || !appearWhen)
+		case appearCondition::appear_onHover:
+			if (static_cast<UINT>(appearWhen) == 1 || static_cast<UINT>(appearWhen) == 4 || static_cast<UINT>(appearWhen) == 5 || !static_cast<UINT>(appearWhen))
 				isShown = false;
 			else
 				isShown = true;
 			break;
-		case appear_onRightClick:
-			if (appearWhen == 1 || appearWhen == 2 || appearWhen == 3 || !appearWhen)
+		case appearCondition::appear_onRightClick:
+			if (static_cast<UINT>(appearWhen) == 1 || static_cast<UINT>(appearWhen) == 2 || static_cast<UINT>(appearWhen) == 3 || !static_cast<UINT>(appearWhen))
 				isShown = false;
 			else
 				isShown = true;
@@ -209,13 +209,13 @@ void TFlyout::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, TDa
 {
 	if (!isShown)
 	{
-		*mOut = negative;return;
+		*mOut = messageOutput::negative;return;
 	}
 
 	if (!isContained(&point, &location))
 	{
 		isShown = false;
-		*mOut = negativeUpdate;return;
+		*mOut = messageOutput::negativeUpdate;return;
 	}
 
 	TControl::OnLButtonDown(nFlags, point, mOut, eventAr, clickedControl);

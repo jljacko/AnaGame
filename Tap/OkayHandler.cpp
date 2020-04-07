@@ -64,5 +64,5 @@ bool OkayHandler::ShouldProcessMessageByType(TrecPointer<HandlerMessage> message
 	if(!message.Get())
 		return false;
 
-	return message->GetHandlerType() == handler_type_okay;
+	return message->GetHandlerType() == handler_type::handler_type_okay;
 }

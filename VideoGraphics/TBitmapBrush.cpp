@@ -191,7 +191,7 @@ TBitmapBrush::TBitmapBrush(TrecPointer<TFileShell> picture, TrecPointer<DrawingB
 {
 	valid = false;
 
-	brushType = brush_type_bitmap;
+	brushType = brush_type::brush_type_bitmap;
 
 	if (!picture.Get())
 		return;

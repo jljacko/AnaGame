@@ -24,19 +24,19 @@ bool EventHandler::ShouldProcessMessage(TrecPointer<HandlerMessage> message)
 
 	switch (message->GetMessageTransmission())
 	{
-	case message_transition_firm_id:
+	case message_transmission::message_transition_firm_id:
 		return message->GetHandlerIdType() == id;
-	case message_transition_firm_name:
+	case message_transmission::message_transition_firm_name:
 		return name.GetSize() && !name.Compare(message->GetHandlerName());
-	case message_transmission_id_over_name:
+	case message_transmission::message_transmission_id_over_name:
 		if (message->GetHandlerIdType() == id)
 			return true;
 		return name.GetSize() && !name.Compare(message->GetHandlerName());
-	case message_transmission_name_over_id:
+	case message_transmission::message_transmission_name_over_id:
 		if (name.GetSize() && !name.Compare(message->GetHandlerName()))
 			return true;
 		return message->GetHandlerIdType() == id;
-	case message_transmission_by_type:
+	case message_transmission::message_transmission_by_type:
 		return this->ShouldProcessMessageByType(message);
 	}
 	return true;

@@ -32,7 +32,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(lpCmdLine);
 
     // TODO: Place code here.
-    TString tmlFile(GetDirectoryWithSlash(cd_Executable));
+    TString tmlFile(GetDirectoryWithSlash(CentralDirectories::cd_Executable));
     tmlFile.Append(L"Resources\\AnagameBuilderRibbon.tml");
 
     TString title(L"Anagame Builder");
@@ -56,7 +56,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     wcex.lpszClassName = winClass.GetConstantBuffer();
     wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
-    mainInstance->SetMainWindow(wcex, tmlFile, TrecPointerKey::GetNewTrecPointerAlt < EventHandler, MainLayoutHandler>(mainInstance), t_window_type_ide);
+    mainInstance->SetMainWindow(wcex, tmlFile, TrecPointerKey::GetNewTrecPointerAlt < EventHandler, MainLayoutHandler>(mainInstance), t_window_type::t_window_type_ide);
 
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_ANIMATEBUILDER));
 

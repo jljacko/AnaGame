@@ -132,11 +132,11 @@ int TInstance::SetMainWindow(WNDCLASSEXW& wcex, TString& file, TrecPointer<Event
 	}
 	switch (winType)
 	{
-	case t_window_type_ide:
+	case t_window_type::t_window_type_ide:
 		mainWindow = TrecPointerKey::GetNewSelfTrecPointerAlt<TWindow, TIdeWindow>(mainWindowName, mainWindowClass, mainStyle, mainWindowHandle, command,
 			TrecPointerKey::GetTrecPointerFromSoft(self), 150, 30);
 		break;
-	case t_window_type_plain:
+	case t_window_type::t_window_type_plain:
 		mainWindow = TrecPointerKey::GetNewSelfTrecPointer<TWindow>(mainWindowName, mainWindowClass, mainStyle, mainWindowHandle, command, 
 			TrecPointerKey::GetTrecPointerFromSoft(self));
 	}

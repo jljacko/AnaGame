@@ -14,7 +14,7 @@ typedef struct _ANAFACE_DLL eventNameID
 	int eventID;
 }eventNameID;
 
-typedef enum anaface_parser_mode
+typedef enum class anaface_parser_mode
 {
 	anaface_parser_mode_normal,
 	anaface_parser_mode_normal_story,

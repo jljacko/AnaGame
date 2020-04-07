@@ -53,7 +53,7 @@ bool HTMLParser::Obj(TString * v)
 	{
 		rootObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TLayout>(renderer, classList);
 		rootObj->AddClass(TString(L"body"));
-		dynamic_cast<TLayout*>(rootObj.Get())->setLayout(VStack);
+		dynamic_cast<TLayout*>(rootObj.Get())->setLayout(orgLayout::VStack);
 		tableMode = tableMode | 0b00001000;
 		AddToTree();
 	}
@@ -160,7 +160,7 @@ bool HTMLParser::Obj(TString * v)
 	{
 		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TLayout>(renderer, classList);
 		TLayout* tl = dynamic_cast<TLayout*>(currentObj.Get());
-		tl->setLayout(grid);
+		tl->setLayout(orgLayout::grid);
 		tl->AddClass(TString(L"table"));
 		currentColunm = maxColunm = 0;
 
@@ -177,7 +177,7 @@ bool HTMLParser::Obj(TString * v)
 		try
 		{
 			TLayout* tl = dynamic_cast<TLayout*>(baseObj.Get());
-			if (tl->GetOrganization() == grid)
+			if (tl->GetOrganization() == orgLayout::grid)
 			{
 				tl->addRow( 100,false);
 			}
@@ -197,7 +197,7 @@ bool HTMLParser::Obj(TString * v)
 		try
 		{
 			TLayout* tl = dynamic_cast<TLayout*>(baseObj.Get());
-			if (tl->GetOrganization() == grid)
+			if (tl->GetOrganization() == orgLayout::grid)
 			{
 				tl->addColunm(100, true);// setNewColunmSize(currentColunm++, 100);
 				maxColunm++;
