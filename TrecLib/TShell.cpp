@@ -1,5 +1,6 @@
 #include "TShell.h"
 #include "DirectoryInterface.h"
+#include "PathConfiguration.h"
 
 /*
 * Method: (TShell) (Constructor) 
@@ -59,7 +60,14 @@ void TShell::SubmitCommand(TString& command)
 	command.Trim();
 	if (!command.GetSize())
 		return;
-	TString com(command.SubString(0, command.Find(L'\s')));
+
+	int firstSpace = command.Find(L'\s');
+
+	TString com(command.SubString(0, firstSpace));
+	com.Trim();
+
+	TString comArgs(command.SubString(firstSpace));
+	comArgs.Trim();
 
 	if (!com.CompareNoCase(L"pwd"))
 	{
@@ -69,8 +77,99 @@ void TShell::SubmitCommand(TString& command)
 	{
 
 	}
+
+	// Intercept commands related to Path configuration
+	else if (!com.CompareNoCase(L"lspath"))
+	{
+		UINT index = 0;
+		TString possiblePath(GetPossiblePath(comArgs, index++));
+
+		while (possiblePath.GetSize())
+		{
+			output.AppendFormat(TString(L"%i. %ls\n"), index, possiblePath.GetConstantBuffer());
+			possiblePath.Set(GetPossiblePath(comArgs, index++));
+		}
+	}
+	else if (!com.CompareNoCase(L"setpath"))
+	{
+		if (comArgs.Find(L'\s') == -1)
+		{
+			output.Set("Error! 'setpath' requires a command and a path to set it to!\n");
+			output.Append(TString(L"\tIt's in the form:  setpath [command] [path-for-command]\n"));
+			output.Append(TString(L"To add a new path to a command: here is an example:\n"));
+			output.Append(TString(L"\tsetpath gradle C:\\Path\\to\\gradle\\installation\n"));
+			output.Append(TString(L"If 'gradle' is a brand new command, then it will be set to that path. Otherwise, the path will be added to the list but the actual path is not set!\n"));
+			output.Append(TString(L"To set the actual path of the command (assuming it currently is registered), use the numeric version:\n"));
+			output.Append(TString(L"\tsetpath gradle [number]\n"));
+			output.Append(TString(L"Where '[number]' can be derived from the 'lspath' command!"));
+		}
+		else
+		{
+			TString comArgs2(comArgs.SubString(0, comArgs.Find(L'\s')));
+			TString comArgs3(comArgs.SubString(comArgs.Find(L'\s')));
+
+			comArgs2.Trim();
+			comArgs3.Trim();
+
+			int pathIndex = 0;
+			if (!comArgs3.ConvertToInt(&pathIndex))
+			{
+				switch (SetCurrentPath(comArgs3, static_cast<UINT>(pathIndex -1)))
+				{
+				case 0:
+					output.Format(TString(L"Successfully set 'comArgs2' to path at index %i\n"), pathIndex);
+					break;
+				case 1:
+					output.Format(TString(L"For the command %ls, provided index %i was out of bounds!\n"), comArgs2.GetConstantBuffer(), pathIndex);
+					break;
+				case 2:
+					output.Format(L"Command not currently registered! To register the '%ls' command, run \n\t\"setpath %ls [C:\\path\\to\\%ls\\installation]\"\n",
+						comArgs2.GetConstantBuffer(), comArgs2.GetConstantBuffer(), comArgs2.GetConstantBuffer(), comArgs2.GetConstantBuffer());
+					break;
+				}
+			}
+			else
+			{
+				if (SubmitPossiblePath(comArgs2, comArgs3))
+				{
+					output.Format(TString(L"Successfully Submitted '%ls' as a possible path for the '%ls' command!\n"), comArgs3.GetConstantBuffer(), comArgs2.GetConstantBuffer());
+				}
+				else
+				{
+					output.Format(TString(L"\"%ls\" is not a valid path!\n"), comArgs3.GetConstantBuffer());
+				}
+			}
+		}
+	}
+	else if (!com.CompareNoCase(L"getpath"))
+	{
+		output.Set(GetCurrentPath(comArgs));
+
+		if (output.GetSize())
+			output.AppendChar(L'\n');
+		else
+			output.Format(TString(L"\"%ls\" does not appear to be registered! To register the '%ls' command, run \n\t\"setpath %ls [C:\\path\\to\\%ls\\installation]\"\n"), 
+				comArgs.GetConstantBuffer(), comArgs.GetConstantBuffer(), comArgs.GetConstantBuffer(), comArgs.GetConstantBuffer());
+	}
+
+	// Now that path management is not the command, process the command using the usual means
 	else
 	{
+		// Use the Path Configuration API to get the actual path to call. 
+		TString pathCommand(GetCurrentPath(com));
+		pathCommand.Trim();
+		if (pathCommand.GetSize())
+		{
+			
+			if (pathCommand[0] != L'\"')
+				pathCommand.Set(TString(L"\"") + pathCommand + L'\"');
+			else if (pathCommand[pathCommand.GetSize() - 1] != L'\"')
+				pathCommand.AppendChar(L'\"');
+
+			command.Set(pathCommand + TString(L'\s') + comArgs);
+		}
+
+
 		if (command[command.GetSize() - 1] == L'&')
 		{
 			// Because the user has decided to run this process in the background, call the function that will start it
