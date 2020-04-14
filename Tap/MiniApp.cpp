@@ -1,10 +1,16 @@
 #include "MiniApp.h"
+#include "IDEPage.h"
 
 MiniApp::MiniApp(TrecSubPointer<TWindow, TIdeWindow> win)
 {
 	this->win = win;
 	if (this->win.Get())
 		instance = this->win->GetInstance();
+}
+
+bool MiniApp::ShouldDestroy()
+{
+	return mainPage.Get() == nullptr;
 }
 
 void MiniApp::SetSelf(TrecPointer<MiniApp> s)

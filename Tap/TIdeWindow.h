@@ -28,6 +28,7 @@ typedef enum class anagame_page
 
 class IDEPage;
 class IDEPageHolder;
+class MiniApp;
 
 class _TAP_DLL TIdeWindow :
 	public TWindow
@@ -39,8 +40,10 @@ public:
 	void OnMouseMove(UINT nFlags, TPoint point)override;
 	void OnLButtonDown(UINT nFlags, TPoint point)override;
 
-	void AddNewPage(anagame_page pageType, ide_page_type pageLoc, TString name, TString tmlLoc, TrecPointer<EventHandler> handler, bool pageTypeStrict = false);
+	void AddNewMiniApp(TrecPointer<MiniApp> app);
 
+	TrecSubPointer<Page, IDEPage> AddNewPage(anagame_page pageType, ide_page_type pageLoc, TString name, TString tmlLoc, TrecPointer<EventHandler> handler, bool pageTypeStrict = false);
+	TrecSubPointer<Page, IDEPage> AddPage(anagame_page pageType, ide_page_type pageLoc, TString name);
 
 
 	int CompileView(TString& file, TrecPointer<EventHandler> eh)override;
@@ -68,5 +71,7 @@ protected:
 	TrecSubPointer<Page, IDEPage> focusPage;
 
 	TrecPointer<TBrush> panelbrush;
+
+	TDataArray<TrecPointer<MiniApp>> apps;
 };
 

@@ -102,3 +102,8 @@ UINT EventHandler::GetId()
 {
 	return id;
 }
+
+TrecPointer<Page> EventHandler::GetPage()
+{
+	return page;
+}

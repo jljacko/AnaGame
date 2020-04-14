@@ -6,6 +6,7 @@
 #include <DirectoryInterface.h>
 #include "TerminalHandler.h"
 #include "TCodeHandler.h"
+#include "MiniApp.h"
 
 
 TIdeWindow::TIdeWindow(TString& name, TString& winClass, UINT style, HWND parent, int commandShow, 
@@ -271,10 +272,18 @@ finish:
 		Draw();
 }
 
-void TIdeWindow::AddNewPage(anagame_page pageType, ide_page_type pageLoc, TString name, TString tmlLoc, TrecPointer<EventHandler> handler, bool pageTypeStrict)
+void TIdeWindow::AddNewMiniApp(TrecPointer<MiniApp> app)
+{
+	if (app.Get() && !app->Initialize())
+	{
+		apps.push_back(app);
+	}
+}
+
+TrecSubPointer<Page, IDEPage> TIdeWindow::AddNewPage(anagame_page pageType, ide_page_type pageLoc, TString name, TString tmlLoc, TrecPointer<EventHandler> handler, bool pageTypeStrict)
 {
 	if (!mainPage.Get())
-		return;
+		return TrecSubPointer<Page, IDEPage>();
 
 	TrecPointer<EventHandler> pageHandler;
 	TrecPointer<TFile> uiFile = TrecPointerKey::GetNewTrecPointer<TFile>();
@@ -311,20 +320,20 @@ void TIdeWindow::AddNewPage(anagame_page pageType, ide_page_type pageLoc, TStrin
 		break;
 	case anagame_page::anagame_page_custom:
 		if (!handler.Get())
-			return;
+			return TrecSubPointer<Page, IDEPage>();
 		pageHandler = handler;
 		uiFile->Open(tmlLoc, TFile::t_file_read | TFile::t_file_share_read | TFile::t_file_open_always);
 
 	}
 
 	if (!uiFile->IsOpen())
-		return;
+		return TrecSubPointer<Page, IDEPage>();
 
 	if (!pageHandler.Get())
-		return;
+		return TrecSubPointer<Page, IDEPage>();
 
 	if (!name.GetSize())
-		return;
+		return TrecSubPointer<Page, IDEPage>();
 
 
 	TrecSubPointer<Page, IDEPage> targetPage = body;
@@ -359,6 +368,33 @@ void TIdeWindow::AddNewPage(anagame_page pageType, ide_page_type pageLoc, TStrin
 	if (pageHandler.Get())
 		pageHandler->Initialize(newPage);
 
+	return TrecPointerKey::GetTrecSubPointerFromTrec<Page, IDEPage>(newPage);
+}
+
+TrecSubPointer<Page, IDEPage> TIdeWindow::AddPage(anagame_page pageType, ide_page_type pageLoc, TString name)
+{
+	TrecSubPointer<Page, IDEPage> ret;
+	if (!this->windowInstance.Get())
+		return ret;
+
+	auto handler = windowInstance->GetHandler(name, pageType);
+
+
+
+	if (handler.Get())
+		ret = TrecPointerKey::GetTrecSubPointerFromTrec<Page, IDEPage>(handler->GetPage());
+
+	if (ret.Get())
+		return ret;
+
+	switch (pageType)
+	{
+	case anagame_page::anagame_page_command_prompt:
+		return AddNewPage(pageType, pageLoc, name, TString(), TrecPointerKey::GetNewSelfTrecPointerAlt<EventHandler, TerminalHandler>(windowInstance));
+	}
+
+
+	return ret;
 }
 
 int TIdeWindow::CompileView(TString& file, TrecPointer<EventHandler> eh)

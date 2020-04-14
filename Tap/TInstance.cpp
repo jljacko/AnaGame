@@ -3,6 +3,9 @@
 #include "TDialog.h"
 #include "TIdeWindow.h"
 
+// Various Built-in handlers Anagame offers
+#include "TCodeHandler.h"
+#include "TerminalHandler.h"
 
 static TString dialogClassName(L"TDialog");
 
@@ -311,6 +314,32 @@ void TInstance::DispatchAnagameMessage(TrecPointer<HandlerMessage> message)
 		if (registeredHandlers[Rust].Get() && registeredHandlers[Rust]->ShouldProcessMessage(message))
 			registeredHandlers[Rust]->ProcessMessage(message);
 	}
+}
+
+TrecPointer<EventHandler> TInstance::GetHandler(const TString& name, anagame_page pageType)
+{
+	for (UINT Rust = 0; Rust < registeredHandlers.Size(); Rust++)
+	{
+		if (registeredHandlers[Rust].Get())
+		{
+			if (registeredHandlers[Rust]->name.Compare(name))
+				continue;
+			switch (pageType)
+			{
+			case anagame_page::anagame_page_command_prompt:
+				if (dynamic_cast<TerminalHandler*>(registeredHandlers[Rust].Get()))
+					return registeredHandlers[Rust];
+				break;
+			case anagame_page::anagame_page_code_file:
+				if (dynamic_cast<TCodeHandler*>(registeredHandlers[Rust].Get()))
+					return registeredHandlers[Rust];
+				break;
+
+				// To-Do: As more Handlers are added, mention them here
+			}
+		}
+	}
+	return TrecPointer<EventHandler>();
 }
  
 void TInstance::RegisterDialog(TrecPointer<TWindow> win)

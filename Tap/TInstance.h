@@ -1,6 +1,6 @@
 #pragma once
 #include <TObject.h>
-#include "TWindow.h"
+#include "TIDEWindow.h"
 #include "HandlerMessage.h"
 #include <TTrecSoftPointerArray.h>
 
@@ -51,6 +51,8 @@ public:
 	void SetSelf(TrecPointer<TInstance> i);
 
 	void DispatchAnagameMessage(TrecPointer<HandlerMessage> message);
+
+	TrecPointer<EventHandler> GetHandler(const TString& name, anagame_page pageType);
 
 protected:
 	void AssertDialogRegistered();
