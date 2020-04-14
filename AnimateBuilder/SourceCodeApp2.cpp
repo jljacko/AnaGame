@@ -23,7 +23,8 @@ UINT SourceCodeApp2::Initialize()
 		return 3;
 
 	mainPage = win->AddNewPage(anagame_page::anagame_page_code_file, ide_page_type::ide_page_type_body, TString(L"Code"), TString(), TrecPointerKey::GetTrecPointerFromSub<EventHandler, TCodeHandler>(codeHandler));
-	win->AddNewPage(anagame_page::anagame_page_command_prompt, ide_page_type::ide_page_type_deep_console, TString(L"Code"), TString(), TrecPointerKey::GetTrecPointerFromSub < EventHandler, TerminalHandler>(commandHandler));
+	win->AddPage(anagame_page::anagame_page_command_prompt, ide_page_type::ide_page_type_deep_console, TString(L"Build"));
+	win->AddPage(anagame_page::anagame_page_command_prompt, ide_page_type::ide_page_type_deep_console, TString(L"Debug"));
 
 	return 0;
 }
