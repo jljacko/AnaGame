@@ -4,7 +4,7 @@
 
 #include "Tap_dll.h"
 
-typedef enum handler_type
+typedef enum class handler_type
 {
 	handler_type_generic,
 	handler_type_console,
@@ -13,19 +13,20 @@ typedef enum handler_type
 	handler_type_compiler,
 	handler_type_interpreter,
 	handler_type_okay,
-
+	handler_type_arena,
 
 	handler_type_other
 }handler_type;
 
-typedef enum message_transmission
+typedef enum class message_transmission
 {
-	message_transition_firm_id,
-	message_transition_firm_name,
+	message_transmission_firm_id,
+	message_transmission_firm_name,
 	message_transmission_id_over_name,
 	message_transmission_name_over_id,
 	message_transmission_by_type,
-	message_transmission_create_new
+	message_transmission_create_new,
+	message_transmission_name_type
 };
 
 

@@ -1,7 +1,7 @@
 #pragma once
 #include "TLayout.h"
 
-typedef enum appearCondition
+typedef enum class appearCondition
 {
 	appear_unset = 0,
 	appear_onClick = 1,      // user clicks on supervisor control

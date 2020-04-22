@@ -34,7 +34,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(lpCmdLine);
 
     // TODO: Place code here.
-	TString tmlFile(GetDirectoryWithSlash(cd_Executable));
+	TString tmlFile(GetDirectoryWithSlash(CentralDirectories::cd_Executable));
 	tmlFile.Append(L"Resources\\AnagameBuilderLayout.tml");
 
 	TString title(L"Anagame Builder");

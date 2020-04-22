@@ -24,5 +24,5 @@ bool TerminalHandler::ShouldProcessMessageByType(TrecPointer<HandlerMessage> mes
 {
 	if(!message.Get())
 		return false;
-	return message->GetHandlerType() == handler_type_console;
+	return message->GetHandlerType() == handler_type::handler_type_console;
 }

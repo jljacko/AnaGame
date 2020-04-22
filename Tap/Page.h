@@ -12,7 +12,7 @@ class TWindow;
 class MiniHandler;
 class TAnimationManager;
 
-typedef enum RenderTargetType
+typedef enum class RenderTargetType
 {
 	render_target_unknown,
 	render_target_device_context,
@@ -88,6 +88,9 @@ public:
 	void PrepAnimations(TAnimationManager& aManager);
 
 	void SetMiniHandler(TrecSubPointer<EventHandler, MiniHandler> mh);
+
+	void AddStory(TString& story, bool persistent = false);
+	void AddAnimations(TrecPointer<AnimationBuilder> builder);
 
 protected:
 	Page(TrecPointer<DrawingBoard>);

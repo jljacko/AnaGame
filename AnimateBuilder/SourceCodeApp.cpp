@@ -18,7 +18,7 @@ SourceCodeApp::SourceCodeApp(TrecPointer<TControl> m, TrecPointer<TControl> o, T
 	eventNameID enid;
 
 
-	TString fileBase(GetDirectory(cd_Executable));
+	TString fileBase(GetDirectory(CentralDirectories::cd_Executable));
 	TString fileBody = fileBase;
 	fileBody.Append( L"\\Resources\\LineTextEditor.txt");
 	window = r->GetMainWindow();

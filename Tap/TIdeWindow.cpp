@@ -6,6 +6,7 @@
 #include <DirectoryInterface.h>
 #include "TerminalHandler.h"
 #include "TCodeHandler.h"
+#include "MiniApp.h"
 
 
 TIdeWindow::TIdeWindow(TString& name, TString& winClass, UINT style, HWND parent, int commandShow, 
@@ -34,6 +35,8 @@ int TIdeWindow::PrepareWindow()
 	{
 		*pages[c] = TrecPointerKey::GetNewSelfTrecSubPointer<Page, IDEPage>(static_cast<ide_page_type>(c), pageBarSpace, drawingBoard);
 		this->pages.push_back(TrecPointerKey::GetTrecPointerFromSub<Page, IDEPage>(*pages[c]));
+
+		(*pages[c])->parentWindow = TrecPointerKey::GetSoftSubPointerFromSoft<TWindow, TIdeWindow>(self);
 	}
 
 	for (UINT c = 0; c < ARRAYSIZE(pages); c++)
@@ -51,21 +54,84 @@ int TIdeWindow::PrepareWindow()
 
 void TIdeWindow::OnLButtonUp(UINT nFlags, TPoint point)
 {
-	dynamic_cast<IDEPage*>(body.Get())->OnLButtonUp();
-	dynamic_cast<IDEPage*>(basicConsole.Get())->OnLButtonUp();
-	dynamic_cast<IDEPage*>(deepConsole.Get())->OnLButtonUp();
-	dynamic_cast<IDEPage*>(upperRight.Get())->OnLButtonUp();
-	dynamic_cast<IDEPage*>(lowerRight.Get())->OnLButtonUp();
-	dynamic_cast<IDEPage*>(upperLeft.Get())->OnLButtonUp();
-	dynamic_cast<IDEPage*>(lowerLeft.Get())->OnLButtonUp();
+	if (dynamic_cast<IDEPage*>(body.Get())->OnLButtonUp(point) && currentHolder.Get())
+	{
+		if (focusPage.Get() && body.Get() != focusPage.Get())
+		{
+			focusPage->RemovePage(currentHolder);
+		}
+		body->AddNewPage(currentHolder);
+		currentHolder.Nullify();
+	}
+	if (dynamic_cast<IDEPage*>(basicConsole.Get())->OnLButtonUp(point) && currentHolder.Get())
+	{
+		if (focusPage.Get() && basicConsole.Get() != focusPage.Get())
+		{
+			focusPage->RemovePage(currentHolder);
+		}
+		basicConsole->AddNewPage(currentHolder);
+		currentHolder.Nullify();
+	}
+	if (dynamic_cast<IDEPage*>(deepConsole.Get())->OnLButtonUp(point) && currentHolder.Get())
+	{
+		if (focusPage.Get() && deepConsole.Get() != focusPage.Get())
+		{
+			focusPage->RemovePage(currentHolder);
+		}
+		deepConsole->AddNewPage(currentHolder);
+		currentHolder.Nullify();
+	}
+	if (dynamic_cast<IDEPage*>(upperRight.Get())->OnLButtonUp(point) && currentHolder.Get())
+	{  
+		if (focusPage.Get() && upperRight.Get() != focusPage.Get())
+		{
+			focusPage->RemovePage(currentHolder);
+		}
+		upperRight->AddNewPage(currentHolder);
+		currentHolder.Nullify();
+	}
+	if (dynamic_cast<IDEPage*>(lowerRight.Get())->OnLButtonUp(point) && currentHolder.Get())
+	{
+		if (focusPage.Get() && lowerRight.Get() != focusPage.Get())
+		{
+			focusPage->RemovePage(currentHolder);
+		}
+		lowerRight->AddNewPage(currentHolder);
+		currentHolder.Nullify();
+	}
+	if (dynamic_cast<IDEPage*>(upperLeft.Get())->OnLButtonUp(point) && currentHolder.Get())
+	{
+		if (focusPage.Get() && upperLeft.Get() != focusPage.Get())
+		{
+			focusPage->RemovePage(currentHolder);
+		}
+		upperLeft->AddNewPage(currentHolder);
+		currentHolder.Nullify();
+	}
+	if (dynamic_cast<IDEPage*>(lowerLeft.Get())->OnLButtonUp(point) && currentHolder.Get())
+	{
+		if (focusPage.Get() && lowerLeft.Get() != focusPage.Get())
+		{
+			focusPage->RemovePage(currentHolder);
+		}
+		lowerLeft->AddNewPage(currentHolder);
+		currentHolder.Nullify();
+	}
+	if (focusPage.Get() && currentHolder.Get())
+	{
+		focusPage->AddNewPage(currentHolder);
+	}
+	currentHolder.Nullify();
+
 	TWindow::OnLButtonUp(nFlags, point);
 	focusPage.Nullify();
+
 }
 
 void TIdeWindow::OnMouseMove(UINT nFlags, TPoint point)
 { 
 	if (locked) return;
-	messageOutput output = negative;
+	messageOutput output = messageOutput::negative;
 
 	if (focusPage.Get())
 	{
@@ -123,14 +189,25 @@ void TIdeWindow::OnMouseMove(UINT nFlags, TPoint point)
 	
 
 finish:
-	if (output == positiveContinueUpdate || output == positiveOverrideUpdate || output == negativeUpdate)
+
+	if (currentHolder.Get())
+	{
+		currentHolder->Move(point);
+	}
+
+
+	if (output == messageOutput::positiveContinueUpdate || output == messageOutput::positiveOverrideUpdate || output == messageOutput::negativeUpdate)
 		Draw();
 }
 
 void TIdeWindow::OnLButtonDown(UINT nFlags, TPoint point)
 {
 	if (locked) return;
-	messageOutput output = negative;
+	messageOutput output = messageOutput::negative;
+
+
+	auto curFocusPage = focusPage;
+
 	if (isContained(point, mainPage->GetArea()))
 	{
 		mainPage->OnLButtonDown(nFlags, point, &output);
@@ -187,14 +264,26 @@ void TIdeWindow::OnLButtonDown(UINT nFlags, TPoint point)
 	}
 
 finish:
-	if (output == positiveContinueUpdate || output == positiveOverrideUpdate || output == negativeUpdate)
+	
+
+
+
+	if (output == messageOutput::positiveContinueUpdate || output == messageOutput::positiveOverrideUpdate || output == messageOutput::negativeUpdate)
 		Draw();
 }
 
-void TIdeWindow::AddNewPage(anagame_page pageType, ide_page_type pageLoc, TString name, TString tmlLoc, TrecPointer<EventHandler> handler, bool pageTypeStrict)
+void TIdeWindow::AddNewMiniApp(TrecPointer<MiniApp> app)
+{
+	if (app.Get() && !app->Initialize())
+	{
+		apps.push_back(app);
+	}
+}
+
+TrecSubPointer<Page, IDEPage> TIdeWindow::AddNewPage(anagame_page pageType, ide_page_type pageLoc, TString name, TString tmlLoc, TrecPointer<EventHandler> handler, bool pageTypeStrict)
 {
 	if (!mainPage.Get())
-		return;
+		return TrecSubPointer<Page, IDEPage>();
 
 	TrecPointer<EventHandler> pageHandler;
 	TrecPointer<TFile> uiFile = TrecPointerKey::GetNewTrecPointer<TFile>();
@@ -203,69 +292,77 @@ void TIdeWindow::AddNewPage(anagame_page pageType, ide_page_type pageLoc, TStrin
 
 	switch (pageType)
 	{
-	case anagame_page_code_explorer:
+	case anagame_page::anagame_page_code_explorer:
 
 		break;
-	case anagame_page_code_file:
-		uiFile->Open(GetDirectoryWithSlash(cd_Executable) + L"Resources\\LineTextEditor.txt", TFile::t_file_read | TFile::t_file_share_read | TFile::t_file_open_always);
+	case anagame_page::anagame_page_code_file:
+		uiFile->Open(GetDirectoryWithSlash(CentralDirectories::cd_Executable) + L"Resources\\LineTextEditor.txt", TFile::t_file_read | TFile::t_file_share_read | TFile::t_file_open_always);
 		fileShell = TFileShell::GetFileInfo(tmlLoc);
 		if (!handler.Get())
 			pageHandler = TrecPointerKey::GetNewSelfTrecPointerAlt<EventHandler, TCodeHandler>(windowInstance);
 		else
 			pageHandler = handler;
 		break;
-	case anagame_page_command_prompt:
-		uiFile->Open(GetDirectoryWithSlash(cd_Executable) + L"Resources\\IDEPrompt.tml", TFile::t_file_read | TFile::t_file_share_read | TFile::t_file_open_always);
+	case anagame_page::anagame_page_command_prompt:
+		uiFile->Open(GetDirectoryWithSlash(CentralDirectories::cd_Executable) + L"Resources\\IDEPrompt.tml", TFile::t_file_read | TFile::t_file_share_read | TFile::t_file_open_always);
 		fileShell = TFileShell::GetFileInfo(tmlLoc);
 		if (!handler.Get())
 			pageHandler = TrecPointerKey::GetNewSelfTrecPointerAlt<EventHandler, TerminalHandler>(windowInstance);
 		else
 			pageHandler = handler;
 		break;
-	case anagame_page_file_node:
-		uiFile->Open(GetDirectoryWithSlash(cd_Executable) + L"Resources\\FileBrowser.tml", TFile::t_file_read | TFile::t_file_share_read | TFile::t_file_open_always);
+	case anagame_page::anagame_page_file_node:
+		uiFile->Open(GetDirectoryWithSlash(CentralDirectories::cd_Executable) + L"Resources\\FileBrowser.tml", TFile::t_file_read | TFile::t_file_share_read | TFile::t_file_open_always);
 		fileShell = TFileShell::GetFileInfo(tmlLoc);
 		break;
-	case anagame_page_object_explorer:
+	case anagame_page::anagame_page_object_explorer:
 
 		break;
-	case anagame_page_custom:
+	case anagame_page::anagame_page_arena:
+		uiFile->Open(GetDirectoryWithSlash(CentralDirectories::cd_Executable) + L"Resources\\ArenaView.tml", TFile::t_file_read | TFile::t_file_share_read | TFile::t_file_open_always);
+		fileShell = TFileShell::GetFileInfo(tmlLoc);
+		break;
+	case anagame_page::anagame_page_camera:
+		uiFile->Open(GetDirectoryWithSlash(CentralDirectories::cd_Executable) + L"Resources\\ArenaViewPanel.txt", TFile::t_file_read | TFile::t_file_share_read | TFile::t_file_open_always);
+		fileShell = TFileShell::GetFileInfo(tmlLoc);
+		break;
+	case anagame_page::anagame_page_custom:
 		if (!handler.Get())
-			return;
+			return TrecSubPointer<Page, IDEPage>();
 		pageHandler = handler;
 		uiFile->Open(tmlLoc, TFile::t_file_read | TFile::t_file_share_read | TFile::t_file_open_always);
 
 	}
 
 	if (!uiFile->IsOpen())
-		return;
+		return TrecSubPointer<Page, IDEPage>();
 
 	if (!pageHandler.Get())
-		return;
+		return TrecSubPointer<Page, IDEPage>();
 
 	if (!name.GetSize())
-		return;
+		return TrecSubPointer<Page, IDEPage>();
 
 
 	TrecSubPointer<Page, IDEPage> targetPage = body;
 	switch (pageLoc)
 	{
-	case ide_page_type_basic_console:
+	case ide_page_type::ide_page_type_basic_console:
 		targetPage = basicConsole;
 		break;
-	case ide_page_type_deep_console:
+	case ide_page_type::ide_page_type_deep_console:
 		targetPage = deepConsole;
 		break;
-	case ide_page_type_lower_left:
+	case ide_page_type::ide_page_type_lower_left:
 		targetPage = lowerLeft;
 		break;
-	case ide_page_type_lower_right:
+	case ide_page_type::ide_page_type_lower_right:
 		targetPage = lowerRight;
 		break;
-	case ide_page_type_upper_left:
+	case ide_page_type::ide_page_type_upper_left:
 		targetPage = upperLeft;
 		break;
-	case ide_page_type_upper_right:
+	case ide_page_type::ide_page_type_upper_right:
 		targetPage = upperRight;
 	}
 
@@ -279,6 +376,33 @@ void TIdeWindow::AddNewPage(anagame_page pageType, ide_page_type pageLoc, TStrin
 	if (pageHandler.Get())
 		pageHandler->Initialize(newPage);
 
+	return TrecPointerKey::GetTrecSubPointerFromTrec<Page, IDEPage>(newPage);
+}
+
+TrecSubPointer<Page, IDEPage> TIdeWindow::AddPage(anagame_page pageType, ide_page_type pageLoc, TString name)
+{
+	TrecSubPointer<Page, IDEPage> ret;
+	if (!this->windowInstance.Get())
+		return ret;
+
+	auto handler = windowInstance->GetHandler(name, pageType);
+
+
+
+	if (handler.Get())
+		ret = TrecPointerKey::GetTrecSubPointerFromTrec<Page, IDEPage>(handler->GetPage());
+
+	if (ret.Get())
+		return ret;
+
+	switch (pageType)
+	{
+	case anagame_page::anagame_page_command_prompt:
+		return AddNewPage(pageType, pageLoc, name, TString(), TrecPointerKey::GetNewSelfTrecPointerAlt<EventHandler, TerminalHandler>(windowInstance));
+	}
+
+
+	return ret;
 }
 
 int TIdeWindow::CompileView(TString& file, TrecPointer<EventHandler> eh)
@@ -351,6 +475,11 @@ int TIdeWindow::CompileView(TString& file, TrecPointer<EventHandler> eh)
 	return 0;
 }
 
+void TIdeWindow::SetCurrentHolder(TrecPointer<IDEPageHolder> holder)
+{
+	currentHolder = holder;
+}
+
 void TIdeWindow::DrawOtherPages()
 {
 	if (body.Get())dynamic_cast<IDEPage*>(body.Get())->Draw(panelbrush, d3dEngine.Get());
@@ -360,4 +489,8 @@ void TIdeWindow::DrawOtherPages()
 	if (upperRight.Get())dynamic_cast<IDEPage*>(upperRight.Get())->Draw(panelbrush, d3dEngine.Get());
 	if (lowerLeft.Get()) dynamic_cast<IDEPage*>(lowerLeft.Get())->Draw(panelbrush, d3dEngine.Get());
 	if (lowerRight.Get())dynamic_cast<IDEPage*>(lowerRight.Get())->Draw(panelbrush, d3dEngine.Get());
+
+
+	if (currentHolder.Get())
+		currentHolder->Draw();
 }

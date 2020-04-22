@@ -225,11 +225,11 @@ void TTextField::storeInTML(TFile * ar, int childLevel, bool ov)
 		_WRITE_THE_STRING;
 
 		appendable.Append(L"|DefaultIncriment:");
-		if (incriment.type == t_float)
+		if (incriment.type == iControlType::t_float)
 		{
 			appendable.AppendFormat(L"%f", incriment.value.f);
 		}
-		else if (incriment.type == t_int)
+		else if (incriment.type == iControlType::t_int)
 			appendable.AppendFormat(L"%d", incriment.value.i);
 		else
 			appendable.AppendFormat(L"%d", 1);
@@ -302,13 +302,13 @@ bool TTextField::onCreate(D2D1_RECT_F r, TrecPointer<TWindowEngine> d3d)
 	if (valpoint.Get() && !valpoint->ConvertToInt(&value))
 	{
 		hasMin = true;
-		minumum.type = t_int;
+		minumum.type = iControlType::t_int;
 		minumum.value.i = value;
 	}
 	else if (valpoint.Get() && !valpoint->ConvertToFloat(&f_value))
 	{
 		hasMin = true;
-		minumum.type = t_float;
+		minumum.type = iControlType::t_float;
 		minumum.value.f = f_value;
 	}
 	else
@@ -321,20 +321,20 @@ bool TTextField::onCreate(D2D1_RECT_F r, TrecPointer<TWindowEngine> d3d)
 	if (valpoint.Get() && !valpoint->ConvertToInt(&value))
 	{
 		hasMax = true;
-		maximum.type = t_int;
+		maximum.type = iControlType::t_int;
 		maximum.value.i = value;
 	}
 	else if (valpoint.Get() && !valpoint->ConvertToFloat(&f_value))
 	{
 		hasMax = true;
-		maximum.type = t_float;
+		maximum.type = iControlType::t_float;
 		maximum.value.f = f_value;
 	}
 	else
 	{
 		hasMax = false;
 	}
-	incriment.type = t_none;
+	incriment.type = iControlType::t_none;
 
 	if (isNumber)
 	{
@@ -345,12 +345,12 @@ bool TTextField::onCreate(D2D1_RECT_F r, TrecPointer<TWindowEngine> d3d)
 			float f = 0.0;
 			if (!valpoint->ConvertToFloat(&f))
 			{
-				incriment.type = t_float;
+				incriment.type = iControlType::t_float;
 				incriment.value.f = f;
 			}
 			else if (!valpoint->ConvertToInt(&i))
 			{
-				incriment.type = t_int;
+				incriment.type = iControlType::t_int;
 				incriment.value.i = i;
 			}
 			else
@@ -359,7 +359,7 @@ bool TTextField::onCreate(D2D1_RECT_F r, TrecPointer<TWindowEngine> d3d)
 		else
 		{
 		otherwise:
-			incriment.type = t_int;
+			incriment.type = iControlType::t_int;
 			incriment.value.i = 1;
 		}
 	}
@@ -653,41 +653,41 @@ parentCall:
 		if (isNumber && isContained(&point, &topBut))
 		{
 			updateNumber(true);
-			*mOut = positiveContinueUpdate;
-			if (hasEvent(On_Text_Change))
+			*mOut = messageOutput::positiveContinueUpdate;
+			if (hasEvent(R_Message_Type::On_Text_Change))
 			{
 				// Set args
 				resetArgs();
-				args.eventType = On_Text_Change;
+				args.eventType = R_Message_Type::On_Text_Change;
 				args.point = point;
-				args.methodID = getEventID(On_Text_Change);
+				args.methodID = getEventID(R_Message_Type::On_Text_Change);
 				args.isClick = true;
 				args.isLeftClick = false;
 				args.control = this;
 
-				eventAr.push_back(EventID_Cred{ On_Text_Change, this });
+				eventAr.push_back(EventID_Cred( R_Message_Type::On_Text_Change, this ));
 			}
 		}
 		else if (isNumber && isContained(&point, &botBut))
 		{
 			updateNumber(false);
-			*mOut = positiveContinueUpdate;
-			if (hasEvent(On_Text_Change))
+			*mOut = messageOutput::positiveContinueUpdate;
+			if (hasEvent(R_Message_Type::On_Text_Change))
 			{
 				// Set args
 				resetArgs();
-				args.eventType = On_Text_Change;
+				args.eventType = R_Message_Type::On_Text_Change;
 				args.point = point;
-				args.methodID = getEventID(On_Text_Change);
+				args.methodID = getEventID(R_Message_Type::On_Text_Change);
 				args.isClick = true;
 				args.isLeftClick = false;
 				args.control = this;
 
-				eventAr.push_back(EventID_Cred{ On_Text_Change, this });
+				eventAr.push_back(EventID_Cred( R_Message_Type::On_Text_Change, this ));
 			}
 		}
 
-		*mOut = positiveContinueUpdate;
+		*mOut = messageOutput::positiveContinueUpdate;
 	}
 	TControl::OnLButtonDown(nFlags, point, mOut,eventAr, clickedControl);
 
@@ -764,15 +764,15 @@ bool TTextField::OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags, me
 				}
 			}
 		}
-		*mOut = positiveOverrideUpdate;
+		*mOut = messageOutput::positiveOverrideUpdate;
 		updateTextString();
 		resetArgs();
-		args.eventType = On_Char;
+		args.eventType = R_Message_Type::On_Char;
 		args.control = this;
-		args.methodID = getEventID(On_Char);
+		args.methodID = getEventID(R_Message_Type::On_Char);
 		args.type = static_cast<WCHAR>(LOWORD(nChar));
 		args.control = this;
-		eventAr.push_back({ On_Text_Change, this });
+		eventAr.push_back({ R_Message_Type::On_Text_Change, this });
 
 		if (text1.Get() && text1->text.GetSize())
 		{
@@ -816,10 +816,10 @@ void TTextField::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDa
 			highlighter.SetSecondPosition(caretLoc = locCarLoc);
 
 			ShowCaret(windowHandle);
-			if (*mOut == positiveContinue)
-				*mOut = positiveContinueUpdate;
-			else if (*mOut == positiveOverride)
-				*mOut = positiveOverrideUpdate;
+			if (*mOut == messageOutput::positiveContinue)
+				*mOut = messageOutput::positiveContinueUpdate;
+			else if (*mOut == messageOutput::positiveOverride)
+				*mOut = messageOutput::positiveOverrideUpdate;
 		}
 	}
 }
@@ -837,7 +837,7 @@ void TTextField::OnLButtonUp(UINT nFlags, TPoint point, messageOutput * mOut, TD
 {
 	if (isContained(&point, &location))
 	{
-		*mOut = positiveOverrideUpdate;
+		*mOut = messageOutput::positiveOverrideUpdate;
 	}
 	showPassword = false;
 
@@ -1031,7 +1031,7 @@ void TTextField::updateNumber(bool pos)
 	if (pos)
 	{
 		// moving the number up
-		if (incriment.type == t_int)
+		if (incriment.type == iControlType::t_int)
 		{
 			if (!floatResult)
 			{
@@ -1044,7 +1044,7 @@ void TTextField::updateNumber(bool pos)
 				setNumericText(i);
 			}
 		}
-		else if(incriment.type == t_float)
+		else if(incriment.type == iControlType::t_float)
 		{
 			if (!floatResult)
 			{
@@ -1061,7 +1061,7 @@ void TTextField::updateNumber(bool pos)
 	else
 	{
 		// moving the number up
-		if (incriment.type == t_int)
+		if (incriment.type == iControlType::t_int)
 		{
 			if (!floatResult)
 			{
@@ -1074,7 +1074,7 @@ void TTextField::updateNumber(bool pos)
 				setNumericText(i);
 			}
 		}
-		else if (incriment.type == t_float)
+		else if (incriment.type == iControlType::t_float)
 		{
 			if (!floatResult)
 			{
@@ -1341,19 +1341,19 @@ void TTextField::moveCaretDown(POINT point)
 */
 bool operator>(incrimentControl& ic1, incrimentControl& ic2)
 {
-	if (ic1.type == t_int)
+	if (ic1.type == iControlType::t_int)
 	{
-		if (ic2.type == t_int)
+		if (ic2.type == iControlType::t_int)
 			return ic1.value.i > ic2.value.i;
-		else if (ic2.type == t_float)
+		else if (ic2.type == iControlType::t_float)
 			return ic1.value.i > ic2.value.f;
 		else return false;
 	}
-	else if(ic1.type == t_float)
+	else if(ic1.type == iControlType::t_float)
 	{
-		if (ic2.type == t_int)
+		if (ic2.type == iControlType::t_int)
 			return ic1.value.f > ic2.value.i;
-		else if (ic2.type == t_float)
+		else if (ic2.type == iControlType::t_float)
 			return ic1.value.f > ic2.value.f;
 		else return false;
 	}
@@ -1370,9 +1370,9 @@ bool operator>(incrimentControl& ic1, incrimentControl& ic2)
 */
 bool operator>(incrimentControl& ic, int i)
 {
-	if (ic.type == t_int)
+	if (ic.type == iControlType::t_int)
 		return ic.value.i > i;
-	else if (ic.type == t_float)
+	else if (ic.type == iControlType::t_float)
 		return ic.value.f > i;
 	else return false;
 }
@@ -1386,9 +1386,9 @@ bool operator>(incrimentControl& ic, int i)
 */
 bool operator>(incrimentControl& ic, float f)
 {
-	if (ic.type == t_int)
+	if (ic.type == iControlType::t_int)
 		return ic.value.i > f;
-	else if (ic.type == t_float)
+	else if (ic.type == iControlType::t_float)
 		return ic.value.f > f;
 	else return false;
 }
@@ -1402,9 +1402,9 @@ bool operator>(incrimentControl& ic, float f)
 */
 bool operator>(int i, incrimentControl& ic)
 {
-	if (ic.type == t_int)
+	if (ic.type == iControlType::t_int)
 		return ic.value.i < i;
-	else if (ic.type == t_float)
+	else if (ic.type == iControlType::t_float)
 		return ic.value.f < i;
 	else return false;
 }
@@ -1418,9 +1418,9 @@ bool operator>(int i, incrimentControl& ic)
 */
 bool operator>(float f, incrimentControl& ic)
 {
-	if (ic.type == t_int)
+	if (ic.type == iControlType::t_int)
 		return ic.value.i < f;
-	else if (ic.type == t_float)
+	else if (ic.type == iControlType::t_float)
 		return ic.value.f < f;
 	else return false;
 }
@@ -1435,19 +1435,19 @@ bool operator>(float f, incrimentControl& ic)
 */
 bool operator<(incrimentControl& ic1, incrimentControl& ic2)
 {
-	if (ic1.type == t_int)
+	if (ic1.type == iControlType::t_int)
 	{
-		if (ic2.type == t_int)
+		if (ic2.type == iControlType::t_int)
 			return ic1.value.i < ic2.value.i;
-		else if (ic2.type == t_float)
+		else if (ic2.type == iControlType::t_float)
 			return ic1.value.i < ic2.value.f;
 		else return false;
 	}
-	else if (ic1.type == t_float)
+	else if (ic1.type == iControlType::t_float)
 	{
-		if (ic2.type == t_int)
+		if (ic2.type == iControlType::t_int)
 			return ic1.value.f < ic2.value.i;
-		else if (ic2.type == t_float)
+		else if (ic2.type == iControlType::t_float)
 			return ic1.value.f < ic2.value.f;
 		else return false;
 	}
@@ -1464,9 +1464,9 @@ bool operator<(incrimentControl& ic1, incrimentControl& ic2)
 */
 bool operator<(incrimentControl& ic, int i)
 {
-	if (ic.type == t_int)
+	if (ic.type == iControlType::t_int)
 		return ic.value.i < i;
-	else if (ic.type == t_float)
+	else if (ic.type == iControlType::t_float)
 		return ic.value.f < i;
 	else return false;
 }
@@ -1480,9 +1480,9 @@ bool operator<(incrimentControl& ic, int i)
 */
 bool operator<(incrimentControl& ic, float f)
 {
-	if (ic.type == t_int)
+	if (ic.type == iControlType::t_int)
 		return ic.value.i < f;
-	else if (ic.type == t_float)
+	else if (ic.type == iControlType::t_float)
 		return ic.value.f < f;
 	else return false;
 }
@@ -1496,9 +1496,9 @@ bool operator<(incrimentControl& ic, float f)
 */
 bool operator<(int i, incrimentControl& ic)
 {
-	if (ic.type == t_int)
+	if (ic.type == iControlType::t_int)
 		return ic.value.i > i;
-	else if (ic.type == t_float)
+	else if (ic.type == iControlType::t_float)
 		return ic.value.f > i;
 	else return false;
 }
@@ -1512,9 +1512,9 @@ bool operator<(int i, incrimentControl& ic)
 */
 bool operator<(float f, incrimentControl& ic)
 {
-	if (ic.type == t_int)
+	if (ic.type == iControlType::t_int)
 		return ic.value.i > f;
-	else if (ic.type == t_float)
+	else if (ic.type == iControlType::t_float)
 		return ic.value.f > f;
 	else return false;
 }
@@ -1529,19 +1529,19 @@ bool operator<(float f, incrimentControl& ic)
 */
 bool operator>=(incrimentControl& ic1, incrimentControl& ic2)
 {
-	if (ic1.type == t_int)
+	if (ic1.type == iControlType::t_int)
 	{
-		if (ic2.type == t_int)
+		if (ic2.type == iControlType::t_int)
 			return ic1.value.i >= ic2.value.i;
-		else if (ic2.type == t_float)
+		else if (ic2.type == iControlType::t_float)
 			return ic1.value.i >= ic2.value.f;
 		else return false;
 	}
-	else if (ic1.type == t_float)
+	else if (ic1.type == iControlType::t_float)
 	{
-		if (ic2.type == t_int)
+		if (ic2.type == iControlType::t_int)
 			return ic1.value.f >= ic2.value.i;
-		else if (ic2.type == t_float)
+		else if (ic2.type == iControlType::t_float)
 			return ic1.value.f >= ic2.value.f;
 		else return false;
 	}
@@ -1558,9 +1558,9 @@ bool operator>=(incrimentControl& ic1, incrimentControl& ic2)
 */
 bool operator>=(incrimentControl& ic, int i)
 {
-	if (ic.type == t_int)
+	if (ic.type == iControlType::t_int)
 		return ic.value.i >= i;
-	else if (ic.type == t_float)
+	else if (ic.type == iControlType::t_float)
 		return ic.value.f >= i;
 	else return false;
 }
@@ -1574,9 +1574,9 @@ bool operator>=(incrimentControl& ic, int i)
 */
 bool operator>=(incrimentControl& ic, float f)
 {
-	if (ic.type == t_int)
+	if (ic.type == iControlType::t_int)
 		return ic.value.i >= f;
-	else if (ic.type == t_float)
+	else if (ic.type == iControlType::t_float)
 		return ic.value.f >= f;
 	else return false;
 }
@@ -1590,9 +1590,9 @@ bool operator>=(incrimentControl& ic, float f)
 */
 bool operator>=(int i, incrimentControl& ic)
 {
-	if (ic.type == t_int)
+	if (ic.type == iControlType::t_int)
 		return ic.value.i <= i;
-	else if (ic.type == t_float)
+	else if (ic.type == iControlType::t_float)
 		return ic.value.f <= i;
 	else return false;
 }
@@ -1606,9 +1606,9 @@ bool operator>=(int i, incrimentControl& ic)
 */
 bool operator>=(float f, incrimentControl& ic)
 {
-	if (ic.type == t_int)
+	if (ic.type == iControlType::t_int)
 		return ic.value.i <= f;
-	else if (ic.type == t_float)
+	else if (ic.type == iControlType::t_float)
 		return ic.value.f <= f;
 	else return false;
 }
@@ -1623,19 +1623,19 @@ bool operator>=(float f, incrimentControl& ic)
 */
 bool operator<=(incrimentControl& ic1, incrimentControl& ic2)
 {
-	if (ic1.type == t_int)
+	if (ic1.type == iControlType::t_int)
 	{
-		if (ic2.type == t_int)
+		if (ic2.type == iControlType::t_int)
 			return ic1.value.i <= ic2.value.i;
-		else if (ic2.type == t_float)
+		else if (ic2.type == iControlType::t_float)
 			return ic1.value.i <= ic2.value.f;
 		else return false;
 	}
-	else if (ic1.type == t_float)
+	else if (ic1.type == iControlType::t_float)
 	{
-		if (ic2.type == t_int)
+		if (ic2.type == iControlType::t_int)
 			return ic1.value.f <= ic2.value.i;
-		else if (ic2.type == t_float)
+		else if (ic2.type == iControlType::t_float)
 			return ic1.value.f <= ic2.value.f;
 		else return false;
 	}
@@ -1652,9 +1652,9 @@ bool operator<=(incrimentControl& ic1, incrimentControl& ic2)
 */
 bool operator<=(incrimentControl& ic, int i)
 {
-	if (ic.type == t_int)
+	if (ic.type == iControlType::t_int)
 		return ic.value.i <= i;
-	else if (ic.type == t_float)
+	else if (ic.type == iControlType::t_float)
 		return ic.value.f <= i;
 	else return false;
 }
@@ -1668,9 +1668,9 @@ bool operator<=(incrimentControl& ic, int i)
 */
 bool operator<=(incrimentControl& ic, float f)
 {
-	if (ic.type == t_int)
+	if (ic.type == iControlType::t_int)
 		return ic.value.i <= f;
-	else if (ic.type == t_float)
+	else if (ic.type == iControlType::t_float)
 		return ic.value.f <= f;
 	else return false;
 }
@@ -1684,9 +1684,9 @@ bool operator<=(incrimentControl& ic, float f)
 */
 bool operator<=(int i, incrimentControl& ic)
 {
-	if (ic.type == t_int)
+	if (ic.type == iControlType::t_int)
 		return ic.value.i >= i;
-	else if (ic.type == t_float)
+	else if (ic.type == iControlType::t_float)
 		return ic.value.f >= i;
 	else return false;
 }
@@ -1700,9 +1700,9 @@ bool operator<=(int i, incrimentControl& ic)
 */
 bool operator<=(float f, incrimentControl& ic)
 {
-	if (ic.type == t_int)
+	if (ic.type == iControlType::t_int)
 		return ic.value.i >= f;
-	else if (ic.type == t_float)
+	else if (ic.type == iControlType::t_float)
 		return ic.value.f >= f;
 	else return false;
 }
@@ -1717,19 +1717,19 @@ bool operator<=(float f, incrimentControl& ic)
 */
 bool operator==(incrimentControl& ic1, incrimentControl& ic2)
 {
-	if (ic1.type == t_int)
+	if (ic1.type == iControlType::t_int)
 	{
-		if (ic2.type == t_int)
+		if (ic2.type == iControlType::t_int)
 			return ic1.value.i == ic2.value.i;
-		else if (ic2.type == t_float)
+		else if (ic2.type == iControlType::t_float)
 			return ic1.value.i == ic2.value.f;
 		else return false;
 	}
-	else if (ic1.type == t_float)
+	else if (ic1.type == iControlType::t_float)
 	{
-		if (ic2.type == t_int)
+		if (ic2.type == iControlType::t_int)
 			return ic1.value.f == ic2.value.i;
-		else if (ic2.type == t_float)
+		else if (ic2.type == iControlType::t_float)
 			return ic1.value.f == ic2.value.f;
 		else return false;
 	}
@@ -1746,9 +1746,9 @@ bool operator==(incrimentControl& ic1, incrimentControl& ic2)
 */
 bool operator==(incrimentControl& ic, int i)
 {
-	if (ic.type == t_int)
+	if (ic.type == iControlType::t_int)
 		return ic.value.i == i;
-	else if (ic.type == t_float)
+	else if (ic.type == iControlType::t_float)
 		return ic.value.f == i;
 	else return false;
 }
@@ -1762,9 +1762,9 @@ bool operator==(incrimentControl& ic, int i)
 */
 bool operator==(incrimentControl& ic, float f)
 {
-	if (ic.type == t_int)
+	if (ic.type == iControlType::t_int)
 		return ic.value.i == f;
-	else if (ic.type == t_float)
+	else if (ic.type == iControlType::t_float)
 		return ic.value.f == f;
 	else return false;
 }
@@ -1778,9 +1778,9 @@ bool operator==(incrimentControl& ic, float f)
 */
 bool operator==(int i, incrimentControl& ic)
 {
-	if (ic.type == t_int)
+	if (ic.type == iControlType::t_int)
 		return ic.value.i == i;
-	else if (ic.type == t_float)
+	else if (ic.type == iControlType::t_float)
 		return ic.value.f == i;
 	else return false;
 }
@@ -1794,9 +1794,9 @@ bool operator==(int i, incrimentControl& ic)
 */
 bool operator==(float f, incrimentControl& ic)
 {
-	if (ic.type == t_int)
+	if (ic.type == iControlType::t_int)
 		return ic.value.i == f;
-	else if (ic.type == t_float)
+	else if (ic.type == iControlType::t_float)
 		return ic.value.f == f;
 	else return false;
 }
@@ -1816,9 +1816,9 @@ bool operator==(D2D1_COLOR_F & c1, D2D1_COLOR_F & c2)
 void incrimentControl::operator=(incrimentControl & ic)
 {
 	type = ic.type;
-	if (type == t_int)
+	if (type == iControlType::t_int)
 		value.i = ic.value.i;
-	else if (type == t_float)
+	else if (type == iControlType::t_float)
 		value.f = ic.value.f;
 }
 
@@ -1830,7 +1830,7 @@ void incrimentControl::operator=(incrimentControl & ic)
 */
 void incrimentControl::operator=(int i)
 {
-	type = t_int;
+	type = iControlType::t_int;
 	value.i = i;
 }
 
@@ -1842,7 +1842,7 @@ void incrimentControl::operator=(int i)
 */
 void incrimentControl::operator=(float f)
 {
-	type = t_float;
+	type = iControlType::t_float;
 	value.f = f;
 }
 

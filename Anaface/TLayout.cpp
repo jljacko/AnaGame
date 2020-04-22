@@ -105,14 +105,14 @@ bool TLayout::addColunm(int x, bool markDetected)
 
 	switch (organization)
 	{
-	case HStack:
+	case orgLayout::HStack:
 		AcceptMark = false;
 		break;
-	case HBuff:
+	case orgLayout::HBuff:
 		AcceptMark = true;
 		break;
-	case HMix:
-	case grid:
+	case orgLayout::HMix:
+	case orgLayout::grid:
 		AcceptMark = markDetected;
 	}
 
@@ -193,14 +193,14 @@ bool TLayout::addRow(int y, bool markDetected)
 
 	switch (organization)
 	{
-	case VStack:
+	case orgLayout::VStack:
 		AcceptMark = false;
 		break;
-	case VBuff:
+	case orgLayout::VBuff:
 		AcceptMark = true;
 		break;
-	case VMix:
-	case grid:
+	case orgLayout::VMix:
+	case orgLayout::grid:
 		AcceptMark = markDetected;
 	}
 
@@ -346,7 +346,7 @@ int TLayout::addChild(TrecPointer<TControl> tc, UINT x, UINT y, UINT x_2, UINT y
 */
 bool TLayout::setGrid(TDataArray<int>& col, TDataArray<int>& row)
 {
-	if(organization != grid)
+	if(organization != orgLayout::grid)
 		return false;
 	if (!col.Size() || !row.Size())
 		return false;
@@ -393,26 +393,26 @@ bool TLayout::setGrid(TDataArray<int>& col, TDataArray<int>& row)
 */
 bool TLayout::setStack(TDataArray<int>& nums)
 {
-	if (organization == grid)
+	if (organization == orgLayout::grid)
 		return false;
 
 	switch (organization)
 	{
-	case VStack:
+	case orgLayout::VStack:
 		for (int c = 0; c < nums.Size(); c++)
 			addRow(nums[c], false);
 		break;
-	case VBuff:
-	case VMix:
+	case orgLayout::VBuff:
+	case orgLayout::VMix:
 		for (int c = 0; c < nums.Size(); c++)
 			addRow(nums[c], true);
 		break;
-	case HStack:
+	case orgLayout::HStack:
 		for (int c = 0; c < nums.Size(); c++)
 			addColunm(nums[c], false);
 		break;
-	case HBuff:
-	case HMix:
+	case orgLayout::HBuff:
+	case orgLayout::HMix:
 		for (int c = 0; c < nums.Size();c++)
 			addColunm(nums[c], true);
 	}
@@ -449,7 +449,7 @@ void TLayout::storeInTML(TFile * ar, int childLevel,bool ov)
 	resetAttributeString(&appendable, childLevel + 1);
 	switch (organization)
 	{
-	case grid:
+	case orgLayout::grid:
 		for (int c = 0; c < columnLines.Size();c++)
 		{
 			appendable.Append(L"|ColumnWidth:");
@@ -463,9 +463,9 @@ void TLayout::storeInTML(TFile * ar, int childLevel,bool ov)
 			_WRITE_THE_STRING
 		}
 		break;
-	case VStack:
-	case VMix:
-	case VBuff:
+	case orgLayout::VStack:
+	case orgLayout::VMix:
+	case orgLayout::VBuff:
 		for (int c = 0;c < rowLines.Size();c++)
 		{
 			appendable.Append(L"|RowHeight:");
@@ -473,9 +473,9 @@ void TLayout::storeInTML(TFile * ar, int childLevel,bool ov)
 			_WRITE_THE_STRING
 		}
 		break;
-	case HBuff:
-	case HMix:
-	case HStack:
+	case orgLayout::HBuff:
+	case orgLayout::HMix:
+	case orgLayout::HStack:
 		for (int c = 0; c < columnLines.Size();c++)
 		{
 			appendable.Append(L"|ColumnWidth:");
@@ -518,12 +518,12 @@ bool TLayout::onCreate(D2D1_RECT_F margin, TrecPointer<TWindowEngine> d3d)
 	}
 
 	valpoint = attributes.retrieveEntry(TString(L"|VerticalScroll"));
-	if (valpoint.Get() && !valpoint->Compare(L"True") && !vScroll) // don't make a new one if one already exists
-		vScroll = new TScrollBar(*this, so_vertical);
+	if (valpoint.Get() && !valpoint->Compare(L"True") && !vScroll.Get()) // don't make a new one if one already exists
+		vScroll = TrecPointerKey::GetNewTrecPointer<TScrollBar>(*this, ScrollOrient::so_vertical);
 
 	valpoint = attributes.retrieveEntry(TString(L"|HorizontalScroll"));
-	if (valpoint.Get() && !valpoint->Compare(L"True") && !hScroll)
-		hScroll = new TScrollBar(*this, so_horizontal);
+	if (valpoint.Get() && !valpoint->Compare(L"True") && !hScroll.Get())
+		hScroll = TrecPointerKey::GetNewTrecPointer<TScrollBar>(*this, ScrollOrient::so_horizontal);
 	
 	
 	int marginWidth = (margin.right - marge.right) - (margin.left + marge.left);
@@ -534,11 +534,11 @@ bool TLayout::onCreate(D2D1_RECT_F margin, TrecPointer<TWindowEngine> d3d)
 	int currentHeight = GetTotalFlexRow();
 
 	int newValue = 0;
-	if (!hScroll && flexMarginWidth < 0)
+	if (!hScroll.Get() && flexMarginWidth < 0)
 	{
-		hScroll = new TScrollBar(*this, so_horizontal);
+		hScroll = TrecPointerKey::GetNewTrecPointer<TScrollBar>(*this, ScrollOrient::so_horizontal);
 	}
-	else if (!hScroll || (organization != orgLayout::HStack)) // If Layout has a horizontal scroll bar, then no need to resize the columns
+	else if (!hScroll.Get() || (organization != orgLayout::HStack)) // If Layout has a horizontal scroll bar, then no need to resize the columns
 	{
 		
 
@@ -552,11 +552,11 @@ bool TLayout::onCreate(D2D1_RECT_F margin, TrecPointer<TWindowEngine> d3d)
 		}
 	}
 	 
-	if (!vScroll && flexMarginHeight < 0)
+	if (!vScroll.Get() && flexMarginHeight < 0)
 	{
-		vScroll = new TScrollBar(*this, so_vertical);
+		vScroll = TrecPointerKey::GetNewTrecPointer<TScrollBar>(*this, ScrollOrient::so_vertical);
 	}
-	if (!vScroll || (organization != orgLayout::VStack)) // Ditto with a vertical Scroll bar and rows
+	if (!vScroll.Get() || (organization != orgLayout::VStack)) // Ditto with a vertical Scroll bar and rows
 	{
 		for (int c = 0; c < rowLines.Size(); c++)
 		{
@@ -574,7 +574,7 @@ bool TLayout::onCreate(D2D1_RECT_F margin, TrecPointer<TWindowEngine> d3d)
 	location.right = margin.right - marge.right;
 	location.top = margin.top + marge.top;
 
-	if (vScroll)
+	if (vScroll.Get())
 	{
 		if (rowLines.Size())
 		{
@@ -584,7 +584,7 @@ bool TLayout::onCreate(D2D1_RECT_F margin, TrecPointer<TWindowEngine> d3d)
 		}
 	}
 
-	if (hScroll)
+	if (hScroll.Get())
 	{
 		if (columnLines.Size())
 		{
@@ -965,7 +965,7 @@ void TLayout::Resize(D2D1_RECT_F& r)
 	UINT curHeight = location.bottom - location.top;
 	UINT newHeight = r.bottom - r.top;
 
-	if (organization == grid)
+	if (organization == orgLayout::grid)
 	{
 		cur_width -= w_fix;
 		new_width -= w_fix;
@@ -988,7 +988,7 @@ void TLayout::Resize(D2D1_RECT_F& r)
 			}
 		}
 	}
-	else if (organization == HStack || organization == HMix || organization == HBuff)
+	else if (organization == orgLayout::HStack || organization == orgLayout::HMix || organization == orgLayout::HBuff)
 	{
 		cur_width -= w_fix;
 		new_width -= w_fix;
@@ -1120,9 +1120,9 @@ UINT TLayout::determineMinHeightNeeded()
 	UINT maxNeeded = 0;
 	switch (organization)
 	{
-	case VStack:
-	case VBuff:
-	case VMix:
+	case orgLayout::VStack:
+	case orgLayout::VBuff:
+	case orgLayout::VMix:
 		for (UINT c = 0; c < lChildren.Count() && lChildren.ElementAt(c)->y < rowLines.Size(); c++)
 		{
 			if (lChildren.ElementAt(c)->contain.Get())
@@ -1139,9 +1139,9 @@ UINT TLayout::determineMinHeightNeeded()
 			newHeight += rowLines[c];
 		location.bottom = location.top + newHeight;
 		break;
-	case HStack:
-	case HBuff:
-	case HMix:
+	case orgLayout::HStack:
+	case orgLayout::HBuff:
+	case orgLayout::HMix:
 		
 		for (UINT c = 0; c < lChildren.Count() && lChildren.ElementAt(c)->x < columnLines.Size(); c++)
 		{
@@ -1158,7 +1158,7 @@ UINT TLayout::determineMinHeightNeeded()
 
 
 		break;
-	case grid: // To-Do
+	case orgLayout::grid: // To-Do
 		TDataArray<UINT> rowHieghts;
 		for (UINT c = 0; c < rowLines.Size(); c++)
 			rowHieghts.push_back(0);

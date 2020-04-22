@@ -7,7 +7,7 @@
 #include "TWindow.h"
 #include <TrecReference.h>
 
-typedef enum TDialogMode
+typedef enum class TDialogMode
 {
 	dialog_mode_free,		// Other widnows could still be interacted with
 	dialog_mode_soft_modal,	// Other Windows will not respond to user interaction, but they could still be moved around

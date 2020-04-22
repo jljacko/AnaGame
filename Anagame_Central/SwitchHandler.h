@@ -2,7 +2,7 @@
 #include <EventHandler.h>
 
 
-#define SWITCH_HANDLER_METHOD_COUNT 11
+#define SWITCH_HANDLER_METHOD_COUNT 12
 
 class SwitchHandler;
 
@@ -37,6 +37,7 @@ protected:
 	void OnSelectText(TControl* tc, EventArgs ea);
 	void OnSelectCombo(TControl* tc, EventArgs ea);
 	void OnSelectScroll(TControl* tc, EventArgs ea);
+	void OnSelectGif(TControl* tc, EventArgs ea);
 
 	virtual bool ShouldProcessMessageByType(TrecPointer<HandlerMessage> message) override;
 

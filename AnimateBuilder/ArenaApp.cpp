@@ -132,7 +132,7 @@ ArenaApp::ArenaApp(TrecPointer<TControl> m, TrecPointer<TControl> o, TrecPointer
 	// Set up the Main Page
 	
 	TString fileBase;
-	fileBase.Set(GetDirectory(cd_Executable));
+	fileBase.Set(GetDirectory(CentralDirectories::cd_Executable));
 	TString fileBody = fileBase;
 	fileBody.Append(L"\\Resources\\ArenaView.tml");
 
@@ -296,7 +296,7 @@ bool ArenaApp::InitializeControls()
 		}
 
 		TrecPointer<ArenaModel> basicModel = TrecPointerKey::GetNewSelfTrecPointer<ArenaModel>(modelCollection);
-		basicModel->SetVertexData(floats, default_shader_Single_Color);
+		basicModel->SetVertexData(floats, DefaultShader::default_shader_Single_Color);
 		basicModel->SetIndices(indices);
 		basicModel->setColorBuffer(0.0f, 0.0f, 1.0f, 1.0f);
 		basicModel->setPipeColorBuffer(1.0f, 0.0f, 0.0f, 1.0f);
@@ -333,7 +333,7 @@ bool ArenaApp::InitializeControls()
 			uints.push_back(c);
 
 		scale = TrecPointerKey::GetNewSelfTrecPointer<ArenaModel>(modelCollection);
-		scale->SetVertexData(floats, default_shader_Single_Color, D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+		scale->SetVertexData(floats, DefaultShader::default_shader_Single_Color, D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 		scale->SetIndices(uints);
 		scale->setColorBuffer(0.0f, 0.0f, 1.0f, 1.0f);
 

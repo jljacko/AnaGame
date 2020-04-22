@@ -29,20 +29,20 @@ bool TransitionAnimation::Update(float progress)
 
 void TransitionAnimation::SetAnimationValue(float value, animation_value_type type)
 {
-	if (animation_phase_end == phase)
+	if (animation_phase::animation_phase_end == phase)
 	{
 		switch (type)
 		{
-		case animation_value_type_bottom_location:
+		case animation_value_type::animation_value_type_bottom_location:
 			loc2.bottom = value;
 			break;
-		case animation_value_type_left_location:
+		case animation_value_type::animation_value_type_left_location:
 			loc2.left = value;
 			break;
-		case animation_value_type_right_location:
+		case animation_value_type::animation_value_type_right_location:
 			loc2.right = value;
 			break;
-		case animation_value_type_top_location:
+		case animation_value_type::animation_value_type_top_location:
 			loc2.top = value;
 			break;
 		}
@@ -51,16 +51,16 @@ void TransitionAnimation::SetAnimationValue(float value, animation_value_type ty
 	{
 		switch (type)
 		{
-		case animation_value_type_bottom_location:
+		case animation_value_type::animation_value_type_bottom_location:
 			loc1.bottom = value;
 			break;
-		case animation_value_type_left_location:
+		case animation_value_type::animation_value_type_left_location:
 			loc1.left = value;
 			break;
-		case animation_value_type_right_location:
+		case animation_value_type::animation_value_type_right_location:
 			loc1.right = value;
 			break;
-		case animation_value_type_top_location:
+		case animation_value_type::animation_value_type_top_location:
 			loc1.top = value;
 			break;
 		}
@@ -92,7 +92,7 @@ void TransitionAnimation::SetControl(TrecPointer<TControl> con)
 	control = con;
 	if (!control.Get())
 		return;
-	if (phase == animation_phase_end)
+	if (phase == animation_phase::animation_phase_end)
 	{
 		loc1 = control->getLocation();
 	}

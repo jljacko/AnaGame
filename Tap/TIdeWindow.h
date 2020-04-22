@@ -1,7 +1,9 @@
 #pragma once
 #include "TWindow.h"
 
-typedef enum ide_page_type
+
+
+typedef enum class ide_page_type
 {
 	ide_page_type_body,
 	ide_page_type_basic_console,
@@ -14,18 +16,21 @@ typedef enum ide_page_type
 }ide_page_type;
 
 
-typedef enum anagame_page
+typedef enum class anagame_page
 {
 	anagame_page_custom,
 	anagame_page_file_node,
 	anagame_page_command_prompt,
 	anagame_page_code_explorer,
 	anagame_page_object_explorer,
-	anagame_page_code_file
+	anagame_page_code_file,
+	anagame_page_arena,
+	anagame_page_camera
 };
 
 class IDEPage;
-
+class IDEPageHolder;
+class MiniApp;
 
 class _TAP_DLL TIdeWindow :
 	public TWindow
@@ -37,15 +42,23 @@ public:
 	void OnMouseMove(UINT nFlags, TPoint point)override;
 	void OnLButtonDown(UINT nFlags, TPoint point)override;
 
-	void AddNewPage(anagame_page pageType, ide_page_type pageLoc, TString name, TString tmlLoc, TrecPointer<EventHandler> handler, bool pageTypeStrict = false);
+	void AddNewMiniApp(TrecPointer<MiniApp> app);
 
+	TrecSubPointer<Page, IDEPage> AddNewPage(anagame_page pageType, ide_page_type pageLoc, TString name, TString tmlLoc, TrecPointer<EventHandler> handler, bool pageTypeStrict = false);
+	TrecSubPointer<Page, IDEPage> AddPage(anagame_page pageType, ide_page_type pageLoc, TString name);
 
 
 	int CompileView(TString& file, TrecPointer<EventHandler> eh)override;
 
+	void SetCurrentHolder(TrecPointer<IDEPageHolder> holder);
+
 protected:
 	UINT pageBarSpace;
 	UINT mainViewSpace;
+
+
+	TrecPointer<IDEPageHolder> currentHolder;
+
 
 	virtual void DrawOtherPages()override;
 
@@ -60,5 +73,7 @@ protected:
 	TrecSubPointer<Page, IDEPage> focusPage;
 
 	TrecPointer<TBrush> panelbrush;
+
+	TDataArray<TrecPointer<MiniApp>> apps;
 };
 

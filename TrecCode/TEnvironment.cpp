@@ -13,7 +13,7 @@ void TEnvironment::SetUpLanguageExtensionMapping()
 	if (languagesMapped)
 		return;
 
-	TString languageFolder = GetDirectoryWithSlash(cd_Executable) + TString(L"Languages");
+	TString languageFolder = GetDirectoryWithSlash(CentralDirectories::cd_Executable) + TString(L"Languages");
 
 	if (languageList.Size())
 		return;

@@ -1,6 +1,6 @@
 #pragma once
 #include <TObject.h>
-#include "TWindow.h"
+#include "TIDEWindow.h"
 #include "HandlerMessage.h"
 #include <TTrecSoftPointerArray.h>
 
@@ -13,7 +13,7 @@ public:
 	int messageStack;
 };
 
-typedef enum t_window_type
+typedef enum class t_window_type
 {
 	t_window_type_plain,
 	t_window_type_ide
@@ -31,7 +31,7 @@ public:
 
 	LRESULT Proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
-	int SetMainWindow(WNDCLASSEXW& wcex, TString& file, TrecPointer<EventHandler> eh, t_window_type winType = t_window_type_plain);
+	int SetMainWindow(WNDCLASSEXW& wcex, TString& file, TrecPointer<EventHandler> eh, t_window_type winType = t_window_type::t_window_type_plain);
 
 	TrecPointer<TWindow> GetWindowByName(TString&);
 
@@ -51,6 +51,8 @@ public:
 	void SetSelf(TrecPointer<TInstance> i);
 
 	void DispatchAnagameMessage(TrecPointer<HandlerMessage> message);
+
+	TrecPointer<EventHandler> GetHandler(const TString& name, anagame_page pageType);
 
 protected:
 	void AssertDialogRegistered();

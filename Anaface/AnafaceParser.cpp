@@ -33,7 +33,7 @@ AnafaceParser::AnafaceParser(TrecPointer<DrawingBoard> rt, HWND hWin,TString dir
 	windowHandle = hWin;
 	events = NULL;
 	classList = TrecPointerKey::GetNewTrecPointer<TArray<styleTable>>();
-	parserMode = anaface_parser_mode_normal;
+	parserMode = anaface_parser_mode::anaface_parser_mode_normal;
 }
 
 /*
@@ -76,18 +76,18 @@ bool AnafaceParser::Obj(TString* va)
 	{
 		addToTree(currentObj);
 		currentObj.Nullify();
-		anaface_parser_mode_persistant_story;
+		parserMode = anaface_parser_mode::anaface_parser_mode_persistant_story;
 		return true;
 	}
 	if (!v.Compare(L"StoryBoard"))
 	{
 		addToTree(currentObj);
 		currentObj.Nullify();
-		parserMode = anaface_parser_mode_normal_story;
+		parserMode = anaface_parser_mode::anaface_parser_mode_normal_story;
 		return true;
 	}
 
-	parserMode = anaface_parser_mode_normal;
+	parserMode = anaface_parser_mode::anaface_parser_mode_normal;
 	currentAnimation.Nullify();
 
 	TrecPointer<TDataArray<TString>> strings;
@@ -184,37 +184,37 @@ bool AnafaceParser::Obj(TString* va)
 	else if (v.Compare(L"TGrid")==0)
 	{
 		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TLayout>(renderer, classList);// TrecPointer<TControl>((new TLayout(renderer, classList)));
-		dynamic_cast<TLayout*>(currentObj.Get())->setLayout(grid);
+		dynamic_cast<TLayout*>(currentObj.Get())->setLayout(orgLayout::grid);
 		addToTree(currentObj);
 	}
 	else if (!v.Compare(L"TGridEx") || !v.Compare(L"GridEx"))
 	{
 		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TLayoutEx>(renderer, classList);// TrecPointer<TControl>((new TLayoutEx(renderer, classList)));
-		dynamic_cast<TLayout*>(currentObj.Get())->setLayout(grid);
+		dynamic_cast<TLayout*>(currentObj.Get())->setLayout(orgLayout::grid);
 		addToTree(currentObj);
 	}
 	else if (v.Compare(L"TStack") == 0)
 	{
 		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TLayout>(renderer, classList);// TrecPointer<TControl>((new TLayout(renderer, classList)));
-		dynamic_cast<TLayout*>(currentObj.Get())->setLayout(VMix);
+		dynamic_cast<TLayout*>(currentObj.Get())->setLayout(orgLayout::VMix);
 		addToTree(currentObj);
 	}
 	else if (!v.Compare(L"TStackEx") || !v.Compare(L"StackEx"))
 	{
 		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TLayoutEx>(renderer, classList);// TrecPointer<TControl>(new TLayoutEx(renderer, classList));
-		dynamic_cast<TLayout*>(currentObj.Get())->setLayout(VMix);
+		dynamic_cast<TLayout*>(currentObj.Get())->setLayout(orgLayout::VMix);
 		addToTree(currentObj);
 	}
 	else if (v.Compare(L"TGallery") == 0)
 	{
 		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TLayout>(renderer, classList);// TrecPointer<TControl>((new TLayout(renderer, classList)));
-		dynamic_cast<TLayout*>(currentObj.Get())->setLayout(HMix);
+		dynamic_cast<TLayout*>(currentObj.Get())->setLayout(orgLayout::HMix);
 		addToTree(currentObj);
 	}
 	else if (!v.Compare(L"TGalleryEx") || !v.Compare(L"GalleryEx"))
 	{
 		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TLayout>(renderer, classList);// TrecPointer<TControl>((new TLayoutEx(renderer, classList)));
-		dynamic_cast<TLayout*>(currentObj.Get())->setLayout(HMix);
+		dynamic_cast<TLayout*>(currentObj.Get())->setLayout(orgLayout::HMix);
 		addToTree(currentObj);
 	}
 	else if (!v.Compare(L"ComboBox") || !v.Compare(L"TComboBox"))
@@ -317,14 +317,14 @@ bool AnafaceParser::Obj(TString* va)
 */
 bool AnafaceParser::Attribute(TrecPointer<TString> v, TString& e)
 {
-	if (!e.CompareNoCase(L"Name") && parserMode == anaface_parser_mode_normal_story)
+	if (!e.CompareNoCase(L"Name") && parserMode == anaface_parser_mode::anaface_parser_mode_normal_story)
 	{
 		if (!v.Get())
 			return false;
 		basicStoryBoards.push_back(*v.Get());
 		return true;
 	}
-	if (!e.CompareNoCase(L"Name") && parserMode == anaface_parser_mode_persistant_story)
+	if (!e.CompareNoCase(L"Name") && parserMode == anaface_parser_mode::anaface_parser_mode_persistant_story)
 	{
 		if (!v.Get())
 			return false;
@@ -700,37 +700,37 @@ bool AnafaceParser::handleEventAttribute(TrecPointer<TString>& v, TString& e)
 
 	if (!TString::Compare(e, L"|EventOnClick"))
 	{
-		AddToEventList(On_Click, eventID);
+		AddToEventList(R_Message_Type::On_Click, eventID);
 		return true;
 	}
 	else if (!TString::Compare(e, L"|EventOnHover"))
 	{
-		AddToEventList(On_Hover, eventID);
+		AddToEventList(R_Message_Type::On_Hover, eventID);
 		return true;
 	}
 	else if (!TString::Compare(e, L"|EventOnHoverLeave"))
 	{
-		AddToEventList(On_Hover_Leave, eventID);
+		AddToEventList(R_Message_Type::On_Hover_Leave, eventID);
 		return true;
 	}
 	else if (!TString::Compare(e, L"|EventOnRightClick"))
 	{
-		AddToEventList(On_Right_Click, eventID);
+		AddToEventList(R_Message_Type::On_Right_Click, eventID);
 		return true;
 	}
 	else if (!TString::Compare(e, L"|EventOnRelease"))
 	{
-		AddToEventList(On_Click_Release, eventID);
+		AddToEventList(R_Message_Type::On_Click_Release, eventID);
 		return true;
 	}
 	else if (!TString::Compare(e, L"|EventOnRightRelease"))
 	{
-		AddToEventList(On_Right_Release, eventID);
+		AddToEventList(R_Message_Type::On_Right_Release, eventID);
 		return true;
 	}
 	else if (!TString::Compare(e, L"|EventOnChar"))
 	{
-		AddToEventList(On_Char, eventID);
+		AddToEventList(R_Message_Type::On_Char, eventID);
 		return true;
 	}
 	else if (!TString::Compare(e, L"|EventOnDblClick"))
@@ -739,32 +739,32 @@ bool AnafaceParser::handleEventAttribute(TrecPointer<TString>& v, TString& e)
 	}
 	else if (!TString::Compare(e, L"|EventOnRadioChange"))
 	{
-		AddToEventList(On_radio_change, eventID);
+		AddToEventList(R_Message_Type::On_radio_change, eventID);
 		return true;
 	}
 	else if (!TString::Compare(e, L"|EventCheck"))
 	{
-		AddToEventList(On_check, eventID);
+		AddToEventList(R_Message_Type::On_check, eventID);
 		return true;
 	}
 	else if (!TString::Compare(e, L"|EventSelectionChange"))
 	{
-		AddToEventList(On_sel_change, eventID);
+		AddToEventList(R_Message_Type::On_sel_change, eventID);
 		return true;
 	}
 	else if (!TString::Compare(e, L"|EventOnTextChange"))
 	{
-		AddToEventList(On_Text_Change, eventID);
+		AddToEventList(R_Message_Type::On_Text_Change, eventID);
 		return true;
 	}
 	else if (!TString::Compare(e, L"|OnFocus"))
 	{
-		AddToEventList(On_Focus, eventID);
+		AddToEventList(R_Message_Type::On_Focus, eventID);
 		return true;
 	}
 	else if (!TString::Compare(e, L"|OnLoseFocus"))
 	{
-		AddToEventList(On_Lose_Focus, eventID);
+		AddToEventList(R_Message_Type::On_Lose_Focus, eventID);
 		return true;
 	}
 	

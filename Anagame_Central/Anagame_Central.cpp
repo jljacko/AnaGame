@@ -35,7 +35,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     // TODO: Place code here.
 
-	TString tmlFile(GetDirectoryWithSlash(cd_Executable));
+	TString tmlFile(GetDirectoryWithSlash(CentralDirectories::cd_Executable));
 	tmlFile.Append(L"CentralInterface.tml");
 
 	TString title(L"Anagame Central");

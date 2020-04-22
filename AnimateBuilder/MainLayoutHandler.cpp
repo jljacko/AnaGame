@@ -4,6 +4,7 @@
 #include <TDialog.h>
 #include "SourceCodeApp.h"
 #include "SourceCodeApp2.h"
+#include "ArenaApp2.h"
 
 
 // Found on the Home Tab
@@ -270,20 +271,28 @@ void MainLayoutHandler::OnPrint(TControl* tc, EventArgs ea)
 
 void MainLayoutHandler::OnNewArena(TControl* tc, EventArgs ea)
 {
-	/*TString dialog(L"Enter a name for your Arena!");
+	TString dialog(L"Enter a name for your Arena!");
 	TString arenaName(ActivateNameDialog(instance, page->GetWindowHandle()->GetWindowHandle(), dialog));
 
 	if (!arenaName.GetSize())
 		return;
 
-	currentDocument = TrecPointerKey::GetNewSelfTrecPointerAlt<MiniHandler, ArenaApp>(body, outputPanel, classUI, app, arenaName);
+	// Make sure Window is ready for 3D
+	if (!window->SetUp3D())
+	{
+		TString errorMessage(L"Error! Failed to Initialize Window for 3D!");
+		ActivateAlertDialog(instance, page->GetWindowHandle()->GetWindowHandle(), errorMessage);
+		return;
+	}
+
+	currentDocument = TrecPointerKey::GetNewSelfTrecPointerAlt<MiniApp, ArenaApp2>(window, arenaName);
 	ActiveDocuments.push_back(currentDocument);
-	currentDocument->InitializeControls();
-	currentDocument->OnShow();
+	currentDocument->Initialize();
+
 	if (arenaStack1.Get())
 		arenaStack1->setActive(true);
 	if (arenaStack3.Get())
-		arenaStack3->setActive(true);*/
+		arenaStack3->setActive(true);
 }
 
 void MainLayoutHandler::OnUpdateClearColor(TControl* tc, EventArgs ea)
@@ -338,5 +347,5 @@ bool MainLayoutHandler::ShouldProcessMessageByType(TrecPointer<HandlerMessage> m
 {
 	if(!message.Get())
 		return false;
-	return message->GetHandlerType() == handler_type_other;
+	return message->GetHandlerType() == handler_type::handler_type_other;
 }

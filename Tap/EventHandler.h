@@ -39,6 +39,8 @@ public:
 	virtual void SetSelf(TrecPointer<EventHandler> handleSelf);
 	UINT GetId();
 
+	TrecPointer<Page> GetPage();
+
 protected:
 	TrecPointerSoft<EventHandler> hSelf;
 	virtual bool ShouldProcessMessageByType(TrecPointer<HandlerMessage> message) = 0;

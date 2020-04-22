@@ -143,7 +143,7 @@ void TBrush::DrawLine(const POINT_2D& p1, const POINT_2D& p2, float thickness)
  */
 UINT TBrush::GetMaxColors()
 {
-	if (brushType == brush_type_solid)
+	if (brushType == brush_type::brush_type_solid)
 		return 1;
 	return gradients.GetGradientCount();
 }
@@ -161,16 +161,16 @@ void TBrush::SetColor(const TColor& color, UINT index)
 {
 	switch (brushType)
 	{
-	case brush_type_solid:
+	case brush_type::brush_type_solid:
 		ATLTRACE(L"SOLID BRUSH TYPE\n");
 		break;
-	case brush_type_linear:
+	case brush_type::brush_type_linear:
 		ATLTRACE(L"LINEAR BRUSH TYPE\n");
 		break;
-	case brush_type_radial:
+	case brush_type::brush_type_radial:
 		ATLTRACE(L"RADIAL BRUSH TYPE\n");
 		break;
-	case brush_type_bitmap:
+	case brush_type::brush_type_bitmap:
 		ATLTRACE(L"BITMAP BRUSH TYPE\n");
 		break;
 	default:
@@ -178,7 +178,7 @@ void TBrush::SetColor(const TColor& color, UINT index)
 	}
 
 
-	if (brushType == brush_type_solid)
+	if (brushType == brush_type::brush_type_solid)
 	{
 		
 		if (brush.Get())
@@ -205,7 +205,7 @@ void TBrush::SetColor(const TColor& color, UINT index)
  */
 TColor TBrush::GetColor(UINT index)
 {
-	if (brushType == brush_type_solid)
+	if (brushType == brush_type::brush_type_solid)
 	{
 		TColor col;
 		if (brush.Get())
@@ -272,7 +272,7 @@ TBrush::TBrush(const TColor& col, TrecPointer<DrawingBoard> rt)
 	currentRenderer->CreateSolidColorBrush(col.GetColor(), brushHolder.GetPointerAddress());
 
 	brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1SolidColorBrush>(brushHolder);
-	brushType = brush_type_solid;
+	brushType = brush_type::brush_type_solid;
 
 	gradients.AddGradient(TGradientStop(col, 0.0f));
 }
@@ -314,7 +314,7 @@ TBrush::TBrush(const TGradientStopCollection& coll, TrecPointer<DrawingBoard> rt
 
 	stopColl->Release();
 	stopColl = nullptr;
-	brushType = brush_type_radial;
+	brushType = brush_type::brush_type_radial;
 }
 
 /**
@@ -351,7 +351,7 @@ TBrush::TBrush(const TGradientStopCollection& coll, TrecPointer<DrawingBoard> rt
 
 	stopColl->Release();
 	stopColl = nullptr;
-	brushType = brush_type_linear;
+	brushType = brush_type::brush_type_linear;
 }
 
 TBrush::TBrush(TrecPointer<DrawingBoard> rt)
@@ -409,14 +409,14 @@ void TBrush::RefreshBrush()
 
 	switch (brushType)
 	{
-	case brush_type_solid:
+	case brush_type::brush_type_solid:
 		col.SetColor(reinterpret_cast<ID2D1SolidColorBrush*>(brush.Get())->GetColor());
 		brush.Delete();
 		currentRenderer->CreateSolidColorBrush(col.GetColor(), brushHolder.GetPointerAddress());
 
 		brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1SolidColorBrush>(brushHolder);
 		break;
-	case brush_type_linear:
+	case brush_type::brush_type_linear:
 		p1 = reinterpret_cast<ID2D1LinearGradientBrush*>(brush.Get())->GetStartPoint();
 		p2 = reinterpret_cast<ID2D1LinearGradientBrush*>(brush.Get())->GetEndPoint();
 		brush.Delete();
@@ -426,7 +426,7 @@ void TBrush::RefreshBrush()
 			stopColl, linBrush.GetPointerAddress());
 		brush = TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1LinearGradientBrush>(linBrush);
 		break;
-	case brush_type_radial:
+	case brush_type::brush_type_radial:
 		p1 = reinterpret_cast<ID2D1RadialGradientBrush*>(brush.Get())->GetCenter();
 		p2 = reinterpret_cast<ID2D1RadialGradientBrush*>(brush.Get())->GetGradientOriginOffset();
 		x = reinterpret_cast<ID2D1RadialGradientBrush*>(brush.Get())->GetRadiusX();

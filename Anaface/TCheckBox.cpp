@@ -100,18 +100,18 @@ void TCheckBox::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, T
 	if (isContained(&point, &location))
 	{
 		//onClick = true;
-		*mOut = positiveOverrideUpdate;
+		*mOut = messageOutput::positiveOverrideUpdate;
 		isClicked = !isClicked;
-		eventAr.push_back({ On_check,this });
+		eventAr.push_back({ R_Message_Type::On_check,this });
 
-		if (hasEvent(On_check))
+		if (hasEvent(R_Message_Type::On_check))
 		{
 
-			args.eventType = On_check;
+			args.eventType = R_Message_Type::On_check;
 			args.positive = isClicked;
 			if (text1.Get())
 				args.text.Set(text1->text);
-			args.methodID = getEventID(On_check);
+			args.methodID = getEventID(R_Message_Type::On_check);
 		}
 
 	}

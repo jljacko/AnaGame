@@ -109,7 +109,8 @@ void TBitmapBrush::FillRectangle(const RECT_2D& r)
 	if (Refresh() && currentFrame < bitmaps.Size() && bitmaps[currentFrame].Get() 
 		&& currentFrame < brushes.Size() && brushes[currentFrame].Get())
 	{
-		currentRenderer->DrawBitmap(bitmaps[currentFrame].Get(), r);
+		currentRenderer->FillRectangle(r, brushes[currentFrame].Get());
+		//currentRenderer->DrawBitmap(bitmaps[currentFrame].Get(), r);
 	}
 }
 
@@ -190,7 +191,7 @@ TBitmapBrush::TBitmapBrush(TrecPointer<TFileShell> picture, TrecPointer<DrawingB
 {
 	valid = false;
 
-	brushType = brush_type_bitmap;
+	brushType = brush_type::brush_type_bitmap;
 
 	if (!picture.Get())
 		return;
@@ -201,7 +202,7 @@ TBitmapBrush::TBitmapBrush(TrecPointer<TFileShell> picture, TrecPointer<DrawingB
 	converter = NULL;
 	IWICBitmapScaler* scale = nullptr;
 	UINT frameCount = 0;
-	HRESULT result = CoCreateInstance(CLSID_WICImagingFactory,
+	HRESULT result = CoCreateInstance(CLSID_WICImagingFactory1,
 		NULL,
 		CLSCTX_INPROC_SERVER,
 		IID_IWICImagingFactory,
@@ -242,8 +243,10 @@ TBitmapBrush::TBitmapBrush(TrecPointer<TFileShell> picture, TrecPointer<DrawingB
 
 
 	decoder->GetFrameCount(&frameCount);
-	for (UINT Rust = 0; Rust < frameCount && SUCCEEDED(decoder->GetFrame(Rust, &frameDec)); Rust++)
+	for (UINT Rust = 0; Rust < frameCount; Rust++)
 	{
+		if (!SUCCEEDED(decoder->GetFrame(Rust, &frameDec)))
+			break;
 		UINT h = 0, w = 0;
 
 		frameDec->GetSize(&w, &h);
@@ -269,12 +272,16 @@ TBitmapBrush::TBitmapBrush(TrecPointer<TFileShell> picture, TrecPointer<DrawingB
 			}
 		}
 		scale->Release();
+		converter->Release();
+		imageFactory->CreateFormatConverter(&converter);
 		imageFactory->CreateBitmapScaler(&scale);
 	}
+	converter->Release();
+	converter = nullptr;
 	scale->Release();
 	if (brushes.Size())
 	{
-		brush = brushes[0];
+		brush = brushes[currentFrame = 0];
 		valid = true;
 	}
 	location = loc;
@@ -299,6 +306,8 @@ void TBitmapBrush::RefreshBrush()
 	result = imageFactory->CreateBitmapScaler(&scale);
 	UINT frameCount = 0;
 	decoder->GetFrameCount(&frameCount);
+
+	imageFactory->CreateFormatConverter(&converter);
 
 	for (UINT Rust = 0; Rust < frameCount && SUCCEEDED(decoder->GetFrame(Rust, &frameDec)); Rust++)
 	{
@@ -326,9 +335,12 @@ void TBitmapBrush::RefreshBrush()
 				brushes.push_back(TrecPointerKey::GetComPointer<ID2D1Brush, ID2D1BitmapBrush>(bitHolder));
 			}
 		}
+		converter->Release();
 		scale->Release();
 		imageFactory->CreateBitmapScaler(&scale);
+		imageFactory->CreateFormatConverter(&converter);
 	}
+	converter->Release();
 	scale->Release();
 	if (currentFrame < brushes.Size())
 	{

@@ -19,7 +19,7 @@ SourceCodeApp::SourceCodeApp(TrecPointer<TControl> m, TrecPointer<TControl> o, T
 	eventNameID enid;
 
 
-	TString fileBase(GetDirectory(cd_Executable));
+	TString fileBase(GetDirectory(CentralDirectories::cd_Executable));
 	TString fileBody = fileBase;
 	fileBody.Append( L"\\Resources\\LineTextEditor.txt");
 	window = r->GetMainWindow();
@@ -67,7 +67,7 @@ SourceCodeApp::SourceCodeApp(TrecPointer<TControl> m, TrecPointer<TControl> o, T
 	explorerControl->onCreate(rect, window->GetWindowEngine());
 
 	TrecPointer<TObjectNode> node = TrecPointerKey::GetNewSelfTrecPointerAlt<TObjectNode, TFileNode>(0);
-	TrecPointer<TFileShell> rootFile = TFileShell::GetFileInfo(GetDirectory(cd_Documents));
+	TrecPointer<TFileShell> rootFile = TFileShell::GetFileInfo(GetDirectory(CentralDirectories::cd_Documents));
 	dynamic_cast<TFileNode*>(node.Get())->SetFile(rootFile);
 	dynamic_cast<TTreeDataBind*>(explorerControl.Get())->SetNode(node);
 	dynamic_cast<AnafaceUI*>(e.Get())->addControl(explorerControl, TString());

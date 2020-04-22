@@ -169,12 +169,15 @@ int Page::SetAnaface(TrecPointer<TFile> file, TrecPointer<EventHandler> eh)
 	rootControl = parser.getRootControl();
 	if (rootControl.Get())
 		rootControl->onCreate(area, windowHandle->GetWindowEngine());
-	if(handler.Get())
-		handler->Initialize(TrecPointerKey::GetTrecPointerFromSoft<Page>(self));
 
 	persistentStoryBoards = parser.GetPersistentStoryBoards();
 	basicStoryBoards = parser.GetStoryBoards();
 	animations = parser.GetAnimations();
+
+	if(handler.Get())
+		handler->Initialize(TrecPointerKey::GetTrecPointerFromSoft<Page>(self));
+
+
 	return 0;
 }
 
@@ -252,7 +255,7 @@ void Page::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
 	if (miniHandler.Get())
 		miniHandler->OnRButtonUp(nFlags, point, mOut);
 
-	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
+	if( *mOut == messageOutput::negativeUpdate || *mOut == messageOutput::positiveContinueUpdate || *mOut == messageOutput::positiveOverrideUpdate)
 		if (windowHandle.Get())windowHandle->Draw(); else return;
 }
 
@@ -267,7 +270,7 @@ void Page::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
 	if (miniHandler.Get())
 		miniHandler->OnLButtonDown(nFlags, point, mOut);
 
-	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
+	if( *mOut == messageOutput::negativeUpdate || *mOut == messageOutput::positiveContinueUpdate || *mOut == messageOutput::positiveOverrideUpdate)
 		if (windowHandle.Get())windowHandle->Draw(); else return;
 }
 
@@ -276,12 +279,25 @@ void Page::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
 	TDataArray<EventID_Cred> eventAr;
 	OnRButtonDown(nFlags, point, mOut, eventAr);
 	
+	if (*mOut == messageOutput::positiveScroll && eventAr.Size() && windowHandle.Get())
+	{
+		for (UINT Rust = 0; Rust < eventAr.Size(); Rust++)
+		{
+			if (eventAr[Rust].scroll.Get())
+			{
+				windowHandle->currentScrollBar = eventAr[Rust].scroll;
+				break;
+			}
+		}
+	}
+
+
 	if(handler.Get())
 		handler->HandleEvents(eventAr);
 
 	if (miniHandler.Get())
 		miniHandler->OnRButtonDown(nFlags, point, mOut);
-	if (*mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
+	if (*mOut == messageOutput::negativeUpdate || *mOut == messageOutput::positiveContinueUpdate || *mOut == messageOutput::positiveOverrideUpdate)
 		if (windowHandle.Get())windowHandle->Draw(); else return;
 }
 
@@ -295,7 +311,7 @@ void Page::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut)
 
 	if (miniHandler.Get())
 		miniHandler->OnMouseMove(nFlags, point, mOut);
-	if (*mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
+	if (*mOut == messageOutput::negativeUpdate || *mOut == messageOutput::positiveContinueUpdate || *mOut == messageOutput::positiveOverrideUpdate)
 		if (windowHandle.Get())windowHandle->Draw(); else return;
 }
 
@@ -310,7 +326,7 @@ void Page::OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut)
 	if (miniHandler.Get())
 		miniHandler->OnLButtonDblClk(nFlags, point, mOut);
 
-	if( *mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
+	if( *mOut == messageOutput::negativeUpdate || *mOut == messageOutput::positiveContinueUpdate || *mOut == messageOutput::positiveOverrideUpdate)
 		if (windowHandle.Get())windowHandle->Draw(); else return;
 }
 
@@ -319,13 +335,14 @@ void Page::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
 	TDataArray<EventID_Cred> eventAr;
 	OnLButtonUp(nFlags, point, mOut, eventAr);
 
+
 	if (handler.Get())
 		handler->HandleEvents(eventAr);
 
 	if (miniHandler.Get())
 		miniHandler->OnLButtonUp(nFlags, point, mOut);
 
-	if (*mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
+	if (*mOut == messageOutput::negativeUpdate || *mOut == messageOutput::positiveContinueUpdate || *mOut == messageOutput::positiveOverrideUpdate)
 		if (windowHandle.Get())windowHandle->Draw(); else return;
 }
 
@@ -341,7 +358,7 @@ bool Page::OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlags, messageOu
 	if(!returnable)
 		returnable = OnChar(fromChar, nChar, nRepCnt, nFlags, mOut, eventAr);
 
-	if (*mOut == negativeUpdate || *mOut == positiveContinueUpdate || *mOut == positiveOverrideUpdate)
+	if (*mOut == messageOutput::negativeUpdate || *mOut == messageOutput::positiveContinueUpdate || *mOut == messageOutput::positiveOverrideUpdate)
 		if (windowHandle.Get())windowHandle->Draw(); else return false;
 	return returnable;
 }
@@ -429,14 +446,14 @@ void Page::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArra
 	{
 		switch (*mOut)
 		{
-		case negative:
-			*mOut = negativeUpdate;
+		case messageOutput::negative:
+			*mOut = messageOutput::negativeUpdate;
 			break;
-		case positiveContinue:
-			*mOut = positiveContinueUpdate;
+		case messageOutput::positiveContinue:
+			*mOut = messageOutput::positiveContinueUpdate;
 			break;
-		case positiveOverride:
-			*mOut = positiveOverrideUpdate;
+		case messageOutput::positiveOverride:
+			*mOut = messageOutput::positiveOverrideUpdate;
 		}
 	}
 }
@@ -483,6 +500,20 @@ void Page::SetMiniHandler(TrecSubPointer<EventHandler, MiniHandler> mh)
 	}
 }
 
+void Page::AddStory(TString& story, bool persistent)
+{
+	if (persistent)
+		persistentStoryBoards.push_back(story);
+	else
+		basicStoryBoards.push_back(story);
+}
+
+void Page::AddAnimations(TrecPointer<AnimationBuilder> builder)
+{
+	if (builder.Get())
+		animations.push_back(builder);
+}
+
 
 
 
@@ -511,7 +542,9 @@ TrecPointer<TArenaEngine> Page::GetArenaEngine()
 void Page::CreateLayout()
 {
 	if (rootControl.Get() && windowHandle.Get())
+	{
 		rootControl->onCreate(area, windowHandle->GetWindowEngine());
+	}
 }
 
 void Page::Draw(TWindowEngine* twe)
@@ -534,6 +567,8 @@ D2D1_RECT_F Page::GetArea()
 void Page::SetArea(const D2D1_RECT_F& loc)
 {
 	area = loc;
+	if (rootControl.Get())
+		rootControl->Resize(area);
 }
 
 

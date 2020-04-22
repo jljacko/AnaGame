@@ -43,7 +43,7 @@ ArenaModel::ArenaModel(TrecPointer<TArenaEngine> ae)
 	TString logMessage;
 	logMessage.Format(L"CREATE %p ArenaModel(ArenaEngine& ae)", this);
 
-	Log(lt_memory, logMessage);
+	Log(LogType::lt_memory, logMessage);
 }
 
 ArenaModel::ArenaModel(ArenaModel& am)
@@ -90,7 +90,7 @@ ArenaModel::~ArenaModel()
 	TString logMessage;
 	logMessage.Format(L"DELETE %p ArenaModel", this);
 
-	Log(lt_memory, logMessage);
+	Log(LogType::lt_memory, logMessage);
 }
 
 TString ArenaModel::toString()
@@ -654,13 +654,13 @@ bool ArenaModel::setSingleColorBuffer(bool solidColor)
 	{
 		if (!singleColorBuffer.Get())
 			return false;
-		engine->ReplaceConstantBuffer(default_shader_Single_Color, loc, singleColorBuffer);
+		engine->ReplaceConstantBuffer(DefaultShader::default_shader_Single_Color, loc, singleColorBuffer);
 	}
 	else
 	{
 		if (!singlePipeColorBuffer.Get())
 			return false;
-		engine->ReplaceConstantBuffer(default_shader_Single_Color, loc, singlePipeColorBuffer);
+		engine->ReplaceConstantBuffer(DefaultShader::default_shader_Single_Color, loc, singlePipeColorBuffer);
 	}
 	return true;
 }
@@ -676,7 +676,7 @@ int ArenaModel::AddTexture(TString & fileName)
 	signed char id = -2;
 	if (shader._default)
 	{
-		id = engine->GetTextureCount(shader.card.dID);
+		id = engine->GetTextureCount(static_cast<int>(shader.card.dID));
 	}
 	else
 	{

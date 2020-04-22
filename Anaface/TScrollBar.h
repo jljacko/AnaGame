@@ -6,14 +6,14 @@
 
 class TControl;
 
-typedef enum ScrollOrient
+typedef enum class ScrollOrient
 {
 	so_vertical,
 	so_horizontal
 }ScrollOrient;
 
 /* Allows individual Controls to communicate with the message engine that called it*/
-typedef enum messageOutput
+typedef enum class messageOutput
 {
 	negative,
 	negativeUpdate,

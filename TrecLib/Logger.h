@@ -4,7 +4,7 @@
 
 // Debugging functions meant to log the operation of AnaGame
 
-typedef enum LogType {
+typedef enum class LogType {
 	lt_memory,
 	lt_code,
 	lt_pointer,

@@ -152,6 +152,7 @@
   <ItemGroup>
     <ClInclude Include="AnimateBuilder.h" />
     <ClInclude Include="ArenaApp.h" />
+    <ClInclude Include="ArenaApp2.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="MainLayoutHandler.h" />
     <ClInclude Include="Resource.h" />
@@ -162,6 +163,7 @@
   <ItemGroup>
     <ClCompile Include="AnimateBuilder.cpp" />
     <ClCompile Include="ArenaApp.cpp" />
+    <ClCompile Include="ArenaApp2.cpp" />
     <ClCompile Include="MainLayoutHandler.cpp" />
     <ClCompile Include="SourceCodeApp.cpp" />
     <ClCompile Include="SourceCodeApp2.cpp" />

@@ -44,7 +44,7 @@ class TContextMenu;
 	resetAttributeString(&appendable, childLevel + 1);
 
 /* Used by the control to determine which to draw */
-typedef enum messageState
+typedef enum class  messageState
 {
 	normal,
 	mouseHover,
@@ -64,7 +64,7 @@ typedef enum messageOutput
 }messageOutput;*/
 
 // Determines the message type for UI Responsiveness
-typedef enum R_Message_Type
+typedef enum class R_Message_Type
 {
 	On_Click,
 	On_Hold_Click,
@@ -79,7 +79,8 @@ typedef enum R_Message_Type
 	On_radio_change,
 	On_Char,
 	On_Focus,
-	On_Lose_Focus
+	On_Lose_Focus,
+	On_Select_Scroller
 }R_Message_Type;
 
 // Event Arguements, used to supply Event Handlers with the necessary information to 
@@ -99,11 +100,18 @@ typedef struct EventArgs
 } EventArgs;
 
 // Used by controls to register themselves in the message queue if they have a message handler
-typedef struct EventID_Cred
+class _ANAFACE_DLL EventID_Cred
 {
+public:
+	EventID_Cred();
+	EventID_Cred(const EventID_Cred& copy);
+	EventID_Cred(R_Message_Type t, TControl* c);
+	EventID_Cred(R_Message_Type t, TControl* c, TrecPointer<TScrollBar> sb);
+
 	R_Message_Type eventType;
 	TControl* control;
-}EventID_Cred;
+	TrecPointer<TScrollBar> scroll;
+};
 
 // Stored by Controls for checking whether or not they actually have a message handler
 typedef struct EventTypeID
@@ -126,7 +134,7 @@ typedef struct sizeControl
 
 // Determines the basic size of the TControl
 //	NOTE: Feature is unstable, stick with T_Rect for now
-typedef enum TShape {
+typedef enum class TShape {
 	T_Rect,
 	T_Rounded_Rect,
 	T_Ellipse,
@@ -134,7 +142,7 @@ typedef enum TShape {
 }TShape;
 
 // Allows TControls to draw with special styles if specified in the ML
-typedef enum BrushMarker
+typedef enum class BrushMarker
 {
 	BM_SolidBrush,
 	BM_RadientBrush,
@@ -241,6 +249,7 @@ class _ANAFACE_DLL TText :public TControlComponent
 	friend class TRadioButton;
 //	friend class TComboBox;
 	friend class TContextMenu;
+	friend class TTabBar;
 public:
 	TText(TrecPointer<DrawingBoard> drawingBoard, TControl*);
 	TText(TrecPointer<TText>&,TControl*);
@@ -348,6 +357,7 @@ class _ANAFACE_DLL TContent :public TControlComponent
 {
 	friend class TControl;
 	friend class TGadgetControl;
+	friend class TTabBar;
 public:
 	TContent(TrecPointer<DrawingBoard>, TControl*);
 	TContent();
@@ -537,7 +547,7 @@ protected:
 	TString className;
 	TString ID;
 	D2D1_RECT_F location, margin;
-	TScrollBar *vScroll, *hScroll;
+	TrecPointer<TScrollBar> vScroll, hScroll;
 	TrecPointer<DrawingBoard> drawingBoard;
 	
 	TrecPointerSoft<TControl> parent;

@@ -28,11 +28,11 @@ int TDialog::PrepareWindow()
 		return 1;
 	if (parent)
 	{
-		if (windowInstance.Get() && dialogMode == dialog_mode_soft_modal)
+		if (windowInstance.Get() && dialogMode == TDialogMode::dialog_mode_soft_modal)
 		{
 			windowInstance->LockWindow(parent);
 		}
-		else if (dialogMode == dialog_mode_hard_model)
+		else if (dialogMode == TDialogMode::dialog_mode_hard_model)
 		{
 			EnableWindow(parent, FALSE);
 		}
@@ -45,11 +45,11 @@ bool TDialog::OnDestroy()
 	bool returnable = TWindow::OnDestroy();
 	if (returnable && parent)
 	{
-		if (windowInstance.Get() && dialogMode == dialog_mode_soft_modal)
+		if (windowInstance.Get() && dialogMode == TDialogMode::dialog_mode_soft_modal)
 		{
 			windowInstance->UnlockWindow(parent);
 		}
-		else if (dialogMode == dialog_mode_hard_model)
+		else if (dialogMode == TDialogMode::dialog_mode_hard_model)
 		{
 			EnableWindow(parent, TRUE);
 		}
@@ -80,7 +80,7 @@ void ActivateAlertDialog(TrecPointer<TInstance> ins, HWND parent, TString& capti
 	// ins
 	// dialog_mode_hard_modal
 
-	TrecPointer<TWindow> dialog = TrecPointerKey::GetNewSelfTrecPointerAlt<TWindow, AlertDialog>(name, winClass, style, parent, 10, ins, dialog_mode_hard_model, caption);
+	TrecPointer<TWindow> dialog = TrecPointerKey::GetNewSelfTrecPointerAlt<TWindow, AlertDialog>(name, winClass, style, parent, 10, ins, TDialogMode::dialog_mode_hard_model, caption);
 	dynamic_cast<AlertDialog*>(dialog.Get())->CompileView(ins->GetFactory());
 
 	dialog->PrepareWindow();
@@ -99,7 +99,7 @@ TString ActivateNameDialog(TrecPointer<TInstance> ins, HWND parent, TString& cap
 	// dialog_mode_hard_modal
 
 
-	TrecPointer<TWindow> dialog = TrecPointerKey::GetNewSelfTrecPointerAlt<TWindow, NameDialog>(name, winClass, style, parent, 10, ins, dialog_mode_hard_model, caption);
+	TrecPointer<TWindow> dialog = TrecPointerKey::GetNewSelfTrecPointerAlt<TWindow, NameDialog>(name, winClass, style, parent, 10, ins, TDialogMode::dialog_mode_hard_model, caption);
 	dynamic_cast<NameDialog*>(dialog.Get())->CompileView(ins->GetFactory());
 
 	TrecPointer<TString> sharedData = dynamic_cast<NameDialog*>(dialog.Get())->GetText();

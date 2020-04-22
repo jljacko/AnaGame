@@ -141,21 +141,21 @@ void TRadioButton::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut
 	if (isContained(&point, &location))
 	{
 		isClicked = !isClicked;
-		*mOut = positiveOverrideUpdate;
+		*mOut = messageOutput::positiveOverrideUpdate;
 		for (int c = 0; c < otherSameButtons.Size(); c++)
 		{
 			otherSameButtons[c]->isClicked = false;
 		}
-		eventAr.push_back({ On_radio_change, this });
+		eventAr.push_back({ R_Message_Type::On_radio_change, this });
 
-		if (hasEvent(On_radio_change))
+		if (hasEvent(R_Message_Type::On_radio_change))
 		{
 		
-			args.eventType = On_radio_change;
+			args.eventType = R_Message_Type::On_radio_change;
 			args.positive = isClicked;
 			if (text1.Get())
 				args.text.Set(text1->text);
-			args.methodID = getEventID(On_radio_change);
+			args.methodID = getEventID(R_Message_Type::On_radio_change);
 		}
 	}
 

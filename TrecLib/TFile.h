@@ -6,7 +6,7 @@
 * enum FileEncodingType
 * used to track what type of encoding the file is using
 */
-typedef enum FileEncodingType
+typedef enum class FileEncodingType
 {
 	fet_unknown,          // We do not know the encoding of this file
 	fet_acsii,            // The encoding is acsii

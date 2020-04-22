@@ -8,14 +8,14 @@
 #include <TCanvas.h>
 #include <TPromptControl.h>
 
-typedef enum CompileErrorHandling
+typedef enum class CompileErrorHandling
 {
 	ceh_stop,
 	ceh_contain_to_block,
 	ceh_document_errors
 }CompileErrorHandling;
 
-typedef enum TargetAnagameMachine
+typedef enum class TargetAnagameMachine
 {
 	tam_object_register,
 	tam_object_stack,

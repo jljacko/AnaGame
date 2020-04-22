@@ -6,27 +6,27 @@
 #include <TMap.h>
 #include "TrecCode.h"
 
-typedef enum LanguageDefaultStringEncoding
+typedef enum class LanguageDefaultStringEncoding
 {
 	ldse_acsii,
 	ldse_unicode
 }LanguageDefaultStringEncoding;
 
-typedef enum LanguageBlockType
+typedef enum class LanguageBlockType
 {
 	lbt_curly,
 	lbt_indent,
 	lbt_tokens
 }LanguageBlockType;
 
-typedef enum RequireModuleHeader
+typedef enum class RequireModuleHeader
 {
 	rmh_yes,
 	rmh_no,
 	rmh_no_in_default
 } RequireModuleHeader;
 
-typedef enum LanguageInheritence
+typedef enum class LanguageInheritence
 {
 	li_mulitple,
 	li_multiple_interface,
@@ -34,7 +34,7 @@ typedef enum LanguageInheritence
 	li_not_supported
 };
 
-typedef enum EnumImplementation
+typedef enum class EnumImplementation
 {
 	ei_primitive,
 	ei_class,
@@ -43,7 +43,7 @@ typedef enum EnumImplementation
 };
 
 // Message that running code can send back to the interpretor to know when it is time to stop, restart from the beginning, or some other action
-typedef enum InterpretorMessage
+typedef enum class InterpretorMessage
 {
 	im_run,
 	im_break,		// Stops the interpretor without returning a value to the parent interpretor
@@ -52,7 +52,7 @@ typedef enum InterpretorMessage
 }InterpretorMessage;
 
 // 
-typedef enum InterpretorResource
+typedef enum class InterpretorResource
 {
 	ir_none,
 	ir_file,
@@ -60,7 +60,7 @@ typedef enum InterpretorResource
 }InterpretorResource;
 
 // Used when filtering-out comments for simpler code parsing
-typedef enum CodeMode
+typedef enum class CodeMode
 {
 	cm_reg,		// currently in regular code
 	cm_sinStr,	// currently in a single-line String

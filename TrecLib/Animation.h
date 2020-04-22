@@ -11,7 +11,7 @@
  * Note: Might be deprecated, depending on how development of the animation API goses, as how
  *	Tap's StoryBoards are handled has a much greater influence on when Animations are played.
  */
-typedef enum animation_phase
+typedef enum class animation_phase
 {
 	animation_pase_beginning,
 	animation_phase_end,
@@ -27,7 +27,7 @@ typedef enum animation_phase
  *	an Animation focused on changing the color would find the value "animation_value_type_red" to be relevent but
  *	ignore an "animation_value_type_width" setting.
  */
-typedef enum animation_value_type
+typedef enum class animation_value_type
 {
 	animation_value_type_width,
 	animation_value_type_hight,

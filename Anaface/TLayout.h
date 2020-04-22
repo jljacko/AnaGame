@@ -1,7 +1,7 @@
 #pragma once
 #include "TControl.h"
 
-typedef enum orgLayout
+typedef enum class orgLayout
 {
 	grid,
 	VStack,
@@ -13,14 +13,14 @@ typedef enum orgLayout
 	tCanvas
 }orgLayut;
 
-typedef enum conflictRes
+typedef enum class conflictRes
 {
 	default_Margin,
 	default_size
 
 }conflictRes;
 
-typedef enum specialLayout
+typedef enum class specialLayout
 {
 	Basic,
 	comboBox,

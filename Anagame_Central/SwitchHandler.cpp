@@ -1,6 +1,7 @@
 #include "SwitchHandler.h"
 #include <Page.h>
 #include <TWindow.h>
+#include <DirectoryInterface.h>
 
 SwitchHandler::SwitchHandler(TrecPointer<TInstance> ins): EventHandler(ins)
 { 
@@ -65,6 +66,11 @@ SwitchHandler::SwitchHandler(TrecPointer<TInstance> ins): EventHandler(ins)
 	events.push_back(enid);
 	handlers[enid.eventID] = &SwitchHandler::OnSelectScroll;
 
+	enid.eventID = 11;
+	enid.name.Set(L"OnSelectGif");
+	events.push_back(enid);
+	handlers[enid.eventID] = &SwitchHandler::OnSelectGif;
+
 }
 
 SwitchHandler::~SwitchHandler()
@@ -91,6 +97,15 @@ void SwitchHandler::Initialize(TrecPointer<Page> page)
 	{
 		throw L"Error! Expected A TControl to change";
 	}
+
+	TString gifStr(L"GifRunner");
+	page->AddStory(gifStr,true);
+
+	auto gifBuilder = TrecPointerKey::GetNewTrecPointer<AnimationBuilder>();
+	gifBuilder->SetName(TString(L"Gif"));
+	gifBuilder->SetType(TString(L"Gif"));
+	gifBuilder->SetAttribute(TString(L"|RefreshRate"), TrecPointerKey::GetNewTrecPointer<TString>(L"100"));
+	page->AddAnimations(gifBuilder);
 }
 
 void SwitchHandler::HandleEvents(TDataArray<EventID_Cred>& eventAr)
@@ -292,7 +307,7 @@ void SwitchHandler::OnSelectRows(TControl* tc, EventArgs ea)
 
 
 	rootLayout->setLocation(tLoc);
-	rootLayout->setLayout(HStack);
+	rootLayout->setLayout(orgLayout::HStack);
 
 	TrecPointer<TString> value = TrecPointerKey::GetNewTrecPointer<TString>("10,10,10,10");
 	rootLayout->addAttribute(TString(L"|Margin"), value);
@@ -356,7 +371,7 @@ void SwitchHandler::OnSelectColumns(TControl* tc, EventArgs ea)
 	TrecPointer<TString> value = TrecPointerKey::GetNewTrecPointer<TString>("10,10,10,10");
 	rootLayout->addAttribute(TString(L"|Margin"), value);
 
-	rootLayout->setLayout(VStack);
+	rootLayout->setLayout(orgLayout::VStack);
 	TrecPointer<TString> value1 = TrecPointerKey::GetNewTrecPointer<TString>("5,5,5,5");
 	rootLayout->addAttribute(TString(L"|Margin"), value1);
 	TrecPointer<TString> value2 = TrecPointerKey::GetNewTrecPointer<TString>("3.0");
@@ -412,7 +427,7 @@ void SwitchHandler::OnSelectGrid(TControl* tc, EventArgs ea)
 	// changeControl.Delete();
 	changeControl = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TLayout>(rtb, TrecPointer<TArray<styleTable>>());
 	TLayout* rootLayout = dynamic_cast<TLayout*>(changeControl.Get());
-	rootLayout->setLayout(grid);
+	rootLayout->setLayout(orgLayout::grid);
 
 
 	TrecPointer<TString> value1 = TrecPointerKey::GetNewTrecPointer<TString>("5,5,5,5");
@@ -509,7 +524,7 @@ void SwitchHandler::OnSelectLayers(TControl* tc, EventArgs ea)
 	TLayout* rootLayout = dynamic_cast<TLayout*>(changeControl.Get());
 
 
-	rootLayout->setLayout(VStack);
+	rootLayout->setLayout(orgLayout::VStack);
 	TrecPointer<TString> value1 = TrecPointerKey::GetNewTrecPointer<TString>("5,5,5,5");
 	rootLayout->addAttribute(TString(L"|Margin"), value1);
 	TrecPointer<TString> value2 = TrecPointerKey::GetNewTrecPointer<TString>("3.0");
@@ -540,7 +555,7 @@ void SwitchHandler::OnSelectLayers(TControl* tc, EventArgs ea)
 
 	TrecPointer<TControl>childControl2 = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TLayout>(rtb, TrecPointer<TArray<styleTable>>());
 	TLayout* childLayout = dynamic_cast<TLayout*>(childControl2.Get());
-	childLayout->setLayout(grid);
+	childLayout->setLayout(orgLayout::grid);
 
 	D2D1_RECT_F tLoc;
 	D2D1_RECT_F area = this->rootLayout->getRawSectionLocation(0, 1);
@@ -641,7 +656,7 @@ void SwitchHandler::OnSelectGadget(TControl* tc, EventArgs ea)
 	// TODO: Add your command handler code here
 	changeControl = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TLayout>(rtb, TrecPointer<TArray<styleTable>>());
 	TLayout* rootLayout = dynamic_cast<TLayout*>(changeControl.Get());
-	rootLayout->setLayout(grid);
+	rootLayout->setLayout(orgLayout::grid);
 
 	TDataArray<int> col, row;
 	col.push_back(500);
@@ -745,7 +760,7 @@ void SwitchHandler::OnSelectText(TControl* tc, EventArgs ea)
 	HWND windowHandle = page->GetWindowHandle()->GetWindowHandle();
 	changeControl = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TLayout>(rtb, TrecPointer<TArray<styleTable>>());
 	TLayout* rootLayout = dynamic_cast<TLayout*>(changeControl.Get());
-	rootLayout->setLayout(grid);
+	rootLayout->setLayout(orgLayout::grid);
 
 	TDataArray<int> col, row;
 	col.push_back(500);
@@ -919,6 +934,22 @@ void SwitchHandler::OnSelectScroll(TControl* tc, EventArgs ea)
 	changeControl->addChild(TrecPointer<TControl>(childControl));
 	this->rootLayout->addChild(changeControl, 1, 0);
 	page->CreateLayout();
+}
+
+void SwitchHandler::OnSelectGif(TControl* tc, EventArgs ea)
+{
+	auto window = page->GetWindowHandle();
+	TrecPointer<DrawingBoard> rtb = window->GetDrawingBoard();
+
+	changeControl = TrecPointerKey::GetNewSelfTrecPointer<TControl>(rtb, TrecPointer<TArray<styleTable>>());
+	TString gifPath(GetDirectoryWithSlash(CentralDirectories::cd_Executable));
+	gifPath.Append(L"Resources\\giphy.gif");
+
+	changeControl->addAttribute(TString(L"|ImageSource"), TrecPointerKey::GetNewTrecPointer<TString>(gifPath));
+	rootLayout->addChild(changeControl, 1, 0);
+	page->CreateLayout();
+
+	window->PrepAnimations(page);
 }
 
 bool SwitchHandler::ShouldProcessMessageByType(TrecPointer<HandlerMessage> message)

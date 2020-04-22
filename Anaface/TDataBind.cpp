@@ -159,7 +159,7 @@ void TDataBind::onDraw(TObject * obj)
 
 
 			if (isContained(&mouseMovePoint, &curLoc))
-				cont->mState = mouseHover;
+				cont->mState = messageState::mouseHover;
 
 			cont->onDraw(dataWrap->GetObjectAt(Rust));
 
@@ -248,10 +248,10 @@ void TDataBind::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TD
 {
 	TControl::OnLButtonDown(nFlags, point, mOut, eventAr, clickedButtons);
 
-	if (*mOut == positiveOverride || *mOut == positiveOverrideUpdate)
+	if (*mOut == messageOutput::positiveOverride || *mOut == messageOutput::positiveOverrideUpdate)
 	{
 		clickedButtons.push_back(this);
-		mState = mouseLClick;
+		mState = messageState::mouseLClick;
 	}
 	/*if (mState == mouseLClick)
 	{
@@ -301,7 +301,7 @@ void TDataBind::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TD
 
 void TDataBind::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
-	bool wasClicked = mState == mouseLClick;
+	bool wasClicked = mState == messageState::mouseLClick;
 	TControl::OnLButtonUp(nFlags, point, mOut, eventAr);
 	if (wasClicked && isContained(&point, &location))
 	{
@@ -324,11 +324,11 @@ void TDataBind::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDat
 				args.arrayLabel = Rust;
 				args.isClick = true;
 				args.isLeftClick = true;
-				args.eventType = On_sel_change;
+				args.eventType = R_Message_Type::On_sel_change;
 				args.control = this;
-				args.methodID = getEventID(On_sel_change);
+				args.methodID = getEventID(R_Message_Type::On_sel_change);
 				args.point = point;
-				eventAr.push_back({ On_sel_change, this });
+				eventAr.push_back({ R_Message_Type::On_sel_change, this });
 				break;
 
 
@@ -352,6 +352,6 @@ void TDataBind::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDat
 void TDataBind::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
 	TControl::OnMouseMove(nFlags, point, mOut, eventAr);
-	if (mState == mouseHover)
+	if (mState == messageState::mouseHover)
 		mouseMovePoint = point;
 }
