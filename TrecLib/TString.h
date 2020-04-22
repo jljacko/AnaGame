@@ -263,28 +263,28 @@ public:
 	* Parameters: TString& t - the TString to append
 	* Returns: void
 	*/
-	TString operator+(const TString&);
+	TString operator+(const TString&) const;
 	/*
 	* Method: TString::operator+
 	* Purpose: Adds the contents of an existing TString to this one
 	* Parameters: TString& t - the TString to append
 	* Returns: void
 	*/
-	TString operator+(const TString*);
+	TString operator+(const TString*) const;
 	/*
 	* Method: TString::operator+
 	* Purpose: Adds the contents of an existing wide string to this one
 	* Parameters: WCHAR* w - the wide string to append
 	* Returns: void
 	*/
-	TString operator+(const WCHAR*);
+	TString operator+(const WCHAR*)const;
 	/**
 	 * Method: TString::operator+
 	 * Purpose: Returns a version of this string with the character appended
 	 * Parameters: WCHAR w -the character to append
 	 * Returns: TString version of the string with the appended character
 	 */
-	TString operator+(const WCHAR w);
+	TString operator+(const WCHAR w)const;
 	/*
 	* Method: TString::operator+=
 	* Purpose: Adds the contents of an existing TString to this one

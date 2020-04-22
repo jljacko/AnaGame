@@ -954,7 +954,7 @@ TString TString::operator=(WCHAR w)
 * Parameters: TString& t - the TString to append
 * Returns: void
 */
-TString TString::operator+(const TString & t)
+TString TString::operator+(const TString & t)const
 {
 	TString returnString = this;
 	for (UINT c = 0; c < t.GetSize();c++)
@@ -970,7 +970,7 @@ TString TString::operator+(const TString & t)
 * Parameters: TString& t - the TString to append
 * Returns: void
 */
-TString TString::operator+(const TString *t)
+TString TString::operator+(const TString *t) const
 {
 	if (t)
 	{
@@ -990,7 +990,7 @@ TString TString::operator+(const TString *t)
 * Parameters: WCHAR* w - the wide string to append
 * Returns: void
 */
-TString TString::operator+(const WCHAR * w)
+TString TString::operator+(const WCHAR * w)const 
 {
 	if (w)
 	{
@@ -1008,7 +1008,7 @@ TString TString::operator+(const WCHAR * w)
  * Parameters: WCHAR w -the character to append
  * Returns: TString version of the string with the appended character
  */
-TString TString::operator+(WCHAR w)
+TString TString::operator+(WCHAR w) const
 {
 	TString returnString = this;
 	returnString.AppendChar(w);

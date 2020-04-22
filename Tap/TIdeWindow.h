@@ -23,7 +23,9 @@ typedef enum class anagame_page
 	anagame_page_command_prompt,
 	anagame_page_code_explorer,
 	anagame_page_object_explorer,
-	anagame_page_code_file
+	anagame_page_code_file,
+	anagame_page_arena,
+	anagame_page_camera
 };
 
 class IDEPage;

@@ -318,6 +318,14 @@ TrecSubPointer<Page, IDEPage> TIdeWindow::AddNewPage(anagame_page pageType, ide_
 	case anagame_page::anagame_page_object_explorer:
 
 		break;
+	case anagame_page::anagame_page_arena:
+		uiFile->Open(GetDirectoryWithSlash(CentralDirectories::cd_Executable) + L"Resources\\ArenaView.tml", TFile::t_file_read | TFile::t_file_share_read | TFile::t_file_open_always);
+		fileShell = TFileShell::GetFileInfo(tmlLoc);
+		break;
+	case anagame_page::anagame_page_camera:
+		uiFile->Open(GetDirectoryWithSlash(CentralDirectories::cd_Executable) + L"Resources\\ArenaViewPanel.txt", TFile::t_file_read | TFile::t_file_share_read | TFile::t_file_open_always);
+		fileShell = TFileShell::GetFileInfo(tmlLoc);
+		break;
 	case anagame_page::anagame_page_custom:
 		if (!handler.Get())
 			return TrecSubPointer<Page, IDEPage>();
