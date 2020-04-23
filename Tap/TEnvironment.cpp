@@ -8,6 +8,11 @@ static bool languagesMapped = false;
 // Holds list of Languages and their file extensions
 static TDataArray<LangNames> languageList;
 
+TrecPointer<TFileShell> TEnvironment::GetRootDirectory()
+{
+	return rootDirectory;
+}
+
 void TEnvironment::SetUpLanguageExtensionMapping()
 {
 	if (languagesMapped)

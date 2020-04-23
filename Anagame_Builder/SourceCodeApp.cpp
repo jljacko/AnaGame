@@ -180,7 +180,7 @@ void SourceCodeApp::ProcessFile(TrecPointer<TEnvironment> env)
 
 	TrecPointer<TFile> curFile = TrecPointerKey::GetNewTrecPointer<TFile>(filePath, TFile::t_file_read);
 
-	env->PreProcessSingleFile(curFile);
+	//env->PreProcessSingleFile(curFile);
 }
 
 void SourceCodeApp::PrepLanguage(TFile& sourceCode)

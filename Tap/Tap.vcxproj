@@ -166,6 +166,7 @@
     <ClInclude Include="ArenaHandler.h" />
     <ClInclude Include="CameraHandler.h" />
     <ClInclude Include="DocumentHandler.h" />
+    <ClInclude Include="FileHandler.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="HandlerMessage.h" />
     <ClInclude Include="IDEPage.h" />
@@ -192,6 +193,7 @@
     <ClInclude Include="TWindow.h" />
     <ClInclude Include="EventHandler.h" />
     <ClInclude Include="MiniHandler.h" />
+    <ClInclude Include="TEnvironment.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AlertDialog.cpp" />
@@ -200,6 +202,7 @@
     <ClCompile Include="CameraHandler.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="DocumentHandler.cpp" />
+    <ClCompile Include="FileHandler.cpp" />
     <ClCompile Include="HandlerMessage.cpp" />
     <ClCompile Include="IDEPage.cpp" />
     <ClCompile Include="MiniApp.cpp" />
@@ -228,6 +231,7 @@
     <ClCompile Include="TWindow.cpp" />
     <ClCompile Include="EventHandler.cpp" />
     <ClCompile Include="MiniHandler.cpp" />
+    <ClCompile Include="TEnvironment.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Machine.asm" />

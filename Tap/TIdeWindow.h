@@ -1,6 +1,6 @@
 #pragma once
 #include "TWindow.h"
-
+#include "TEnvironment.h"
 
 
 typedef enum class ide_page_type
@@ -52,12 +52,17 @@ public:
 
 	void SetCurrentHolder(TrecPointer<IDEPageHolder> holder);
 
+	void SetEnvironment(TrecPointer<TEnvironment> env);
+	TrecPointer<TFileShell> GetEnvironmentDirectory();
+
 protected:
 	UINT pageBarSpace;
 	UINT mainViewSpace;
 
 
 	TrecPointer<IDEPageHolder> currentHolder;
+
+	TrecPointer<TEnvironment> environment;
 
 
 	virtual void DrawOtherPages()override;

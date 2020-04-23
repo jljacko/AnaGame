@@ -59,3 +59,11 @@ void TAnaGameCodeEnvironment::Compile()
 void TAnaGameCodeEnvironment::Compile(TrecPointer<TFile> logFile)
 {
 }
+
+void TAnaGameCodeEnvironment::Log()
+{
+}
+
+void TAnaGameCodeEnvironment::Run()
+{
+}

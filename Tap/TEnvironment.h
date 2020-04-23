@@ -2,33 +2,13 @@
 #include <TObject.h>
 #include <TFile.h>
 #include <TMap.h>
-#include "TLanguage.h"
+#include "Tap_dll.h"
 #include <TType.h>
 #include <TDirectory.h>
 #include <TCanvas.h>
 #include <TPromptControl.h>
 
-typedef enum class CompileErrorHandling
-{
-	ceh_stop,
-	ceh_contain_to_block,
-	ceh_document_errors
-}CompileErrorHandling;
 
-typedef enum class TargetAnagameMachine
-{
-	tam_object_register,
-	tam_object_stack,
-	tam_binary_register,
-	tam_binary_stack
-}TargetAnagameMachine;
-
-typedef struct Variable
-{
-	TString name;
-	TrecPointer<TType> type;
-	UINT location;
-}Variable;
 
 
 void GetAnagameProvidedEnvironmentList(TrecPointer<TFileShell> directory, TDataArray<TString>& environmentType);
@@ -36,7 +16,7 @@ void GetAnagameProvidedEnvironmentList(TrecPointer<TFileShell> directory, TDataA
 /* struct LangNames
  * Purpose: holds the name of a Programming language and the file extensions associated with them
  */
-class _TREC_CODE_DLL LangNames : public TObject
+class _TAP_DLL LangNames : public TObject
 {
 public:
 	TString language;
@@ -44,7 +24,7 @@ public:
 };
 
 
-class _TREC_CODE_DLL TEnvironment :
+class _TAP_DLL TEnvironment :
 	public TObject
 {
 public:
@@ -52,7 +32,7 @@ public:
 	~TEnvironment();
 
 	TEnvironment(TrecSubPointer<TControl, TPromptControl> prompt);
-virtual TDataArray<TString> GetTaskList();
+	virtual TDataArray<TString> GetTaskList();
 	//virtual static bool IsViable(TrecPointer<TFileShell> shell) = 0;
 	virtual UINT SetUpEnv() = 0;
 
@@ -66,6 +46,8 @@ virtual TDataArray<TString> GetTaskList();
 	
 
 	virtual UINT RunTask(TString& task) = 0;
+
+	TrecPointer<TFileShell> GetRootDirectory();
 
 protected:
 

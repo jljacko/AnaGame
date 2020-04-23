@@ -7,7 +7,7 @@
 #include "TerminalHandler.h"
 #include "TCodeHandler.h"
 #include "MiniApp.h"
-
+#include "FileHandler.h"
 
 TIdeWindow::TIdeWindow(TString& name, TString& winClass, UINT style, HWND parent, int commandShow, 
 	TrecPointer<TInstance> ins, UINT mainViewSpace, UINT pageBarSpace):
@@ -314,6 +314,10 @@ TrecSubPointer<Page, IDEPage> TIdeWindow::AddNewPage(anagame_page pageType, ide_
 	case anagame_page::anagame_page_file_node:
 		uiFile->Open(GetDirectoryWithSlash(CentralDirectories::cd_Executable) + L"Resources\\FileBrowser.tml", TFile::t_file_read | TFile::t_file_share_read | TFile::t_file_open_always);
 		fileShell = TFileShell::GetFileInfo(tmlLoc);
+		if (!handler.Get())
+			pageHandler = TrecPointerKey::GetNewSelfTrecPointerAlt<EventHandler, FileHandler>(windowInstance);
+		else
+			pageHandler = handler;
 		break;
 	case anagame_page::anagame_page_object_explorer:
 
@@ -321,10 +325,12 @@ TrecSubPointer<Page, IDEPage> TIdeWindow::AddNewPage(anagame_page pageType, ide_
 	case anagame_page::anagame_page_arena:
 		uiFile->Open(GetDirectoryWithSlash(CentralDirectories::cd_Executable) + L"Resources\\ArenaView.tml", TFile::t_file_read | TFile::t_file_share_read | TFile::t_file_open_always);
 		fileShell = TFileShell::GetFileInfo(tmlLoc);
+		pageHandler = handler;
 		break;
 	case anagame_page::anagame_page_camera:
 		uiFile->Open(GetDirectoryWithSlash(CentralDirectories::cd_Executable) + L"Resources\\ArenaViewPanel.txt", TFile::t_file_read | TFile::t_file_share_read | TFile::t_file_open_always);
 		fileShell = TFileShell::GetFileInfo(tmlLoc);
+		pageHandler = handler;
 		break;
 	case anagame_page::anagame_page_custom:
 		if (!handler.Get())
@@ -478,6 +484,18 @@ int TIdeWindow::CompileView(TString& file, TrecPointer<EventHandler> eh)
 void TIdeWindow::SetCurrentHolder(TrecPointer<IDEPageHolder> holder)
 {
 	currentHolder = holder;
+}
+
+void TIdeWindow::SetEnvironment(TrecPointer<TEnvironment> env)
+{
+	environment = env;
+}
+
+TrecPointer<TFileShell> TIdeWindow::GetEnvironmentDirectory()
+{
+	if (environment.Get())
+		return environment->GetRootDirectory();
+	return TrecPointer<TFileShell>();
 }
 
 void TIdeWindow::DrawOtherPages()
