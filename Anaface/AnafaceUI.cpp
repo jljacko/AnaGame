@@ -459,7 +459,7 @@ int AnafaceUI::addControl(TrecPointer<TControl> control, TString tabName)
 
 		AddNewTab(tabName);
 
-		control->setParent(TrecPointerKey::GetTrecPointerFromSoft<TControl>(tThis));
+		control->setParent(GetParentReference());
 
 
 		return children.Count() - 1;

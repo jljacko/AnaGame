@@ -27,6 +27,15 @@ TrecPointer<AnimationBuilder> Page::GetAnimationByName(TString& name)
 	return TrecPointer<AnimationBuilder>();
 }
 
+void Page::SwitchChildControl(TrecPointer<TControl> newRoot)
+{
+	if (newRoot.Get())
+	{
+		rootControl = newRoot;
+		rootControl->setParent(selfHolder);
+	}
+}
+
 void Page::PrepAnimations(TAnimationManager& aManager)
 {
 	if (!rootControl.Get())
@@ -168,15 +177,17 @@ int Page::SetAnaface(TrecPointer<TFile> file, TrecPointer<EventHandler> eh)
 
 	rootControl = parser.getRootControl();
 	if (rootControl.Get())
+	{
 		rootControl->onCreate(area, windowHandle->GetWindowEngine());
-
+		rootControl->setParent(selfHolder);
+	}
 	persistentStoryBoards = parser.GetPersistentStoryBoards();
 	basicStoryBoards = parser.GetStoryBoards();
 	animations = parser.GetAnimations();
 
 	if(handler.Get())
 		handler->Initialize(TrecPointerKey::GetTrecPointerFromSoft<Page>(self));
-
+	
 
 	return 0;
 }
@@ -198,7 +209,10 @@ int Page::SetAnaface(TrecPointer<TFile> file, TDataArray<eventNameID>& id)
 
 	rootControl = parser.getRootControl();
 	if (rootControl.Get())
+	{
 		rootControl->onCreate(area, windowHandle->GetWindowEngine());
+		rootControl->setParent(selfHolder);
+	}
 	if(handler.Get())
 		handler->Initialize(TrecPointerKey::GetTrecPointerFromSoft<Page>(self));
 
@@ -212,7 +226,8 @@ int Page::SetAnaface(TrecPointer<TFile> file, TDataArray<eventNameID>& id)
 void Page::SetAnaface(TrecPointer<TControl> newRoot)
 {
 	rootControl = newRoot;
-
+	if(rootControl.Get())
+	rootControl->setParent(selfHolder);
 }
 
 TrecPointer<TControl> Page::GetRootControl()
@@ -482,6 +497,8 @@ void Page::SetSelf(TrecPointer<Page> s)
 	if (!s.Get() || s.Get() != this)
 		throw L"Error! Must Set sef with a valid pointer!";
 	self = TrecPointerKey::GetSoftPointerFromTrec<Page>(s);
+
+	selfHolder = TrecPointerKey::GetNewTrecPointerAlt<TParentHolder, TPageParentHolder>(self);
 }
 
 TrecPointer<TInstance> Page::GetInstance()
@@ -571,4 +588,16 @@ void Page::SetArea(const D2D1_RECT_F& loc)
 		rootControl->Resize(area);
 }
 
+TPageParentHolder::TPageParentHolder(TrecPointerSoft<class Page> page)
+{
+	parent = page;
+}
 
+void TPageParentHolder::SwitchChildControl(TrecPointerSoft<TControl> cur, TrecPointer<TControl> newTControl)
+{
+	auto tPage = TrecPointerKey::GetTrecPointerFromSoft<Page>(parent);
+	if (tPage.Get())
+	{
+		tPage->SwitchChildControl(newTControl);
+	}
+}
