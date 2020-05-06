@@ -16,7 +16,7 @@ DocumentHandler::DocumentHandler(TrecPointer<TInstance> in, const TString& name)
 void DocumentHandler::OnSave()
 {
 	TrecPointer<TWindow> win;
-	if (!file.Get() && page.Get() && (this->page->GetWindowHandle()).Get() && instance.Get())
+	if (!file.Get() && page.Get() && (this->page->GetWindowHandle()).Get() && app.Get())
 	{
 		win = this->page->GetWindowHandle();
 		TString initialSearch(GetDirectory(CentralDirectories::cd_Documents));
@@ -26,7 +26,7 @@ void DocumentHandler::OnSave()
 
 		fileInfo.lStructSize = sizeof(OPENFILENAMEW);
 		fileInfo.hwndOwner = win->GetWindowHandle();
-		fileInfo.hInstance = instance->GetInstanceHandle();
+		fileInfo.hInstance = app->GetInstanceHandle();
 		fileInfo.lpstrFilter = nullptr;
 		fileInfo.lpstrInitialDir = initialSearch.GetConstantBuffer();
 		fileInfo.lpstrFile = new WCHAR[255];

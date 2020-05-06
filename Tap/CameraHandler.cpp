@@ -19,7 +19,7 @@ TString on_SelectCurrentObject(L"OnSelectObject");
 TString on_GetDefaultObject(L"OnGetDefaultObject");
 TString on_ToggleObjectAndCamera(L"OnToggleObjectAndCamera");
 
-CameraHandler::CameraHandler(TrecPointer<TInstance> instance, TString& name): EventHandler(instance)
+CameraHandler::CameraHandler(TrecPointer<TInstance> instance, TString& name): EventHandler(instance, name)
 {
 	arenaName.Set(name);
 	
@@ -198,6 +198,9 @@ void CameraHandler::ProcessMessage(TrecPointer<HandlerMessage> message)
 				mode = 1;
 			else if (!pieces->at(Rust).Compare(L"Direction"))
 				mode = 2;
+
+			if (mode)
+				continue;
 		}
 
 		if (mode == 1 || mode == 2)
@@ -243,8 +246,8 @@ void CameraHandler::SendMessageToArena(const TString& target, const TString& att
 {
 	
 	TString messageStr(target + L" " + attribute + L" " + value);
-	TrecPointer<HandlerMessage> newMessage = TrecPointerKey::GetNewTrecPointer<HandlerMessage>(name, handler_type::handler_type_camera, 0, message_transmission::message_transmission_name_type, 0, messageStr);
-	instance->DispatchAnagameMessage(newMessage);
+	TrecPointer<HandlerMessage> newMessage = TrecPointerKey::GetNewTrecPointer<HandlerMessage>(name, handler_type::handler_type_arena, 0, message_transmission::message_transmission_name_type, 0, messageStr);
+	app->DispatchAnagameMessage(newMessage);
 }
 
 

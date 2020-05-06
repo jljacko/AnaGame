@@ -1,7 +1,7 @@
 #include "ArenaHandler.h"
 #include "Page.h"
 #include "TInstance.h"
-ArenaHandler::ArenaHandler(TrecPointer<TInstance> instance, TString& name): EventHandler(instance)
+ArenaHandler::ArenaHandler(TrecPointer<TInstance> instance, TString& name): EventHandler(instance, name)
 {
 	this->name.Set(name);
 }
@@ -12,7 +12,7 @@ ArenaHandler::~ArenaHandler()
 
 void ArenaHandler::Initialize(TrecPointer<Page> page)
 {
-	if (!page.Get() || !instance.Get() || !page->GetWindowHandle().Get())
+	if (!page.Get() || !app.Get() || !page->GetWindowHandle().Get())
 		return;
 
 	auto control = page->GetRootControl();
@@ -22,6 +22,9 @@ void ArenaHandler::Initialize(TrecPointer<Page> page)
 	arenaControl = TrecPointerKey::GetTrecSubPointerFromTrec<TControl, TArena>(control);
 
 	this->engine = page->GetWindowHandle()->GetNewArenaEngine(name);
+
+	assert(arenaControl.Get());
+	arenaControl->setEngine(this->engine);
 }
 
 void ArenaHandler::HandleEvents(TDataArray<EventID_Cred>& eventAr)
@@ -51,11 +54,11 @@ void ArenaHandler::HandleEvents(TDataArray<EventID_Cred>& eventAr)
 
 void ArenaHandler::ProcessMessage(TrecPointer<HandlerMessage> message)
 {
-	if (!message.Get() || !arenaControl.Get() || !instance.Get())
+	if (!message.Get() || !arenaControl.Get() || !app.Get())
 		return;
 	TString strMessage(message->GetMessage_());
 
-	auto messages = strMessage.split(L"\s");
+	auto messages = strMessage.split(L"\s ");
 
 	if (!messages.Get() || messages->Size() < 3)
 		return;
@@ -72,19 +75,19 @@ void ArenaHandler::ProcessMessage(TrecPointer<HandlerMessage> message)
 		if (dataPoints->at(0).ConvertToFloat(&x) || dataPoints->at(1).ConvertToFloat(&y))
 			return;
 
-		if (!messages->at(1).Compare(L"Location") || dataPoints->Size() > 2 || dataPoints->at(2).ConvertToFloat(&z))
+		if (!messages->at(1).Compare(L"Location") && dataPoints->Size() > 2 && !dataPoints->at(2).ConvertToFloat(&z))
 		{
 			arenaControl->UpdatePos(x, 0);
 			arenaControl->UpdatePos(y, 1);
 			arenaControl->UpdatePos(z, 2);
 		}
-		else if (!messages->at(1).Compare(L"Direction") || dataPoints->Size() > 2 || dataPoints->at(2).ConvertToFloat(&z))
+		else if (!messages->at(1).Compare(L"Direction") && dataPoints->Size() > 2 && !dataPoints->at(2).ConvertToFloat(&z))
 		{
 			arenaControl->UpdateDir(x, 0);
 			arenaControl->UpdateDir(y, 1);
 			arenaControl->UpdateDir(z, 2);
 		}
-		else if (!messages->at(1).Compare(L"Translate") || dataPoints->Size() > 3 || dataPoints->at(2).ConvertToFloat(&z) || dataPoints->at(2).ConvertToFloat(&m))
+		else if (!messages->at(1).Compare(L"Translate") && dataPoints->Size() > 3 && !dataPoints->at(2).ConvertToFloat(&z) && !dataPoints->at(2).ConvertToFloat(&m))
 		{
 			arenaControl->Translate(m, DirectX::XMFLOAT3(x, y, z));
 		}
@@ -98,7 +101,7 @@ void ArenaHandler::ProcessMessage(TrecPointer<HandlerMessage> message)
 		messageStr.Format(L"Camera Location %f;%f;%f Direction %f;%f;%f", loc.x, loc.y, loc.z, dir.x, dir.y, dir.z);
 
 		TrecPointer<HandlerMessage> newMessage = TrecPointerKey::GetNewTrecPointer<HandlerMessage>(name, handler_type::handler_type_camera, 0, message_transmission::message_transmission_name_type, 0, messageStr);
-		instance->DispatchAnagameMessage(newMessage);
+		app->DispatchAnagameMessage(newMessage);
 	}
 }
 

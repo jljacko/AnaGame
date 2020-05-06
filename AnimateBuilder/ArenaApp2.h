@@ -14,6 +14,8 @@ public:
 
 	virtual UINT Initialize()override;
 
+	virtual void OnSave()override;
+
 private:
 	TString name;
 

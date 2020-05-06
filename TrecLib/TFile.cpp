@@ -24,7 +24,7 @@ TFile::TFile()
 *			UINT nOpenFlags - flags that specify the open status of the file
 * Returns: void
 */
-TFile::TFile(TString& lpszFileName, UINT nOpenFlags) 
+TFile::TFile(const TString& lpszFileName, UINT nOpenFlags) 
 {
 	Open(lpszFileName, nOpenFlags);
 }

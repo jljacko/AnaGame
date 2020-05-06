@@ -92,6 +92,9 @@ public:
 	void AddStory(TString& story, bool persistent = false);
 	void AddAnimations(TrecPointer<AnimationBuilder> builder);
 
+	// Handle Focus
+	void OnFocus();
+
 protected:
 	Page(TrecPointer<DrawingBoard>);
 

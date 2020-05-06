@@ -150,7 +150,7 @@ void MainLayoutHandler::Initialize(TrecPointer<Page> page)
 
 	this->page = page;
 
-	instance = page->GetInstance();
+	app = page->GetInstance();
 
 	rootControl = page->GetRootControl();
 
@@ -272,7 +272,7 @@ void MainLayoutHandler::OnPrint(TControl* tc, EventArgs ea)
 void MainLayoutHandler::OnNewArena(TControl* tc, EventArgs ea)
 {
 	TString dialog(L"Enter a name for your Arena!");
-	TString arenaName(ActivateNameDialog(instance, page->GetWindowHandle()->GetWindowHandle(), dialog));
+	TString arenaName(ActivateNameDialog(app, page->GetWindowHandle()->GetWindowHandle(), dialog));
 
 	if (!arenaName.GetSize())
 		return;
@@ -281,7 +281,7 @@ void MainLayoutHandler::OnNewArena(TControl* tc, EventArgs ea)
 	if (!window->SetUp3D())
 	{
 		TString errorMessage(L"Error! Failed to Initialize Window for 3D!");
-		ActivateAlertDialog(instance, page->GetWindowHandle()->GetWindowHandle(), errorMessage);
+		ActivateAlertDialog(app, page->GetWindowHandle()->GetWindowHandle(), errorMessage);
 		return;
 	}
 

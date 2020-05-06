@@ -80,6 +80,7 @@ protected:
 
 
 	TTrecPointerSoftArray<EventHandler> registeredHandlers;
+	void UnregisterHandler(TrecPointer<EventHandler>);
 
 	bool RegisterHandler(TrecPointer<EventHandler> handler);
 

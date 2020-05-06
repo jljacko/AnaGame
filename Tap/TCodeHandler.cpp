@@ -37,6 +37,19 @@ void TCodeHandler::ProcessMessage(TrecPointer<HandlerMessage> message)
 {
 }
 
+void TCodeHandler::OnSave()
+{
+	SetSaveFile();
+
+	if (filePointer.Get() && !filePointer->IsDirectory())
+	{
+		
+		TFile saver(filePointer->GetPath(), TFile::t_file_write | TFile::t_file_create_always);
+
+		OnSave(saver);
+	}
+}
+
 bool TCodeHandler::ShouldProcessMessageByType(TrecPointer<HandlerMessage> message)
 {
 	return false;

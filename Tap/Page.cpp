@@ -105,6 +105,10 @@ Page::~Page()
 	rootControl.Delete();
 	// 3D mixing with 2D Resources
 	solidBrush.Delete();
+	if (instance.Get())
+	{
+		instance->UnregisterHandler(handler);
+	}
 }
 
 
@@ -512,6 +516,12 @@ void Page::AddAnimations(TrecPointer<AnimationBuilder> builder)
 {
 	if (builder.Get())
 		animations.push_back(builder);
+}
+
+void Page::OnFocus()
+{
+	if (handler.Get())
+		handler->OnFocus();
 }
 
 

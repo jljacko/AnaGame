@@ -27,5 +27,14 @@ UINT ArenaApp2::Initialize()
 	mainPage = win->AddNewPage(anagame_page::anagame_page_arena, ide_page_type::ide_page_type_body, name, TString(), TrecPointerKey::GetTrecPointerFromSub<EventHandler, ArenaHandler>(arena));
 	cameraPage = win->AddNewPage(anagame_page::anagame_page_camera, ide_page_type::ide_page_type_deep_console, name, TString(), TrecPointerKey::GetTrecPointerFromSub<EventHandler, CameraHandler>(cameraControls));
 
+
+	win->SetCurrentApp(TrecPointerKey::GetTrecPointerFromSoft<MiniApp>(self));
+	arena->SetMiniApp(TrecPointerKey::GetTrecPointerFromSoft<MiniApp>(self));
+
+
 	return 0;
+}
+
+void ArenaApp2::OnSave()
+{
 }

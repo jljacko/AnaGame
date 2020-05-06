@@ -14,13 +14,14 @@ OkayHandler::OkayHandler(TrecPointer<TInstance> instance): EventHandler(instance
 
 OkayHandler::~OkayHandler()
 {
+	int e = 0;
 }
 
 void OkayHandler::Initialize(TrecPointer<Page> page)
 {
 	assert(page.Get());
 	this->page = page;
-	instance = page->GetInstance();
+	app = page->GetInstance();
 }
 
 void OkayHandler::HandleEvents(TDataArray<EventID_Cred>& eventAr)

@@ -361,6 +361,18 @@ void TInstance::CleanWindows()
 	}
 }
 
+void TInstance::UnregisterHandler(TrecPointer<EventHandler> handler)
+{
+	for (UINT Rust = 0; Rust < registeredHandlers.Size(); Rust++)
+	{
+		if (handler.Get() == registeredHandlers[Rust].Get())
+		{
+			registeredHandlers.RemoveAt(Rust);
+			break;
+		}
+	}
+}
+
 bool TInstance::RegisterHandler(TrecPointer<EventHandler> handler)
 {
 	if(!handler.Get())

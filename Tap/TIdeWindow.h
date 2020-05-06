@@ -55,6 +55,11 @@ public:
 	void SetEnvironment(TrecPointer<TEnvironment> env);
 	TrecPointer<TFileShell> GetEnvironmentDirectory();
 
+	void SaveAll();
+	void SaveCurrent();
+
+	void SetCurrentApp(TrecPointer<MiniApp> app);
+
 protected:
 	UINT pageBarSpace;
 	UINT mainViewSpace;
@@ -79,6 +84,7 @@ protected:
 
 	TrecPointer<TBrush> panelbrush;
 
+	TrecPointer<MiniApp> currentApp;
 	TDataArray<TrecPointer<MiniApp>> apps;
 };
 

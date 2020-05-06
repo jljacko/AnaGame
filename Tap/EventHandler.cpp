@@ -1,5 +1,6 @@
 #include "EventHandler.h"
 #include "TInstance.h"
+#include <DirectoryInterface.h>
 
 EventHandler::EventHandler(TrecPointer<TInstance> instance)
 {
@@ -96,8 +97,8 @@ void EventHandler::SetSelf(TrecPointer<EventHandler> handleSelf)
 	if (handleSelf.Get() != this)
 		throw L"Error! Needs to be set to Self";
 	hSelf = TrecPointerKey::GetSoftPointerFromTrec<EventHandler>(handleSelf);
-	if (instance.Get())
-		instance->RegisterHandler(handleSelf);
+	if (app.Get())
+		app->RegisterHandler(handleSelf);
 }
 
 UINT EventHandler::GetId()
@@ -108,4 +109,63 @@ UINT EventHandler::GetId()
 TrecPointer<Page> EventHandler::GetPage()
 {
 	return page;
+}
+
+void EventHandler::SetMiniApp(TrecPointer<MiniApp> mApp)
+{
+	miniApp = mApp;
+}
+
+void EventHandler::OnFocus()
+{
+	if (!page.Get() || !page->GetWindowHandle().Get())
+	{
+		return;
+	}
+
+	if (miniApp.Get())
+	{
+		auto win = TrecPointerKey::GetTrecSubPointerFromTrec<TWindow, TIdeWindow>(page->GetWindowHandle());
+		if (win.Get())
+			win->SetCurrentApp(miniApp);
+	}
+}
+
+void EventHandler::OnSave()
+{
+}
+
+void EventHandler::SetSaveFile()
+{
+	if (filePointer.Get())
+		return;
+
+	if (!page.Get() || !page->GetWindowHandle().Get())
+		return;
+
+	auto win = page->GetWindowHandle();
+
+	TString initialSearch(GetDirectory(CentralDirectories::cd_Documents));
+
+
+	OPENFILENAMEW fileInfo;
+	ZeroMemory(&fileInfo, sizeof(fileInfo));
+
+	fileInfo.lStructSize = sizeof(OPENFILENAMEW);
+	fileInfo.hwndOwner = win->GetWindowHandle();
+	fileInfo.hInstance = win->GetInstance()->GetInstanceHandle();
+	fileInfo.lpstrFilter = nullptr;
+	fileInfo.lpstrInitialDir = initialSearch.GetConstantBuffer();
+	fileInfo.lpstrFile = new WCHAR[255];
+	fileInfo.nMaxFile = 230;
+
+	bool gotName = false;
+	if (gotName = GetSaveFileNameW(&fileInfo))
+	{
+		filePointer = TFileShell::GetFileInfo(TString(fileInfo.lpstrFile));
+	}
+
+	delete[] fileInfo.lpstrFile;
+	if (!gotName) return;
+	
 }

@@ -11,6 +11,8 @@ public:
 
 	virtual void ProcessMessage(TrecPointer<HandlerMessage> message) override;
 
+	virtual void OnSave()override;
+
 protected:
 	virtual bool ShouldProcessMessageByType(TrecPointer<HandlerMessage> message) override;
 

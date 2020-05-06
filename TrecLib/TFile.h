@@ -39,7 +39,7 @@ public:
 	static const UINT t_file_truncate_existing = TRUNCATE_EXISTING << 16;
 
 	TFile();
-	TFile(TString& lpszFileName,
+	TFile(const TString& lpszFileName,
 		UINT nOpenFlags);
 	~TFile();
 

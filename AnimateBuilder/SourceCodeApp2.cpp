@@ -26,5 +26,13 @@ UINT SourceCodeApp2::Initialize()
 	win->AddPage(anagame_page::anagame_page_command_prompt, ide_page_type::ide_page_type_deep_console, TString(L"Build"));
 	win->AddPage(anagame_page::anagame_page_command_prompt, ide_page_type::ide_page_type_deep_console, TString(L"Debug"));
 
+	codeHandler->SetMiniApp(TrecPointerKey::GetTrecPointerFromSoft<MiniApp>(self));
+
 	return 0;
+}
+
+void SourceCodeApp2::OnSave()
+{
+	if (codeHandler.Get())
+		codeHandler->OnSave();
 }

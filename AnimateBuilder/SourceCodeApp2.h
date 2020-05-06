@@ -13,6 +13,8 @@ public:
 
 	virtual UINT Initialize()override;
 
+	virtual void OnSave() override;
+
 protected:
 	TrecSubPointer<EventHandler, TerminalHandler> commandHandler;
 	TrecSubPointer<EventHandler, TCodeHandler> codeHandler;

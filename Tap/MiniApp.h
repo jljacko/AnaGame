@@ -15,6 +15,8 @@ public:
 
 	void SetSelf(TrecPointer<MiniApp> s);
 
+	virtual void OnSave() = 0;
+
 protected:
 	TrecSubPointer<TWindow, TIdeWindow> win;
 

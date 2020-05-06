@@ -5,6 +5,7 @@
 
 class Page;
 class TInstance;
+class MiniApp;
 
 class _TAP_DLL EventHandler
 {
@@ -41,6 +42,11 @@ public:
 
 	TrecPointer<Page> GetPage();
 
+	// Mini App related methods
+	void SetMiniApp(TrecPointer<MiniApp> mApp);
+	void OnFocus();
+	virtual void OnSave();
+
 protected:
 	TrecPointerSoft<EventHandler> hSelf;
 	virtual bool ShouldProcessMessageByType(TrecPointer<HandlerMessage> message) = 0;
@@ -48,6 +54,12 @@ protected:
 	TString name;
 	TrecPointer<TInstance> app;
 	TDataArray<eventNameID> events;
-	TrecPointer<TInstance> instance;
 	TrecPointer<Page> page;
+
+	TrecPointer<MiniApp> miniApp;
+
+	// Resources for Saving
+	TrecPointer<TFileShell> filePointer;
+
+	void SetSaveFile();
 };

@@ -109,7 +109,7 @@ void TBitmapBrush::FillRectangle(const RECT_2D& r)
 	if (Refresh() && currentFrame < bitmaps.Size() && bitmaps[currentFrame].Get() 
 		&& currentFrame < brushes.Size() && brushes[currentFrame].Get())
 	{
-		currentRenderer->FillRectangle(r, brushes[currentFrame].Get());
+		currentRenderer->DrawBitmap(bitmaps[currentFrame].Get(), r);
 		//currentRenderer->DrawBitmap(bitmaps[currentFrame].Get(), r);
 	}
 }

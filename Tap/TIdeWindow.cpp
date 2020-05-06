@@ -498,6 +498,41 @@ TrecPointer<TFileShell> TIdeWindow::GetEnvironmentDirectory()
 	return TrecPointer<TFileShell>();
 }
 
+void TIdeWindow::SaveAll()
+{
+	for (UINT Rust = 0; Rust < apps.Size(); Rust++)
+	{
+		if (apps[Rust].Get())
+			apps[Rust]->OnSave();
+	}
+}
+
+void TIdeWindow::SaveCurrent()
+{
+	if (currentApp.Get())
+		currentApp->OnSave();
+}
+
+void TIdeWindow::SetCurrentApp(TrecPointer<MiniApp> app)
+{
+	if (app.Get())
+	{
+		currentApp = app;
+		bool addApp = true;
+		for (UINT Rust = 0; Rust < apps.Size(); Rust++)
+		{
+			if (app.Get() == apps[Rust].Get())
+			{
+				addApp = false;
+				break;
+			}
+		}
+
+		if (addApp)
+			apps.push_back(app);
+	}
+}
+
 void TIdeWindow::DrawOtherPages()
 {
 	if (body.Get())dynamic_cast<IDEPage*>(body.Get())->Draw(panelbrush, d3dEngine.Get());
