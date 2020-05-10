@@ -32,8 +32,7 @@ void TDataBind::Resize(D2D1_RECT_F& r)
 			TrecPointer<TControl> scrollControl = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TScrollerControl>(drawingBoard, styles);
 			scrollControl->onCreate(r, TrecPointer<TWindowEngine>());
 			dynamic_cast<TScrollerControl*>(scrollControl.Get())->SetChildControl(TrecPointerKey::GetTrecPointerFromSoft<TControl>(tThis));
-			TrecPointerKey::GetTrecPointerFromSoft<TControl>(parent)->SwitchChildControl(tThis, scrollControl);
-			parent = TrecPointerKey::GetSoftPointerFromTrec<TControl>(scrollControl);
+			parent->SwitchChildControl(tThis, scrollControl);
 			location.left = r.left;
 			location.top = r.top;
 		}

@@ -21,6 +21,18 @@ typedef enum class RenderTargetType
 	render_target_dxgi
 }RenderTargetType;
 
+
+
+class TPageParentHolder: TParentHolder
+{
+public:
+	TPageParentHolder(TrecPointerSoft<class Page> page);
+	virtual void SwitchChildControl(TrecPointerSoft<TControl> cur, TrecPointer<TControl> newTControl)override;
+private:
+	TrecPointerSoft<class Page> parent;
+};
+
+
 /* Class: Page
 * Purpose: Provide the foundation through which Drawing resources can be set up on a certain Window or device context,
 *	Allows for refactoring of code that is essentially repeated
@@ -28,6 +40,7 @@ typedef enum class RenderTargetType
 class _TAP_DLL Page : public TObject
 {
 	friend class TrecPointerKey;
+	friend class TPageParentHolder;
 public:
 	virtual ~Page();
 
@@ -120,7 +133,10 @@ protected:
 	D2D1_MATRIX_3X2_F adjustMatrix;
 	TrecPointer<TWindow> windowHandle;		// the Window attached to the page
 
+	void SwitchChildControl(TrecPointer<TControl> newRoot);
+
 	TrecPointerSoft<Page> self;
+	TrecPointer<TParentHolder> selfHolder;
 
 	// Anaface Resources
 	TDataArray<TControl*> clickedControl;

@@ -22,6 +22,7 @@
 
 
 #include <TControlComponent.h>
+#include "TParentHolder.h"
 
 //#define _TREC_LIB_DLL __declspec(dllimport)
 #include <TMap.h>
@@ -424,6 +425,17 @@ private:
 };
 
 
+class _ANAFACE_DLL TControlParentHolder: public TParentHolder
+{
+public:
+	TControlParentHolder(TrecPointer<TControl> parent);
+	TControlParentHolder(TrecPointerSoft<TControl> parent);
+
+	virtual void SwitchChildControl(TrecPointerSoft<TControl> cur, TrecPointer<TControl> newTControl)override;
+private:
+	TrecPointerSoft<TControl> parent;
+};
+
 
 class _ANAFACE_DLL TControl : public TObject
 {
@@ -434,6 +446,7 @@ class _ANAFACE_DLL TControl : public TObject
 	friend class TControl;
 	friend class TDataBind;
 	friend class TTreeDataBind;
+	friend class TControlParentHolder;
 public:
 
 	TControl(TrecPointer<DrawingBoard> drawingBoard, TrecPointer<TArray<styleTable>> styles, bool base = true);
@@ -509,7 +522,7 @@ public:
 	bool addAttribute(const TString&, TrecPointer<TString>);
 	bool addChild(TrecPointer<TControl>);
 
-	void setParent(TrecPointer<TControl> tcp);
+	void setParent(TrecPointer<TParentHolder> tcp);
 	TrecPointer<TText> getText(int n);
 	TrecPointer<TContent> getContent(int n);
 	TrecPointer<TBorder> getBorder(int n);
@@ -550,7 +563,9 @@ protected:
 	TrecPointer<TScrollBar> vScroll, hScroll;
 	TrecPointer<DrawingBoard> drawingBoard;
 	
-	TrecPointerSoft<TControl> parent;
+	TrecPointer <TParentHolder> GetParentReference();
+	TrecPointer<TParentHolder> thisParent;
+	TrecPointer<TParentHolder> parent;
 	TrecPointerSoft<TControl> tThis;
 
 	//TrecPointer<TControl> PointerCase;

@@ -194,6 +194,7 @@
     <ClInclude Include="TLayout.h" />
     <ClInclude Include="TLayoutEx.h" />
     <ClInclude Include="TLineGeometry.h" />
+    <ClInclude Include="TParentHolder.h" />
     <ClInclude Include="TPathGeometry.h" />
     <ClInclude Include="TPromptControl.h" />
     <ClInclude Include="TRadioButton.h" />
@@ -245,6 +246,7 @@
     <ClCompile Include="TLayout.cpp" />
     <ClCompile Include="TLayoutEx.cpp" />
     <ClCompile Include="TLineGeometry.cpp" />
+    <ClCompile Include="TParentHolder.cpp" />
     <ClCompile Include="TPathGeometry.cpp" />
     <ClCompile Include="TPromptControl.cpp" />
     <ClCompile Include="TRadioButton.cpp" />

@@ -1202,43 +1202,43 @@ void TControl::scroll(RECT& loc)
 {
 	// Make sure that this Control is not out of view
 
-	TControl* sh_parent = parent.Get();
+	//TControl* sh_parent = parent.Get();
 
-	// Test for need to Vertically Scroll
-	if (loc.bottom < location.top)
-	{
-		if (!vScroll.Get() && sh_parent)
-		{
-			sh_parent->scroll(loc);
-			return;
-		}
+	//// Test for need to Vertically Scroll
+	//if (loc.bottom < location.top)
+	//{
+	//	if (!vScroll.Get() && sh_parent)
+	//	{
+	//		sh_parent->scroll(loc);
+	//		return;
+	//	}
 
-	}
-	else if (loc.top > location.bottom)
-	{
-		if (!vScroll.Get() && sh_parent)
-		{
-			sh_parent->scroll(loc);
-			return;
-		}
-	}
+	//}
+	//else if (loc.top > location.bottom)
+	//{
+	//	if (!vScroll.Get() && sh_parent)
+	//	{
+	//		sh_parent->scroll(loc);
+	//		return;
+	//	}
+	//}
 
-	if (loc.left > location.right)
-	{
-		if (!hScroll.Get() && sh_parent)
-		{
-			sh_parent->scroll(loc);
-			return;
-		}
-	}
-	else if (loc.right < location.left)
-	{
-		if (!hScroll.Get() && sh_parent)
-		{
-			sh_parent->scroll(loc);
-			return;
-		}
-	}
+	//if (loc.left > location.right)
+	//{
+	//	if (!hScroll.Get() && sh_parent)
+	//	{
+	//		sh_parent->scroll(loc);
+	//		return;
+	//	}
+	//}
+	//else if (loc.right < location.left)
+	//{
+	//	if (!hScroll.Get() && sh_parent)
+	//	{
+	//		sh_parent->scroll(loc);
+	//		return;
+	//	}
+	//}
 
 }
 
@@ -1365,7 +1365,7 @@ bool TControl::SetScrollControlOnMinSize(D2D1_RECT_F l)
 				TrecPointer<TControl> scrollControl = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TScrollerControl>(drawingBoard, styles);
 				scrollControl->onCreate(l, TrecPointer<TWindowEngine>());
 				dynamic_cast<TScrollerControl*>(scrollControl.Get())->SetChildControl(TrecPointerKey::GetTrecPointerFromSoft<TControl>(tThis));
-				TrecPointerKey::GetTrecPointerFromSoft<TControl>(parent)->SwitchChildControl(tThis, scrollControl);
+				parent->SwitchChildControl(tThis, scrollControl);
 				return true;
 			}
 		}
@@ -1380,9 +1380,19 @@ void TControl::SwitchChildControl(TrecPointerSoft<TControl> curControl, TrecPoin
 		if (children.ElementAt(Rust).Get() == curControl.Get())
 		{
 			children.setAt(Rust, newControl);
+			newControl->setParent(GetParentReference());
 			break;
 		}
 	}
+}
+
+TrecPointer<TParentHolder> TControl::GetParentReference()
+{
+	if (!thisParent.Get())
+	{
+		thisParent = TrecPointerKey::GetNewTrecPointerAlt<TParentHolder, TControlParentHolder>(tThis);
+	}
+	return thisParent;
 }
 
 /*
@@ -1523,7 +1533,9 @@ TrecPointer<DrawingBoard> TControl::getDrawingBoard()
 */
 TrecPointer<TControl> TControl::getParent()
 {
-	return TrecPointerKey::GetTrecPointerFromSoft<TControl>(parent);
+	if (!parent.Get())
+		return TrecPointer<TControl>();
+	return parent->GetParent();
 }
 
 /*
@@ -1742,7 +1754,7 @@ bool TControl::addChild(TrecPointer<TControl> tcon)
 	return false;
 	children.Add(tcon);
 	
-	tcon->setParent(TrecPointerKey::GetTrecPointerFromSoft<TControl>( tThis));
+	tcon->setParent(GetParentReference());
 	return true;
 	
 }
@@ -1900,13 +1912,13 @@ void TControl::ShrinkHeight()
 /*
 * Method: TControl - setParent
 * Purpose: Sets the controls parent for reference in the tree
-* Parameters: TrecPointer<TControl> tcp - the pointer to the parent
+* Parameters: TrecPointer<TParentHolder> tcp - the pointer to the parent (whether it is a TControl, a (Tap) Page
 * Returns: void
 * To-Do: Add code to make sure the parent is not a child or grand-child ( or lower)
 */
-void TControl::setParent(TrecPointer<TControl> tcp)
+void TControl::setParent(TrecPointer<TParentHolder> tcp)
 {
-	parent = TrecPointerKey::GetSoftPointerFromTrec<TControl>(tcp);
+	parent = tcp;
 }
 
 /*
@@ -6412,4 +6424,23 @@ EventID_Cred::EventID_Cred(R_Message_Type t, TControl* c, TrecPointer<TScrollBar
 	eventType = t;
 	control = c;
 	scroll = sb;
+}
+
+TControlParentHolder::TControlParentHolder(TrecPointer<TControl> parent)
+{
+	this->parent = TrecPointerKey::GetSoftPointerFromTrec<TControl>(parent);
+}
+
+TControlParentHolder::TControlParentHolder(TrecPointerSoft<TControl> parent)
+{
+	this->parent = parent;
+}
+
+void TControlParentHolder::SwitchChildControl(TrecPointerSoft<TControl> cur, TrecPointer<TControl> newTControl)
+{
+	auto tParent = TrecPointerKey::GetTrecPointerFromSoft<TControl>(parent);
+	if (tParent.Get())
+	{
+		tParent->SwitchChildControl(cur, newTControl);
+	}
 }

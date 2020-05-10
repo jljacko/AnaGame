@@ -285,7 +285,7 @@ int TLayout::addChild(TrecPointer<TControl> tc, UINT x, UINT y)
 				return 3;
 			lChildren.ElementAt(c)->extend = false;
 			lChildren.ElementAt(c)->contain = tc;
-			lChildren.ElementAt(c)->contain->setParent(TrecPointerKey::GetTrecPointerFromSoft<TControl>(tThis));
+			lChildren.ElementAt(c)->contain->setParent(GetParentReference());
 			/*for (UINT rust = 0; rust < children.Count(); rust++)
 			{
 				if (children.ElementAt(rust).Get() == tc.Get())
@@ -328,7 +328,7 @@ int TLayout::addChild(TrecPointer<TControl> tc, UINT x, UINT y, UINT x_2, UINT y
 			else
 				lChildren.ElementAt(c)->extend = false;
 			lChildren.ElementAt(c)->contain = tc;
-			lChildren.ElementAt(c)->contain->setParent(TrecPointerKey::GetTrecPointerFromSoft<TControl>(tThis));
+			lChildren.ElementAt(c)->contain->setParent(GetParentReference());
 			return 0;
 		}
 	}
