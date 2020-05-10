@@ -148,7 +148,7 @@ void MainLayoutHandler::Initialize(TrecPointer<Page> page)
 
 	this->page = page;
 
-	instance = page->GetInstance();
+	app = page->GetInstance();
 
 	rootControl = page->GetRootControl();
 
@@ -282,7 +282,7 @@ void MainLayoutHandler::OnPrint(TControl* tc, EventArgs ea)
 void MainLayoutHandler::OnNewArena(TControl* tc, EventArgs ea)
 {
 	TString dialog(L"Enter a name for your Arena!");
-	TString arenaName(ActivateNameDialog(instance, page->GetWindowHandle()->GetWindowHandle(), dialog));
+	TString arenaName(ActivateNameDialog(app, page->GetWindowHandle()->GetWindowHandle(), dialog));
 
 	if (!arenaName.GetSize())
 		return;
