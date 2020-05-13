@@ -6,6 +6,12 @@
 #include "TWindow.h"
 #include "MiniHandler.h"
 
+/**
+ * Method: Page::Page
+ * Purpose: Constructor
+ * Parameters: TrecPointer<DrawingBoard> -  the Drawing Board for All Drawing operations
+ * Returns: new Page object
+ */
 Page::Page(TrecPointer<DrawingBoard> board)
 {
 	drawingBoard = board;
@@ -15,6 +21,12 @@ Page::Page(TrecPointer<DrawingBoard> board)
 	scale = 1.0f;
 }
 
+/**
+ * Method: Page::GetAnimationByName
+ * Purpose: Retrieves the Animation Bulder by name
+ * Parameters: TString& name - name of the Animation Builder
+ * Returns: TrecPointer<AnimationBuilder> - the builder requested, null if not found
+ */
 TrecPointer<AnimationBuilder> Page::GetAnimationByName(TString& name)
 {
 	for (UINT Rust = 0; Rust < animations.Size(); Rust++)
@@ -27,6 +39,12 @@ TrecPointer<AnimationBuilder> Page::GetAnimationByName(TString& name)
 	return TrecPointer<AnimationBuilder>();
 }
 
+/**
+ * Method: Page::SwitchChildControl
+ * Purpose: Allows the root control to insert a new control (most likely a TScollerControl) between the page and itself
+ * Parameters: TrecPointer<TControl> newRoot - the control to set as the new root
+ * Returns: void
+ */
 void Page::SwitchChildControl(TrecPointer<TControl> newRoot)
 {
 	if (newRoot.Get())
@@ -36,6 +54,12 @@ void Page::SwitchChildControl(TrecPointer<TControl> newRoot)
 	}
 }
 
+/**
+ * Method: Page::PrepAnimations
+ * Purpose: Allows the Page to Prepare Animations requiested by the TControls it has generated
+ * Parameters: TAnimationManager& aManager - the Animation Manager that oversees all Story Board within a Window
+ * Returns: void
+ */
 void Page::PrepAnimations(TAnimationManager& aManager)
 {
 	if (!rootControl.Get())
@@ -109,6 +133,12 @@ void Page::PrepAnimations(TAnimationManager& aManager)
 }
 
 
+/**
+ * Method: Page::~Page
+ * Purpose: Destructor
+ * Parameters: void
+ * Returns: void
+ */
 Page::~Page()
 {
 	rootControl.Delete();
@@ -121,6 +151,14 @@ Page::~Page()
 }
 
 
+/**
+ * Method: static Page::GetWindowPage
+ * Purpose: Proides a new page set for just 2D drawing
+ * Parameters: TrecPointer<TInstance> - instance under which this page is created
+ *				TrecPointer<TWindow> - the WIndow to hold this page
+ *				TrecPointer<EventHandler> - the Event Handler to work with this page
+ * Returns: TrecPointer<Page> - the page object requested
+ */
 TrecPointer<Page> Page::GetWindowPage(TrecPointer<TInstance> in , TrecPointer<TWindow> window, TrecPointer<EventHandler> eh)
 {
 	if (!in.Get())
@@ -146,6 +184,14 @@ TrecPointer<Page> Page::GetWindowPage(TrecPointer<TInstance> in , TrecPointer<TW
 }
 
 
+/**
+ * Method: Page::
+ * Purpose:
+ * Parameters:
+ * Returns:
+ *
+ * Note: DEPRICATED - in favor of the IDE Page in the TIdeWindow
+ */
 TrecPointer<Page> Page::GetSmallPage(TrecPointer<TInstance> in, TrecPointer<TWindow> window, D2D1_RECT_F area)
 {
 	TrecPointer<Page> ret = TrecPointerKey::GetNewSelfTrecPointer<Page>(window->GetDrawingBoard());
@@ -159,6 +205,15 @@ TrecPointer<Page> Page::GetSmallPage(TrecPointer<TInstance> in, TrecPointer<TWin
 	return ret;
 }
 
+/**
+ * Method: Page::SetAnaface
+ * Purpose: Sets up the Anaface of this Page as well as the Handler
+ * Parameters: TrecPointer<TFile> file - the file holding the TML file
+ *				TrecPointer<EventHandler> eh -  the handler that goes with this TML Anaface
+ * Returns: int error code (0 for success)
+ *
+ * Note: the file is expected to already be open
+ */
 int Page::SetAnaface(TrecPointer<TFile> file, TrecPointer<EventHandler> eh)
 {
 	if (!file.Get())
@@ -174,10 +229,6 @@ int Page::SetAnaface(TrecPointer<TFile> file, TrecPointer<EventHandler> eh)
 	int result = 0;
 	if (!reader.read(&result))
 		throw result;
-
-
-
-
 
 	rootControl = parser.getRootControl();
 	if (rootControl.Get())
@@ -196,6 +247,14 @@ int Page::SetAnaface(TrecPointer<TFile> file, TrecPointer<EventHandler> eh)
 	return 0;
 }
 
+/**
+ * Method: Page::SetAnaface
+ * Purpose:
+ * Parameters:
+ * Returns:
+ *
+ * Note: Might be marked for Deprication
+ */
 int Page::SetAnaface(TrecPointer<TFile> file, TDataArray<eventNameID>& id)
 {
 	if (!file.Get())
@@ -227,6 +286,12 @@ int Page::SetAnaface(TrecPointer<TFile> file, TDataArray<eventNameID>& id)
 	return 0;
 }
 
+/**
+ * Method: Page::
+ * Purpose:
+ * Parameters:
+ * Returns:
+ */
 void Page::SetAnaface(TrecPointer<TControl> newRoot)
 {
 	rootControl = newRoot;
@@ -234,11 +299,24 @@ void Page::SetAnaface(TrecPointer<TControl> newRoot)
 	rootControl->setParent(selfHolder);
 }
 
+
+/**
+ * Method: Page::GetRootControl
+ * Purpose: Retrieves the Root Control of this page
+ * Parameters: void
+ * Returns: TrecPointer<TControl> - the Root control of this Page
+ */
 TrecPointer<TControl> Page::GetRootControl()
 {
 	return rootControl;
 }
 
+/**
+ * Method: Page::ExtractRootControl
+ * Purpose: Retrieves the Root Control of this page, while also removing it from the Page
+ * Parameters: void
+ * Returns: TrecPointer<TControl> - the (now former) Root control of this Page
+ */
 TrecPointer<TControl> Page::ExtractRootControl()
 {
 	TrecPointer<TControl> ret(rootControl);
@@ -246,16 +324,34 @@ TrecPointer<TControl> Page::ExtractRootControl()
 	return ret;
 }
 
+/**
+ * Method: Page::GetWindowHandle
+ * Purpose: Retrieves the TWindow holding this page
+ * Parameters: void
+ * Returns: TrecPointer<TWindow> - the TWindow associated with this page
+ */
 TrecPointer<TWindow> Page::GetWindowHandle()
 {
 	return windowHandle;
 }
 
+/**
+ * Method: Page::GetHandler
+ * Purpose: Retrieves the Handler held by this Page
+ * Parameters: void
+ * Returns: TrecPointer<EventHandler> - the Event Handler responding to Events for this page
+ */
 TrecPointer<EventHandler> Page::GetHandler()
 {
 	return handler;
 }
 
+/**
+ * Method: Page::SetHandler
+ * Purpose: Sets the Handler for this Page
+ * Parameters: TrecPointer<EventHandler> eh - the Handler to set to
+ * Returns: void
+ */
 void Page::SetHandler(TrecPointer <EventHandler> eh)
 {
 	handler = eh;
@@ -263,6 +359,14 @@ void Page::SetHandler(TrecPointer <EventHandler> eh)
 		instance->RegisterHandler(handler);
 }
 
+/**
+ * Method: Page::OnRButtonUp
+ * Purpose: Responds to the Right Button Up Message
+ * Parameters: UINT nFlags - flags associated with the message
+ *				TPoint point - the point included in the message
+ *				messageOutput* mOut -  the result of the message
+ * Returns: void
+ */
 void Page::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
 {
 	TDataArray<EventID_Cred> eventAr;
@@ -278,6 +382,14 @@ void Page::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
 		if (windowHandle.Get())windowHandle->Draw(); else return;
 }
 
+/**
+ * Method: Page::OnLButtonDown
+ * Purpose: Responds to the Left Button Down Message
+ * Parameters: UINT nFlags - flags associated with the message
+ *				TPoint point - the point included in the message
+ *				messageOutput* mOut -  the result of the message
+ * Returns: void
+ */
 void Page::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
 {
 	TDataArray<EventID_Cred> eventAr;
@@ -293,6 +405,14 @@ void Page::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
 		if (windowHandle.Get())windowHandle->Draw(); else return;
 }
 
+/**
+ * Method: Page::OnRButtonDown
+ * Purpose: Responds to the Right Button Down Message
+ * Parameters: UINT nFlags - flags associated with the message
+ *				TPoint point - the point included in the message
+ *				messageOutput* mOut -  the result of the message
+ * Returns: void
+ */
 void Page::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
 {
 	TDataArray<EventID_Cred> eventAr;
@@ -320,6 +440,14 @@ void Page::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
 		if (windowHandle.Get())windowHandle->Draw(); else return;
 }
 
+/**
+ * Method: Page::OnMouseMove
+ * Purpose: Responds to the Mouse Move Message
+ * Parameters: UINT nFlags - flags associated with the message
+ *				TPoint point - the point included in the message
+ *				messageOutput* mOut -  the result of the message
+ * Returns: void
+ */
 void Page::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut)
 {
 	TDataArray<EventID_Cred> eventAr;
@@ -334,6 +462,14 @@ void Page::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut)
 		if (windowHandle.Get())windowHandle->Draw(); else return;
 }
 
+/**
+ * Method: Page::OnLButtonDblClk
+ * Purpose: Responds to the Left Button Double CLick Message
+ * Parameters: UINT nFlags - flags associated with the message
+ *				TPoint point - the point included in the message
+ *				messageOutput* mOut -  the result of the message
+ * Returns: void
+ */
 void Page::OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut)
 {
 	TDataArray<EventID_Cred> eventAr;
@@ -349,6 +485,14 @@ void Page::OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut)
 		if (windowHandle.Get())windowHandle->Draw(); else return;
 }
 
+/**
+ * Method: Page::OnLButtonUp
+ * Purpose: Responds to the Left Button Up Message
+ * Parameters: UINT nFlags - flags associated with the message
+ *				TPoint point - the point included in the message
+ *				messageOutput* mOut -  the result of the message
+ * Returns: void
+ */
 void Page::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
 {
 	TDataArray<EventID_Cred> eventAr;
@@ -365,6 +509,16 @@ void Page::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
 		if (windowHandle.Get())windowHandle->Draw(); else return;
 }
 
+/**
+ * Method: Page::OnChar
+ * Purpose: Responds to the Char Message
+ * Parameters: bool fromChar - whether this is from on Char at the Windows level (assume "Key Down" if false)
+ *				UINT nChar - the Character provided
+ *				UINT nRepCnt - the number of times to add it
+ *				UINT nFlags - flags associated with the message
+ *				messageOutput* mOut - the result of the event
+ * Returns: bool
+ */
 bool Page::OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlags, messageOutput *mOut)
 {
 	TDataArray<EventID_Cred> eventAr;
@@ -382,6 +536,14 @@ bool Page::OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlags, messageOu
 	return returnable;
 }
 
+/**
+ * Method: Page::OnResize
+ * Purpose: Resizes the Page
+ * Parameters: D2D1_RECT_F& newLoc - the new regoin of the Page
+ *				UINT nFlags - flags associated with the move
+ *				TrecPointer<TWindowEngine> - the 3D Engine to work with
+ * Returns: void
+ */
 void Page::OnResize(D2D1_RECT_F& newLoc, UINT nFlags, TrecPointer<TWindowEngine> engine)
 {
 	// Only Resize if basic resources are in order
@@ -399,6 +561,17 @@ void Page::OnResize(D2D1_RECT_F& newLoc, UINT nFlags, TrecPointer<TWindowEngine>
 		miniHandler->OnResize(area);
 }
 
+/**
+ * Method: Page::OnRButtonUp
+ * Purpose: Responds to the Right Button Up Message
+ * Parameters: UINT nFlags - flags associated with the message
+ *				TPoint point - the point included in the message
+ *				messageOutput* mOut -  the result of the message
+ *				TDataArray<EventID_Cred>& eventAr - list of events
+ * Returns: void
+ *
+ * Note: May be Deprecated soon once the MiniHandler is removed from the library
+ */
 void Page::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
 	if (!isContained(&point, &area))
@@ -409,6 +582,17 @@ void Page::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArra
 		rootControl->OnRButtonUp(nFlags, point, mOut, eventAr);
 }
 
+/**
+ * Method: Page::OnLButtonDown
+ * Purpose: Responds to the Left Button Down Message
+ * Parameters: UINT nFlags - flags associated with the message
+ *				TPoint point - the point included in the message
+ *				messageOutput* mOut -  the result of the message
+ *				TDataArray<EventID_Cred>& eventAr - list of events
+ * Returns: void
+ *
+ * Note: May be Deprecated soon once the MiniHandler is removed from the library
+ */
 void Page::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
 	if (!isContained(&point, &area))
@@ -418,6 +602,17 @@ void Page::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataAr
 		rootControl->OnLButtonDown(nFlags, point, mOut, eventAr, clickedControl);
 }
 
+/**
+ * Method: Page::OnRButtonDown
+ * Purpose: Responds to the Right Button Down Message
+ * Parameters: UINT nFlags - flags associated with the message
+ *				TPoint point - the point included in the message
+ *				messageOutput* mOut -  the result of the message
+ *				TDataArray<EventID_Cred>& eventAr - list of events
+ * Returns: void
+ *
+ * Note: May be Deprecated soon once the MiniHandler is removed from the library
+ */
 void Page::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
 	if (!isContained(&point, &area))
@@ -427,6 +622,17 @@ void Page::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataAr
 		rootControl->OnRButtonDown(nFlags, point, mOut, eventAr);
 }
 
+/**
+ * Method: Page::OnMouseMove
+ * Purpose: Responds to the Mouse Move Message
+ * Parameters: UINT nFlags - flags associated with the message
+ *				TPoint point - the point included in the message
+ *				messageOutput* mOut -  the result of the message
+ *				TDataArray<EventID_Cred>& eventAr - list of events
+ * Returns: void
+ *
+ * Note: May be Deprecated soon once the MiniHandler is removed from the library
+ */
 void Page::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
 	if (!isContained(&point, &area))
@@ -436,6 +642,17 @@ void Page::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArra
 		rootControl->OnMouseMove(nFlags, point, mOut, eventAr);
 }
 
+/**
+ * Method: Page::OnLButtonDblClk
+ * Purpose: Responds to the Left Button Double CLick Message
+ * Parameters: UINT nFlags - flags associated with the message
+ *				TPoint point - the point included in the message
+ *				messageOutput* mOut -  the result of the message
+ *				TDataArray<EventID_Cred>& eventAr - list of events
+ * Returns: void
+ *
+ * Note: May be Deprecated soon once the MiniHandler is removed from the library
+ */
 void Page::OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
 	if (!isContained(&point, &area))
@@ -445,6 +662,17 @@ void Page::OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut, TData
 		rootControl->OnLButtonDblClk(nFlags, point, mOut, eventAr);
 }
 
+/**
+ * Method: Page::OnLButtonUp
+ * Purpose: Responds to the Left Button Up Message
+ * Parameters: UINT nFlags - flags associated with the message
+ *				TPoint point - the point included in the message
+ *				messageOutput* mOut -  the result of the message
+ *				TDataArray<EventID_Cred>& eventAr - list of events
+ * Returns: void
+ *
+ * Note: May be Deprecated soon once the MiniHandler is removed from the library
+ */
 void Page::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
 	if (!isContained(&point, &area))
@@ -477,6 +705,19 @@ void Page::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArra
 	}
 }
 
+/**
+ * Method: Page::OnChar
+ * Purpose: Responds to the Char Message
+ * Parameters: bool fromChar - whether this is from on Char at the Windows level (assume "Key Down" if false)
+ *				UINT nChar - the Character provided
+ *				UINT nRepCnt - the number of times to add it
+ *				UINT nFlags - flags associated with the message
+ *				messageOutput* mOut - the result of the event
+ *				TDataArray<EventID_Cred>& eventAr - list of events
+ * Returns: bool
+ *
+ * Note: May be Deprecated soon once the MiniHandler is removed from the library
+ */
 bool Page::OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
 	if (rootControl.Get())
@@ -485,10 +726,27 @@ bool Page::OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags, messageO
 	return false;
 }
 
+/**
+ * Method: Page::OnResize
+ * Purpose: Resizes the Page
+ * Parameters: D2D1_RECT_F& newLoc - the new regoin of the Page
+ *				UINT nFlags - flags associated with the move
+ *				TrecPointer<TWindowEngine> - the 3D Engine to work with
+ *				TDataArray<EventID_Cred>& eventAr - list of events
+ * Returns: void
+ *
+ * Note: May be Deprecated soon once the MiniHandler is removed from the library
+ */
 void Page::OnResize(D2D1_RECT_F& newLoc, UINT nFlags, TDataArray<EventID_Cred>& eventAr)
 {
 }
 
+/**
+ * Method: Page::OnDestroy
+ * Purpose: Reports whether the Page is ready to be destroyed
+ * Parameters: void
+ * Returns: bool - true if the Page doesn't have a handler or that handler is ready to be destroyed
+ */
 bool Page::OnDestroy()
 {
 	if(handler.Get())
@@ -496,6 +754,12 @@ bool Page::OnDestroy()
 	return true;
 }
 
+/**
+ * Method: Page::SetSelf
+ * Purpose: Allows TrecPointerKey to set a Trec Reference to itself
+ * Parameters: TrecPointer<Page> - self reference to the page
+ * Returns: void
+ */
 void Page::SetSelf(TrecPointer<Page> s)
 {
 	if (!s.Get() || s.Get() != this)
@@ -505,6 +769,12 @@ void Page::SetSelf(TrecPointer<Page> s)
 	selfHolder = TrecPointerKey::GetNewTrecPointerAlt<TParentHolder, TPageParentHolder>(self);
 }
 
+/**
+ * Method: Page::GetInstance
+ * Purpose: Retrieves the TInstance associiated with this page
+ * Parameters: void
+ * Returns: TrecPointer<TInstance> - the TInstance under which this page was created
+ */
 TrecPointer<TInstance> Page::GetInstance()
 {
 	return instance;
@@ -512,6 +782,14 @@ TrecPointer<TInstance> Page::GetInstance()
 
 
 
+/**
+ * Method: Page::SetMiniHandler
+ * Purpose: Sets the Mini Handler for this Page
+ * Parameters: TrecSubPointer<EventHandler, MiniHandler> mh - the miniHandler to set
+ * Returns: void
+ *
+ * Note: DEPRICATED - MiniHandler class is depricated so this method is as well
+ */
 void Page::SetMiniHandler(TrecSubPointer<EventHandler, MiniHandler> mh)
 {
 	miniHandler = mh;
@@ -521,6 +799,13 @@ void Page::SetMiniHandler(TrecSubPointer<EventHandler, MiniHandler> mh)
 	}
 }
 
+/**
+ * Method: Page::AddStory
+ * Purpose: Adds to the list of StoryBoards to manage
+ * Parameters: TString& story - the name of the Story Board
+ *				bool persistent - whether this Story Board should be "persistent" or not
+ * Returns:
+ */
 void Page::AddStory(TString& story, bool persistent)
 {
 	if (persistent)
@@ -529,12 +814,24 @@ void Page::AddStory(TString& story, bool persistent)
 		basicStoryBoards.push_back(story);
 }
 
+/**
+ * Method: Page::AddAnimations
+ * Purpose: Enables the Page to Create an Animation with an Animation Builder
+ * Parameters: TrecPointer<AnimationBuilder> builder - the Builder for the Animation
+ * Returns: void
+ */
 void Page::AddAnimations(TrecPointer<AnimationBuilder> builder)
 {
 	if (builder.Get())
 		animations.push_back(builder);
 }
 
+/**
+ * Method: Page::OnFocus
+ * Purpose: Lets the Page know that User is now focusing on it
+ * Parameters: void
+ * Returns: void
+ */
 void Page::OnFocus()
 {
 	if (handler.Get())
@@ -549,6 +846,14 @@ UCHAR * Page::GetAnaGameType()
 	return nullptr;
 }
 
+/**
+ * Method: Page::
+ * Purpose:
+ * Parameters:
+ * Returns:
+ *
+ * Note: DEPRICATED - Use Resize or SetArea instead
+ */
 void Page::OnSize(UINT nType, int cx, int cy)
 {
 
@@ -561,11 +866,23 @@ void Page::OnSize(UINT nType, int cx, int cy)
 
 }
 
+/**
+ * Method: Page::GetArenaEngine
+ * Purpose: Gets the Arena Engine Used by this Page
+ * Parameters: void
+ * Returns: TrecPointer<TArenaEngine> - the Arena Engine used by one of this Page's Controls
+ */
 TrecPointer<TArenaEngine> Page::GetArenaEngine()
 {
 	return engine;
 }
 
+/**
+ * Method: Page::CreateLayout
+ * Purpose: Calls OnCreate for the Root Control
+ * Parameters: void
+ * Returns: void
+ */
 void Page::CreateLayout()
 {
 	if (rootControl.Get() && windowHandle.Get())
@@ -574,6 +891,12 @@ void Page::CreateLayout()
 	}
 }
 
+/**
+ * Method: Page::Draw
+ * Purpose: Draws the Page to the Window
+ * Parameters: TWindowEngine* twe - the 3D Window Engine (not sure why this parameter is here)
+ * Returns: void
+ */
 void Page::Draw(TWindowEngine* twe)
 {
 	if (!rootControl.Get() || !drawingBoard.Get()) return;
@@ -586,11 +909,23 @@ void Page::Draw(TWindowEngine* twe)
 		handler->Draw();
 }
 
+/**
+ * Method: Page::GetArea
+ * Purpose: Retrieves the Area held by the Page
+ * Parameters: void
+ * Returns: D2D1_RECT_F -  the Region the Page claims it is drawing to
+ */
 D2D1_RECT_F Page::GetArea()
 {
 	return area;
 }
 
+/**
+ * Method: Page::SetArea
+ * Purpose: Sets the Region of the Page
+ * Parameters: const D2D1_RECT_F& loc -  the location to provide this Page
+ * Returns: void
+ */
 void Page::SetArea(const D2D1_RECT_F& loc)
 {
 	area = loc;
@@ -598,11 +933,24 @@ void Page::SetArea(const D2D1_RECT_F& loc)
 		rootControl->Resize(area);
 }
 
+/**
+ * Method: TPageParentHolder::TPageParentHolder
+ * Purpose: Constructor
+ * Parameters: TrecPointerSoft<class Page> page -  the Page to serve as the Parent
+ * Returns: New Page Holder Object
+ */
 TPageParentHolder::TPageParentHolder(TrecPointerSoft<class Page> page)
 {
 	parent = page;
 }
 
+/**
+ * Method: TPageParentHolder::SwitchChildControl
+ * Purpose: Instructs the Page to treat the provided TControl as the new Root Control
+ * Parameters: TrecPointerSoft<TControl> cur - the current root control
+ *				TrecPointer<TControl> newTControl - the new control to set as root
+ * Returns: void
+ */
 void TPageParentHolder::SwitchChildControl(TrecPointerSoft<TControl> cur, TrecPointer<TControl> newTControl)
 {
 	auto tPage = TrecPointerKey::GetTrecPointerFromSoft<Page>(parent);

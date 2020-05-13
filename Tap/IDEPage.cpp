@@ -2,6 +2,15 @@
 #include "TInstance.h"
 #include "TIdeWindow.h"
 
+
+/**
+ * Method: IDEPage::IDEPage
+ * Purpose: Constructor
+ * Parameters: ide_page_type type - the type of Page this will be
+ *				UINT barSpace - how much space to give the Tab Bar
+ *				TrecPointer<DrawingBoard> board - The Drawing Board to draw on
+ * Returns: New IDEPage object
+ */
 IDEPage::IDEPage(ide_page_type type, UINT barSpace, TrecPointer<DrawingBoard> board): Page(board)
 {
 	this->type = type;
@@ -15,6 +24,12 @@ IDEPage::IDEPage(ide_page_type type, UINT barSpace, TrecPointer<DrawingBoard> bo
 
 }
 
+/**
+ * Method: IDEPage::SetResources
+ * Purpose: Sets up resources for this Page to be a 2D Page
+ * Parameters: TrecPointer<TInstance> in, TrecPointer<TWindow> window
+ * Returns: void
+ */
 void IDEPage::SetResources(TrecPointer<TInstance> in, TrecPointer<TWindow> window)
 {
 	this->windowHandle = window;
@@ -28,11 +43,26 @@ void IDEPage::SetResources(TrecPointer<TInstance> in, TrecPointer<TWindow> windo
 	
 }
 
+/**
+ * Method: IDEPage::SetResources
+ * Purpose: Sets up resources for 3D Support
+ * Parameters: TrecPointer<TInstance> in - instance associate with this Page
+ *				TrecPointer<TWindow> window - the Window this will be added to
+ *				TrecPointer<TWindowEngine> engine - the Engine to provide 3D support
+ * Returns: void
+ */
 void IDEPage::SetResources(TrecPointer<TInstance> in, TrecPointer<TWindow> window, TrecPointer<TWindowEngine> engine)
 {
 	SetResources(in, window);
 }
 
+/**
+ * Method: IDEPage::MoveBorder
+ * Purpose: Shofts the border when called upon by a neighboring page
+ * Parameters: float& magnitude - the amount to shift the border by
+ *				page_move_mode mode - which border to shift
+ * Returns: void
+ */
 void IDEPage::MoveBorder(float& magnitude, page_move_mode mode)
 {
 	if (isSnipZero(area))
@@ -90,6 +120,14 @@ void IDEPage::MoveBorder(float& magnitude, page_move_mode mode)
 		rootControl->Resize(topBorder);
 }
 
+/**
+ * Method: IDEPage::OnRButtonUp
+ * Purpose: Responds to the Right Button Up Message
+ * Parameters: UINT nFlags - flags associated with the message
+ *				TPoint point - the point included in the message
+ *				messageOutput* mOut -  the result of the message
+ * Returns: void
+ */
 void IDEPage::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
 {
 	if (currentPage.Get())
@@ -98,6 +136,14 @@ void IDEPage::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
 		Page::OnRButtonUp(nFlags, point, mOut);
 }
 
+/**
+ * Method: IDEPage::OnLButtonDown
+ * Purpose: Responds to the Left Button Down Message
+ * Parameters: UINT nFlags - flags associated with the message
+ *				TPoint point - the point included in the message
+ *				messageOutput* mOut -  the result of the message
+ * Returns: void
+ */
 void IDEPage::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
 {
 	focusPage = GetFocusPage(point);
@@ -114,6 +160,14 @@ void IDEPage::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
 		Page::OnLButtonDown(nFlags, point, mOut);
 }
 
+/**
+ * Method: IDEPage::OnRButtonDown
+ * Purpose: Responds to the Right Button Down Message
+ * Parameters: UINT nFlags - flags associated with the message
+ *				TPoint point - the point included in the message
+ *				messageOutput* mOut -  the result of the message
+ * Returns: void
+ */
 void IDEPage::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
 {
 	if (currentPage.Get())
@@ -122,6 +176,14 @@ void IDEPage::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
 		Page::OnRButtonDown(nFlags, point, mOut);
 }
 
+/**
+ * Method: IDEPage::OnMouseMove
+ * Purpose: Responds to the Mouse Move Message
+ * Parameters: UINT nFlags - flags associated with the message
+ *				TPoint point - the point included in the message
+ *				messageOutput* mOut -  the result of the message
+ * Returns: void
+ */
 void IDEPage::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut)
 {
 	if (currentPage.Get())
@@ -130,6 +192,14 @@ void IDEPage::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut)
 		Page::OnMouseMove(nFlags, point, mOut);
 }
 
+/**
+ * Method: IDEPage::OnLButtonDblClk
+ * Purpose: Responds to the Left Button Double CLick Message
+ * Parameters: UINT nFlags - flags associated with the message
+ *				TPoint point - the point included in the message
+ *				messageOutput* mOut -  the result of the message
+ * Returns: void
+ */
 void IDEPage::OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut)
 {
 	if (currentPage.Get())
@@ -138,6 +208,14 @@ void IDEPage::OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut)
 		Page::OnLButtonDblClk(nFlags, point, mOut);
 }
 
+/**
+ * Method: IDEPage::OnLButtonUp
+ * Purpose: Responds to the Left Button Up Message
+ * Parameters: UINT nFlags - flags associated with the message
+ *				TPoint point - the point included in the message
+ *				messageOutput* mOut -  the result of the message
+ * Returns: void
+ */
 void IDEPage::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
 {
 	auto upPage = GetFocusPage(point);
@@ -165,6 +243,16 @@ void IDEPage::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
 		Page::OnLButtonUp(nFlags, point, mOut);
 }
 
+/**
+ * Method: IDEPage::OnChar
+ * Purpose: Responds to the Char Message
+ * Parameters: bool fromChar - whether this is from on Char at the Windows level (assume "Key Down" if false)
+ *				UINT nChar - the Character provided
+ *				UINT nRepCnt - the number of times to add it
+ *				UINT nFlags - flags associated with the message
+ *				messageOutput* mOut - the result of the event
+ * Returns:
+ */
 bool IDEPage::OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags, messageOutput* mOut)
 {
 	if (currentPage.Get())
@@ -173,6 +261,14 @@ bool IDEPage::OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags, messa
 		return Page::OnChar(fromChar, nChar, nRepCnt, nFlags, mOut);
 }
 
+/**
+ * Method: IDEPage::OnResize
+ * Purpose: Resizes the Page
+ * Parameters: D2D1_RECT_F& newLoc - the new regoin of the Page
+ *				UINT nFlags - flags associated with the move
+ *				TrecPointer<TWindowEngine> - the 3D Engine to work with
+ * Returns: void
+ */
 void IDEPage::OnResize(D2D1_RECT_F& newLoc, UINT nFlags, TrecPointer<TWindowEngine> e)
 {
 	if (currentPage.Get())
@@ -181,6 +277,15 @@ void IDEPage::OnResize(D2D1_RECT_F& newLoc, UINT nFlags, TrecPointer<TWindowEngi
 		Page::OnResize(newLoc, nFlags, e);
 }
 
+/**
+ * Method: IDEPage::OnLButtonDown
+ * Purpose: Captures the message and sees if it needs to prepare to shift borders before processing the message normally
+ * Parameters: UINT nFlags - flags associated with the click
+ *				TPoint point - Location of the mouse
+ *				messageOutput* mOut - result of the click
+ *				TDataArray<EventID_Cred>& eventAr - list of events to feed the Handler if applicable
+ * Returns: void
+ */
 void IDEPage::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
 	if (isContained(point, area))
@@ -234,6 +339,15 @@ void IDEPage::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDat
 	}
 }
 
+/**
+ * Method: IDEPage::OnMouseMove
+ * Purpose: Captures the message and sees if it needs to shift borders before processing the message normally
+ * Parameters: UINT nFlags - flags associated with the movement
+ *				TPoint point - Location of the mouse
+ *				messageOutput* mOut - result of the movement
+ *				TDataArray<EventID_Cred>& eventAr - list of events to feed the Handler if applicable
+ * Returns: void
+ */
 void IDEPage::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
 	if (moveMode == page_move_mode::page_move_mode_normal)
@@ -274,6 +388,12 @@ void IDEPage::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataA
 	*mOut = messageOutput::positiveOverrideUpdate;
 }
 
+/**
+ * Method: IDEPage::OnLButtonUp
+ * Purpose: Used to confirm whether a proper click was done
+ * Parameters: TPoint& point - location where the mouse is when the user releases
+ * Returns: bool - whether the mouse was in the Page's region
+ */
 bool IDEPage::OnLButtonUp(TPoint& point)
 {
 	curPoint.x = curPoint.y = 0.0f;
@@ -282,6 +402,13 @@ bool IDEPage::OnLButtonUp(TPoint& point)
 	return isContained(point, area);
 }
 
+/**
+ * Method: IDEPage::Draw
+ * Purpose: Draws the Tab Bar and then proceeds to draw its contents
+ * Parameters: TrecPointer<TBrush> color - the Brush to draw the TabBar with
+ *				TWindowEngine* twe = nullptr -  the TWindowEngine to feed the COntrols
+ * Returns: void
+ */
 void IDEPage::Draw(TrecPointer<TBrush> color, TWindowEngine* twe)
 {
 	D2D1_RECT_F topBorder = area;
@@ -310,6 +437,13 @@ void IDEPage::Draw(TrecPointer<TBrush> color, TWindowEngine* twe)
 }
 
 
+/**
+ * Method: IDEPage::SetLink
+ * Purpose: Allows the IDE Window to link up it's pages so that they can directly communicate with each other
+ * Parameters: TrecSubPointer<Page, IDEPage> p - The Page to link to
+ *				ide_page_type t - the Specific purpose of the Page
+ * Returns: void
+ */
 void IDEPage::SetLink(TrecSubPointer<Page, IDEPage> p, ide_page_type t)
 {
 	switch (t)
@@ -339,16 +473,34 @@ void IDEPage::SetLink(TrecSubPointer<Page, IDEPage> p, ide_page_type t)
 	}
 }
 
+/**
+ * Method: IDEPage::GetName
+ * Purpose: Retireves the Name associated with this page
+ * Parameters: void
+ * Returns: TSTring - name held by the page
+ */
 TString IDEPage::GetName()
 {
 	return name;
 }
 
+/**
+ * Method: IDEPage::SetNewParentPage
+ * Purpose: Sets the Parent of this Page (assumes this is a Drag Page)
+ * Parameters: TrecPointer<Page> p -  the Page that holds this page
+ * Returns: void
+ */
 void IDEPage::SetNewParentPage(TrecPointer<Page> p)
 {
 	currentPage = p;
 }
 
+/**
+ * Method: IDEPage::AddNewPage
+ * Purpose: Add an Existing Page holder to THIS page
+ * Parameters: TrecPointer<IDEPageHolder> pageHolder - The Tab and Page to add to
+ * Returns: void
+ */
 void IDEPage::AddNewPage(TrecPointer<IDEPageHolder> pageHolder)
 {
 	if (!pageHolder.Get() || !pageHolder->GetPage().Get()) return;
@@ -412,6 +564,15 @@ void IDEPage::AddNewPage(TrecPointer<IDEPageHolder> pageHolder)
 	pageHolder->GetPage()->SetArea(loc);
 }
 
+/**
+ * Method: IDEPage::AddNewPage
+ * Purpose: Submits a new Page to the IDE Page to be tabbed
+ * Parameters: TrecPointer<TInstance> ins - the instance associated with this operation
+ *				TrecPointer<TWindow> win - The Window this Page is in
+ *				TString name - Te Name to present of the Tab
+ *				TrecPointer<EventHandler> h - the EventHandler associated with the Page
+ * Returns: TrecPointer<Page> - the page generated
+ */
 TrecPointer<Page> IDEPage::AddNewPage(TrecPointer<TInstance> ins, TrecPointer<TWindow> win, TString name, TrecPointer<EventHandler> h)
 {
 	TrecSubPointer<Page, IDEPage> newPage = TrecPointerKey::GetNewSelfTrecSubPointer<Page, IDEPage>(ide_page_type::ide_page_type_drag, 0, this->drawingBoard);
@@ -442,6 +603,12 @@ TrecPointer<Page> IDEPage::AddNewPage(TrecPointer<TInstance> ins, TrecPointer<TW
 	return newHolder->GetBasePage();
 }
 
+/**
+ * Method: IDEPage::RemovePage
+ * Purpose: Removes the Page Holder and page from this IDE Page
+ * Parameters: TrecPointer<IDEPageHolder> pageHolder - The Page Holder to Remove
+ * Returns: void
+ */
 void IDEPage::RemovePage(TrecPointer<IDEPageHolder> pageHolder)
 {
 	int index = -1;
@@ -471,11 +638,23 @@ void IDEPage::RemovePage(TrecPointer<IDEPageHolder> pageHolder)
 	pages.RemoveAt(index);
 }
 
+/**
+ * Method: IDEPage::IsDrawing
+ * Purpose: Reports whether the Page is currently able to draw
+ * Parameters: void
+ * Returns: bool - if the region is not zeroed
+ */
 bool IDEPage::IsDrawing()
 {
 	return draw = !isSnipZero(area);
 }
 
+/**
+ * Method: IDEPage::GetFocusPage
+ * Purpose: Retrieves the Page to set the focus to if the User Clicks on the Tab Bar
+ * Parameters:TPoint& point
+ * Returns: TrecPointer<IDEPageHolder> - the Holder referenced by the Tab
+ */
 TrecPointer<IDEPageHolder> IDEPage::GetFocusPage(TPoint& point)
 {
 	for (UINT c = 0; c < pages.Size(); c++)
@@ -490,6 +669,12 @@ TrecPointer<IDEPageHolder> IDEPage::GetFocusPage(TPoint& point)
 	return TrecPointer<IDEPageHolder>();
 }
 
+/**
+ * Method: IDEPage::MouseMoveBody
+ * Purpose: Send move commands to its neighbors, assuming that this IDE Page is the Body Page
+ * Parameters: TPoint& diff - the amount of units to move by
+ * Returns: void
+ */
 void IDEPage::MouseMoveBody(TPoint& diff)
 {
 	TPoint before = diff;
@@ -571,6 +756,12 @@ void IDEPage::MouseMoveBody(TPoint& diff)
 	}
 }
 
+/**
+ * Method: IDEPage::MouseMoveBasicConsole
+ * Purpose: Send move commands to its neighbors, assuming that this IDE Page is the Basic-Console Page
+ * Parameters: TPoint& diff - the amount of units to move by
+ * Returns: void
+ */
 void IDEPage::MouseMoveBasicConsole(TPoint& diff)
 {
 	switch (moveMode)
@@ -600,6 +791,12 @@ void IDEPage::MouseMoveBasicConsole(TPoint& diff)
 	}
 }
 
+/**
+ * Method: IDEPage::MouseMoveDeepConsole
+ * Purpose: Send move commands to its neighbors, assuming that this IDE Page is the Deep-Console Page
+ * Parameters: TPoint& diff - the amount of units to move by
+ * Returns: void
+ */
 void IDEPage::MouseMoveDeepConsole(TPoint& diff)
 {
 	if (moveMode == page_move_mode::page_move_mode_top)
@@ -665,6 +862,12 @@ void IDEPage::MouseMoveDeepConsole(TPoint& diff)
 	}
 }
 
+/**
+ * Method: IDEPage::MouseMoveUpperRight
+ * Purpose: Send move commands to its neighbors, assuming that this IDE Page is the Upper-Right Page
+ * Parameters: TPoint& diff - the amount of units to move by
+ * Returns: void
+ */
 void IDEPage::MouseMoveUpperRight(TPoint& diff)
 {
 	TPoint before = diff;
@@ -719,6 +922,12 @@ void IDEPage::MouseMoveUpperRight(TPoint& diff)
 	}
 }
 
+/**
+ * Method: IDEPage::MouseMoveLowerRight
+ * Purpose: Send move commands to its neighbors, assuming that this IDE Page is the Lower-Right Page
+ * Parameters: TPoint& diff - the amount of units to move by
+ * Returns: void
+ */
 void IDEPage::MouseMoveLowerRight(TPoint& diff)
 {
 	TPoint before = diff;
@@ -765,6 +974,12 @@ void IDEPage::MouseMoveLowerRight(TPoint& diff)
 	}
 }
 
+/**
+ * Method: IDEPage::MouseMoveUpperLeft
+ * Purpose: Send move commands to its neighbors, assuming that this IDE Page is the Upper-Left Page
+ * Parameters: TPoint& diff - the amount of units to move by
+ * Returns: void
+ */
 void IDEPage::MouseMoveUpperLeft(TPoint& diff)
 {
 	TPoint before = diff;
@@ -819,6 +1034,12 @@ void IDEPage::MouseMoveUpperLeft(TPoint& diff)
 	}
 }
 
+/**
+ * Method: IDEPage::MouseMoveLowerLeft
+ * Purpose: Send move commands to its neighbors, assuming that this IDE Page is the Lower-Left Page
+ * Parameters: TPoint& diff - the amount of units to move by
+ * Returns: void
+ */
 void IDEPage::MouseMoveLowerLeft(TPoint& diff)
 {
 	TPoint before = diff;
@@ -865,6 +1086,17 @@ void IDEPage::MouseMoveLowerLeft(TPoint& diff)
 	}
 }
 
+/**
+ * Method: IDEPageHolder::IDEPageHolder
+ * Purpose: Constructor
+ * Parameters: TString name, - name to present of the Tab
+ *				TrecPointer<DrawingBoard> rt - the Drawing Board to draw with
+ *				UINT barSpace - the size of the bar
+ *				TrecPointer<EventHandler> handler - the handler to the new page
+ *				TrecPointer<TWindow> win - the Window to draw against
+ *				D2D1_RECT_F initLoc -  the initial location available (might be smaller than what's provided here)
+ * Returns: New Page Holder Object
+ */
 IDEPageHolder::IDEPageHolder(TString name, TrecPointer<DrawingBoard> rt, UINT barSpace, TrecPointer<EventHandler> handler, TrecPointer<TWindow> win, D2D1_RECT_F initLoc)
 {
 	text = TrecPointerKey::GetNewTrecPointer<TText>(rt, nullptr);
@@ -887,16 +1119,34 @@ IDEPageHolder::IDEPageHolder(TString name, TrecPointer<DrawingBoard> rt, UINT ba
 	page->SetHandler(handler);
 }
 
+/**
+ * Method: IDEPageHolder::GetBasePage
+ * Purpose: Retrieves the Base Reference to the Page it is holding
+ * Parameters: void
+ * Returns: TrecPointer<Page> - the Base Page reference
+ */
 TrecPointer<Page> IDEPageHolder::GetBasePage()
 {
 	return TrecPointerKey::GetTrecPointerFromSub<Page, IDEPage>(page);
 }
 
+/**
+ * Method: IDEPageHolder::GetPage
+ * Purpose: Retrieves the IDE Page Reference this object is holding
+ * Parameters: void
+ * Returns: TrecSubPointer<Page, IDEPage> - the IDE Page reference
+ */
 TrecSubPointer<Page, IDEPage> IDEPageHolder::GetPage()
 {
 	return page;
 }
 
+/**
+ * Method: IDEPageHolder::GetName
+ * Purpose: Retrievs the Name printed on the Tab
+ * Parameters: void
+ * Returns: TString - the Name held by the holder
+ */
 TString IDEPageHolder::GetName()
 {
 	if(!text.Get())
@@ -904,11 +1154,23 @@ TString IDEPageHolder::GetName()
 	return text->getCaption();
 }
 
+/**
+ * Method: IDEPageHolder::GetLocation
+ * Purpose: Retrieves the Location of the Tab
+ * Parameters: void
+ * Returns: D2D1_RECT_F - the Rectable occupied by the Tab
+ */
 D2D1_RECT_F IDEPageHolder::GetLocation()
 {
 	return location;
 }
 
+/**
+ * Method: IDEPageHolder::SetLocation
+ * Purpose: Sets the boundaries of the Tab
+ * Parameters: const D2D1_RECT_F& newLoc - reference to the space this tab is being allocated
+ * Returns: D2D1_RECT_F - the Rectable occupied by the Tab
+ */
 D2D1_RECT_F IDEPageHolder::SetLocation(const D2D1_RECT_F& newLoc)
 {
 	location = newLoc;
@@ -925,6 +1187,12 @@ D2D1_RECT_F IDEPageHolder::SetLocation(const D2D1_RECT_F& newLoc)
 	return location;
 }
 
+/**
+ * Method: IDEPageHolder::Draw
+ * Purpose: Draws the Tab
+ * Parameters: void
+ * Returns: void
+ */
 void IDEPageHolder::Draw()
 {
 	if (text.Get())
@@ -933,6 +1201,12 @@ void IDEPageHolder::Draw()
 
 
 
+/**
+ * Method: IDEPageHolder::Move
+ * Purpose: Moves the Tab by the specifed amount
+ * Parameters: TPoint& moveBy - the amount to move by
+ * Returns: void
+ */
 void IDEPageHolder::Move(TPoint& moveBy)
 {
 	auto tempPoint = moveBy;
@@ -950,11 +1224,23 @@ void IDEPageHolder::Move(TPoint& moveBy)
 		text->setNewLocation(convertD2DRectToRECT(location));
 }
 
+/**
+ * Method: IDEPageHolder::SetCurrentPoint
+ * Purpose: Sets the Current Point of the Tab
+ * Parameters: TPoint& p - the starting position of the tab
+ * Returns: void
+ */
 void IDEPageHolder::SetCurrentPoint(TPoint& p)
 {
 	curPoint = p;
 }
 
+/**
+ * Method: IDEPageHolder::SetPage
+ * Purpose:sets the Page for this Tab
+ * Parameters: TrecSubPointer<Page, IDEPage> p - the page to set this to
+ * Returns: void
+ */
 void IDEPageHolder::SetPage(TrecSubPointer<Page, IDEPage> p)
 {
 	page = p;

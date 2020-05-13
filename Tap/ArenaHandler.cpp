@@ -1,15 +1,35 @@
 #include "ArenaHandler.h"
 #include "Page.h"
 #include "TInstance.h"
+
+/**
+ * Method: ArenaHandler::ArenaHandler
+ * Purpose: Constructor
+ * Parameters: TrecPointer<TInstance> instance - the instance associated with the Page/handler
+ *				TString& name - name of the handler, used for identifying the Camera Handler
+ * Returns: New ArenaHandler instance
+ */
 ArenaHandler::ArenaHandler(TrecPointer<TInstance> instance, TString& name): EventHandler(instance, name)
 {
 	this->name.Set(name);
 }
 
+/**
+ * Method: ArenaHandler::~ArenaHandler
+ * Purpose: Destructor
+ * Parameters: void
+ * Returns: void
+ */
 ArenaHandler::~ArenaHandler()
 {
 }
 
+/**
+ * Method: ArenaHandler::Initialize
+ * Purpose: Initializes the Handler so that it has direct Access to certain Controls held by the page
+ * Parameters: TrecPointer<Page> page - page that holds the Controls to latch on to
+ * Returns: void
+ */
 void ArenaHandler::Initialize(TrecPointer<Page> page)
 {
 	if (!page.Get() || !app.Get() || !page->GetWindowHandle().Get())
@@ -27,6 +47,12 @@ void ArenaHandler::Initialize(TrecPointer<Page> page)
 	arenaControl->setEngine(this->engine);
 }
 
+/**
+ * Method: ArenaHandler::HandleEvents
+ * Purpose: Handles Events produced from the set of TControls
+ * Parameters: TDataArray<EventID_Cred>& eventAr - list of events to process
+ * Returns: void
+ */
 void ArenaHandler::HandleEvents(TDataArray<EventID_Cred>& eventAr)
 {
 	TControl* tc = nullptr;
@@ -52,6 +78,18 @@ void ArenaHandler::HandleEvents(TDataArray<EventID_Cred>& eventAr)
 	eventAr.RemoveAll();
 }
 
+/**
+ * Method: ArenaHandler::ProcessMessage
+ * Purpose: Processes the message sent to the handler
+ * Parameters: TrecPointer<HandlerMessage> message - the message to recieve and Process
+ * Returns: void
+ *
+ * Note: The Arena expects the message to be of the format:
+ *     "[object] [task] [float;float...]"
+ *
+ *  where "[object]" currently would be "Camera".
+ *  "[task]" can be "Location" (3 floats), "Direction" (3 floats), "Tanslate" (3 floats), or "Rotate" (2 floats)
+ */
 void ArenaHandler::ProcessMessage(TrecPointer<HandlerMessage> message)
 {
 	if (!message.Get() || !arenaControl.Get() || !app.Get())
@@ -105,6 +143,12 @@ void ArenaHandler::ProcessMessage(TrecPointer<HandlerMessage> message)
 	}
 }
 
+/**
+ * Method: ArenaHandler::ShouldProcessMessageByType
+ * Purpose: Reports whether this Object is of the correct type to recieve the message
+ * Parameters: TrecPointer<HandlerMessage> message - the message to scan
+ * Returns: bool - true if the type matches, false oherwise
+ */
 bool ArenaHandler::ShouldProcessMessageByType(TrecPointer<HandlerMessage> message)
 {
 	if (!message.Get())

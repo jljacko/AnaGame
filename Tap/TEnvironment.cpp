@@ -8,11 +8,24 @@ static bool languagesMapped = false;
 // Holds list of Languages and their file extensions
 static TDataArray<LangNames> languageList;
 
+
+/**
+ * Method: TEnvironment::GetRootDirectory
+ * Purpose: Retrieves the Working Directory of the Environment
+ * Parameters: void
+ * Returns: TrecPointer<TFileShell> - object representing the working directory of the environment
+ */
 TrecPointer<TFileShell> TEnvironment::GetRootDirectory()
 {
 	return rootDirectory;
 }
 
+/**
+ * Method: TEnvironment::SetUpLanguageExtensionMapping
+ * Purpose: Sets up mapping to langugaes by extension
+ * Parameters: void
+ * Returns: void
+ */
 void TEnvironment::SetUpLanguageExtensionMapping()
 {
 	if (languagesMapped)
@@ -72,35 +85,46 @@ TString retrieveLanguageByExtension(TString ext)
 }
 
 
+/**
+ * Method: TEnvironment::TEnvironment
+ * Purpose: Constructor
+ * Parameters: TrecPointer<TFileShell> shell - the Root Directory to focus on (working Directory)
+ * Returns: New Environment object
+ */
 TEnvironment::TEnvironment(TrecPointer<TFileShell> shell)
 {
 }
 
+/**
+ * Method: TEnvironment::~TEnvironment
+ * Purpose: Destructor
+ * Parameters: void
+ * Returns: void
+ */
 TEnvironment::~TEnvironment()
 {
 }
 
+/**
+ * Method: TEnvironment::TEnvironment
+ * Purpose: Constructor
+ * Parameters: TrecSubPointer<TControl, TPromptControl> prompt - the Command Prompt to work with
+ * Returns: new Environment object
+ */
 TEnvironment::TEnvironment(TrecSubPointer<TControl, TPromptControl> prompt)
 {
 	shellRunner = prompt;
 }
 
-void TEnvironment::Compile()
-{
-}
 
-void TEnvironment::Compile(TrecPointer<TFile> logFile)
-{
-}
 
-void TEnvironment::Log()
-{
-}
 
-void TEnvironment::Run()
-{
-}
-
+/**
+ * Method: TEnvironment::GetTaskList
+ * Purpose: Retrieves the list of tasks offered by the Environment
+ * Parameters: void
+ * Returns: TDataArray<TString> - list of tasks offered by the Environment
+ */
 TDataArray<TString> TEnvironment::GetTaskList()
 {
 	return taskList;

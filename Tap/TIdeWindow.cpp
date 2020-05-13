@@ -9,6 +9,19 @@
 #include "MiniApp.h"
 #include "FileHandler.h"
 
+/**
+ * Method: TIdeWindow::TIdeWindow
+ * Purpose: Constructor
+ * Parameters: TString& name - the name of the WIndow
+ *				TString& winClass - the name to tell Windows to use for this Window type
+ *				UINT style - the Style of window to use
+ *				HWND parent - the Handle to the Parent Window (if any)
+ *				int commandShow - How to show the Window (provided in WinMain)
+ *				TrecPointer ins - pointer to the TInstance involved (hence why TInstance has a SetSelf method)
+ *				UINT mainViewSpace - how much drawing space to devote to the main Page
+ *				UINT pageBarSpace - how much tab space to allow the tab bars in the IDE-Pages
+ * Returns: New IDE Window
+ */
 TIdeWindow::TIdeWindow(TString& name, TString& winClass, UINT style, HWND parent, int commandShow, 
 	TrecPointer<TInstance> ins, UINT mainViewSpace, UINT pageBarSpace):
 	TWindow(name, winClass, style | WS_MAXIMIZE, parent, commandShow, ins)
@@ -17,6 +30,12 @@ TIdeWindow::TIdeWindow(TString& name, TString& winClass, UINT style, HWND parent
 	this->pageBarSpace = pageBarSpace;
 }
 
+/**
+ * Method: TIdeWindow::PrepareWindow
+ * Purpose: Prepares the Window while also managing the links between the IDE-Pages
+ * Parameters: void
+ * Returns: int - error code (0 = success)
+ */
 int TIdeWindow::PrepareWindow()
 {
 	//body = TrecPointerKey::GetNewSelfTrecPointerAlt<Page, IDEPage>(ide_page_type_body, pageBarSpace);
@@ -52,6 +71,13 @@ int TIdeWindow::PrepareWindow()
 	return TWindow::PrepareWindow();
 }
 
+/**
+ * Method: TIdeWindow::OnLButtonUp
+ * Purpose: Manages the Left Button Up Message
+ * Parameters: UINT nFlags - the flags associated with the message
+ *				TPoint point - the point that was clicked
+ * Returns: void
+ */
 void TIdeWindow::OnLButtonUp(UINT nFlags, TPoint point)
 {
 	if (dynamic_cast<IDEPage*>(body.Get())->OnLButtonUp(point) && currentHolder.Get())
@@ -128,6 +154,13 @@ void TIdeWindow::OnLButtonUp(UINT nFlags, TPoint point)
 
 }
 
+/**
+ * Method: TIdeWindow::OnMouseMove
+ * Purpose: Manages the Mouse Move Message
+ * Parameters: UINT nFlags - the flags associated with the message
+ *				TPoint point - the point that the mouse is now
+ * Returns: void
+ */
 void TIdeWindow::OnMouseMove(UINT nFlags, TPoint point)
 { 
 	if (locked) return;
@@ -200,6 +233,13 @@ finish:
 		Draw();
 }
 
+/**
+ * Method: TIdeWindow::OnLButtonDown
+ * Purpose: Manages the Left Button Down Message
+ * Parameters: UINT nFlags - the flags associated with the message
+ *				TPoint point - the point that was clicked
+ * Returns: void
+ */
 void TIdeWindow::OnLButtonDown(UINT nFlags, TPoint point)
 {
 	if (locked) return;
@@ -272,6 +312,12 @@ finish:
 		Draw();
 }
 
+/**
+ * Method: TIdeWindow::AddNewMiniApp
+ * Purpose: Adds a MiniApp to the list of Apps being managed
+ * Parameters: TrecPointer<MiniApp> app - the App to add
+ * Returns: void
+ */
 void TIdeWindow::AddNewMiniApp(TrecPointer<MiniApp> app)
 {
 	if (app.Get() && !app->Initialize())
@@ -280,6 +326,17 @@ void TIdeWindow::AddNewMiniApp(TrecPointer<MiniApp> app)
 	}
 }
 
+/**
+ * Method: TIdeWindow::AddNewPage
+ * Purpose: Creates a new Page and returns it to the caller
+ * Parameters: anagame_page pageType - type of built-in page
+ *				ide_page_type pageLoc - the location to place the new Page
+ *				TString name - name of the page to write on the Tab
+ *				TString tmlLoc - the File location of the TML file (if the page type is built-in, this can be empty)
+ *				TrecPointer<EventHandler> handler - the Handler to provide the Page
+ *				bool pageTypeStrict - whether the caller is strict when it comes to the location of the Page
+ * Returns: TrecSubPointer<Page, IDEPage> -  the Page generated
+ */
 TrecSubPointer<Page, IDEPage> TIdeWindow::AddNewPage(anagame_page pageType, ide_page_type pageLoc, TString name, TString tmlLoc, TrecPointer<EventHandler> handler, bool pageTypeStrict)
 {
 	if (!mainPage.Get())
@@ -385,6 +442,14 @@ TrecSubPointer<Page, IDEPage> TIdeWindow::AddNewPage(anagame_page pageType, ide_
 	return TrecPointerKey::GetTrecSubPointerFromTrec<Page, IDEPage>(newPage);
 }
 
+/**
+ * Method: TIdeWindow::AddPage
+ * Purpose: Creates a built-in Page
+ * Parameters: anagame_page pageType - type of built-in page
+ *				ide_page_type pageLoc - the location to place the new Page
+ *				TString name - name of the page to write on the Tab
+ * Returns: TrecSubPointer<Page, IDEPage> -  the Page generated
+ */
 TrecSubPointer<Page, IDEPage> TIdeWindow::AddPage(anagame_page pageType, ide_page_type pageLoc, TString name)
 {
 	TrecSubPointer<Page, IDEPage> ret;
@@ -411,6 +476,13 @@ TrecSubPointer<Page, IDEPage> TIdeWindow::AddPage(anagame_page pageType, ide_pag
 	return ret;
 }
 
+/**
+ * Method: TIdeWindow::CompileView
+ * Purpose: Compiles the Main View while also preparing all of the individual IDE pages
+ * Parameters: TString& file - path of the TML file holding the Anaface
+ *				TrecPointer<EventHandler> eh - the Handler to the Main page
+ * Returns: int - error (0 == success)
+ */
 int TIdeWindow::CompileView(TString& file, TrecPointer<EventHandler> eh)
 {
 	if (!windowInstance.Get())
@@ -481,16 +553,34 @@ int TIdeWindow::CompileView(TString& file, TrecPointer<EventHandler> eh)
 	return 0;
 }
 
+/**
+ * Method: TIdeWindow::SetCurrentHolder
+ * Purpose: Marks a Page Holder as being dragged by the User
+ * Parameters: TrecPointer<IDEPageHolder> holder - the Page holder believed to be dragged
+ * Returns: void
+ */
 void TIdeWindow::SetCurrentHolder(TrecPointer<IDEPageHolder> holder)
 {
 	currentHolder = holder;
 }
 
+/**
+ * Method: TIdeWindow::SetEnvironment
+ * Purpose: Sets the Environment of the Window
+ * Parameters: TrecPointer<TEnvironment> env - the Environment to manage
+ * Returns: void
+ */
 void TIdeWindow::SetEnvironment(TrecPointer<TEnvironment> env)
 {
 	environment = env;
 }
 
+/**
+ * Method: TIdeWindow::GetEnvironmentDirectory
+ * Purpose: Retrievs the Workign Directory of the TEnvironment
+ * Parameters: void
+ * Returns: TrecPointer<TFileShell> - the Environment's working directory (could be NULL)
+ */
 TrecPointer<TFileShell> TIdeWindow::GetEnvironmentDirectory()
 {
 	if (environment.Get())
@@ -498,6 +588,12 @@ TrecPointer<TFileShell> TIdeWindow::GetEnvironmentDirectory()
 	return TrecPointer<TFileShell>();
 }
 
+/**
+ * Method: TIdeWindow::SaveAll
+ * Purpose: Sends the Save signal to all MiniAPps registered
+ * Parameters: void
+ * Returns: void
+ */
 void TIdeWindow::SaveAll()
 {
 	for (UINT Rust = 0; Rust < apps.Size(); Rust++)
@@ -507,12 +603,24 @@ void TIdeWindow::SaveAll()
 	}
 }
 
+/**
+ * Method: TIdeWindow::SaveCurrent
+ * Purpose: Sends the Save signal to the current MiniApp, if set
+ * Parameters: void
+ * Returns: void
+ */
 void TIdeWindow::SaveCurrent()
 {
 	if (currentApp.Get())
 		currentApp->OnSave();
 }
 
+/**
+ * Method: TIdeWindow::SetCurrentApp
+ * Purpose: Sets the focus to the provided MiniApp
+ * Parameters: TrecPointer<MiniApp> app - the MiniApp to focus on
+ * Returns: void
+ */
 void TIdeWindow::SetCurrentApp(TrecPointer<MiniApp> app)
 {
 	if (app.Get())
@@ -533,6 +641,12 @@ void TIdeWindow::SetCurrentApp(TrecPointer<MiniApp> app)
 	}
 }
 
+/**
+ * Method: TIdeWindow::DrawOtherPages
+ * Purpose: Draws the other page it has set up
+ * Parameters: void
+ * Returns: void
+ */
 void TIdeWindow::DrawOtherPages()
 {
 	if (body.Get())dynamic_cast<IDEPage*>(body.Get())->Draw(panelbrush, d3dEngine.Get());

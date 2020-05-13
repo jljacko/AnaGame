@@ -5,6 +5,13 @@
 #include "TInstance.h"
 #include "EventHandler.h"
 
+/**
+ * Class: MiniHandler
+ * Purpose: Provides Methods on an EventHandler that enable it to be managed by a TWindow holding multiple apps
+ *
+ * Note: DEPRECATED - this class fulfilled a purpose that has been rendered unecessary due to the introduction of the IDE WIndow and 
+ *  MiniApps.
+ */
 class _TAP_DLL MiniHandler: public EventHandler
 {
 public:

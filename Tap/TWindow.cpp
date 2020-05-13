@@ -11,6 +11,17 @@ bool IsD2D1RectEqual(const D2D1_RECT_F& r1, const  D2D1_RECT_F& r2, float differ
 }
 
 
+/**
+ * Method: TWindow::TWindow
+ * Purpose: Constructor
+ * Parameters: TString& name - the name of the Window
+ *				TString& winClass - the name to tell Windows to use for this Window type
+ *				UINT style - the Style of window to use
+ *				HWND parent - the Handle to the Parent Window (if any)
+ *				int commandShow - How to show the Window (provided in WinMain)
+ *				TrecPointer ins - pointer to the TInstance involved (hence why TInstance has a SetSelf method)
+ * Returns: New Window
+ */
 TWindow::TWindow(TString& name, TString& winClass, UINT style, HWND parent, int commandShow, TrecPointer<TInstance> ins)
 {
 	currentWindow = CreateWindowW(winClass.GetConstantBuffer(),
@@ -37,6 +48,12 @@ TWindow::TWindow(TString& name, TString& winClass, UINT style, HWND parent, int 
 	
 }
 
+/**
+ * Method: TWindow::~TWindow
+ * Purpose: Destructor
+ * Parameters: void
+ * Returns: void
+ */
 TWindow::~TWindow()
 {
 	CleanUp();
@@ -48,6 +65,12 @@ TWindow::~TWindow()
 	d3dEngine.Delete();
 }
 
+/**
+ * Method: TWindow::PrepareWindow
+ * Purpose: Sets the Window up for viewing
+ * Parameters: void
+ * Returns: int - error code (0 = success)
+ */
 int TWindow::PrepareWindow()
 {
 	if (!currentWindow)
@@ -65,6 +88,13 @@ int TWindow::PrepareWindow()
 	return 0;
 }
 
+/**
+ * Method: TWindow::CompileView
+ * Purpose: Compiles the Main View
+ * Parameters: TString& file - path of the TML file holding the Anaface
+ *				TrecPointer<EventHandler> eh - the Handler to the Main page
+ * Returns: int - error (0 == success)
+ */
 int TWindow::CompileView(TString& file, TrecPointer<EventHandler> eh)
 {
 	if (!windowInstance.Get())
@@ -94,6 +124,14 @@ int TWindow::CompileView(TString& file, TrecPointer<EventHandler> eh)
 	return 0;
 }
 
+/**
+ * Method: TWindow::MovePageToTop
+ * Purpose:
+ * Parameters:
+ * Returns:
+ *
+ * DEPRECATED -
+ */
 bool TWindow::MovePageToTop(TrecPointer<Page> p)
 {
 	if (!p.Get())
@@ -125,16 +163,34 @@ bool TWindow::MovePageToTop(TrecPointer<Page> p)
 	return true;
 }
 
+/**
+ * Method: TWindow::GetWinClass
+ * Purpose: Retrievs the Window-level class of this window
+ * Parameters: void
+ * Returns: TString - the class name registered with Windows
+ */
 TString TWindow::GetWinClass()
 {
 	return winClass;
 }
 
+/**
+ * Method: TWindow::GetWinName
+ * Purpose: Retrievs the Window-level name of this window
+ * Parameters: void
+ * Returns: TString - the name registered with Windows
+ */
 TString TWindow::GetWinName()
 {
 	return name;
 }
 
+/**
+ * Method: TWindow::Draw
+ * Purpose: Draws the window
+ * Parameters: void
+ * Returns: void
+ */
 void TWindow::Draw()
 {
 	if (mainPage.Get() && safeToDraw)
@@ -192,16 +248,39 @@ void TWindow::Draw()
 
 }
 
+/**
+ * Method: TWindow::Draw
+ * Purpose:
+ * Parameters:
+ * Returns:
+ *
+ * DEPRICATED
+ */
 void TWindow::Draw(Page& draw)
 {
 	draw.Draw();
 }
 
+/**
+ * Method: TWindow::InduceDraw
+ * Purpose: Sends a Message to Windows to send the Draw message
+ * Parameters: void
+ * Returns: void
+ *
+ * Note: this method is provided to be called by nimation threads as Draw should only be called by the Message thread, not by Animation threads
+ */
 void TWindow::InduceDraw()
 {
 	RedrawWindow(currentWindow, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
 }
 
+/**
+ * Method: TWindow::OnRButtonUp
+ * Purpose: Manages the Right Button Up Message
+ * Parameters: UINT nFlags - the flags associated with the message
+ *				TPoint point - the point that was clicked
+ * Returns: void
+ */
 void TWindow::OnRButtonUp(UINT nFlags, TPoint point)
 {
 	if (locked) return;
@@ -216,6 +295,15 @@ void TWindow::OnRButtonUp(UINT nFlags, TPoint point)
 		mainPage->OnRButtonUp(nFlags, point, &mOut);
 }
 
+/**
+ * Method: TWindow::OnLButtonDown
+ * Purpose: Manages the Left Button Down Message
+ * Parameters: UINT nFlags - the flags associated with the message
+ *				TPoint point - the point that was clicked
+ * Returns: void
+ * Parameters:
+ * Returns:
+ */
 void TWindow::OnLButtonDown(UINT nFlags, TPoint point)
 {
 	if (locked) return;
@@ -230,6 +318,13 @@ void TWindow::OnLButtonDown(UINT nFlags, TPoint point)
 		mainPage->OnLButtonDown(nFlags, point, &mOut);
 }
 
+/**
+ * Method: TWindow::OnRButtonDown
+ * Purpose: Manages the Right Button Down Message
+ * Parameters: UINT nFlags - the flags associated with the message
+ *				TPoint point - the point that was clicked
+ * Returns: void
+ */
 void TWindow::OnRButtonDown(UINT nFlags, TPoint point)
 {
 	if (locked) return;
@@ -243,6 +338,14 @@ void TWindow::OnRButtonDown(UINT nFlags, TPoint point)
 	if(mOut == messageOutput::negative || mOut == messageOutput::negativeUpdate)
 		mainPage->OnRButtonDown(nFlags, point, &mOut);
 }
+
+/**
+ * Method: TWindow::OnMouseMove
+ * Purpose: Manages the Mouse Move Message
+ * Parameters: UINT nFlags - the flags associated with the message
+ *				TPoint point - the point that was clicked
+ * Returns: void
+ */
 void TWindow::OnMouseMove(UINT nFlags, TPoint point)
 {
 	if (locked) return;
@@ -268,6 +371,13 @@ void TWindow::OnMouseMove(UINT nFlags, TPoint point)
 		mainPage->OnMouseMove(nFlags, point, &mOut);
 }
 
+/**
+ * Method: TWindow::OnLButtonDblClk
+ * Purpose: Manages the Double Click Message
+ * Parameters: UINT nFlags - the flags associated with the message
+ *				TPoint point - the point that was clicked
+ * Returns: void
+ */
 void TWindow::OnLButtonDblClk(UINT nFlags, TPoint point)
 {
 	if (locked) return;
@@ -282,6 +392,13 @@ void TWindow::OnLButtonDblClk(UINT nFlags, TPoint point)
 		mainPage->OnLButtonDblClk(nFlags, point, &mOut);
 }
 
+/**
+ * Method: TWindow::OnLButtonUp
+ * Purpose: Manages the Left Button Up Message
+ * Parameters: UINT nFlags - the flags associated with the message
+ *				TPoint point - the point that was clicked
+ * Returns: void
+ */
 void TWindow::OnLButtonUp(UINT nFlags, TPoint point)
 {
 	if (currentScrollBar.Get())
@@ -300,6 +417,15 @@ void TWindow::OnLButtonUp(UINT nFlags, TPoint point)
 		mainPage->OnLButtonUp(nFlags, point, &mOut);
 }
 
+/**
+ * Method: TWindow::OnChar
+ * Purpose: Manages the Char Message
+ * Parameters: bool fromChar - whether this is from on Char at the Windows level (assume "Key Down" if false)
+ *				UINT nChar - the Character provided
+ *				UINT nRepCnt - the number of times to add it
+ *				UINT nFlags - flags associated with the message
+ * Returns: bool
+ */
 bool TWindow::OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	if (locked) return false;
@@ -318,6 +444,13 @@ bool TWindow::OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlags)
 	return returnable;
 }
 
+/**
+ * Method: TWindow::OnWindowResize
+ * Purpose: Resizes the Window
+ * Parameters: UINT width - the new width of the window
+ *				UINT height - the new height of the Window
+ * Returns: void
+ */
 void TWindow::OnWindowResize(UINT width, UINT height)
 {
 	if (d3dEngine.Get())
@@ -342,6 +475,12 @@ void TWindow::OnWindowResize(UINT width, UINT height)
 	//safeToDraw = safeToDraw & 0b11111101;
 }
 
+/**
+ * Method: TWindow::OnDestroy
+ * Purpose: Reports whether it is ready for destruction of not
+ * Parameters: void
+ * Returns: bool - whether it is ready for destruction
+ */
 bool TWindow::OnDestroy()
 {
 	if(mainPage.Get())
@@ -349,6 +488,14 @@ bool TWindow::OnDestroy()
 	return true;
 }
 
+/**
+ * Method: TWindow::GetHandlePage
+ * Purpose:
+ * Parameters:
+ * Returns:
+ *
+ * Note: DEPRICATED in favor of the Ide Window/IDE Page
+ */
 TrecPointer<Page> TWindow::GetHandlePage(bool singleton)
 {
 	if (singleton && handlePage.Get())
@@ -367,6 +514,14 @@ TrecPointer<Page> TWindow::GetHandlePage(bool singleton)
 	return ret;
 }
 
+/**
+ * Method: TWindow::
+ * Purpose:
+ * Parameters:
+ * Returns:
+ *
+ * Note: DEPRICATED in favor of the Ide Window/IDE Page
+ */
 TrecPointer<Page> TWindow::GetHandlePage(const TString& name)
 {
 	TrecPointer<Page> ret = keyPages.retrieveEntry(name);
@@ -381,6 +536,14 @@ TrecPointer<Page> TWindow::GetHandlePage(const TString& name)
 	return ret;
 }
 
+/**
+ * Method: TWindow::
+ * Purpose:
+ * Parameters:
+ * Returns:
+ *
+ * Note: DEPRICATED in favor of the Ide Window/IDE Page
+ */
 TrecPointer<Page> TWindow::Get3DPage(bool singleton, TString& engineId)
 {
 	if(!engineId.GetSize() && singleton)
@@ -400,6 +563,14 @@ TrecPointer<Page> TWindow::Get3DPage(bool singleton, TString& engineId)
 	return Get3DPage(singleton, engine);
 }
 
+/**
+ * Method: TWindow::
+ * Purpose:
+ * Parameters:
+ * Returns:
+ *
+ * Note: DEPRICATED in favor of the Ide Window/IDE Page
+ */
 TrecPointer<Page> TWindow::Get3DPage(bool singleton, TrecPointer<TArenaEngine> engine)
 {
 	if (singleton)
@@ -425,16 +596,34 @@ TrecPointer<Page> TWindow::Get3DPage(bool singleton, TrecPointer<TArenaEngine> e
 	return TrecPointer<Page>();//ret;
 }
 
+/**
+ * Method: TWindow::LockWindow
+ * Purpose: Locks the Window from handling Messages
+ * Parameters: void
+ * Returns: void
+ */
 void TWindow::LockWindow()
 {
 	locked = true;
 }
 
+/**
+ * Method: TWindow::UnlockWindow
+ * Purpose: Unlocks the Window allowing it to handle messages
+ * Parameters: void
+ * Returns: void
+ */
 void TWindow::UnlockWindow()
 {
 	locked = false;
 }
 
+/**
+ * Method: TWindow::SetSelf
+ * Purpose: Allows the Window to hold a reference to itself
+ * Parameters: TrecPointer<TWindow> win - the self window to set to
+ * Returns: void
+ */
 void TWindow::SetSelf(TrecPointer<TWindow> win)
 {
 	if (this != win.Get())
@@ -442,6 +631,14 @@ void TWindow::SetSelf(TrecPointer<TWindow> win)
 	this->self = TrecPointerKey::GetSoftPointerFromTrec<TWindow>(win);
 }
 
+/**
+ * Method: TWindow::GetPageByArea
+ * Purpose:
+ * Parameters:
+ * Returns:
+ *
+ * Note: DEPRICATED in favor of the Ide Window/IDE Page
+ */
 TrecPointer<Page> TWindow::GetPageByArea(D2D1_RECT_F r)
 {
 	for (UINT Rust = 0; Rust < pages.Size(); Rust++)
@@ -454,11 +651,23 @@ TrecPointer<Page> TWindow::GetPageByArea(D2D1_RECT_F r)
 	return ret;
 }
 
+/**
+ * Method: TWindow::GetInstance
+ * Purpose: Retrievs the instance associated with this window
+ * Parameters: void
+ * Returns: TrecPointer<TInstance> - the Instance this window is under
+ */
 TrecPointer<TInstance> TWindow::GetInstance()
 {
 	return windowInstance;
 }
 
+/**
+ * Method: TWindow::SetUp3D
+ * Purpose: Configures the Window to support 3D drawing (if it doesn't already)
+ * Parameters: void
+ * Returns: whether the window is now set for 3D
+ */
 bool TWindow::SetUp3D()
 {
 	if (d3dEngine.Get())
@@ -481,16 +690,34 @@ bool TWindow::SetUp3D()
 	return false;
 }
 
+/**
+ * Method: TWindow::CleanUp
+ * Purpose: Deletes the Page marked for deletion
+ * Parameters: void
+ * Returns: void
+ */
 void TWindow::CleanUp()
 {
 	deletePage.Delete();
 }
 
+/**
+ * Method: TWindow::GetWindowEngine
+ * Purpose: Retirves the 3D Engine associated with this window
+ * Parameters: void
+ * Returns: TrecPointer<TWindowEngine> - the 3D window engine
+ */
 TrecPointer<TWindowEngine> TWindow::GetWindowEngine()
 {
 	return d3dEngine;
 }
 
+/**
+ * Method: TWindow::GetNewArenaEngine
+ * Purpose: Retirves a new Arena Engine
+ * Parameters: void
+ * Returns: TrecPointer<TArenaEngine> - the Arena Engine produced
+ */
 TrecPointer<TArenaEngine> TWindow::GetNewArenaEngine()
 {
 	TrecPointer<TArenaEngine> ret;
@@ -502,6 +729,12 @@ TrecPointer<TArenaEngine> TWindow::GetNewArenaEngine()
 	return ret;
 }
 
+/**
+ * Method: TWindow::GetNewArenaEngine
+ * Purpose: Retirves a new Arena Engine by name
+ * Parameters: TString& name - the name of the Arena Engine
+ * Returns: TrecPointer<TArenaEngine> - the Arena Engine produced
+ */
 TrecPointer<TArenaEngine> TWindow::GetNewArenaEngine(TString& name)
 {
 	TrecPointer<TArenaEngine> ret;
@@ -513,11 +746,23 @@ TrecPointer<TArenaEngine> TWindow::GetNewArenaEngine(TString& name)
 	return ret;
 }
 
+/**
+ * Method: TWindow::GetDrawingBoard
+ * Purpose: Retrieves the drawing board associated with this window
+ * Parameters: void
+ * Returns: TrecPointer<DrawingBoard> - the drawing board held by the WIndow
+ */
 TrecPointer<DrawingBoard> TWindow::GetDrawingBoard()
 {
 	return drawingBoard;
 }
 
+/**
+ * Method: TWindow::PrepAnimations
+ * Purpose: Prepares animations held by the provided page
+ * Parameters: TrecPointer<Page> page - the page to prepare the animations for
+ * Returns: bool - whether the page was set and the Window matched
+ */
 bool TWindow::PrepAnimations(TrecPointer<Page> page)
 {
 	if(!page.Get() || page->GetWindowHandle().Get() != this)
@@ -528,6 +773,12 @@ bool TWindow::PrepAnimations(TrecPointer<Page> page)
 	return true;
 }
 
+/**
+ * Method: TWindow::DrawOtherPages
+ * Purpose: Draws other pages registered in this window
+ * Parameters: void
+ * Returns: void
+ */
 void TWindow::DrawOtherPages()
 {
 }

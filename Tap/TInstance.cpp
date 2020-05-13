@@ -9,6 +9,18 @@
 
 static TString dialogClassName(L"TDialog");
 
+/**
+ * Method: TInstance::
+ * Purpose:
+ * Parameters: TString& name - the name of the main window
+ *				TString& winClass - the class name of the Window (used by Windows)
+ *				UINT style - the desired style of the Window
+ *				HWND parent - parent of the Window
+ *				int commandShow - how to first present the window
+ *				HINSTANCE ins - the Instance Handle provided by WinMain
+ *				WNDPROC wp - the Wind Proc function that intercepts messages
+ * Returns: new TInstance object
+ */
 TInstance::TInstance(TString& name, TString& winClass, UINT style, HWND parent, int commandShow, HINSTANCE ins, WNDPROC wp)
 {
 	handlerID = 1;
@@ -31,6 +43,12 @@ TInstance::TInstance(TString& name, TString& winClass, UINT style, HWND parent, 
 	dialogAtom = 0;
 }
 
+/**
+ * Method: TInstance::Proc
+ * Purpose: Takes in messages from WinProc and sends them to the appropriate window
+ * Parameters: HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam
+ * Returns: LRESULT - the Result of the message
+ */
 LRESULT TInstance::Proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	TWindow* win = nullptr;
@@ -125,6 +143,15 @@ LRESULT TInstance::Proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
+/**
+ * Method: TInstance::SetMainWindow
+ * Purpose: Sets up the Main Window
+ * Parameters: WNDCLASSEXW& wcex - the details of the Window
+ *				TString& file - path to the tml file for it's contents
+ *				TrecPointer<EventHandler> eh - main handler for the window
+ *				t_window_type winType - type of window desired (default provides a regular TWindow)
+ * Returns: int - error code
+ */
 int TInstance::SetMainWindow(WNDCLASSEXW& wcex, TString& file, TrecPointer<EventHandler> eh, t_window_type winType)
 {
 	WORD regResult = RegisterClassExW(&wcex);
@@ -149,6 +176,12 @@ int TInstance::SetMainWindow(WNDCLASSEXW& wcex, TString& file, TrecPointer<Event
 	return mainWindow->CompileView(file, eh);
 }
 
+/**
+ * Method: TInstance::GetWindowByName
+ * Purpose: Retrieves the window held by the name
+ * Parameters: TString& - the name of the window to get
+ * Returns: TrecPointer<TWindow> - the TWindow requested
+ */
 TrecPointer<TWindow> TInstance::GetWindowByName(TString& name)
 {
 	if(mainWindow.Get() && !mainWindow->GetWinName().Compare(name))
@@ -227,17 +260,35 @@ void TInstance::AssertDialogRegistered()
 	return true;
 }*/
 
+/**
+ * Method: TInstance::GetProc
+ * Purpose: Retrieves the WinProc function
+ * Parameters: void
+ * Returns: WNDPROC - the location of the WinProc function
+ */
 WNDPROC TInstance::GetProc()
 {
 	return proctor;
 }
 
 
+/**
+ * Method: TInstance::GetMainWindow
+ * Purpose: Retrieves the main window of the instance
+ * Parameters: void
+ * Returns:TrecPointer<TWindow> - the main window
+ */
 TrecPointer<TWindow> TInstance::GetMainWindow()
 {
 	return mainWindow;
 }
 
+/**
+ * Method: TInstance::GetWindow
+ * Purpose: Retirevs the TWindow by handle
+ * Parameters: HWND h - the handle to get the TWindow for
+ * Returns: TrecPointer<TWindow> - The Window requested
+ */
 TrecPointer<TWindow> TInstance::GetWindow(HWND h)
 {
 	if (h == mainWindow->GetWindowHandle())
@@ -251,6 +302,12 @@ TrecPointer<TWindow> TInstance::GetWindow(HWND h)
 	return TrecPointer<TWindow>();
 }
 
+/**
+ * Method: TInstance::LockWindow
+ * Purpose: Locks the specified Window
+ * Parameters: HWND win - the window to lock
+ * Returns: void
+ */
 void TInstance::LockWindow(HWND win)
 {
 	if (mainWindow.Get() && mainWindow->GetWindowHandle() == win)
@@ -269,6 +326,12 @@ void TInstance::LockWindow(HWND win)
 	}
 }
 
+/**
+ * Method: TInstance::UnlockWindow
+ * Purpose: Unlocks the specified Window
+ * Parameters: HWND win - the window to unlock
+ * Returns: void
+ */
 void TInstance::UnlockWindow(HWND win)
 {
 	if (mainWindow.Get() && mainWindow->GetWindowHandle() == win)
@@ -287,16 +350,34 @@ void TInstance::UnlockWindow(HWND win)
 	}
 }
 
+/**
+ * Method: TInstance::GetInstanceHandle
+ * Purpose: Retrievs the raw instance handle
+ * Parameters: void
+ * Returns: HINSTANCE - instance provided during construction
+ */
 HINSTANCE TInstance::GetInstanceHandle()
 {
 	return instance;
 }
 
+/**
+ * Method: TInstance::GetFactory
+ * Purpose: retirevs the factory used for Direct2D
+ * Parameters: void
+ * Returns: TrecComPointer<ID2D1Factory1> - the factory used for Direct 2D drawing
+ */
 TrecComPointer<ID2D1Factory1> TInstance::GetFactory()
 {
 	return factory;
 }
 
+/**
+ * Method: TInstance::SetSelf
+ * Purpose: Allows the instance to hold a reference to itself
+ * Parameters: TrecPointer<TInstance> i - the instance to hold
+ * Returns: void
+ */
 void TInstance::SetSelf(TrecPointer<TInstance> i)
 {
 	if (this != i.Get() || i.Get() != this)
@@ -306,6 +387,12 @@ void TInstance::SetSelf(TrecPointer<TInstance> i)
 	AssertDialogRegistered();
 }
 
+/**
+ * Method: TInstance::DispatchAnagameMessage
+ * Purpose: Allows a Handler to send s message to another handler
+ * Parameters: TrecPointer<HandlerMessage> message - the message to dispatch to a handler
+ * Returns: void
+ */
 void TInstance::DispatchAnagameMessage(TrecPointer<HandlerMessage> message)
 {
 	CleanHandlerList();
@@ -316,6 +403,13 @@ void TInstance::DispatchAnagameMessage(TrecPointer<HandlerMessage> message)
 	}
 }
 
+/**
+ * Method: TInstance::GetHandler
+ * Purpose: Retrieves the Handler by name and type
+ * Parameters: const TString& name - the name of the handler
+ *				anagame_page pageType - the type of handler
+ * Returns: TrecPointer<EventHandler> - the handler specified (null if not found)
+ */
 TrecPointer<EventHandler> TInstance::GetHandler(const TString& name, anagame_page pageType)
 {
 	for (UINT Rust = 0; Rust < registeredHandlers.Size(); Rust++)
@@ -341,7 +435,13 @@ TrecPointer<EventHandler> TInstance::GetHandler(const TString& name, anagame_pag
 	}
 	return TrecPointer<EventHandler>();
 }
- 
+
+/**
+ * Method: TInstance::RegisterDialog
+ * Purpose: Adds a window to the list of windows
+ * Parameters: TrecPointer<TWindow> - the window to add
+ * Returns: void
+ */
 void TInstance::RegisterDialog(TrecPointer<TWindow> win)
 {
 	TrecPointer<WindowContainer> contain = TrecPointerKey::GetNewTrecPointer<WindowContainer>();
@@ -349,6 +449,12 @@ void TInstance::RegisterDialog(TrecPointer<TWindow> win)
 	windowList.push_back(contain);
 }
 
+/**
+ * Method: TInstance::CleanWindows
+ * Purpose: Removes all WIndows from the Instance
+ * Parameters: void
+ * Returns: void
+ */
 void TInstance::CleanWindows()
 {
 	for (UINT Rust = 0; Rust < windowList.Size(); Rust++)
@@ -361,6 +467,12 @@ void TInstance::CleanWindows()
 	}
 }
 
+/**
+ * Method: TInstance::UnregisterHandler
+ * Purpose: Removes the given handler from it's list
+ * Parameters:TrecPointer<EventHandler> handler - the handler to remove
+ * Returns: void
+ */
 void TInstance::UnregisterHandler(TrecPointer<EventHandler> handler)
 {
 	for (UINT Rust = 0; Rust < registeredHandlers.Size(); Rust++)
@@ -373,6 +485,12 @@ void TInstance::UnregisterHandler(TrecPointer<EventHandler> handler)
 	}
 }
 
+/**
+ * Method: TInstance::RegisterHandler
+ * Purpose: Adds a handler to the list of handlers
+ * Parameters: TrecPointer<EventHandler> handler - the handler to add
+ * Returns: bool whether the handler was added or not
+ */
 bool TInstance::RegisterHandler(TrecPointer<EventHandler> handler)
 {
 	if(!handler.Get())
@@ -389,15 +507,27 @@ bool TInstance::RegisterHandler(TrecPointer<EventHandler> handler)
 	return true;
 }
 
+/**
+ * Method: TInstance::CleanHandlerList
+ * Purpose: Cleans the list of handlers so that none are null
+ * Parameters: void
+ * Returns: void
+ */
 void TInstance::CleanHandlerList()
 {
 	for (int Rust = static_cast<int>(registeredHandlers.Size()) - 1; Rust >= 0; Rust--)
 	{
 		if (!registeredHandlers[Rust].Get())
-			registeredHandlers.RemoveAt(Rust);
+			registeredHandlers.RemoveAt(Rust--);
 	}
 }
 
+/**
+ * Method: WindowContainer::WindowContainer
+ * Purpose: Default Constructor
+ * Parameters: void
+ * Returns: New Window container
+ */
 WindowContainer::WindowContainer()
 {
 	destroy = false;

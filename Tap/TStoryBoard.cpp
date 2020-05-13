@@ -1,6 +1,12 @@
 #include "TStoryBoard.h"
 #include "TWindow.h"
 
+/**
+ * Function: ProcessAnimations
+ * Purpose: Function in the Animation Thread that runs the Animations
+ * Parameters: LPVOID param -  the data needed to run the thread (a ThreadData object)
+ * Returns: DWORD - error code
+ */
 DWORD __stdcall ProcessAnimations(LPVOID param)
 {
 	ThreadData* data = reinterpret_cast<ThreadData*>(param);
@@ -31,6 +37,12 @@ DWORD __stdcall ProcessAnimations(LPVOID param)
 	return 0;
 }
 
+/**
+ * Method: TStoryBoard::TStoryBoard
+ * Purpose: Default Constructor
+ * Parameters: void
+ * Returns: New Story Board Object
+ */
 TStoryBoard::TStoryBoard()
 {
 	threadData.animationThread = 0;
@@ -39,11 +51,23 @@ TStoryBoard::TStoryBoard()
 	threadData.shortestInterval = 60000;
 }
 
+/**
+ * Method: TStoryBoard::~TStoryBoard
+ * Purpose: Destructor
+ * Parameters: void
+ * Returns: void
+ */
 TStoryBoard::~TStoryBoard()
 {
 	Terminate();
 }
 
+/**
+ * Method: TStoryBoard::AddAnimation
+ * Purpose: Adds an Animation to the Story Board
+ * Parameters: TrecPointer<Animation> a -  the Animation to add
+ * Returns: bool - true if the Animation was added (false if null or the thread was actively running)
+ */
 bool TStoryBoard::AddAnimation(TrecPointer<Animation> a)
 {
 	if (!a.Get())
@@ -68,22 +92,46 @@ bool TStoryBoard::AddAnimation(TrecPointer<Animation> a)
 	return true;
 }
 
+/**
+ * Method: TStoryBoard::SetWindow
+ * Purpose: Identifies the Window the Story board is working on
+ * Parameters: TrecPointer<TWindow> w - The Window to associate the Story Board with
+ * Returns: void
+ */
 void TStoryBoard::SetWindow(TrecPointer<TWindow> w)
 {
 	if (w.Get())
 		threadData.win = w;
 }
 
+/**
+ * Method: TStoryBoard::SetPersistant
+ * Purpose: Marks the Story Board as persistent (meaning rather than stop, it will run in a loop)
+ * Parameters: void
+ * Returns: void
+ */
 void TStoryBoard::SetPersistant()
 {
 	threadData.persist = true;
 }
 
+/**
+ * Method: TStoryBoard::IsPersistant
+ * Purpose: reports whether the Story Board is persistent or not
+ * Parameters: void
+ * Returns: bool - whether the Story Board is persistent
+ */
 bool TStoryBoard::IsPersistant()
 {
 	return threadData.persist;
 }
 
+/**
+ * Method: TStoryBoard::Run
+ * Purpose: Starts the Animation thread
+ * Parameters: void
+ * Returns: bool - whether a thread was created or not
+ */
 bool TStoryBoard::Run()
 {
 	if (threadData.animationThread)
@@ -99,6 +147,12 @@ bool TStoryBoard::Run()
 	return threadData.animationThread != 0;
 }
 
+/**
+ * Method: TStoryBoard::Pause
+ * Purpose: Pauses the running thread
+ * Parameters: void
+ * Returns: bool - whether there was a thread to pause
+ */
 bool TStoryBoard::Pause()
 {
 	if (threadData.animationThread)
@@ -109,6 +163,12 @@ bool TStoryBoard::Pause()
 	return false;
 }
 
+/**
+ * Method: TStoryBoard::Resume
+ * Purpose: Resumes the thread if paused
+ * Parameters: void
+ * Returns: void
+ */
 void TStoryBoard::Resume()
 {
 	if (threadData.animationThread)
@@ -116,6 +176,12 @@ void TStoryBoard::Resume()
 }
 
 
+/**
+ * Method: TStoryBoard::Terminate
+ * Purpose: Terminates the thread
+ * Parameters: void
+ * Returns: void
+ */
 void TStoryBoard::Terminate()
 {
 	// TO-DO: Research safer way to terminate thread
@@ -125,6 +191,12 @@ void TStoryBoard::Terminate()
 	threadData.animationThread = 0;
 }
 
+/**
+ * Method: TStoryBoard::Empty
+ * Purpose: Empties the Story Board of Animtions
+ * Parameters: void
+ * Returns: void
+ */
 void TStoryBoard::Empty()
 {
 	threadData.animations.RemoveAll();

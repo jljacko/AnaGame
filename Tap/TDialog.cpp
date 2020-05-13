@@ -11,6 +11,19 @@
 
 // #include <afxglobals.h>
 
+
+/**
+ * Method: TDialog::TDialog
+ * Purpose: Constructor
+ * Parameters: TString& name - Name to give the Window
+ *				TString& winClass - Name of the Window Class to send to Windows
+ *				UINT style - the Style of the Window desired
+ *				HWND parent - Handle to the Parent Window
+ *				int commandShow - How to show the Window once created
+ *				TrecPointer<TInstance> ins - The Anagame Instance associated with thi DIalog
+ *				TDialogMode mode - How the Dialog should approach its parent
+ * Returns: New Dialog Object
+ */
 TDialog::TDialog(TString& name, TString& winClass, UINT style, HWND parent, int commandShow, TrecPointer<TInstance> ins, TDialogMode mode) :
 	TWindow(name, winClass, style | WS_POPUP | WS_DLGFRAME, parent, commandShow, ins)
 {
@@ -18,10 +31,22 @@ TDialog::TDialog(TString& name, TString& winClass, UINT style, HWND parent, int 
 	breakLoop = false;
 }
 
+/**
+ * Method: TDialog::~TDialog
+ * Purpose: Destructor
+ * Parameters: void
+ * Returns: void
+ */
 TDialog::~TDialog()
 {
 }
 
+/**
+ * Method: TDialog::PrepareWindow
+ * Purpose: Sets up the Dialog Window, restricting the Parent Window as called for
+ * Parameters: void
+ * Returns: int - error code (o for success)
+ */
 int TDialog::PrepareWindow()
 {
 	if (!currentWindow)
@@ -40,6 +65,12 @@ int TDialog::PrepareWindow()
 	return TWindow::PrepareWindow();
 }
 
+/**
+ * Method: TDialog::OnDestroy
+ * Purpose: Prepares the Dialog for destruction, releasing the Parent Window if necessary
+ * Parameters: void
+ * Returns: bool - whether the dialog can be destroyed yet
+ */
 bool TDialog::OnDestroy()
 {
 	bool returnable = TWindow::OnDestroy();
@@ -58,6 +89,12 @@ bool TDialog::OnDestroy()
 	return breakLoop = returnable;
 }
 
+/**
+ * Method: TDialog::Run
+ * Purpose: Runs a New Loop for intercepting Messages
+ * Parameters: void
+ * Returns: void
+ */
 void TDialog::Run()
 {
 	MSG msg;
@@ -68,7 +105,14 @@ void TDialog::Run()
 	}
 }
 
-
+/**
+ * Function: ActivateAlertDialog
+ * Purpose: Runs the Course of an Alert Dialog
+ * Parameters: TrecPointer<TInstance> ins - Instance under which the Dialog is being created
+ *				 HWND parent - Handle to the Parent Window
+ *				 TString& caption - the Text to present to the User
+ * Returns: void
+ */
 void ActivateAlertDialog(TrecPointer<TInstance> ins, HWND parent, TString& caption)
 {
 	//  UINT style, HWND parent, int commandShow, TrecPointer<TInstance> ins, TDialogMode mode, TString& caption;
@@ -88,6 +132,14 @@ void ActivateAlertDialog(TrecPointer<TInstance> ins, HWND parent, TString& capti
 	dynamic_cast<AlertDialog*>(dialog.Get())->Run();
 }
 
+/**
+ * Function: ActivateNameDialog
+ * Purpose: Runs the Course of a Name Dialog
+ * Parameters: TrecPointer<TInstance> ins - Instance under which the Dialog is being created
+ *				 HWND parent - Handle to the Parent Window
+ *				 TString& caption - the Text to present to the User
+ * Returns: TString - the Input the User entered
+ */
 TString ActivateNameDialog(TrecPointer<TInstance> ins, HWND parent, TString& caption)
 {
 	TString name(L"Alert");
