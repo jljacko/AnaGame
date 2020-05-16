@@ -77,7 +77,7 @@ void SetUpComboAtt()
 TComboBox::TComboBox(TrecPointer<DrawingBoard> rt, TrecPointer<TArray<styleTable>> ta):TGadgetControl(rt,ta)
 {
 	vertexPoint = D2D1::Point2F();
-	
+	initClick = false;
 	SetUpComboAtt();
 }
 
