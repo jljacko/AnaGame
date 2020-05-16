@@ -50,14 +50,9 @@ TControl::TControl(TrecPointer<DrawingBoard> db,TrecPointer<TArray<styleTable>> 
 		isTextControl = false;
 	}
 
-	contextMenu = NULL;
-	flyout = NULL;
 	shape =TShape::T_Rect;
 	fixHeight = fixWidth = false;
 	rightBorder = leftBorder = topBorder = bottomBorder = onFocus = onClickFocus = false;
-
-	//eventList = new TDataArray<EventTypeID>();
-	contextMenu = nullptr;
 
 	controlTransform = D2D1::IdentityMatrix();
 	
@@ -77,8 +72,6 @@ TControl::TControl(TrecPointer<DrawingBoard> db,TrecPointer<TArray<styleTable>> 
 TControl::TControl(TControl & rCont)
 {
 	arrayID = rCont.arrayID;
-	contextMenu = rCont.contextMenu;
-	flyout = rCont.flyout;
 	eventHandler = rCont.eventHandler;
 	isActive = rCont.isActive;
 
@@ -185,10 +178,8 @@ TControl::TControl()
 {
 	arrayID = -1;
 
-	contextMenu = nullptr;
 	eventHandler = NULL;
 	isActive = true;
-	flyout = nullptr;
 
 	treeLevel = 0;
 
@@ -208,9 +199,6 @@ TControl::TControl()
 	
 	isLayout = false;
 	isTextControl = false;
-
-	flyout = nullptr;
-	contextMenu = nullptr;
 	//PointerCase =TrecPointer<TControl>(this);
 	shape =TShape::T_Rect;
 	fixHeight = fixWidth = false;
@@ -1014,15 +1002,6 @@ TrecPointer<styleTable> classy;
 
 	}
 
-	valpoint = attributes.retrieveEntry(TString(L"|FlyoutLocation"));
-	if (valpoint.Get() && flyout)
-		flyout->onCreate(convertStringToD2D1Rect(valpoint.Get()),d3d);
-
-	if (contextMenu)
-	{
-		contextMenu->onCreate(location, d3d);
-	}
-
 	updateComponentLocation();
 
 	// Now see if any child element extends beyond 
@@ -1242,30 +1221,6 @@ void TControl::scroll(RECT& loc)
 
 }
 
-/*
-* Method: TControl - SetContextMenu
-* Purpose: Set up a Context Menu to show if Control is ever right-Clicked
-* Parameters: TrecPointer<TControl> cm - Smart Pointer to a Control to serve as the Context Menu
-* Returns: bool - true if successful, false if error occurs
-*/
-bool TControl::SetContextMenu(TrecPointer<TControl> cm)
-{
-	if(contextMenu)
-	return false;
-	if (!cm.Get())
-		return false;
-	try
-	{
-		contextMenu = dynamic_cast<TContextMenu*>(cm.Get());
-		
-		return true;
-	}
-	catch (std::bad_cast& bc)
-	{
-		return false;
-	}
-
-}
 
 /*
 * Method: TControl - BreakShared
@@ -3431,11 +3386,6 @@ afx_msg void TControl::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* m
 		args.isLeftClick = false;
 		args.control = this;
 		eventAr.push_back(EventID_Cred( R_Message_Type::On_Right_Click,this ));
-	}
-
-	if (contextMenu)
-	{
-		contextMenu->Show(appearCondition::appear_onRightClick);
 	}
 
 }
@@ -6426,6 +6376,15 @@ EventID_Cred::EventID_Cred(R_Message_Type t, TControl* c, TrecPointer<TScrollBar
 	scroll = sb;
 }
 
+EventID_Cred::EventID_Cred(TrecPointer<TFlyout> fly)
+{
+	eventType = R_Message_Type::On_Flyout;
+	control = nullptr;
+	if (!fly.Get())
+		throw L"Error! Needed initialized Flyout!";
+	flyout = fly;
+}
+
 TControlParentHolder::TControlParentHolder(TrecPointer<TControl> parent)
 {
 	this->parent = TrecPointerKey::GetSoftPointerFromTrec<TControl>(parent);
@@ -6443,4 +6402,15 @@ void TControlParentHolder::SwitchChildControl(TrecPointerSoft<TControl> cur, Tre
 	{
 		tParent->SwitchChildControl(cur, newTControl);
 	}
+}
+
+/**
+ * Method: TControlParentHolder::GetParent
+ * Purpose: Allows the Retrieval of the Parent Control (if the holder is holding a control)
+ * Parameters: void
+ * Returns: TrecPointer<TControl> - the Parent (the default returns null but the TControlParentHolder will return the parent)
+ */
+TrecPointer<TControl> TControlParentHolder::GetParent()
+{
+	return TrecPointerKey::GetTrecPointerFromSoft<TControl>(parent);
 }

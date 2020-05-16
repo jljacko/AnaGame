@@ -345,6 +345,16 @@ public:
 	 */
 	bool PrepAnimations(TrecPointer<Page> page);
 
+	/**
+	 * Method:: TWindow::SetFlyout
+	 * Pupose: Allows Flyouts in an Anaface to be set
+	 * Parameters: TrecPointer<TFlyout> fly - the flyout to Draw
+	 * Returns: void
+	 *
+	 * Note: This method is intended to be called by the Page Class. The Page looks for TFlyouts to draw and the Window takes it from there
+	 */
+	void SetFlyout(TrecPointer<TFlyout> fly);
+
 protected:
 
 	// Draw Other pages that are special to the Window
@@ -446,5 +456,15 @@ protected:
 	 * Scroll Bar currently focusing on
 	 */
 	TrecPointer<TScrollBar> currentScrollBar;
+
+
+	// Manage Flyouts
+
+	/**
+	 * Holds any flyout that needs to be drawn after everything else is
+	 */
+	TrecPointer<TFlyout> flyout;
+
+
 };
 

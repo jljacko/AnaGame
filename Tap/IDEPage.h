@@ -199,7 +199,7 @@ protected:
 	 *				messageOutput* mOut -  the result of the message
 	 * Returns: void
 	 */
-	afx_msg virtual void OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)override;
+	afx_msg virtual void OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TrecPointer<TFlyout> fly)override;
 	/**
 	 * Method: IDEPage::OnRButtonDown
 	 * Purpose: Responds to the Right Button Down Message
@@ -217,7 +217,7 @@ protected:
 	 *				messageOutput* mOut -  the result of the message
 	 * Returns: void
 	 */
-	afx_msg virtual void OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut)override;
+	afx_msg virtual void OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TrecPointer<TFlyout> fly)override;
 	/**
 	 * Method: IDEPage::OnLButtonDblClk
 	 * Purpose: Responds to the Left Button Double CLick Message
@@ -235,7 +235,7 @@ protected:
 	 *				messageOutput* mOut -  the result of the message
 	 * Returns: void
 	 */
-	afx_msg virtual void OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut) override;
+	afx_msg virtual void OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TrecPointer<TFlyout> fly) override;
 	/**
 	 * Method: IDEPage::OnChar
 	 * Purpose: Responds to the Char Message
@@ -268,7 +268,7 @@ public:
 	 *				TDataArray<EventID_Cred>& eventAr - list of events to feed the Handler if applicable
 	 * Returns: void
 	 */
-	afx_msg void OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
+	afx_msg void OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr, TrecPointer<TFlyout> fly)override;
 	/**
 	 * Method: IDEPage::OnMouseMove
 	 * Purpose: Captures the message and sees if it needs to shift borders before processing the message normally
@@ -278,7 +278,7 @@ public:
 	 *				TDataArray<EventID_Cred>& eventAr - list of events to feed the Handler if applicable
 	 * Returns: void
 	 */
-	afx_msg void OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
+	afx_msg void OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr, TrecPointer<TFlyout> fly)override;
 	/**
 	 * Method: IDEPage::OnLButtonUp
 	 * Purpose: Used to confirm whether a proper click was done

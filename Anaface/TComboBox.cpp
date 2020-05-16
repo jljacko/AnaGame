@@ -1,57 +1,70 @@
 
 #include "TComboBox.h"
 
-TDataArray<TComboBox*> boxList;
 
-/*
-* Function: DrawActiveComboBox
-* Purpose: Draws Active Combo-box
-* Parameters: ID2D1RenderTarget * rt - the render target to use
-* Returns: void
-*/
-void  DrawActiveComboBox(ID2D1RenderTarget * rt)
-{
-	//for (int c = 0; c < boxList.Size(); c++)
-	//{
-	//	if (!boxList[c])
-	//		continue;
-	//	if (boxList[c]->GetExtensionStatus())
-	//	{
-	//		boxList[c]->onDraw(rt);
-	//		break;
-	//	}
-	//}
-}
+TDataArray<TString> comboAtt, regAtt;
 
-/*
-* Function: GetActiveComboBox
-* Purpose: retrieves the currently acting combo-box, if one is active
-* Parameters: void
-* Returns: TComboBox* - currently active combo-box (or null)
-*/
-TComboBox * GetActiveComboBox()
+/**
+ * Function: SetUpComboAtt
+ * Purpose: Initializes the comboAtt and regAtt lists with combo-box attributes and their regular counter parts
+ * Parameters: void
+ * Returns: void
+ */
+void SetUpComboAtt()
 {
-	for (int c = 0; c < boxList.Size(); c++)
-	{
-		if (boxList[c] && boxList[c]->GetExtensionStatus())
-			return boxList[c];
-	}
-	return nullptr;
-}
+	if (comboAtt.Size() && regAtt.Size())
+		return;
 
-/*
-* Function: ResetComboBoxes
-* Purpose:  Makes sure all but the current ComboBox closes itself
-* Parameters: void
-* Returns: void
-*/
-void ResetComboBoxes()
-{
-	for (int c = 0; c < boxList.Size(); c++)
-	{
-		if (boxList[c])
-			boxList[c]->FinalizeUpdate();
-	}
+	comboAtt.push_back(L"|ComboContentColor");
+	regAtt.push_back(L"|ContentColor");
+
+
+	comboAtt.push_back(L"|ComboBorderThickness");
+	regAtt.push_back(L"|BorderThickness");
+
+
+	comboAtt.push_back(L"|ComboBorderColor");
+	regAtt.push_back(L"|BorderColor");
+
+	comboAtt.push_back(L"|ComboFont");
+	regAtt.push_back(L"|Font");
+
+	comboAtt.push_back(L"|ComboFontColor");
+	regAtt.push_back(L"|FontColor");
+
+	comboAtt.push_back(L"|ComboFontSize");
+	regAtt.push_back(L"|FontSize");
+
+	comboAtt.push_back(L"|ComboHorizontalAlignment");
+	regAtt.push_back(L"|HorizontalAlignment");
+
+	comboAtt.push_back(L"|ComboVerticalAlignment");
+	regAtt.push_back(L"|VerticalAlignment");
+
+	comboAtt.push_back(L"|ComboHoverContentColor");
+	regAtt.push_back(L"|HoverContentColor");
+
+	comboAtt.push_back(L"|ComboHoverBorderThickness");
+	regAtt.push_back(L"|HoverBorderThickness");
+
+	comboAtt.push_back(L"|ComboHoverBorderColor");
+	regAtt.push_back(L"|HoverBorderColor");
+
+	comboAtt.push_back(L"|ComboHoverFont");
+	regAtt.push_back(L"|HoverFont");
+
+	comboAtt.push_back(L"|ComboHoverFontColor");
+	regAtt.push_back(L"|HoverFontColor");
+
+	comboAtt.push_back(L"|ComboHoverFontSize");
+	regAtt.push_back(L"|HoverFontSize");
+
+	comboAtt.push_back(L"|ComboHoverHorizontalAlignment");
+	regAtt.push_back(L"|HoverHorizontalAlignment");
+
+	comboAtt.push_back(L"|ComboHoverVerticalAlignment");
+	regAtt.push_back(L"|HoverVerticalAlignment");
+
 }
 
 /*
@@ -63,14 +76,9 @@ void ResetComboBoxes()
 */
 TComboBox::TComboBox(TrecPointer<DrawingBoard> rt, TrecPointer<TArray<styleTable>> ta):TGadgetControl(rt,ta)
 {
-	childHeight = 40;
-	showExtended = prepShowExtended = false;
-	reacted = false;
-	boxList.push_back(this);
-	boxLoc = boxList.Size() - 1;
-	extendedSpace = D2D1_RECT_F{ 0,0,0,0 };
 	vertexPoint = D2D1::Point2F();
-	//defaultText = NULL;
+	
+	SetUpComboAtt();
 }
 
 /*
@@ -82,14 +90,6 @@ TComboBox::TComboBox(TrecPointer<DrawingBoard> rt, TrecPointer<TArray<styleTable
 */
 TComboBox::~TComboBox()
 {
-	//TGadgetControl::~TGadgetControl();
-//	boxList.RemoveAt(boxLoc);
-	for (int c = boxLoc;c < boxList.Size();c++)
-	{
-		if (boxList[c] == this)
-			boxList.setAt(nullptr, c);
-		//boxList[c]->decrimentLocation();
-	}
 
 }
 
@@ -101,13 +101,23 @@ TComboBox::~TComboBox()
 */
 bool TComboBox::onCreate(D2D1_RECT_F r, TrecPointer<TWindowEngine> d3d)
 {
+	extension = TrecPointerKey::GetNewSelfTrecSubPointer<TControl, TComboBoxExtension>(drawingBoard, TrecPointer<TArray<styleTable>>(), 
+		TrecPointerKey::GetTrecSubPointerFromTrec<TControl, TComboBox>(TrecPointerKey::GetTrecPointerFromSoft<TControl>(tThis)));
+
+	flyout = TrecPointerKey::GetNewSelfTrecPointer<TFlyout>(TrecPointerKey::GetTrecPointerFromSub<TControl, TComboBoxExtension>(extension));
+
+
+
 	TrecPointer<TString> valpoint = attributes.retrieveEntry(TString(L"|SubHeight"));
+
+
+	int childHeight;
 	if (valpoint.Get() && !valpoint->ConvertToInt(&childHeight))
 	{
-
+		extension->childHeight = childHeight;
 	}
 	else
-		childHeight = 30;
+		extension->childHeight = 30;
 	valpoint = attributes.retrieveEntry(TString(L"|DefaultText"));
 	if (valpoint.Get())
 	{
@@ -126,7 +136,7 @@ bool TComboBox::onCreate(D2D1_RECT_F r, TrecPointer<TWindowEngine> d3d)
 
 	while (valpoint.Get())
 	{
-		elements.Add(valpoint);
+		extension->elements.push_back(valpoint.Get());
 		valpoint = attributes.retrieveEntry(TString(L"|BoxEntry"), occ++);
 	}
 	
@@ -145,213 +155,106 @@ bool TComboBox::onCreate(D2D1_RECT_F r, TrecPointer<TWindowEngine> d3d)
 
 	vertexPoint = D2D1::Point2F(midDx, DxLocation.bottom);
 
+	// Handle Styling of the Extension box
 
-	D2D1_RECT_F entrybox = D2D1_RECT_F{ 0,0,0,0 };
-	for (int c = 0; c < elements.Count(); c++)
+
+	bool handledFontSize = false, handledContentColor = false;
+	for (UINT Rust = 0; Rust < comboAtt.Size() && regAtt.Size(); Rust++)
 	{
-		tc = TrecPointerKey::GetNewSelfTrecPointer<TControl>(drawingBoard, styles);
-		//cont = new TContainer();
-		//cont->setTControl(tc);
-
-
-		tc->setNewText(1);
-		TString CapParam = elements.ElementAt(c).Get();
-
-
-		tc->text1->setCaption(CapParam); 
-
-		entrybox.left = location.left;
-		entrybox.right = location.right;
-		entrybox.top = location.bottom + c * childHeight;
-		entrybox.bottom = location.bottom + (c + 1)*childHeight;
-		children.Add(tc);
-		//cont->setLocation(entrybox);
-		tc->onCreate(entrybox,d3d);
+		valpoint = attributes.retrieveEntry(comboAtt[Rust]);
+		if (valpoint.Get())
+		{
+			extension->attributes.addEntry(regAtt[Rust], valpoint);
+			if (!regAtt[Rust].Compare(L"|FontSize"))
+				handledFontSize = true;
+			if (!regAtt[Rust].Compare(L"|ContentColor"))
+				handledContentColor = true;
+		}
 	}
 
+	r = location;
+	r.top = r.bottom;
+	r.bottom = r.bottom + 10;
 
-
-	// now set up the extended background
-	extendedSpace = D2D1::RectF(location.left, location.bottom,
-		location.right, location.bottom + (childHeight) * (children.Count()));
-
-	extendedBrush = drawingBoard->GetBrush(TColor( D2D1::ColorF(D2D1::ColorF::White, 0.9f)));
-	return extendedBrush.Get() != nullptr;
-
-	//return false;
-}
-
-/*
-* Method: TComboBox - onDraw
-* Purpose: Draws the ComboBox
-* Parameters: void
-* Returns: void
-* Note: This method is almost identical to the TControl version except that children
-*	are only drawn when set to
-*/
-void TComboBox::onDraw(TObject* obj)
-{
-	if (!isActive)
-		return;
-	if (!drawingBoard.Get())
-		return;
-
-	// Although this code is seen in the TControl implementation of onDraw, 
-	// that method also calls on Draw on it's children. we don't want to do that
-	// here unless showExtended is true.
-	if (mState == messageState::mouseLClick)
+	if (!handledFontSize)
 	{
-		if (content3.Get())
-			content3.Get()->onDraw(location);
-		else if (content1.Get())
-			content1->onDraw(location);
-		if (border3.Get())
-			border3->onDraw(location);
-		else if (border1.Get())
-			border1->onDraw(location);
-		if (text3.Get())
-			text3->onDraw(location, obj);
-		else if (text1.Get())
-			text1->onDraw(location, obj);
-	}
-	else if (mState == messageState::mouseHover)
-	{
-		if (content2.Get())
-			content2->onDraw(location);
-		else if (content1.Get())
-			content1->onDraw(location);
-		if (border2.Get())
-			border2->onDraw(location);
-		else if (border1.Get())
-			border1->onDraw(location);
-		if (text2.Get())
-			text2->onDraw(location, obj);
-		else if (text1.Get())
-			text1->onDraw(location, obj);
-	}
-	else
-	{
-		if (content1.Get())
-			content1->onDraw(location);
-		if (border1.Get())
-			border1->onDraw(location);
-		if (text1.Get())
-			text1->onDraw(location, obj);
+		extension->attributes.addEntry(L"|FontSize", TrecPointerKey::GetNewTrecPointer<TString>(L"12"));
 	}
 
-	brush->DrawLine(leftpoint, vertexPoint);
-	brush->DrawLine(vertexPoint, rightPoint);
-
-if (showExtended)
-{
-	extendedBrush->FillRectangle(extendedSpace);
-
-	for (int c = 0; c < children.Count(); c++)
+	if (!handledContentColor)
 	{
-		children.ElementAt(c)->onDraw(obj);
+		extension->attributes.addEntry(L"|ContentColor", TrecPointerKey::GetNewTrecPointer<TString>(L"1.0,1.0,1.0,1.0"));
 	}
 
+	extension->onCreate(r, d3d);
 
-}
 
-}
 
-/*
-* Method: TComboBox - onDraw
-* Purpose: ?
-* Parameter: ID2D1RenderTarget * rt - render target to use
-* Returns: void
-*/
-void TComboBox::onDraw(DrawingBoard * rt)
-{
-	if (rt == drawingBoard.Get())
-		onDraw();
-}
 
-/*
-* Method: TComboBox - addElement
-* Purpose: Adds an element to the Drop-Down Menu
-* Parameters: TString
-* Returns: void
-* Note: Method currently has no functionality and should be considered DEPRECIATED until further notice
-*/
-void TComboBox::addElement(TString)
-{
+	// Remaining attributes
+	valpoint = attributes.retrieveEntry(TString(L"|BoxEntry"));
 
-}
+	if (valpoint.Get() && !valpoint->ConvertToInt(&childHeight) && childHeight > -1)
+	{
+		extension->maxHeight = childHeight;
+	}
 
-/*
-* Method: TComboBox - removeElement
-* Purpose: Removes an Element from the drop down menu
-* Parameters: TString
-* Returns: bool
-* Note: Method currently has no functionality and should be considered DEPRECIATED until further notice
-*/
-bool TComboBox::removeElement(TString)
-{
 	return false;
 }
 
-/*
-* Method: TComboBox - storeInTML
-* Purpose: Stores the Combo-box specific attributes in a TML file
-* Parameters:  CArchive* ar - the file to save to
-*				int childLevel - the generation if the TControl
-*				bool overrideChildren - whether to ignore the children to save
-* Returns: void
-*/
-void TComboBox::storeInTML(TFile* ar, int childLevel, bool ov)
-{
-	//	_Unreferenced_parameter_(ov);
 
 
-	TString appendable;
-	resetAttributeString(&appendable, childLevel + 1);
-	appendable.Append(L"|SubHeight:");
-	appendable.AppendFormat("%d", childHeight);
-	_WRITE_THE_STRING;
+//
+///*
+//* Method: TComboBox - storeInTML
+//* Purpose: Stores the Combo-box specific attributes in a TML file
+//* Parameters:  CArchive* ar - the file to save to
+//*				int childLevel - the generation if the TControl
+//*				bool overrideChildren - whether to ignore the children to save
+//* Returns: void
+//*/
+//void TComboBox::storeInTML(TFile* ar, int childLevel, bool ov)
+//{
+//	//	_Unreferenced_parameter_(ov);
+//
+//
+//	TString appendable;
+//	resetAttributeString(&appendable, childLevel + 1);
+//	appendable.Append(L"|SubHeight:");
+//	appendable.AppendFormat("%d", childHeight);
+//	_WRITE_THE_STRING;
+//
+//
+//	if (defaultText.GetSize())
+//	{
+//		appendable.Append(L"|DefaultText:");
+//		appendable.Append(defaultText);
+//		_WRITE_THE_STRING;
+//	}
+//
+//	TControl* tc = nullptr;
+//	for (int c = 0; c < children.Count(); c++)
+//	{
+//		appendable.Append(L"|BoxEntry:");
+//		if (children.ElementAt(c).Get())
+//
+//		tc = children.ElementAt(c).Get();
+//
+//		if (tc && tc->getText(1).Get() && tc->text1->getCaption().GetSize())
+//		{
+//			appendable.Append(tc->text1->getCaption());
+//		}
+//		else
+//			appendable.Append(L"NULL");
+//		_WRITE_THE_STRING;
+//	}
+//
+//	TGadgetControl::storeInTML(ar, childLevel, true);
+//
+//
+//
+//}
 
-
-	if (defaultText.GetSize())
-	{
-		appendable.Append(L"|DefaultText:");
-		appendable.Append(defaultText);
-		_WRITE_THE_STRING;
-	}
-
-	TControl* tc = nullptr;
-	for (int c = 0; c < children.Count(); c++)
-	{
-		appendable.Append(L"|BoxEntry:");
-		if (children.ElementAt(c).Get())
-
-		tc = children.ElementAt(c).Get();
-
-		if (tc && tc->getText(1).Get() && tc->text1->getCaption().GetSize())
-		{
-			appendable.Append(tc->text1->getCaption());
-		}
-		else
-			appendable.Append(L"NULL");
-		_WRITE_THE_STRING;
-	}
-
-	TGadgetControl::storeInTML(ar, childLevel, true);
-
-
-
-}
-
-/*
-* Method: TComboBox - GetExtensionStatus
-* Purpose: Reports whether the drop-down menu is showing
-* Parameters: void
-* Returns: bool - whether the Combo-Box is active
-*/
-bool TComboBox::GetExtensionStatus()
-{
-	return showExtended;
-}
 
 
 /*
@@ -367,158 +270,183 @@ void TComboBox::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, T
 {
 	resetArgs();
 
-	// first check to see if it covers the whole area. Update show extended to false if
-	// necessary
-	RECT MFC_extended_Space;
-	MFC_extended_Space.bottom = extendedSpace.bottom;
-	MFC_extended_Space.left = extendedSpace.left;
-	MFC_extended_Space.right = extendedSpace.right;
-	MFC_extended_Space.top = extendedSpace.top;
-	if (!isContained(&point, &location) && !isContained(&point, &MFC_extended_Space))
+	if (isContained(point, location))
 	{
-		showExtended =prepShowExtended = false;
-		TControl::OnLButtonDown(nFlags, point, mOut, eventAr, clickedControl);
-		return;
-	}
-//	*mOut = positiveOverrideUpdate;
-	if (isContained(&point, &location))
-	{
-		//reacted = true;
-		// To-Do:: When features are added
-		// enable Text Support
-
-
-
-		// end new Text edit feature
-		bool extensionClear = true;
-		for (int c = 0; c < boxList.Size(); c++)
-		{
-			if(boxList[c])
-				if (boxList[c]->showExtended)
-				{
-					extensionClear = false;
-					break;
-				}
-		}
-
-		if(extensionClear)
-			prepShowExtended = !prepShowExtended;
-		TControl::OnLButtonDown(nFlags, point, mOut,eventAr, clickedControl);
-		
+		initClick = true;
+		clickedControl.push_back(this);
 	}
 
-	if (showExtended && isContained(&point, &MFC_extended_Space))
+}
+
+void TComboBox::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+{
+	resetArgs();
+
+	if (isContained(point, location) && initClick)
 	{
-		*mOut = messageOutput::negativeUpdate;
-		TrecPointer<TControl> tc;
-		for (int c = 0; c < children.Count(); c++)
-		{
-			if (children.ElementAt(c).Get())
-				tc = children.ElementAt(c);
-			if (tc.Get())
-			{
-				tc->OnLButtonDown(nFlags, point, mOut,eventAr, clickedControl);
-				if (*mOut == messageOutput::negative || *mOut == messageOutput::negativeUpdate)
-					continue;
+		// To-Do: Return the TFlyout somehow
+		if (flyout.Get())
+			eventAr.push_back(EventID_Cred(flyout));
 
-				if (text1.Get())
-				{
-					text1->removeCaption();
-
-					TString tempText = tc->text1->getCaption();
-
-
-					text1->setCaption(tempText);
-					text1->reCreateLayout();
-				}
-				prepShowExtended = false;
-				*mOut = messageOutput::positiveOverrideUpdate;
-
-				// Set args
-				resetArgs();
-				args.eventType = R_Message_Type::On_sel_change;
-				args.point = point;
-				args.methodID = getEventID(R_Message_Type::On_sel_change);
-				args.isClick = false;
-				args.isLeftClick = false;
-				args.control = this;
-				if (text1.Get() && text1->getCaption().GetSize())
-					args.text.Set(text1->getCaption());
-
-				eventAr.push_back({ R_Message_Type::On_sel_change,this});
-
-
-
-				return;
-			}
-		}
+		// End to-do
 	}
+	initClick = false;
 }
 
-/*
-* Method: TComboBox - decrimentLocation
-* Purpose: Moves itself lower in the list of comboboxes to make room for new Combo-Boxes
-* Parameters: void
-* Returns: void
-* Note: Method currently not called
-*/
-void TComboBox::decrimentLocation()
-{
-	boxLoc--;
-}
-
-/*
-* Method: TComboBox - FinalizeUpdate
-* Purpose: Makes sure the Combo_box knows whtehr to show the menu or not
-* Parameters: void
-* Returns: void
-*/
-void TComboBox::FinalizeUpdate()
-{
-	showExtended = prepShowExtended;
-}
-
-/*
-* Method: TComboBox - GetAnaGameType
-* Purpose: Retrieves the AnaGame type for Combo-boxes
-* Parameters: void
-* Returns: UCHAR* - pointer to AnaGame type
-*/
-UCHAR * TComboBox::GetAnaGameType()
-{
-	return nullptr;
-}
 
 void TComboBox::Resize(D2D1_RECT_F& r)
 {
 	TGadgetControl::Resize(r);
-	leftpoint = D2D1::Point2F(DxLocation.left, DxLocation.top);
-	rightPoint = D2D1::Point2F(DxLocation.right, DxLocation.top);
-
-	float midDx = DxLocation.left + ((DxLocation.right - DxLocation.left) / 2);
-
-	vertexPoint = D2D1::Point2F(midDx, DxLocation.bottom);
-
-	D2D1_RECT_F entrybox = D2D1_RECT_F{ 0,0,0,0 };
-	for (int c = 0; c < children.Count(); c++)
+	
+	if (extension.Get())
 	{
-		TControl* tc = children.ElementAt(c).Get();
-		if (!tc)
-			continue;
-
-
-		entrybox.left = location.left;
-		entrybox.right = location.right;
-		entrybox.top = location.bottom + c * childHeight;
-		entrybox.bottom = location.bottom + (c + 1)*childHeight;
-		
-		//cont->setLocation(entrybox);
-		tc->Resize(entrybox);
+		r.top = r.bottom;
+		r.bottom = r.bottom + 10;
+		extension->Resize(r);
 	}
+		
+
+}
+
+void TComboBox::UpdateCaption(TString& str, UINT index)
+{
+	if (text1.Get())
+		text1->setCaption(str);
+
+	resetArgs();
+
+	args.arrayLabel = index;
+	args.control = this;
+	args.eventType = R_Message_Type::On_sel_change;
+	args.isClick = true;
+	args.isLeftClick = true;
+	args.methodID = getEventID(R_Message_Type::On_sel_change);
+	args.text = str;
+}
+
+TComboBoxExtension::TComboBoxExtension(TrecPointer<DrawingBoard> rt, TrecPointer<TArray<styleTable>> ta, TrecSubPointer<TControl, TComboBox> combo): TControl(rt, ta)
+{
+	this->combo = combo;
+
+	this->childHeight = 30;
+	this->maxHeight = 0;
+
+	hoverSelection = -1;
+	clickSelection = -1;
+}
 
 
+/*
+* Method: TComboBoxExtension::addElement
+* Purpose: Adds an element to the Drop-Down Menu
+* Parameters: TString
+* Returns: void
+*/
+void TComboBoxExtension::addElement(TString& str)
+{
+	if (str.IsEmpty())
+		return;
+	elements.push_back(str);
+}
 
-	// now set up the extended background
-	extendedSpace = D2D1::RectF(location.left, location.bottom,
-		location.right, location.bottom + (childHeight) * (children.Count()));
+/*
+* Method: TComboBoxExtension::removeElement
+* Purpose: Removes an Element from the drop down menu
+* Parameters: TString
+* Returns: bool - whether the string was found and removed
+*/
+bool TComboBoxExtension::removeElement(TString& str)
+{
+	for (UINT Rust = 0; Rust < elements.Size(); Rust++)
+	{
+		if (!elements[Rust].Compare(str))
+			return true;
+	}
+	return false;
+}
+
+void TComboBoxExtension::Resize(D2D1_RECT_F& r)
+{
+	location = r;
+
+	// To-Do: Handle scenario where a TScrollerControl may need to be created
+}
+
+void TComboBoxExtension::onDraw(TObject* obj)
+{
+	D2D1_RECT_F miniLoc = location;
+	miniLoc.bottom = miniLoc.top + childHeight;
+
+	for (UINT Rust = 0; Rust < elements.Size(); Rust++)
+	{
+		TrecPointer<TText> useText = (Rust == hoverSelection && text2.Get()) ? text2: text1;
+		TrecPointer<TContent> useContent = (Rust == hoverSelection && content2.Get()) ? content2 : content1;
+		TrecPointer<TBorder> useBorder = (Rust == hoverSelection && border2.Get()) ? border2 : border1;
+
+		if (useContent.Get())
+		{
+			// useContent->SetLocation(miniLoc);
+			useContent->onDraw(miniLoc);
+		}
+
+		if (useText.Get())
+		{
+			useText->setCaption(elements[Rust]);
+			useText->onDraw(miniLoc);
+		}
+		if (useBorder.Get())
+		{
+			useBorder->onDraw(miniLoc);
+		}
+
+		miniLoc.top += childHeight;
+		miniLoc.bottom += childHeight;
+	}
+}
+
+void TComboBoxExtension::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr, TDataArray<TControl*>& clickedControl)
+{
+	auto rect = location;
+
+	rect.bottom = rect.top + childHeight * elements.Size();
+	if (isContained(point, rect))
+	{
+		clickSelection = static_cast<int>(point.y - rect.top) / childHeight;
+		clickedControl.push_back(this);
+
+		*mOut = messageOutput::positiveOverrideUpdate;
+	}
+}
+
+void TComboBoxExtension::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+{
+	auto rect = location;
+
+	rect.bottom = rect.top + childHeight * elements.Size();
+	if (isContained(point, rect))
+	{
+		if ((clickSelection == static_cast<int>(point.y - rect.top) / childHeight) && combo.Get())
+		{
+			combo->UpdateCaption(elements[clickSelection], clickSelection);
+			EventID_Cred cred;
+			cred.control = combo.Get();
+			cred.eventType = R_Message_Type::On_sel_change;
+			eventAr.push_back(cred);
+		}
+		*mOut = messageOutput::positiveOverrideUpdate;
+	}
+	clickSelection = -1;
+}
+
+void TComboBoxExtension::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+{
+	auto rect = location;
+
+	rect.bottom = rect.top + childHeight * elements.Size();
+	if (isContained(point, rect))
+	{
+		hoverSelection = static_cast<int>(point.y - rect.top) / childHeight;
+
+		*mOut = messageOutput::positiveOverrideUpdate;
+	}
 }

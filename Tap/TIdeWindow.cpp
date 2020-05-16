@@ -168,55 +168,55 @@ void TIdeWindow::OnMouseMove(UINT nFlags, TPoint point)
 
 	if (focusPage.Get())
 	{
-		focusPage.GetBase()->OnMouseMove(nFlags, point, &output);
+		focusPage.GetBase()->OnMouseMove(nFlags, point, &output, flyout);
 		goto finish;
 	}
 
 	if (isContained(point, mainPage->GetArea()))
 	{
-		mainPage->OnMouseMove(nFlags, point, &output);
+		mainPage->OnMouseMove(nFlags, point, &output, flyout);
 		goto finish;
 	}
 
 	if (isContained(point, body->GetArea()))
 	{
-		body.GetBase()->OnMouseMove(nFlags, point, &output);
+		body.GetBase()->OnMouseMove(nFlags, point, &output, flyout);
 		goto finish;
 	}
 
 	if (isContained(point, upperLeft->GetArea()))
 	{
-		upperLeft.GetBase()->OnMouseMove(nFlags, point, &output);
+		upperLeft.GetBase()->OnMouseMove(nFlags, point, &output, flyout);
 		goto finish;
 	}
 
 	if (isContained(point, upperRight->GetArea()))
 	{
-		upperRight.GetBase()->OnMouseMove(nFlags, point, &output);
+		upperRight.GetBase()->OnMouseMove(nFlags, point, &output, flyout);
 		goto finish;
 	}
 
 	if (isContained(point, lowerLeft->GetArea()))
 	{
-		lowerLeft.GetBase()->OnMouseMove(nFlags, point, &output);
+		lowerLeft.GetBase()->OnMouseMove(nFlags, point, &output, flyout);
 		goto finish;
 	}
 
 	if (isContained(point, lowerRight->GetArea()))
 	{
-		lowerRight.GetBase()->OnMouseMove(nFlags, point, &output);
+		lowerRight.GetBase()->OnMouseMove(nFlags, point, &output, flyout);
 		goto finish;
 	}
 
 	if (isContained(point, basicConsole->GetArea()))
 	{
-		basicConsole.GetBase()->OnMouseMove(nFlags, point, &output);
+		basicConsole.GetBase()->OnMouseMove(nFlags, point, &output, flyout);
 		goto finish;
 	}
 
 	if (isContained(point, deepConsole->GetArea()))
 	{
-		deepConsole.GetBase()->OnMouseMove(nFlags, point, &output);
+		deepConsole.GetBase()->OnMouseMove(nFlags, point, &output, flyout);
 		goto finish;
 	}
 	
@@ -250,55 +250,55 @@ void TIdeWindow::OnLButtonDown(UINT nFlags, TPoint point)
 
 	if (isContained(point, mainPage->GetArea()))
 	{
-		mainPage->OnLButtonDown(nFlags, point, &output);
+		mainPage->OnLButtonDown(nFlags, point, &output, flyout);
 		goto finish;
 	}
 
 	if (isContained(point, body->GetArea()))
 	{
-		body.GetBase()->OnLButtonDown(nFlags, point, &output);
+		body.GetBase()->OnLButtonDown(nFlags, point, &output, flyout);
 		focusPage = body;
 		goto finish;
 	}
 
 	if (isContained(point, upperLeft->GetArea()))
 	{
-		upperLeft.GetBase()->OnLButtonDown(nFlags, point, &output);
+		upperLeft.GetBase()->OnLButtonDown(nFlags, point, &output, flyout);
 		focusPage = upperLeft;
 		goto finish;
 	}
 
 	if (isContained(point, upperRight->GetArea()))
 	{
-		upperRight.GetBase()->OnLButtonDown(nFlags, point, &output);
+		upperRight.GetBase()->OnLButtonDown(nFlags, point, &output, flyout);
 		focusPage = upperRight;
 		goto finish;
 	}
 
 	if (isContained(point, lowerLeft->GetArea()))
 	{
-		lowerLeft.GetBase()->OnLButtonDown(nFlags, point, &output);
+		lowerLeft.GetBase()->OnLButtonDown(nFlags, point, &output, flyout);
 		focusPage = lowerLeft;
 		goto finish;
 	}
 
 	if (isContained(point, lowerRight->GetArea()))
 	{
-		lowerRight.GetBase()->OnLButtonDown(nFlags, point, &output);
+		lowerRight.GetBase()->OnLButtonDown(nFlags, point, &output, flyout);
 		focusPage = lowerRight;
 		goto finish;
 	}
 
 	if (isContained(point, basicConsole->GetArea()))
 	{
-		basicConsole.GetBase()->OnLButtonDown(nFlags, point, &output);
+		basicConsole.GetBase()->OnLButtonDown(nFlags, point, &output, flyout);
 		focusPage = basicConsole;
 		goto finish;
 	}
 
 	if (isContained(point, deepConsole->GetArea()))
 	{
-		deepConsole.GetBase()->OnLButtonDown(nFlags, point, &output);
+		deepConsole.GetBase()->OnLButtonDown(nFlags, point, &output, flyout);
 		focusPage = deepConsole;
 		goto finish;
 	}

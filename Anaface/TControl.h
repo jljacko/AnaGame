@@ -81,7 +81,8 @@ typedef enum class R_Message_Type
 	On_Char,
 	On_Focus,
 	On_Lose_Focus,
-	On_Select_Scroller
+	On_Select_Scroller,
+	On_Flyout
 }R_Message_Type;
 
 // Event Arguements, used to supply Event Handlers with the necessary information to 
@@ -108,10 +109,12 @@ public:
 	EventID_Cred(const EventID_Cred& copy);
 	EventID_Cred(R_Message_Type t, TControl* c);
 	EventID_Cred(R_Message_Type t, TControl* c, TrecPointer<TScrollBar> sb);
+	EventID_Cred(TrecPointer<TFlyout> fly);
 
 	R_Message_Type eventType;
 	TControl* control;
 	TrecPointer<TScrollBar> scroll;
+	TrecPointer<TFlyout> flyout;
 };
 
 // Stored by Controls for checking whether or not they actually have a message handler
@@ -432,6 +435,15 @@ public:
 	TControlParentHolder(TrecPointerSoft<TControl> parent);
 
 	virtual void SwitchChildControl(TrecPointerSoft<TControl> cur, TrecPointer<TControl> newTControl)override;
+
+
+	/**
+	 * Method: TControlParentHolder::GetParent
+	 * Purpose: Allows the Retrieval of the Parent Control (if the holder is holding a control)
+	 * Parameters: void
+	 * Returns: TrecPointer<TControl> - the Parent (the default returns null but the TControlParentHolder will return the parent)
+	 */
+	virtual TrecPointer<TControl> GetParent();
 private:
 	TrecPointerSoft<TControl> parent;
 };
@@ -537,7 +549,6 @@ public:
 	bool onScroll(int x, int y);
 	bool onBeingScrolled(int x, int y);
 	void scroll(RECT& loc);
-	bool SetContextMenu(TrecPointer<TControl> cm);
 	void BreakShared();
 	void AddClass(const TString& t);
 	TString GetID();
@@ -610,8 +621,6 @@ protected:
 	// data for dealing with messages
 	bool overrideParent;          // should response to message stop parent from doing the same?
 	messageState mState;          // mechanism as to which version of the TControl should be drawn based off of user interaction
-	TFlyout* flyout;              // Generic flyout, which can appear if attached
-	TContextMenu* contextMenu;    // specific flyout primed for dealing with right clicks, as is traditional
 	EventArgs args;               // Information about the arguements set
 	TDataArray<EventTypeID> eventList;// 
 	bool isActive;                // Controls can be disabled
