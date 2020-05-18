@@ -2,18 +2,18 @@
 #include "TLayout.h"
 
 /*
-* Method:
-* Purpose:
-* Parameters:
-* Returns:
-*/
+ * Method:
+ * Purpose:
+ * Parameters:
+ * Returns:
+ */
 
 /*
-* Method: (TLayout) (Constructor)
-* Purpose: Sets up a TLayout Object that extends the Basic TControl
+* Method: TLayout::TLayout
+* Purpose: Constructor
 * Parameters: TrecPointer<DrawingBoard> rt -  the Render target to draw to (TControl handles it)
 *				TrecPointer<TArray<styleTable>> ta - the Class Style list (TControl handles this)
-* Returns: void
+* Returns: New TLayout
 */
 TLayout::TLayout(TrecPointer<DrawingBoard> rt, TrecPointer<TArray<styleTable>> ta):TControl(rt,ta, false)
 {
@@ -34,8 +34,8 @@ TLayout::TLayout(TrecPointer<DrawingBoard> rt, TrecPointer<TArray<styleTable>> t
 }
 
 /*
-* Method: (TLayout) (Destructor)
-* Purpose: Cleans up the TLayout
+* Method: TLayout::~TLayout
+* Purpose: Destructor
 * Parameters: void
 * Returns: void
 * Note: Currently, the destructor is more ceremonial than functional
@@ -45,7 +45,7 @@ TLayout::~TLayout()
 }
 
 /*
-* Method: TLayout - setLayout
+* Method: TLayout::setLayout
 * Purpose:Sets the layout mode of the TLayout
 * Parameters: orgLayout ol - the layout mode to use
 * Returns: bool - success, true if no children are present, false if a child has been added
@@ -60,7 +60,7 @@ bool TLayout::setLayout(orgLayout ol)
 }
 
 /*
-* Method: TLayout - setConflictResolutionMode
+* Method: TLayout::setConflictResolutionMode
 * Purpose: Sets the Layouts mechanism for handling layouting conflict amongst its controls
 * Parameters: conflictRes cr - the mode for resolving conflict
 * Returns: bool - success, true if no children are present, false if a child has been added
@@ -75,7 +75,7 @@ bool TLayout::setConflictResolutionMode(conflictRes cr)
 }
 
 /*
-* Method: TLayout - setSpecialFunction
+* Method: TLayout::setSpecialFunction
 * Purpose: Sets the Basic mechanism for what this layout will do
 * Parameters: specialLayout sl - sets the special mode that the Layout will perform
 * Returns: bool - success, true if no children are present, false if a child has been added
@@ -91,7 +91,7 @@ bool TLayout::setSpecialFunction(specialLayout sl)
 
 
 /*
-* Method: TLayout - addColunm
+* Method: TLayout::addColunm
 * Purpose: Adds a column to the Layout, as long as it is not a vertical stack
 * Parameters: int x - the size of the new column
 *				bool markDetected - whether the size is absolut or relative compared to available space
@@ -179,7 +179,7 @@ bool TLayout::addColunm(int x, bool markDetected)
 }
 
 /*
-* Method: TLayout - addRow
+* Method: TLayout::addRow
 * Purpose: Adds a new row to the Layout, as long as the layout is not a vertical gallery
 * Parameters: int y - the size of the new row
 *				bool markDetected - whether or not the new size is relative to available space or absolute
@@ -266,7 +266,7 @@ bool TLayout::addRow(int y, bool markDetected)
 }
 
 /*
-* Method: TLayout - addChild
+* Method: TLayout::addChild
 * Purpose: Adds a new Child Control to the layout at the specified location
 * Parameters: TrecPointer<TControl> tc - the control to add
 *				UINT x - the column to target
@@ -299,7 +299,7 @@ int TLayout::addChild(TrecPointer<TControl> tc, UINT x, UINT y)
 }
 
 /*
-* Method: TLayout - addChild
+* Method: TLayout::addChild
 * Purpose: Adds a new Child Control to the layout at the specified location, and allows for more cells to be covered
 * Parameters: TrecPointer<TControl> tc - the control to add
 *				UINT x - the column to target
@@ -336,7 +336,7 @@ int TLayout::addChild(TrecPointer<TControl> tc, UINT x, UINT y, UINT x_2, UINT y
 }
 
 /*
-* Method: TLayout - setGrid
+* Method: TLayout::setGrid
 * Purpose: Sets up a predetermined Grid
 * Parameters: TArray<int>* col - the column layout of the grid
 *				TArray<int>* row - the row layout of the grid
@@ -386,7 +386,7 @@ bool TLayout::setGrid(TDataArray<int>& col, TDataArray<int>& row)
 }
 
 /*
-* Method: TLayout - setStack
+* Method: TLayout::setStack
 * Purpose: Sets either the Column layout or the Row Layout, based off of the Layout mode
 * Parameters: TArray<int>* nums - the layout of the row/column
 * Returns: bool - success (method fails if layout is a grid or if a control has already been added)
@@ -422,7 +422,7 @@ bool TLayout::setStack(TDataArray<int>& nums)
 }
 
 /*
-* Method: TLayout - loadFromHTML
+* Method: TLayout::loadFromHTML
 * Purpose: Allows the TLayout to Extract itself from an HTML File
 * Parameters: CArchive* ar - the file to read from
 * Returns: int - 0
@@ -434,7 +434,7 @@ int TLayout::loadFromHTML(TFile * ar)
 }
 
 /*
-* Method: TLayout - storeInTML
+* Method: TLayout::storeInTML
 * Purpose: Allows the TLayout to save itself in an Anaface TML file
 * Parameters: CArchive * ar - the file to read from
 *				int childLevel - the generation the Layout is (how many dashes to write
@@ -488,7 +488,7 @@ void TLayout::storeInTML(TFile * ar, int childLevel,bool ov)
 }
 
 /*
-* Method: TLayout - storeInHTML
+* Method: TLayout::storeInHTML
 * Purpose: Allows the layout to save itself as an HTML tag
 * Parameters: CArchive * ar - the file to write to
 * Returns: void
@@ -498,7 +498,7 @@ void TLayout::storeInHTML(TFile * ar)
 }
 
 /*
-* Method: TLayout - onCreate
+* Method: TLayout::onCreate
 * Purpose: Sets up the attributes of the TLayout by processing the attributes and playing it out
 * Parameters: RECT margin - the location the layout has to work with
 * Returns: bool - success
@@ -661,7 +661,7 @@ bool TLayout::onCreate(D2D1_RECT_F margin, TrecPointer<TWindowEngine> d3d)
 }
 
 /*
-* Method: TLayout - onDraw
+* Method: TLayout::onDraw
 * Purpose: Draws out the Layout Generated
 * Parameters: void
 * Returns: void
@@ -695,7 +695,7 @@ void TLayout::onDraw(TObject* obj)
 }
 
 /*
-* Method: TLayout - returnMinX
+* Method: TLayout::returnMinX
 * Purpose: Returns the left-x coordinate of the right most column depending on whether a new column is expected
 * Parameters: bool newColumn - whether a new column is expected
 * Returns: int - the minimum x-coordinate the right most column available
@@ -716,7 +716,7 @@ int TLayout::returnMinX(bool newColumn)
 }
 
 /*
-* Method: TLayout - returnMinY
+* Method: TLayout::returnMinY
 * Purpose: Returns the bottom-y coordinate of the bottom row depending on whether a new row is expected
 * Parameters: bool newRow - whether a new row is expected
 * Returns: int - the top coordinate of the bottom row whether it is the current bottom or a new row
@@ -737,7 +737,7 @@ int TLayout::returnMinY(bool newRow)
 }
 
 /*
-* Method: TLayout - returnRectX
+* Method: TLayout::returnRectX
 * Purpose: Returns the location of the given of the column (and first row)
 * Parameters: int x - the column to look at
 * Returns: D2D1_RECT_F - the location of that area
@@ -753,7 +753,7 @@ D2D1_RECT_F TLayout::returnRectX(int x)
 }
 
 /*
-* Method: TLayout - returnRectY
+* Method: TLayout::returnRectY
 * Purpose: Returns the location of the given of the row (and first column)
 * Parameters: int y - the row to look st
 * Returns: D2D1_RECT_F the location of the area
@@ -769,7 +769,7 @@ D2D1_RECT_F TLayout::returnRectY(int y)
 }
 
 /*
-* Method: TLayout - GetColumnFlexAt
+* Method: TLayout::GetColumnFlexAt
 * Purpose: Determines whether a given column is flexible and able to change size
 * Parameters: UINT col - the column to check
 * Returns: bool - whether the column is flexible
@@ -783,7 +783,7 @@ bool TLayout::GetColumnFlexAt(UINT col)
 }
 
 /*
-* Method: TLayout - GetRowFlexAt
+* Method: TLayout::GetRowFlexAt
 * Purpose: Determines whether a given row is flexible and able to change size
 * Parameters: UINT row - the row to check
 * Returns: bool whether the row is flexible
@@ -797,7 +797,7 @@ bool TLayout::GetRowFlexAt(UINT row)
 }
 
 /*
-* Method: TLayout - AddToColFlex
+* Method: TLayout::AddToColFlex
 * Purpose: Adds a new column to the column flexibility array
 * Parameters: bool val - whether the new Column is to be flexible or not
 * Returns: void
@@ -821,7 +821,7 @@ void TLayout::AddToColFlex(bool val)
 }
 
 /*
-* Method: TLayout - AddToRowFlex
+* Method: TLayout::AddToRowFlex
 * Purpose: Adds a new row to the row flexibility array
 * Parameters: bool var - whether the new row is to be flexible or not
 * Returns: void 
@@ -845,7 +845,7 @@ void TLayout::AddToRowFlex(bool val)
 }
 
 /*
-* Method: TLayout - GetTotalFlexRow
+* Method: TLayout::GetTotalFlexRow
 * Purpose: Retrieves the total height of all rows marked as flexible
 * Parameters: void
 * Returns: UINT - current height of all flexible rows
@@ -864,7 +864,7 @@ UINT TLayout::GetTotalFlexRow()
 }
 
 /*
-* Method: TLayout - GetTotalSetRow
+* Method: TLayout::GetTotalSetRow
 * Purpose: Retrieves the total height of all rows marked as static
 * Parameters: void
 * Returns: UINT - current height of all fixed sized rows
@@ -883,7 +883,7 @@ UINT TLayout::GetTotalSetRow()
 }
 
 /*
-* Method: TLayout - GetTotalFlexCol
+* Method: TLayout::GetTotalFlexCol
 * Purpose: Retrieves the total width of all columns marked as flexible
 * Parameters: void 
 * Returns: UINT - current width of all flexible columns
@@ -904,7 +904,7 @@ UINT TLayout::GetTotalFlexCol()
 }
 
 /*
-* Method: TLayout - GetTotalSetCol
+* Method: TLayout::GetTotalSetCol
 * Purpose: Retrieves the total width of all columns marked as static
 * Parameters: void
 * Returns: UINT - current width of all fixed sized columns
@@ -925,6 +925,13 @@ UINT TLayout::GetTotalSetCol()
 	return ret;
 }
 
+
+/*
+ * Method: TLayout::Resize
+ * Purpose: resets the Size of the TLayout
+ * Parameters: D2D1_RECT_F& r - the location to set the TLayout to
+ * Returns: void
+ */
 void TLayout::Resize(D2D1_RECT_F& r)
 {
 	if (SetScrollControlOnMinSize(r))
@@ -1045,7 +1052,7 @@ void TLayout::Resize(D2D1_RECT_F& r)
 
 
 /*
-* Method: TLayout - returnColumnsWidth
+* Method: TLayout::returnColumnsWidth
 * Purpose: Retrieves the Total Current width of all columns up to a certain column
 * Parameters: int x - the column to stop at
 * Returns: int - The total witdh (-1 if Layout uses only rows)
@@ -1063,7 +1070,7 @@ int TLayout::returnColumnsWidth(int x)
 }
 
 /*
-* Method: TLayout - returnRowsHeight
+* Method: TLayout::returnRowsHeight
 * Purpose: Retrieves the total current height of all rows down to a certain row
 * Parameters: int y - the row to stop at
 * Returns: int - the total height (-1 if Layout uses only columns)
@@ -1081,7 +1088,7 @@ int TLayout::returnRowsHeight(int y)
 }
 
 /*
-* Method: TLayout - getColunmWidth
+* Method: TLayout::getColunmWidth
 * Purpose: Retrieves the Width of a specific column
 * Parameters: int x - the column to inspect
 * Returns: int - the Size of the column (Zero if column does not exist)
@@ -1094,7 +1101,7 @@ int TLayout::getColunmWidth(int x)
 }
 
 /*
-* Method: TLayout - getRowHeight
+* Method: TLayout::getRowHeight
 * Purpose: Retrieves the height of a specific row
 * Parameters: int y - the row to inspect
 * Returns: int - the Size of the Row (0 if row does not exist)
@@ -1108,7 +1115,7 @@ int TLayout::getRowHeight(int y)
 }
 
 /*
-* Method: TLayout - determineMinHeightNeeded
+* Method: TLayout::determineMinHeightNeeded
 * Purpose: Reports the minimum height needed by the Layout and the child controls
 * Parameters: void
 * Returns: UINT - Returns the minimum height needed by the Layout, not the current height
@@ -1184,7 +1191,7 @@ UINT TLayout::determineMinHeightNeeded()
 }
 
 /*
-* Method: TLayout - SetNewLocation
+* Method: TLayout::SetNewLocation
 * Purpose: Sets the new location of the Layout and adjusts the child controls accordingly
 * Parameters: RECT& r - the new location to occupy
 * Returns: void
@@ -1205,7 +1212,7 @@ void TLayout::SetNewLocation(const D2D1_RECT_F& r)
 }
 
 /*
-* Method: TLayout - ShrinkHeight
+* Method: TLayout::ShrinkHeight
 * Purpose: Shrinks the Layout to a minimum (Used by Web-tours to make web-page look closer to real web-pages)
 * Parameters: void
 * Returns: void
@@ -1217,7 +1224,7 @@ void TLayout::ShrinkHeight()
 }
 
 /*
-* Method: TLayout - setNewColunmSize
+* Method: TLayout::setNewColunmSize
 * Purpose: Sets the size of a given column
 * Parameters: int xLoc - the Column to modify
 *				int x - the size to set that column to
@@ -1242,7 +1249,7 @@ void TLayout::setNewColunmSize(int xLoc, int x)
 }
 
 /*
-* Method: TLayout - setNewRowSize
+* Method: TLayout::setNewRowSize
 * Purpose: Sets the size of a given row
 * Parameters: int yLoc - the row to modify
 *				int y - the size to set that column to
@@ -1266,7 +1273,7 @@ void TLayout::setNewRowSize(int yLoc, int y)
 }
 
 /*
-* Method: TLayout - getRowNumber
+* Method: TLayout::getRowNumber
 * Purpose: Retireves the number of rows present
 * Parameters: void
 * Returns: int - the number of rows
@@ -1277,7 +1284,7 @@ int TLayout::getRowNumber()
 }
 
 /*
-* Method: TLayout - getColumnNumber
+* Method: TLayout::getColumnNumber
 * Purpose: Retrieves the number of Columns present
 * Parameters: void
 * Returns: int - the number of columns
@@ -1288,7 +1295,7 @@ int TLayout::getColumnNumber()
 }
 
 /*
-* Method: TLayout - getRawSectionLocation
+* Method: TLayout::getRawSectionLocation
 * Purpose: Gets the Location of the section specified by the coordinates and permitted to any control occupied there
 * Parameters: int r - the row to look at
 *				int c - the column to look at
@@ -1367,7 +1374,7 @@ D2D1_RECT_F TLayout::getRawSectionLocation(int r, int c)
 }
 
 /*
-* Method: TLayout - GetLayoutChild
+* Method: TLayout::GetLayoutChild
 * Purpose: Retrieves the Child located at the specified coordinates
 * Parameters: int x - the x-coordinate of the child control
 *				int y - the y-coordinate of the child control
@@ -1389,7 +1396,7 @@ TrecPointer<TControl> TLayout::GetLayoutChild(int x, int y)
 }
 
 /*
-* Method: TLayout - GetOrganization
+* Method: TLayout::GetOrganization
 * Purpose: Retrieves the organization mode of the layout
 * Parameters: void
 * Returns: orgLayout - the organization the layout is configured to
@@ -1404,6 +1411,13 @@ UCHAR * TLayout::GetAnaGameType()
 	return nullptr;
 }
 
+/*
+ * Method: TLayout::SwitchChildControl
+ * Purpose: Allows a Child Control to be swapped
+ * Parameters: TrecPointerSoft<TControl> curControl - the control making the call
+ *				TrecPointer<TControl> newTControl - the Control to replace it with
+ * Returns: void
+ */
 void TLayout::SwitchChildControl(TrecPointerSoft<TControl> curControl, TrecPointer<TControl> newControl)
 {
 	for (UINT Rust = 0; Rust < lChildren.Count(); Rust++)
