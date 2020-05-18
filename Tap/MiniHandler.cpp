@@ -173,7 +173,7 @@ void MiniHandler::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
 {
 	if (mainPage.Get())
 	{
-		mainPage->OnLButtonDown(nFlags, point, mOut, cred);
+		mainPage->OnLButtonDown(nFlags, point, mOut, cred, TrecPointer<TFlyout>());
 		if (*mOut == messageOutput::negative || *mOut == messageOutput::negativeUpdate)
 			goto cont2;
 		HandleEvents(cred);
@@ -183,7 +183,7 @@ void MiniHandler::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
 cont2:
 	if (outputPane.Get())
 	{
-		outputPane->OnLButtonDown(nFlags, point, mOut, cred);
+		outputPane->OnLButtonDown(nFlags, point, mOut, cred, TrecPointer<TFlyout>());
 		if (*mOut == messageOutput::negative || *mOut == messageOutput::negativeUpdate)
 			goto cont3;
 		HandleEvents(cred);
@@ -193,7 +193,7 @@ cont2:
 cont3:
 	if (explorerPane.Get())
 	{
-		explorerPane->OnLButtonDown(nFlags, point, mOut, cred);
+		explorerPane->OnLButtonDown(nFlags, point, mOut, cred, TrecPointer<TFlyout>());
 		if (*mOut == messageOutput::negative || *mOut == messageOutput::negativeUpdate)
 			return;
 		HandleEvents(cred);
@@ -237,7 +237,7 @@ void MiniHandler::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut)
 {
 	if (mainPage.Get())
 	{
-		mainPage->OnMouseMove(nFlags, point, mOut, cred);
+		mainPage->OnMouseMove(nFlags, point, mOut, cred, TrecPointer<TFlyout>());
 		if (*mOut == messageOutput::negative || *mOut == messageOutput::negativeUpdate)
 			goto cont2;
 		HandleEvents(cred);
@@ -247,7 +247,7 @@ void MiniHandler::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut)
 cont2:
 	if (outputPane.Get())
 	{
-		outputPane->OnMouseMove(nFlags, point, mOut, cred);
+		outputPane->OnMouseMove(nFlags, point, mOut, cred, TrecPointer<TFlyout>());
 		if (*mOut == messageOutput::negative || *mOut == messageOutput::negativeUpdate)
 			goto cont3;
 		HandleEvents(cred);
@@ -257,7 +257,7 @@ cont2:
 cont3:
 	if (explorerPane.Get())
 	{
-		explorerPane->OnMouseMove(nFlags, point, mOut, cred);
+		explorerPane->OnMouseMove(nFlags, point, mOut, cred, TrecPointer<TFlyout>());
 		if (*mOut == messageOutput::negative || *mOut == messageOutput::negativeUpdate)
 			return;
 		HandleEvents(cred);
@@ -301,7 +301,7 @@ void MiniHandler::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
 {
 	if (mainPage.Get())
 	{
-		mainPage->OnLButtonUp(nFlags, point, mOut, cred);
+		mainPage->OnLButtonUp(nFlags, point, mOut, cred, TrecPointer<TFlyout>());
 		if (*mOut == messageOutput::negative || *mOut == messageOutput::negativeUpdate)
 			goto cont2;
 		HandleEvents(cred);
@@ -311,7 +311,7 @@ void MiniHandler::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
 cont2:
 	if (outputPane.Get())
 	{
-		outputPane->OnLButtonUp(nFlags, point, mOut, cred);
+		outputPane->OnLButtonUp(nFlags, point, mOut, cred, TrecPointer<TFlyout>());
 		if (*mOut == messageOutput::negative || *mOut == messageOutput::negativeUpdate)
 			goto cont3;
 		HandleEvents(cred);
@@ -321,7 +321,7 @@ cont2:
 cont3:
 	if (explorerPane.Get())
 	{
-		explorerPane->OnLButtonUp(nFlags, point, mOut, cred);
+		explorerPane->OnLButtonUp(nFlags, point, mOut, cred, TrecPointer<TFlyout>());
 		if (*mOut == messageOutput::negative || *mOut == messageOutput::negativeUpdate)
 			return;
 		HandleEvents(cred);

@@ -233,6 +233,9 @@ void TWindow::Draw()
 				d3d->FinalizeScene();
 				
 			}
+			if (flyout.Get())
+				flyout->AfterDraw();
+
 			rt->EndDraw();
 		}
 		else
@@ -241,6 +244,9 @@ void TWindow::Draw()
 			rt->Clear(D2D1::ColorF(D2D1::ColorF::White));
 			mainPage->Draw(d3d);
 			DrawOtherPages();
+
+			if (flyout.Get())
+				flyout->AfterDraw();
 			rt->EndDraw();
 		}
 		safeToDraw = tempSafe;
@@ -308,14 +314,15 @@ void TWindow::OnLButtonDown(UINT nFlags, TPoint point)
 {
 	if (locked) return;
 	messageOutput mOut = messageOutput::negative;
+
 	for(UINT c = 0; c < pages.Size() && (mOut == messageOutput::negative || mOut == messageOutput::negativeUpdate); c++)
 	{
 		if(pages[c].Get())
-			pages[c]->OnLButtonDown(nFlags, point, &mOut);
+			pages[c]->OnLButtonDown(nFlags, point, &mOut, flyout);
 	}
 
 	if(mOut == messageOutput::negative || mOut == messageOutput::negativeUpdate)
-		mainPage->OnLButtonDown(nFlags, point, &mOut);
+		mainPage->OnLButtonDown(nFlags, point, &mOut, flyout);
 }
 
 /**
@@ -364,11 +371,11 @@ void TWindow::OnMouseMove(UINT nFlags, TPoint point)
 	for(UINT c = 0; c < pages.Size() && (mOut == messageOutput::negative || mOut == messageOutput::negativeUpdate); c++)
 	{
 		if(pages[c].Get())
-			pages[c]->OnMouseMove(nFlags, point, &mOut);
+			pages[c]->OnMouseMove(nFlags, point, &mOut, flyout);
 	}
 
 	if(mOut == messageOutput::negative || mOut == messageOutput::negativeUpdate)
-		mainPage->OnMouseMove(nFlags, point, &mOut);
+		mainPage->OnMouseMove(nFlags, point, &mOut, flyout);
 }
 
 /**
@@ -407,14 +414,18 @@ void TWindow::OnLButtonUp(UINT nFlags, TPoint point)
 
 	if (locked) return;
 	messageOutput mOut = messageOutput::negative;
+
+	auto fly = flyout;
+	flyout.Nullify();
+
 	for(UINT c = 0; c < pages.Size() && (mOut == messageOutput::negative || mOut == messageOutput::negativeUpdate); c++)
 	{
 		if(pages[c].Get())
-			pages[c]->OnLButtonUp(nFlags, point, &mOut);
+			pages[c]->OnLButtonUp(nFlags, point, &mOut, fly);
 	}
 
 	if(mOut == messageOutput::negative || mOut == messageOutput::negativeUpdate)
-		mainPage->OnLButtonUp(nFlags, point, &mOut);
+		mainPage->OnLButtonUp(nFlags, point, &mOut, fly);
 }
 
 /**
@@ -771,6 +782,19 @@ bool TWindow::PrepAnimations(TrecPointer<Page> page)
 	animationCentral.StartBegin();
 	animationCentral.StartNewPersistant();
 	return true;
+}
+
+/**
+ * Method:: TWindow::SetFlyout
+ * Pupose: Allows Flyouts in an Anaface to be set
+ * Parameters: TrecPointer<TFlyout> fly - the flyout to Draw
+ * Returns: void
+ *
+ * Note: This method is intended to be called by the Page Class. The Page looks for TFlyouts to draw and the Window takes it from there
+ */
+void TWindow::SetFlyout(TrecPointer<TFlyout> fly)
+{
+	flyout = fly;
 }
 
 /**

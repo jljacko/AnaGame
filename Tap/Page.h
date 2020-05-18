@@ -26,7 +26,7 @@ typedef enum class RenderTargetType
  * Class: TPageParentHolder
  * Allows Root TControls to reference the Page as a Parent, event though Pages are not known to the TControl
  */
-class TPageParentHolder: TParentHolder
+class TPageParentHolder: public TParentHolder
 {
 public:
 
@@ -246,9 +246,10 @@ public:
 	 * Parameters: UINT nFlags - flags associated with the message
 	 *				TPoint point - the point included in the message
 	 *				messageOutput* mOut -  the result of the message
+	 *				TrecPointer<TFlyout> fly -  any flyout that should have the chance to intercept the message first
 	 * Returns: void
 	 */
-	afx_msg virtual void OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut);
+	afx_msg virtual void OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TrecPointer<TFlyout> fly);
 
 	/**
 	 * Method: Page::OnRButtonDown
@@ -266,9 +267,10 @@ public:
 	 * Parameters: UINT nFlags - flags associated with the message
 	 *				TPoint point - the point included in the message
 	 *				messageOutput* mOut -  the result of the message
+	 *				TrecPointer<TFlyout> fly -  any flyout that should have the chance to intercept the message first
 	 * Returns: void
 	 */
-	afx_msg virtual void OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut);
+	afx_msg virtual void OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TrecPointer<TFlyout> fly);
 
 	/**
 	 * Method: Page::OnLButtonDblClk
@@ -286,9 +288,10 @@ public:
 	 * Parameters: UINT nFlags - flags associated with the message
 	 *				TPoint point - the point included in the message
 	 *				messageOutput* mOut -  the result of the message
+	 *				TrecPointer<TFlyout> fly -  any flyout that should have the chance to intercept the message first
 	 * Returns: void
 	 */
-	afx_msg virtual void OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut);
+	afx_msg virtual void OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TrecPointer<TFlyout> fly);
 
 	/**
 	 * Method: Page::OnChar
@@ -334,11 +337,12 @@ public:
 	 *				TPoint point - the point included in the message
 	 *				messageOutput* mOut -  the result of the message
 	 *				TDataArray<EventID_Cred>& eventAr - list of events 
+	 *				TrecPointer<TFlyout> fly -  any flyout that should have the chance to intercept the message first
 	 * Returns: void
 	 *
 	 * Note: May be Deprecated soon once the MiniHandler is removed from the library
 	 */
-	afx_msg virtual void OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
+	afx_msg virtual void OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr, TrecPointer<TFlyout> fly);
 
 	/**
 	 * Method: Page::OnRButtonDown
@@ -360,11 +364,12 @@ public:
 	 *				TPoint point - the point included in the message
 	 *				messageOutput* mOut -  the result of the message
 	 *				TDataArray<EventID_Cred>& eventAr - list of events 
+	 *				TrecPointer<TFlyout> fly -  any flyout that should have the chance to intercept the message first
 	 * Returns: void
 	 *
 	 * Note: May be Deprecated soon once the MiniHandler is removed from the library
 	 */
-	afx_msg virtual void OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
+	afx_msg virtual void OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr, TrecPointer<TFlyout> fly);
 
 	/**
 	 * Method: Page::OnLButtonDblClk
@@ -386,11 +391,12 @@ public:
 	 *				TPoint point - the point included in the message
 	 *				messageOutput* mOut -  the result of the message
 	 *				TDataArray<EventID_Cred>& eventAr - list of events 
+	 *				TrecPointer<TFlyout> fly -  any flyout that should have the chance to intercept the message first
 	 * Returns: void
 	 *
 	 * Note: May be Deprecated soon once the MiniHandler is removed from the library
 	 */
-	afx_msg virtual void OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr);
+	afx_msg virtual void OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr, TrecPointer<TFlyout> fly);
 
 	/**
 	 * Method: Page::OnChar

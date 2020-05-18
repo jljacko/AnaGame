@@ -153,25 +153,25 @@ bool AnafaceParser::Obj(TString* va)
 	}
 
 
-	if (v.Compare(L"ContextMenu") == 0)
-	{
-		if (!baseObj.Get())
-		{
-			return false;
-		}
-		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TContextMenu>(renderer, classList);   // <TControl>((new TContextMenu()));
-		if (!currentObj.Get())
-		{
-			return false;
-		}
-		return baseObj->SetContextMenu(currentObj);
-	}
+	//if (v.Compare(L"ContextMenu") == 0)
+	//{
+	//	if (!baseObj.Get())
+	//	{
+	//		return false;
+	//	}
+	//	currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TContextMenu>(renderer, classList);   // <TControl>((new TContextMenu()));
+	//	if (!currentObj.Get())
+	//	{
+	//		return false;
+	//	}
+	//	return baseObj->SetContextMenu(currentObj);
+	//}
 	/*else if (v.Compare(L"TVideo") == 0)
 	{
 		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TVideo>(renderer, classList, windowHandle);// TrecPointer<TControl>((new TVideo(renderer, classList,windowHandle)));
 		addToTree(currentObj);
 	}*/
-	else if (v.Compare(L"TArena") == 0)
+	if (v.Compare(L"TArena") == 0)
 	{
 		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TArena>(renderer, classList, windowHandle);// TrecPointer<TControl>((new TArena(renderer, classList, windowHandle)));
 		addToTree(currentObj);
@@ -222,11 +222,7 @@ bool AnafaceParser::Obj(TString* va)
 		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TComboBox>(renderer, classList);// TrecPointer<TControl>((new TComboBox(renderer, classList)));
 		addToTree(currentObj);
 	}
-	else if (v.Compare(L"Flyout") == 0)
-	{
-		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TFlyout>(renderer, classList);// TrecPointer<TControl>((new TFlyout(renderer, classList)));
-		addToTree(currentObj);
-	}
+
 	else if (!v.Compare(L"TTerminal") || !v.Compare(L"TCommandPrompt") || !v.Compare(L"TPrompt"))
 	{
 		currentObj = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TPromptControl>(renderer, classList, windowHandle);

@@ -144,7 +144,7 @@ void IDEPage::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
  *				messageOutput* mOut -  the result of the message
  * Returns: void
  */
-void IDEPage::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
+void IDEPage::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TrecPointer<TFlyout> fly)
 {
 	focusPage = GetFocusPage(point);
 
@@ -155,9 +155,9 @@ void IDEPage::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
 	}
 
 	if (currentPage.Get())
-		currentPage->OnLButtonDown(nFlags, point, mOut);
+		currentPage->OnLButtonDown(nFlags, point, mOut, fly);
 	else
-		Page::OnLButtonDown(nFlags, point, mOut);
+		Page::OnLButtonDown(nFlags, point, mOut, fly);
 }
 
 /**
@@ -184,12 +184,12 @@ void IDEPage::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
  *				messageOutput* mOut -  the result of the message
  * Returns: void
  */
-void IDEPage::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut)
+void IDEPage::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TrecPointer<TFlyout> fly)
 {
 	if (currentPage.Get())
-		currentPage->OnMouseMove(nFlags, point, mOut);
+		currentPage->OnMouseMove(nFlags, point, mOut, fly);
 	else
-		Page::OnMouseMove(nFlags, point, mOut);
+		Page::OnMouseMove(nFlags, point, mOut, fly);
 }
 
 /**
@@ -216,7 +216,7 @@ void IDEPage::OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut)
  *				messageOutput* mOut -  the result of the message
  * Returns: void
  */
-void IDEPage::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
+void IDEPage::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TrecPointer<TFlyout> fly)
 {
 	auto upPage = GetFocusPage(point);
 	if (focusPage.Get() && focusPage.Get() == upPage.Get())
@@ -238,9 +238,9 @@ void IDEPage::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
 	focusPage.Nullify();
 
 	if (currentPage.Get())
-		currentPage->OnLButtonUp(nFlags, point, mOut);
+		currentPage->OnLButtonUp(nFlags, point, mOut, fly);
 	else
-		Page::OnLButtonUp(nFlags, point, mOut);
+		Page::OnLButtonUp(nFlags, point, mOut, fly);
 }
 
 /**
@@ -286,7 +286,7 @@ void IDEPage::OnResize(D2D1_RECT_F& newLoc, UINT nFlags, TrecPointer<TWindowEngi
  *				TDataArray<EventID_Cred>& eventAr - list of events to feed the Handler if applicable
  * Returns: void
  */
-void IDEPage::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+void IDEPage::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr, TrecPointer<TFlyout> fly)
 {
 	if (isContained(point, area))
 	{
@@ -335,7 +335,7 @@ void IDEPage::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDat
 		}
 
 		regular_click_mode:
-		Page::OnLButtonDown(nFlags, point, mOut, eventAr);
+		Page::OnLButtonDown(nFlags, point, mOut, eventAr, fly);
 	}
 }
 
@@ -348,10 +348,10 @@ void IDEPage::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDat
  *				TDataArray<EventID_Cred>& eventAr - list of events to feed the Handler if applicable
  * Returns: void
  */
-void IDEPage::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+void IDEPage::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr, TrecPointer<TFlyout> fly)
 {
 	if (moveMode == page_move_mode::page_move_mode_normal)
-		return Page::OnMouseMove(nFlags, point, mOut, eventAr);
+		return Page::OnMouseMove(nFlags, point, mOut, eventAr, fly);
 
 	
 
