@@ -26,6 +26,7 @@
 
 //#define _TREC_LIB_DLL __declspec(dllimport)
 #include <TMap.h>
+#include <TObjectNode.h>
 
 #define RADIAN_DEGREE_RATIO 57.2957795
 
@@ -81,7 +82,8 @@ typedef enum class R_Message_Type
 	On_Char,
 	On_Focus,
 	On_Lose_Focus,
-	On_Select_Scroller
+	On_Select_Scroller,
+	On_LDoubleClick
 }R_Message_Type;
 
 // Event Arguements, used to supply Event Handlers with the necessary information to 

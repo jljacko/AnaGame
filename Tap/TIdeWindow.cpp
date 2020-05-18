@@ -8,6 +8,7 @@
 #include "TCodeHandler.h"
 #include "MiniApp.h"
 #include "FileHandler.h"
+#include <atltrace.h>
 
 /**
  * Method: TIdeWindow::TIdeWindow
@@ -470,6 +471,8 @@ TrecSubPointer<Page, IDEPage> TIdeWindow::AddPage(anagame_page pageType, ide_pag
 	{
 	case anagame_page::anagame_page_command_prompt:
 		return AddNewPage(pageType, pageLoc, name, TString(), TrecPointerKey::GetNewSelfTrecPointerAlt<EventHandler, TerminalHandler>(windowInstance));
+	case anagame_page::anagame_page_file_node:
+		return AddNewPage(pageType, pageLoc, name, TString(), TrecPointerKey::GetNewSelfTrecPointerAlt<EventHandler, FileHandler>(windowInstance));
 	}
 
 
@@ -647,7 +650,7 @@ void TIdeWindow::SetCurrentApp(TrecPointer<MiniApp> app)
  * Parameters: TrecPointer<TFileShell> - representation of the file to open
  * Returns: UINT - error code (0 for success)
  */
-UINT OpenFile(TrecPointer<TFileShell> shell)
+UINT TIdeWindow::OpenFile(TrecPointer<TFileShell> shell)
 {
 	if(!shell.Get())
 	{

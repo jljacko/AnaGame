@@ -735,7 +735,8 @@ bool AnafaceParser::handleEventAttribute(TrecPointer<TString>& v, TString& e)
 	}
 	else if (!TString::Compare(e, L"|EventOnDblClick"))
 	{
-
+		AddToEventList(R_Message_Type::On_LDoubleClick, eventID);
+		return true;
 	}
 	else if (!TString::Compare(e, L"|EventOnRadioChange"))
 	{

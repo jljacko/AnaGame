@@ -3134,6 +3134,7 @@ void TControl::resetArgs()
 	args.positive = false;
 	args.text.Empty();
 	args.type = L'\0';
+	args.object.Nullify();
 }
 
 /*
@@ -3536,6 +3537,48 @@ afx_msg void TControl::OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput*
 {
 	if (!isActive)
 		return;
+
+
+	if (!isContained(&point, &location))
+	{
+		if (mState != messageState::normal)
+		{
+			mState = messageState::normal;
+			*mOut = messageOutput::negativeUpdate;
+		}
+		else
+			*mOut = messageOutput::negative;
+		return;
+	}
+	for (int c = 0; c < children.Count(); c++)
+	{
+		children.ElementAt(c)->OnRButtonDown(nFlags, point, mOut, eventAr);
+		if (*mOut == messageOutput::negative)
+			continue;
+		if (*mOut == messageOutput::positiveOverride || *mOut == messageOutput::positiveOverrideUpdate)
+			return;
+	}
+	if (*mOut == messageOutput::positiveContinue || *mOut == messageOutput::positiveContinueUpdate)
+	{
+		if (mState != messageState::mouseRClick)
+			*mOut = messageOutput::positiveContinueUpdate;
+
+	}
+	
+
+	if (hasEvent(R_Message_Type::On_LDoubleClick))
+	{
+		// Set args
+		resetArgs();
+		args.eventType = R_Message_Type::On_LDoubleClick;
+		args.point = point;
+		args.methodID = getEventID(R_Message_Type::On_LDoubleClick);
+		args.isClick = true;
+		args.isLeftClick = false;
+		args.control = this;
+		eventAr.push_back(EventID_Cred(R_Message_Type::On_LDoubleClick, this));
+	}
+
 }
 
 /*
