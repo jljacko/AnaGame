@@ -661,7 +661,7 @@ UINT TIdeWindow::OpenFile(TrecPointer<TFileShell> shell)
 	TString printOut;
 	printOut.Format(format, shell->GetPath().GetConstantBuffer());
 
-	ATLTRACE(format.GetConstantBuffer());
+	ATLTRACE(printOut.GetConstantBuffer());
 }
 
 /**

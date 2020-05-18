@@ -50,7 +50,7 @@ void TScrollerControl::SetChildControl(TrecPointer<TControl> cont)
 {
 	childControl = cont;
 	children.Clear();
-	children.Add(cont);
+	TControl::addChild(cont);
 }
 
 void TScrollerControl::Resize(D2D1_RECT_F& loc)

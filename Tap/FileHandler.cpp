@@ -46,6 +46,9 @@ void FileHandler::Initialize(TrecPointer<Page> page)
 {
 	if (!page.Get() || !page->GetWindowHandle().Get())
 		return;
+
+	this->page = page;
+
 	TIdeWindow* ideWin = dynamic_cast<TIdeWindow*>(page->GetWindowHandle().Get());
 
 	browser = TrecPointerKey::GetTrecSubPointerFromTrec<TControl, TTreeDataBind>(page->GetRootControl());

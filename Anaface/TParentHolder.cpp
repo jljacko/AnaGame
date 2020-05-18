@@ -21,3 +21,14 @@ TrecPointer<TControl> TParentHolder::GetParent()
 {
 	return TrecPointer <TControl>();
 }
+
+/**
+ * Method: TParentHolder::IsScroller
+ * Purpose: Reports to the Child whether the parent holding it is a Scroller Control
+ * Parameters: void
+ * Returns: bool - whether or not the parent is a Scroller Control (default is false, but the Holder that holds a control can determine otherwise)
+ */
+bool TParentHolder::IsScroller()
+{
+	return false;
+}

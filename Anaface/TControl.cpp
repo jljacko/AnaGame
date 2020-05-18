@@ -3502,7 +3502,7 @@ afx_msg void TControl::OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput*
 	}
 	for (int c = 0; c < children.Count(); c++)
 	{
-		children.ElementAt(c)->OnRButtonDown(nFlags, point, mOut, eventAr);
+		children.ElementAt(c)->OnLButtonDblClk(nFlags, point, mOut, eventAr);
 		if (*mOut == messageOutput::negative)
 			continue;
 		if (*mOut == messageOutput::positiveOverride || *mOut == messageOutput::positiveOverrideUpdate)
@@ -6456,4 +6456,15 @@ void TControlParentHolder::SwitchChildControl(TrecPointerSoft<TControl> cur, Tre
 TrecPointer<TControl> TControlParentHolder::GetParent()
 {
 	return TrecPointerKey::GetTrecPointerFromSoft<TControl>(parent);
+}
+
+/**
+ * Method: TControlParentHolder::IsScroller
+ * Purpose: Reports to the Child whether the parent holding it is a Scroller Control
+ * Parameters: void
+ * Returns: bool - whether or not the parent is a Scroller Control
+ */
+bool TControlParentHolder::IsScroller()
+{
+	return dynamic_cast<TScrollerControl*>(parent.Get()) != nullptr;
 }

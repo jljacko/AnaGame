@@ -10,6 +10,7 @@ TTreeDataBind::TTreeDataBind(TrecPointer<DrawingBoard> rt, TrecPointer<TArray<st
 
 TTreeDataBind::~TTreeDataBind()
 {
+	int e = 3;
 }
 
 void TTreeDataBind::onDraw(TObject* obj)
@@ -102,6 +103,10 @@ bool TTreeDataBind::onCreate(D2D1_RECT_F r, TrecPointer<TWindowEngine> d3d)
 	{
 		outerBrush = drawingBoard->GetBrush(TColor(D2D1::ColorF::Black));
 		innerBrush = drawingBoard->GetBrush(TColor(D2D1::ColorF::Wheat));
+	}
+	if (children.Count() && children.ElementAt(0).Get())
+	{
+		children.ElementAt(0)->onCreate(r, d3d);
 	}
 	return false;
 }
@@ -196,8 +201,6 @@ void TTreeDataBind::OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mO
 {
 	TControl::OnLButtonDblClk(nFlags, point, mOut, eventAr);
 
-	if(*mOut == messageOutput::negative || *mOut == messageOutput::negativeUpdate)
-		return;
 	
 	if (isContained(&point, &location) && mainNode.Get())
 	{
@@ -237,12 +240,15 @@ void TTreeDataBind::Resize(D2D1_RECT_F& r)
 	if ((tempLoc.bottom - tempLoc.top > r.bottom - r.top) ||
 		(tempLoc.right - tempLoc.left > r.right - r.left))
 	{
-		if (parent.Get() && !dynamic_cast<TScrollerControl*>(parent.Get()))
+		if (parent.Get() && !parent->IsScroller())
 		{
 			TrecPointer<TControl> scrollControl = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TScrollerControl>(drawingBoard, styles);
 			scrollControl->onCreate(r, TrecPointer<TWindowEngine>());
+
+			auto oldParent = parent;
+
 			dynamic_cast<TScrollerControl*>(scrollControl.Get())->SetChildControl(TrecPointerKey::GetTrecPointerFromSoft<TControl>(tThis));
-			parent->SwitchChildControl(tThis, scrollControl);
+			oldParent->SwitchChildControl(tThis, scrollControl);
 			location.left = r.left;
 			location.top = r.top;
 		}

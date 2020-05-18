@@ -447,6 +447,15 @@ public:
 	 * Returns: TrecPointer<TControl> - the Parent (the default returns null but the TControlParentHolder will return the parent)
 	 */
 	virtual TrecPointer<TControl> GetParent();
+
+
+	/**
+	 * Method: TControlParentHolder::IsScroller
+	 * Purpose: Reports to the Child whether the parent holding it is a Scroller Control
+	 * Parameters: void
+	 * Returns: bool - whether or not the parent is a Scroller Control
+	 */
+	virtual bool IsScroller() override;
 private:
 	TrecPointerSoft<TControl> parent;
 };
