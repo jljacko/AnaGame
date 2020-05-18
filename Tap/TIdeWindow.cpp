@@ -650,8 +650,10 @@ void TIdeWindow::SetCurrentApp(TrecPointer<MiniApp> app)
 UINT OpenFile(TrecPointer<TFileShell> shell)
 {
 	if(!shell.Get())
+	{
+		ATLTRACE(L"Null object submitted!\n");
 		return 1;
-	
+	}
 	TString format(L"File to open: %ls \n");
 	TString printOut;
 	printOut.Format(format, shell->GetPath().GetConstantBuffer());

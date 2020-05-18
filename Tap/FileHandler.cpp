@@ -120,3 +120,30 @@ bool FileHandler::ShouldProcessMessageByType(TrecPointer<HandlerMessage> message
 		return false;
 	return message->GetHandlerType() == handler_type::handler_type_file_manager;
 }
+
+
+
+/**
+ * Method: FileHandler::OnOpenFile
+ * Purpose: Responds to a Double Click from the Control
+ * Parameters: TControl* tc - The Control that generated the event
+ *				EventArgs ea - The parameters of the event
+ * Returns: void
+ */
+void FileHandler::OnOpenFile(TControl* tc, EventArgs ea)
+{
+	if(!ea.object.Get())
+		return;
+
+	if(!page.Get() || !page->GetWindowHandle().Get())
+		return;
+	if(dynamic_cast<TIdeWindow*>(page->GetWindowHandle().Get()))
+	{
+		auto fileObject = TrecPointerKey::GetTrecSubPointerFromTrec<TObjectNode, TFileNode>(ea.object);
+
+		if(fileObject.Get())
+		{
+			dynamic_cast<TIdeWindow*>(page->GetWindowHandle().Get())->OpenFile(fileObject->GetData());
+	    }
+	}
+}

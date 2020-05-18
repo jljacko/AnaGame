@@ -120,6 +120,15 @@ public:
 	* Returns: void
 	*/
 	void SetFile(TrecPointer<TFileShell>& d);
+
+
+	/**
+	 * Method: TFileNode::GetData
+	 * Purpose: retireves the underlying file shell object
+	 * Parameters: void
+	 * Returns: TrecPointer<TFileShell> - the data the node is holding
+	 */
+	TrecPointer<TFileShell> GetData();
 protected:
 	/**
 	 * the data held by this node
