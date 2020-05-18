@@ -4,6 +4,8 @@
 #include <TFileNode.h>
 #include <DirectoryInterface.h>
 
+TString on_OpenFile(L"OnOpenFile");
+
 /**
  * Method: FileHandler::FileHandler
  * Purpose: Constructor
@@ -12,6 +14,16 @@
  */
 FileHandler::FileHandler(TrecPointer<TInstance> instance) : EventHandler(instance)
 {
+	// First set up the Array list with our event handlers
+	fileHandlers.push_back(&FileHandler::OnOpenFile);
+
+
+	// Now create the link between the name of the handler in TML with 
+	eventNameID enid;
+
+	enid.eventID = 0;
+	enid.name.Set(on_OpenFile);
+	events.push_back(enid);
 }
 
 /**
@@ -63,6 +75,27 @@ void FileHandler::Initialize(TrecPointer<Page> page)
  */
 void FileHandler::HandleEvents(TDataArray<EventID_Cred>& eventAr)
 {
+	TControl* tc = nullptr;
+	int e_id = -1;
+	EventArgs ea;
+	for (UINT c = 0; c < eventAr.Size(); c++)
+	{
+		tc = eventAr.at(c).control;
+		if (!tc)
+			continue;
+		ea = tc->getEventArgs();
+		e_id = ea.methodID;
+		// At this point, call the appropriate method
+		if (e_id > -1 && e_id < fileHandlers.Size())
+		{
+			// call method
+			if (fileHandlers[e_id])
+				(this->*fileHandlers[e_id])(tc, ea);
+		}
+	}
+
+	//onDraw();
+	eventAr.RemoveAll();
 }
 
 /**

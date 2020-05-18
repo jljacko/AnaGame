@@ -642,6 +642,24 @@ void TIdeWindow::SetCurrentApp(TrecPointer<MiniApp> app)
 }
 
 /**
+ * Method: TIdeWindow::OpenFile
+ * Purpose: Allows a File Handler to command the Window to open a new file (will currently just log the fileto open for now)
+ * Parameters: TrecPointer<TFileShell> - representation of the file to open
+ * Returns: UINT - error code (0 for success)
+ */
+UINT OpenFile(TrecPointer<TFileShell> shell)
+{
+	if(!shell.Get())
+		return 1;
+	
+	TString format(L"File to open: %ls \n");
+	TString printOut;
+	printOut.Format(format, shell->GetPath().GetConstantBuffer());
+
+	ATLTRACE(format.GetConstantBuffer());
+}
+
+/**
  * Method: TIdeWindow::DrawOtherPages
  * Purpose: Draws the other page it has set up
  * Parameters: void

@@ -192,6 +192,26 @@ void TTreeDataBind::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, 
 	TControl::OnMouseMove(nFlags, point, mOut, eventAr);
 }
 
+void TTreeDataBind::OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+{
+	TControl::OnLButtonDblClk(nFlags, point, mOut, eventAr);
+
+	if(*mOut == messageOutput::negative || *mOut == messageOutput::negativeUpdate)
+		return;
+	
+	if (isContained(&point, &location) && mainNode.Get())
+	{
+		float dist = point.y - location.top;
+
+		UINT targetNode = static_cast<UINT>(dist) / 30;
+
+		TrecPointer<TObjectNode> tNode = mainNode->GetNodeAt(targetNode, 0);
+		
+		if (tNode.Get())
+			args.object = tNode;
+	}
+}
+
 void TTreeDataBind::SetNode(TrecPointer<TObjectNode> newNode)
 {
 	mainNode = newNode;

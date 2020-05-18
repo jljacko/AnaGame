@@ -98,6 +98,7 @@ typedef struct EventArgs
 	int methodID;
 	int arrayLabel;
 	WCHAR type;
+	TrecPointer<TObjectNode> object;
 } EventArgs;
 
 // Used by controls to register themselves in the message queue if they have a message handler
