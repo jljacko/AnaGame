@@ -5,12 +5,24 @@
 
 TString colorAnimationString(L"Simple-Color");
 
+/**
+ * Method: ColorAnimation::Animation (Constructor)
+ * Purpose: Creates the ColorAnimation with the specified animation-phase setting
+ * Parameters: animation_phase ap - the animation_phase this Animation is set to
+ * Returns: ColorAnimation
+ */
 ColorAnimation::ColorAnimation(animation_phase ap): Animation(ap)
 {
 	color1 = color2 = D2D1::ColorF(D2D1::ColorF::Azure);
 	color1Set = color2Set = false;
 }
 
+/**
+ * Method: ColorAnimation::Update
+ * Purpose: Informs the animation regarding what progress a given animation should be along
+ * Parameters: float progress - the progression a between the two colors provided
+ * Returns: bool - true if the resources are in order, false if a resource is missing
+ */
 bool ColorAnimation::Update(float progress)
 {
 	ATLTRACE(L"COLOR ANIMATION UPDATE called!\n");
@@ -95,6 +107,12 @@ void ColorAnimation::SetAnimationValue(float value, animation_value_type type)
 	}
 }
 
+/**
+ * Method: ColorAnimation::SetComponent
+ * Purpose: Applies a TBrush to the animation to act upon
+ * Parameters: TrecPointer<TBrush> comp - the Brush to operate upon
+ * Returns: void
+ */
 void ColorAnimation::SetComponent(TrecPointer<TBrush> comp)
 {
 	brush = comp;
@@ -106,10 +124,22 @@ void ColorAnimation::SetComponent(TrecPointer<TBrush> comp)
 		color1 = brush->GetColor().GetColor();
 }
 
+/**
+ * Method: ColorAnimation::SetControl
+ * Purpose: Allows animations to get the control they need to act upon
+ * Parameters: TrecPointer<TControl> con -  the control to operate upon
+ * Returns: void
+ */
 void ColorAnimation::SetControl(TrecPointer<TControl> con)
 {
 }
 
+/**
+ * Method: ColorAnimation::Prepare
+ * Purpose: Sets an animation to its starting position before an animation commences
+ * Parameters: void
+ * Returns: void
+ */
 void ColorAnimation::Prepare()
 {
 	if (done && reverse)
@@ -121,6 +151,14 @@ void ColorAnimation::Prepare()
 	done = false;
 }
 
+/**
+ * Method: ColorAnimation::GetAnimationType
+ * Purpose: Reports the String version of the animation type
+ * Parameters: void
+ * Returns: TString - representing the type this animation object is
+ *
+ * Note: In this case, the String is L"Simple-Color"
+ */
 TString ColorAnimation::GetAnimationType()
 {
 	return colorAnimationString;

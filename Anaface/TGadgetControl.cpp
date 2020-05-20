@@ -2,12 +2,12 @@
 #include "TGadgetControl.h"
 
 /*
-* Method: TGadgetControl) (Constructor) 
-* Purpose: Sets up a TGadet Control
+* Method: TGadgetControl::TGadgetControl 
+* Purpose: Constructor
 * Parameters: TrecPointer<DrawingBoard> rt - the Render Target to use
 *				TrecPointer<TArray<styleTable>> ta - List of Styles for the TControl
 *				bool isGadgetBase - the gadget base
-* Return: void
+* Return: new Gadget Control object
 */
 TGadgetControl::TGadgetControl(TrecPointer<DrawingBoard> rt, TrecPointer<TArray<styleTable>> ta, bool isGadgetBase):TControl(rt, ta, false)
 {
@@ -20,8 +20,8 @@ TGadgetControl::TGadgetControl(TrecPointer<DrawingBoard> rt, TrecPointer<TArray<
 }
 
 /*
-* Method: (TGadgetControl) (Destructor)
-* Purpose: Cleans up Gadget Control
+* Method: TGadgetControl::~TGadgetControl
+* Purpose: Destructor
 * Parameters: void
 * Return: void
 */
@@ -47,7 +47,7 @@ void TGadgetControl::storeInTML(TFile* ar, int childLevel, bool ov)
 
 
 /*
-* Method: TGadgetControl - onCreate
+* Method: TGadgetControl::onCreate
 * Purpose: To set up the Gadget Control
 * Parameters: D2D1_RECT_F r - the location control will be
 * Return: bool - false, ignore for now
@@ -109,7 +109,7 @@ bool TGadgetControl::onCreate(D2D1_RECT_F r, TrecPointer<TWindowEngine> d3d)
 }
 
 /*
-* Method: TGadgetControl - GetAnaGameType
+* Method: TGadgetControl::GetAnaGameType
 * Purpose: Returns the AnaGame format of the classes type
 * Parameters: void
 * Return: UCHAR* reference to the AnaGame type
@@ -120,6 +120,12 @@ UCHAR * TGadgetControl::GetAnaGameType()
 }
 
 
+/*
+ * Method: TGadgetControl::Resize
+ * Purpose: Resizes the control upon the window being resized, applies to the box inside the control
+ * Parameters: D2D1_RECT_F& r - the new location for the control
+ * Returns: void
+ */
 void TGadgetControl::Resize(D2D1_RECT_F& r)
 {
 	TControl::Resize(r);

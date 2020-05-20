@@ -1036,7 +1036,7 @@ TrecPointer<styleTable> classy;
 /*
  * Method: TControl::Resize
  * Purpose: Resizes the control upon the window being resized
- * Parameters: RECT r - the new location for the control
+ * Parameters: D2D1_RECT_F& r - the new location for the control
  * Returns: void
  */
 void TControl::Resize(D2D1_RECT_F& rr)

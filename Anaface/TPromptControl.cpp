@@ -2,15 +2,35 @@
 
 extern TDataArray<TTextField*> TextList;
 
+/*
+ * Method: TPromptControl::TPromptControl
+ * Purpose: Constructor
+ * Parameters: TrecPointer<DrawingBoard> rt - The Render Target to draw to
+ *				TrecPointer<TArray<styleTable>> ta - The Style Table to draw from
+ *				HWND winHand - the handle to the window so Windows Caret Support is possible
+ * Returns: New Prompt Control
+ */
 TPromptControl::TPromptControl(TrecPointer<DrawingBoard> rt, TrecPointer<TArray<styleTable>> ta, HWND w):TTextField(rt,ta,w)
 {
 	processRunning = false;
 }
 
+/*
+ * Method: TPromptControl::~TPromptControl
+ * Purpose: Destructor
+ * Parameters: void
+ * Returns: void
+ */
 TPromptControl::~TPromptControl()
 {
 }
 
+/*
+* Method: TPromptControl::onCreate
+* Purpose: Sets up the TPromptControl with Prompt Specific attributes
+* Parameters: RECT r - the location that the control would work in
+* Returns: bool - success (currently arbitrarily)
+*/
 bool TPromptControl::onCreate(D2D1_RECT_F r, TrecPointer<TWindowEngine> d3d)
 {
 	TTextField::onCreate(r, d3d);
@@ -21,6 +41,12 @@ bool TPromptControl::onCreate(D2D1_RECT_F r, TrecPointer<TWindowEngine> d3d)
 	return false;
 }
 
+/*
+* Method: TPromptControl::onDraw
+* Purpose: Draws the text that it was given
+* Parameters: TObject* obj - object used for databinding (unlikely to be used here)
+* Returns: void
+*/
 void TPromptControl::onDraw(TObject* obj)
 {
 	TString shellOutput(shell.GetOutput());
@@ -70,6 +96,15 @@ void TPromptControl::onDraw(TObject* obj)
 	TControl::onDraw(obj);
 }
 
+/*
+* Method: TTextField::OnLButtonDown
+* Purpose: Determines if a mouse click occured and where it should put the caret
+* Parameters: UINT nFlags - flags provided by MFC's Message system, not used
+*				CPoint point - the point on screen where the event occured
+*				messageOutput* mOut - allows controls to keep track of whether ohter controls have caught the event
+*				TDataArray<EventID_Cred>& eventAr - allows Controls to add whatever Event Handler they have been assigned
+* Returns: void
+*/
 void TPromptControl::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr, TDataArray<TControl*>& clickedControl)
 {
 	resetArgs();
@@ -224,6 +259,17 @@ parentCall:
 	}
 }
 
+/*
+* Method: TPromptControl::OnChar
+* Purpose: Adds a character to the String
+* Parameters: bool fromChar - can be called either from on Key Down or OnChar
+*				UINT nChar - The ID of the character that was pressed
+*				UINT nRepCnt - how many times the character was processed for this event
+*				UINT nFlags - flags provided by MFC's Message system, not used
+*				messageOutput* mOut - allows controls to keep track of whether ohter controls have caught the event
+*				TDataArray<EventID_Cred>& eventAr - allows Controls to add whatever Event Handler they have been assigned
+* Returns: void
+*/
 bool TPromptControl::OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
 	// To-Do: sort out anomalies with characters
@@ -312,6 +358,12 @@ void TPromptControl::SetText(TString)
 {
 }
 
+/*
+ * Method: TPromptControl::SubmitCommand
+ * Purpose: Allows external code (such as a handler or an environment) to manually enter a command
+ * Parameters: TString& command -  the command to enter
+ * Returns: void
+ */
 void TPromptControl::SubmitCommand(TString& command)
 {
 	isPassword = false;
@@ -319,12 +371,24 @@ void TPromptControl::SubmitCommand(TString& command)
 	processRunning = true;
 }
 
+/*
+ * Method: TPromptControl::isInInput
+ * Purpose: Checks whether a string index is within the input region
+ * Parameters: UINT proposeLoc - the index of the string to check
+ * Returns: bool - whether the index is within the input region or not
+ */
 bool TPromptControl::isInInput(UINT proposeLoc)
 {
 	auto textSize = text.GetSize();
 	return proposeLoc < textSize && proposeLoc >= (textSize - input.GetSize());
 }
 
+/*
+ * Method: TPromptControl::SubmitCommand
+ * Purpose: Submits the command entered by the user for processing
+ * Parameters: void
+ * Returns: void
+ */
 void TPromptControl::SubmitCommand()
 {
 	isPassword = false;
@@ -333,6 +397,13 @@ void TPromptControl::SubmitCommand()
 	input.Empty();
 }
 
+/*
+ * Method: TPromptControl::InputChar
+ * Purpose: Adds a character to the input string
+ * Parameters: WCHAR ch - the character to add
+ *				int - the number of times to add that character
+ * Returns: void
+ */
 void TPromptControl::InputChar(wchar_t cha, int times)
 {
 	if (!onFocus) // hopefully this is true, but just in case

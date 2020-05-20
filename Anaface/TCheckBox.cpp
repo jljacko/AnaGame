@@ -2,8 +2,8 @@
 #include "TCheckBox.h"
 
 /*
-* Method: (TCheckBox) (Constructor) 
-* Purpose: Sets up the check box
+* Method: TCheckBox::TCheckBox 
+* Purpose: Constructor
 * Parameters: TrecPointer<DrawingBoard> rt - the render target to draw to
 *				TrecPointer<TArray<styleTable>> ta - the style list for Anaface
 * Returns: void
@@ -15,8 +15,8 @@ TCheckBox::TCheckBox(TrecPointer<DrawingBoard> rt, TrecPointer<TArray<styleTable
 }
 
 /*
-* Method: (TCheckBox) (Destructor)
-* Purpose: Cleans up check-box
+* Method: TCheckBox::~TCheckBox
+* Purpose: Destructor
 * Parameters: void
 * Returns: void
 */
@@ -25,7 +25,7 @@ TCheckBox::~TCheckBox()
 }
 
 /*
-* Method: TCheckBox - onCreate
+* Method: TCheckBox::onCreate
 * Purpose: Sets up the check-boxes attribute
 * Parameters: RECT r - the location for the check-box
 * Returns: bool - ignore
@@ -49,7 +49,7 @@ bool TCheckBox::onCreate(D2D1_RECT_F r, TrecPointer<TWindowEngine> d3d)
 }
 
 /*
-* Method: TCheckBox - onDraw
+* Method: TCheckBox::onDraw
 * Purpose: Draws the check-box
 * Parameters: void
 * Returns: void
@@ -75,7 +75,7 @@ void TCheckBox::onDraw(TObject* obj)
 }
 
 /*
-* Method: TCheckBox - IsClicked
+* Method: TCheckBox::IsClicked
 * Purpose: Reports whether the Check-box is in a clicked state
 * Parameters: void
 * Returns: bool - whether the check-box has been "selected" or not
@@ -86,7 +86,7 @@ bool TCheckBox::IsClicked()
 }
 
 /*
-* Method: TCheckBox - OnLButtonDown
+* Method: TCheckBox::OnLButtonDown
 * Purpose: Catches the OnClick event and allows the check box to add a check-box event to the Event List
 * Parameters: UINT nFlags - Details provided by Windows 
 *				CPoint point - The location of the click 
@@ -119,7 +119,7 @@ void TCheckBox::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, T
 }
 
 /*
-* Method: TCheckBox - OnLButtonUp
+* Method: TCheckBox::OnLButtonUp
 * Purpose: Catches the Click Release method
 * Parameters: UINT nFlags - Details provided by Windows 
 *				CPoint point - The location of the click 
@@ -134,7 +134,7 @@ void TCheckBox::OnLButtonUp(UINT nFlags, TPoint point, messageOutput * mOut, TDa
 }
 
 /*
-* Method: TCheckBox - GetAnaGameType
+* Method: TCheckBox::GetAnaGameType
 * Purpose: Retrieves the Structure that lets AnaGame know that this is a TCheck-Box
 * Parameters: void
 * Returns: UCHAR* - The AnaGame type structure

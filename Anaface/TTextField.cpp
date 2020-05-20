@@ -6,19 +6,19 @@
 static TDataArray<TTextField*> TextList;
 
 /*
-* Method:
-* Purpose: 
-* Parameters:
-* Returns:
-*/
+ * Method:
+ * Purpose: 
+ * Parameters:
+ * Returns:
+ */
 
 /*
-* Method: (TTextField) (Constructor)
-* Purpose: Sets up a text field and performs basic initialization
+* Method: TTextField::TTextField
+* Purpose: Constructor
 * Parameters: TrecPointer<DrawingBoard> rt - The Render Target to draw to
 *				TrecPointer<TArray<styleTable>> ta - The Style Table to draw from
 *				HWND winHand - the handle to the window so Windows Caret Support is possible
-* Returns: void
+* Returns: New TTextField 
 */
 TTextField::TTextField(TrecPointer<DrawingBoard> rt, TrecPointer<TArray<styleTable>> st, HWND winHand) :
 	TGadgetControl(rt,st,false),
@@ -49,8 +49,8 @@ TTextField::TTextField(TrecPointer<DrawingBoard> rt, TrecPointer<TArray<styleTab
 }
 
 /*
-* Method: (TTextField) (Destructor)
-* Purpose: Cleans up TTextField (cheifly here for ceremonial purposes)
+* Method: TTextField::~TTextField
+* Purpose: Destructor
 * Parameters: void
 * Returns: void
 */
@@ -75,7 +75,7 @@ TTextField::~TTextField()
 }
 
 /*
-* Method: TTextField - InputChar
+* Method: TTextField::InputChar
 * Purpose: Adds key stroke to the appropriate location in the string
 * Parameters: wchar_t cha - the character to input
 *				int times - the number of times to insert it
@@ -132,7 +132,7 @@ void TTextField::InputChar(wchar_t cha, int times)
 }
 
 /*
-* Method: TTextField - onClick
+* Method: TTextField::onClick
 * Purpose: Checks to see if a Point falls within it's area space
 * Parameters: CPoint cp - the point to check
 * Returns: bool - whether the point is present or not
@@ -149,18 +149,30 @@ bool TTextField::onClick(TPoint cp)
 	return false;
 }
 
+/*
+ * Method: TTextField::LockText
+ * Purpose: Prevents the User from editing the control
+ * Parameters: void
+ * Returns: void
+ */
 void TTextField::LockText()
 {
 	isEditable = false;
 }
 
+/*
+ * Method: TTextField::UnlockText
+ * Purpose: Allows the User to edit the control
+ * Parameters: void
+ * Returns: void
+ */
 void TTextField::UnlockText()
 {
 	isEditable = true;
 }
 
 /*
-* Method: TTextField - loadFromHTML
+* Method: TTextField::loadFromHTML
 * Purpose: Loads the Text Element from HTML
 * Parameters: CArchive * ar - File to read from
 * Returns: int
@@ -172,7 +184,7 @@ int TTextField::loadFromHTML(TFile * ar)
 }
 
 /*
-* Method: TTextField - storeInTML
+* Method: TTextField::storeInTML
 * Purpose: Stores the control in a TML file
 * Parameters: CArchive* ar - the file to save to
 *				int childLevel - the generation if the TControl
@@ -246,7 +258,7 @@ void TTextField::storeInTML(TFile * ar, int childLevel, bool ov)
 }
 
 /*
-* Method: TTextField - storeInHTML
+* Method: TTextField::storeInHTML
 * Purpose: Stores the control in an HTML format
 * Parameters: CArchive * ar - the file to write to
 * Returns: void
@@ -256,7 +268,7 @@ void TTextField::storeInHTML(TFile * ar)
 }
 
 /*
-* Method: TTextField - onCreate
+* Method: TTextField::onCreate
 * Purpose: Sets up the TTextFeild with Text Specific attributes
 * Parameters: RECT r - the location that the control would work in
 * Returns: bool - success (currently arbitrarily)
@@ -419,9 +431,9 @@ bool TTextField::onCreate(D2D1_RECT_F r, TrecPointer<TWindowEngine> d3d)
 }
 
 /*
-* Method: TTextField - onDraw
+* Method: TTextField::onDraw
 * Purpose: Draws the text that it was given
-* Parameters: void
+* Parameters: TObject* obj - object used for databinding (unlikely to be used here)
 * Returns: void
 */
 void TTextField::onDraw(TObject* obj)
@@ -435,9 +447,6 @@ void TTextField::onDraw(TObject* obj)
 	{
 
 		brush->DrawEllipse(passwordPeek_outer);
-
-
-
 
 		brush->FillEllipse(passwordPeek_inner);
 	}
@@ -471,7 +480,7 @@ void TTextField::onDraw(TObject* obj)
 }
 
 /*
-* Method: TTextField - determineMinHeightNeeded
+* Method: TTextField::determineMinHeightNeeded
 * Purpose: Determines how high the control HAS to be that it was still functional
 * Parameters: void
 * Returns: UINT - The minimum height control needed
@@ -503,7 +512,7 @@ UINT TTextField::determineMinHeightNeeded()
 }
 
 /*
-* Method: TTextField - SetNewLocation
+* Method: TTextField::SetNewLocation
 * Purpose: Sets a new location for the Control
 * Parameters: RECT& r - the new location
 * Returns: void
@@ -526,7 +535,7 @@ void TTextField::SetNewLocation(const D2D1_RECT_F& r)
 }
 
 /*
-* Method: TTextField - OnLButtonDown
+* Method: TTextField::OnLButtonDown
 * Purpose: Determines if a mouse click occured and where it should put the caret
 * Parameters: UINT nFlags - flags provided by MFC's Message system, not used
 *				CPoint point - the point on screen where the event occured
@@ -698,7 +707,7 @@ parentCall:
 }
 
 /*
-* Method: TTextField - OnChar
+* Method: TTextField::OnChar
 * Purpose: Adds a character to the String
 * Parameters: bool fromChar - can be called either from on Key Down or OnChar
 *				UINT nChar - The ID of the character that was pressed
@@ -784,6 +793,15 @@ bool TTextField::OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags, me
 	return onFocus;
 }
 
+/*
+* Method: TTextField::OnMouseMove
+* Purpose: Allows Controls to catch themessageState::mouse Move event and deduce if the cursor has hovered over it, used by Text field to oversee the selection of text
+* Parameters: UINT nFlags - flags provided by MFC's Message system, not used
+*				TPoint point - the point on screen where the event occured
+*				messageOutput* mOut - allows controls to keep track of whether ohter controls have caught the event
+*				TDataArray<EventID_Cred>& eventAr - allows Controls to add whatever Event Handler they have been assigned
+* Returns: void
+*/
 void TTextField::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
 	ATLTRACE(L"TEXT FILED ONMOVEMOUSECALLED\n");
@@ -825,7 +843,7 @@ void TTextField::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDa
 }
 
 /*
-* Method: TTextField - OnLButtonUp
+* Method: TTextField::OnLButtonUp
 * Purpose: Responds to mouse clicks ending
 * Parameters: UINT nFlags - flags provided by MFC's Message system, not used
 *				CPoint point - the point on screen where the event occured
@@ -862,7 +880,7 @@ void TTextField::OnLButtonUp(UINT nFlags, TPoint point, messageOutput * mOut, TD
 }
 
 /*
-* Method: TTextField - AppendBoldText
+* Method: TTextField::AppendBoldText
 * Purpose: Adds Bold Text at the end of the text
 * Parameters: TString& t - the text to add
 * Returns: void
@@ -885,7 +903,7 @@ void TTextField::AppendBoldText(const TString & t)
 }
 
 /*
-* Method: TTextField - AppendItalicText
+* Method: TTextField::AppendItalicText
 * Purpose: Adds Italic text at the end of the text
 * Parameters: TString& t - the text to add
 * Returns: void
@@ -908,7 +926,7 @@ void TTextField::AppendItalicText(const TString & t)
 }
 
 /*
-* Method: TTextField - AppendBoldItalicText
+* Method: TTextField::AppendBoldItalicText
 * Purpose: Adds Italic and Bold Text to the end
 * Parameters: TString& t - the text to add
 * Returns: void
@@ -931,7 +949,7 @@ void TTextField::AppendBoldItalicText(const TString & t)
 }
 
 /*
-* Method: TTextField - AppendNormalText
+* Method: TTextField::AppendNormalText
 * Purpose: Adds Normal Text to the end of the current text
 * Parameters: TString& t - the text to add
 * Returns: void
@@ -954,7 +972,7 @@ void TTextField::AppendNormalText(const TString & t)
 }
 
 /*
-* Method: TTextField - isOnFocus
+* Method: TTextField::isOnFocus
 * Purpose: Reports whether focus is on the current control
 * Parameters: void
 * Returns: bool - whether focus is on the control
@@ -965,7 +983,7 @@ bool TTextField::isOnFocus()
 }
 
 /*
-* Method: TTextField - GetText
+* Method: TTextField::GetText
 * Purpose: Retrieves the current text of the control
 * Parameters: void
 * Returns: TString - the current text held by the control
@@ -975,6 +993,12 @@ TString TTextField::GetText()
 	return text;
 }
 
+/*
+* Method: TTextField::SetText
+* Purpose: Sets the current text of the control
+* Parameters: TString t - the string to set the text to
+* Returns: void
+*/
 void TTextField::SetText(TString t )
 {
 	text = t;
@@ -986,6 +1010,12 @@ UCHAR * TTextField::GetAnaGameType()
 	return nullptr;
 }
 
+/*
+ * Method: TTextField::Resize
+ * Purpose: resets the Size of the TextField
+ * Parameters: D2D1_RECT_F& r - the location to set the text field to
+ * Returns: void
+ */
 void TTextField::Resize(D2D1_RECT_F& r)
 {
 	TGadgetControl::Resize(r);
@@ -1011,7 +1041,7 @@ void TTextField::Resize(D2D1_RECT_F& r)
 }
 
 /*
-* Method: TTextField - updateNumber
+* Method: TTextField::updateNumber
 * Purpose: Updates the Number string by a predefined incriment 
 * Parameters: bool pos - whether moving the number up or down
 * Returns: void
@@ -1092,7 +1122,7 @@ void TTextField::updateNumber(bool pos)
 }
 
 /*
-* Method: TTextField - setToZero
+* Method: TTextField::setToZero
 * Purpose: Sets a number oriented TextField to 0
 * Parameters: void
 * Returns: void
@@ -1104,7 +1134,7 @@ void TTextField::setToZero()
 }
 
 /*
-* Method: TTextField - setNumericText
+* Method: TTextField::setNumericText
 * Purpose: Sets the TextField to an integer value
 * Parameters: int i - the number to set control to
 * Returns: void
@@ -1129,7 +1159,7 @@ void TTextField::setNumericText(int i)
 }
 
 /*
-* Method: TTextField - setNumericText
+* Method: TTextField::setNumericText
 * Purpose: Sets the TextField to a floating point value
 * Parameters: float f - the number to set control to
 * Returns: void
@@ -1153,6 +1183,15 @@ void TTextField::setNumericText(float f)
 		text1->setCaption(text);
 }
 
+
+/*
+ * Method: TTextField::AddColorEffect
+ * Purpose: Adds a color effect to the text presented
+ * Parameters: D2D1_COLOR_F col - the color to set the text
+ *				UINT start - the starting index to apply the color
+ *				UINT length - the number of characters to apply the color to
+ * Returns: void
+ */
 void TTextField::AddColorEffect(D2D1_COLOR_F col, UINT start, UINT length)
 {
 	if (!text1.Get() || !drawingBoard.Get())
@@ -1181,6 +1220,13 @@ void TTextField::AddColorEffect(D2D1_COLOR_F col, UINT start, UINT length)
 	}
 }
 
+
+/*
+ * Method: TTextField::RemoveFocus
+ * Purpose: Removes the User focus from this control
+ * Parameters: void
+ * Returns: void
+ */
 void TTextField::RemoveFocus()
 {
 	TTextField* feild = nullptr;
@@ -1193,7 +1239,7 @@ void TTextField::RemoveFocus()
 }
 
 /*
-* Method: TTextField - updateTextString
+* Method: TTextField::updateTextString
 * Purpose: Refreshes the Text string formating
 * Parameters: void
 * Returns: void
@@ -1220,7 +1266,7 @@ void TTextField::updateTextString()
 }
 
 /*
-* Method: TTextField - moveCaretLeft
+* Method: TTextField::moveCaretLeft
 * Purpose: Shifts the caret to the left in the text
 * Parameters: CPoint point - the point to test
 * Returns:void
@@ -1241,7 +1287,7 @@ void TTextField::moveCaretLeft(POINT point)
 }
 
 /*
-* Method: TTextField - moveCaretRight
+* Method: TTextField::moveCaretRight
 * Purpose: Shifts the Caret to the right in the text
 * Parameters: CPoint point - the point to test
 * Returns: void
@@ -1261,7 +1307,7 @@ void TTextField::moveCaretRight(POINT point)
 }
 
 /*
-* Method: TTextField - moveCaretUp
+* Method: TTextField::moveCaretUp
 * Purpose: Shifts the Caret to the up in the text
 * Parameters: CPoint point - the point to test
 * Returns: void
@@ -1294,7 +1340,7 @@ void TTextField::moveCaretUp(POINT point)
 }
 
 /*
-* Method: TTextField - moveCaretDown
+* Method: TTextField::moveCaretDown
 * Purpose: Shifts the Caret to the down in the text
 * Parameters: CPoint point - the point to test
 * Returns: void
@@ -1411,7 +1457,7 @@ bool operator>(int i, incrimentControl& ic)
 
 /*
 * Function: operator>
-* Purpose:
+* Purpose: Compares an incrimentControl to a float for >
 * Parameters: float f - the float to compare
 *				incrimentControl& ic - the incrimentControl to compare
 * Returns: bool - the results of the comparison
@@ -1801,6 +1847,13 @@ bool operator==(float f, incrimentControl& ic)
 	else return false;
 }
 
+/*
+* Function: operator==
+* Purpose: Compares two colors
+* Parameters: D2D1_COLOR_F & c1 - the first color to compare
+*				D2D1_COLOR_F & c2 - the second color to compare
+* Returns: bool - whether the values are equal
+*/
 bool operator==(D2D1_COLOR_F & c1, D2D1_COLOR_F & c2)
 {
 	return c1.r == c2.r && c1.g == c2.b 
@@ -1846,6 +1899,12 @@ void incrimentControl::operator=(float f)
 	value.f = f;
 }
 
+/*
+ * Method: TextHighlighter::TextHighlighter
+ * Purpose: Constructor
+ * Parameters: TrecPointer<DrawingBoard> - the drawing board to draw to
+ * Returns: New Text Highlighter object
+ */
 TextHighlighter::TextHighlighter(TrecPointer<DrawingBoard> rt)
 {
 	if (!rt.Get())
@@ -1858,12 +1917,24 @@ TextHighlighter::TextHighlighter(TrecPointer<DrawingBoard> rt)
 	brush = renderer->GetBrush(TColor(D2D1::ColorF::Aqua));
 }
 
+/*
+ * Method: TextHighlighter::SetLayout
+ * Purpose: Sets the layout of the text to apply the effect to
+ * Parameters: TrecComPointer<IDWriteTextLayout> l - the layout to apply effects to
+ * Returns: void
+ */
 void TextHighlighter::SetLayout(TrecComPointer<IDWriteTextLayout> l)
 {
 	layout = l;
 	assert(layout.Get());
 }
 
+/*
+ * Method: TextHighlighter::SetFirstPosition
+ * Purpose: ID's the index of the first point and sets the highlighter to active
+ * Parameters: UINT f - the location of the first point in the text
+ * Returns: void
+ */
 void TextHighlighter::SetFirstPosition(UINT f)
 {
 	beginningPosition = f;
@@ -1872,6 +1943,12 @@ void TextHighlighter::SetFirstPosition(UINT f)
 	ATLTRACE(L"HIGHLIGHTER PREPARED\n");
 }
 
+/*
+ * Method: TextHighlighter::SetSecondPosition
+ * Purpose: Identifies the second position the user has specified and applies the highlighing effect to the region betweent he two positions
+ * Parameters: UINT s - the location of the second point in the text
+ * Returns: void
+ */
 void TextHighlighter::SetSecondPosition(UINT s)
 {
 	if (isActive && layout.Get())
@@ -1909,6 +1986,12 @@ void TextHighlighter::SetSecondPosition(UINT s)
 }
 
 
+/*
+ * Method: TextHighlighter::Reset
+ * Purpose: Resets the highlighter
+ * Parameters: UINT location - the location where the mouse is unclicked
+ * Returns: bool - whether the highlighter was reset
+ */
 bool TextHighlighter::Reset(UINT cLocation)
 {
 
@@ -1924,6 +2007,12 @@ bool TextHighlighter::Reset(UINT cLocation)
 	return true;
 }
 
+/*
+ * Method: TextHighlighter::ResetUp
+ * Purpose: Resets the highlighter if necessary
+ * Parameters: UINT location - the location where the mouse is unclicked
+ * Returns: void
+ */
 void TextHighlighter::ResetUp(UINT cLocation)
 {
 	if (cLocation == ((beginningIsInitial) ? beginningPosition : endingPosition))
@@ -1937,6 +2026,12 @@ void TextHighlighter::ResetUp(UINT cLocation)
 	isActive = false;
 }
 
+/*
+ * Method: TextHighlighter::IsActive
+ * Purpose: Reports whether the highlighter is looking for the second position
+ * Parameters: void
+ * Returns: bool - whether the highlighter is actively looking for the second position
+ */
 bool TextHighlighter::IsActive()
 {
 	return isActive;

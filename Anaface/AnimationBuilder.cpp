@@ -5,21 +5,46 @@
 #include "GifAnimation.h"
 #include "TControl.h"
 
+/*
+* Method: AnimationBuilder::AnimationBuilder
+* Purpose: Constructor
+* Parameters: void
+* Returns: New Animation Builder
+*/
 AnimationBuilder::AnimationBuilder()
 {
 	phase = animation_phase::animation_phase_middle;
 }
 
+/*
+* Method: AnimationBuilder::SetName
+* Purpose: Sets the name to give any animation created by this builder
+* Parameters: const TString& name - the name to set the animation to
+* Returns: void
+*/
 void AnimationBuilder::SetName(const TString& name)
 {
 	this->name.Set(name);
 }
 
+/*
+* Method: AnimationBuilder::SetType
+* Purpose: Sets the type of Animation
+* Parameters: const TString& type - the type to set
+* Returns: void
+*/
 void AnimationBuilder::SetType(const TString& type)
 {
 	this->type.Set(type);
 }
 
+/*
+* Method: AnimationBuilder::SetAttribute
+* Purpose: Adds specifications for the animation to be created
+* Parameters: const TString& key - the animation attribute to add
+*				TrecPointer<TString> value - the value of the anumation attribute
+* Returns: void
+*/
 void AnimationBuilder::SetAttribute(const TString& key, TrecPointer<TString> value)
 {
 	if (!key.Compare(L"Phase"))
@@ -39,16 +64,34 @@ void AnimationBuilder::SetAttribute(const TString& key, TrecPointer<TString> val
 		attributes.addEntry(key, value);
 }
 
+/*
+* Method: AnimationBuilder::GetName
+* Purpose: Reports the name of the animation to create
+* Parameters: void
+* Returns: TString - the name of the animation to create
+*/
 TString AnimationBuilder::GetName()
 {
 	return name;
 }
 
+/*
+* Method: AnimationBuilder::GetType
+* Purpose: Reports the type of animation to create
+* Parameters: void
+* Returns: TString - the type of animation given
+*/
 TString AnimationBuilder::GetType()
 {
 	return type;
 }
 
+/*
+* Method: AnimationBuilder::Build
+* Purpose: Builds the animation
+* Parameters: void
+* Returns: TrecPointer<Animation> - the Animation requested
+*/
 TrecPointer<Animation> AnimationBuilder::Build()
 {
 	TrecPointer<Animation> ret;

@@ -2,17 +2,36 @@
 #include "TScrollerControl.h"
 #include <d2d1.h>
 
+/**
+ * Method: TTreeDataBind::TTreeDataBind
+ * Purpose: Constructor
+ * Parameters: TrecPointer<DrawingBoard> db - Smart Pointer to the Render Target to draw on
+ *				TrecPointer<TArray<styleTable>> styTab - Smart Pointer to the list of styles to draw from
+ * Returns: New Tree Object
+ */
 TTreeDataBind::TTreeDataBind(TrecPointer<DrawingBoard> rt, TrecPointer<TArray<styleTable>> ta): TControl(rt, ta)
 {
 	isNodeSelected = isTickSelected = false;
 	nodeSelected = 0;
 }
 
+/**
+ * Method: TTreeDataBind::~TTreeDataBind
+ * Purpose: Destructor
+ * Parameters: void
+ * Returns: void
+ */
 TTreeDataBind::~TTreeDataBind()
 {
 	int e = 3;
 }
 
+/**
+ * Method: TTreeDataBind::onDraw
+* Purpose: Draws the control
+* Parameters: TObject* obj - Raw reference to a TObject that might have specific text to say
+* Returns: void
+ */
 void TTreeDataBind::onDraw(TObject* obj)
 {
 	if (!mainNode.Get())
@@ -90,12 +109,21 @@ void TTreeDataBind::onDraw(TObject* obj)
 	}
 
 }
-
+/**
+ * DEPRECATED
+ */
 UCHAR* TTreeDataBind::GetAnaGameType()
 {
 	return nullptr;
 }
 
+/**
+ * Method: TTreeDataBind::onCreateAllows
+ * Purose: the Control To contstruct itself based off of the location it has and the
+ *		screen space it is given
+ * Parameters: RECT contain - the area it can use
+ * Returns: bool - success
+ */
 bool TTreeDataBind::onCreate(D2D1_RECT_F r, TrecPointer<TWindowEngine> d3d)
 {
 	TControl::onCreate(r, d3d);
@@ -110,7 +138,15 @@ bool TTreeDataBind::onCreate(D2D1_RECT_F r, TrecPointer<TWindowEngine> d3d)
 	}
 	return false;
 }
-
+/**
+ * Method: TTreeDataBind::OnLButtonDown
+* Purpose: Allows Control to catch the LeftmessageState::mouse Button Down event and act accordingly
+* Parameters: UINT nFlags - flags provided by MFC's Message system, not used
+*				TPoint point - the point on screen where the event occured
+*				messageOutput* mOut - allows controls to keep track of whether ohter controls have caught the event
+*				TDataArray<EventID_Cred>& eventAr - allows Controls to add whatever Event Handler they have been assigned
+* Returns: void
+ */
 void TTreeDataBind::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr, TDataArray<TControl*>& clickedButtons)
 {
 	if (isContained(&point, &location))
@@ -149,7 +185,15 @@ void TTreeDataBind::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut
 		TControl::OnLButtonDown(nFlags, point, mOut, eventAr, clickedButtons);
 	}
 }
-
+/**
+ * Method: TTreeDataBind::OnLButtonUp
+ * Purpose: Allows control to catch the Left Button Up event and act accordingly
+ * Parameters: UINT nFlags - flags provided by MFC's Message system, not used
+ *				TPoint point - the point on screen where the event occured
+ *				messageOutput* mOut - allows controls to keep track of whether ohter controls have caught the event
+ *				TDataArray<EventID_Cred>& eventAr - allows Controls to add whatever Event Handler they have been assigned
+ * Returns: void
+ */
 void TTreeDataBind::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
 	if (isContained(&point, &location))
@@ -191,12 +235,27 @@ void TTreeDataBind::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, 
 	isTickSelected = isNodeSelected = false;
 	nodeSelected = 0;
 }
-
+/**
+ * Method: TTreeDataBind::OnMouseMove Allows Controls to catch themessageState::mouse Move event and deduce if the cursor has hovered over it
+ * Parameters: UINT nFlags - flags provided by MFC's Message system, not used
+ *				TPoint point - the point on screen where the event occured
+ *				messageOutput* mOut - allows controls to keep track of whether ohter controls have caught the event
+ *				TDataArray<EventID_Cred>& eventAr - allows Controls to add whatever Event Handler they have been assigned
+ * Returns: void
+ */
 void TTreeDataBind::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
 	TControl::OnMouseMove(nFlags, point, mOut, eventAr);
 }
-
+/**
+ * Method: TTreeDataBind::OnLButtonDblClk
+ * Purpose: Allows control to catch the DOuble Click event and act accordingly
+ * Parameters: UINT nFlags - flags provided by MFC's Message system, not used
+ *				TPoint point - the point on screen where the event occured
+ *				messageOutput* mOut - allows controls to keep track of whether ohter controls have caught the event
+ *				TDataArray<EventID_Cred>& eventAr - allows Controls to add whatever Event Handler they have been assigned
+ * Returns: void
+ */
 void TTreeDataBind::OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
 {
 	TControl::OnLButtonDblClk(nFlags, point, mOut, eventAr);
@@ -215,11 +274,23 @@ void TTreeDataBind::OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mO
 	}
 }
 
+/**
+ * Method: TTreeDataBind::SetNode
+ * Purpose: Sets the node of the Control so that when it is time to draw, the control has content to produce
+ * Parameters: TrecPointer<TObjectNode> newNode - the node of the tree to depict when drawing
+ * Returns: void
+ */
 void TTreeDataBind::SetNode(TrecPointer<TObjectNode> newNode)
 {
 	mainNode = newNode;
 }
 
+/**
+ * Method: TTreeDataBind::getLocation
+ * Purpose: Reports how much space this object will actually need to draw
+ * Parameters: void
+ * Returns: D2D1_RECT_F -  the Rectangle of the content that would be drawn (even if it was officially allocated less space)
+ */
 D2D1_RECT_F TTreeDataBind::getLocation()
 {
 	D2D1_RECT_F ret = location;
@@ -228,11 +299,12 @@ D2D1_RECT_F TTreeDataBind::getLocation()
 	return ret;
 }
 
-/*
-* Method: TControl - Resize
-* Purpose: Resizes the control upon the window being resized
-* Parameters: RECT r - the new location for the control
-*/
+/**
+ * Method: TTreeDataBind::Resize
+ * Purpose: Resizes the control upon the window being resized
+ * Parameters: RECT r - the new location for the control
+ * Returns: void
+ */
 void TTreeDataBind::Resize(D2D1_RECT_F& r)
 {
 	// First Check to see if we need a new scroll control

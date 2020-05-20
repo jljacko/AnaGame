@@ -18,6 +18,9 @@ private:
 	bool hasChildren, childrenActive;
 };
 
+/**
+ * DEPRECATED in favor of the TTreeDataBind control and it's TObjectNode
+ */
 class TDropMenu :public TControl
 {
 public:

@@ -6,6 +6,13 @@ D2D1_COLOR_F end_box, body_box, middle_box_click, middle_box;
 int* pointer = nullptr;
 int value = 255;
 
+/**
+ * Method: TScrollBar::TScrollBar
+ * Purpose: Constructor
+ * Parameters: TControl& control - The control holding this scroll bar
+ *				ScrollOrient so - whether this is a horizontal or vertical scroll bar 
+ * Returns: new Scroll Bar
+ */
 TScrollBar::TScrollBar(TControl& control, ScrollOrient so)
 {
 	scrollAlignment = so;
@@ -16,10 +23,22 @@ TScrollBar::TScrollBar(TControl& control, ScrollOrient so)
 		EstablishScrollColors();
 }
 
+/**
+ * Method: TScrollBar::~TScrollBar
+ * Purpose: Destructor
+ * Parameters: void
+ * Returns: void
+ */
 TScrollBar::~TScrollBar()
 {
 }
 
+/**
+ * Method: TScrollBar::onDraw
+ * Purpose: Draws the scroll bar
+ * Parameters: ID2D1RenderTarget* target -  the target to draw with
+ * Returns: void
+ */
 void TScrollBar::onDraw(ID2D1RenderTarget* target)
 {
 	if (!target || !parent || !(widthFactor < 1.0f)) return;
@@ -67,6 +86,14 @@ void TScrollBar::onDraw(ID2D1RenderTarget* target)
 	brush->Release();
 }
 
+/**
+ * Method: TScrollBar::OnLButtonDown
+ * Purpose: Allows bars to assume focus
+ * Parameters:UINT nFlags - redundant
+ *				TPoint point - The point where the user clicked
+ *				messageOutput* mOut - redundant
+ * Returns: whether the focus is on this control or not
+ */
 bool TScrollBar::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
 {
 	if (isContained(&point, &body_rect))
@@ -81,11 +108,27 @@ bool TScrollBar::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
 	return onFocus;
 }
 
+/**
+ * Method: TScrollBar::OnLButtonUp
+ * Purpose: Lets the scroll bar know that the user has unclicked and thus can no longer have any focus
+ * Parameters: UINT nFlags - redundant
+ *				TPoint point - redundant
+ *				messageOutput* mOut - redundant
+ * Returns: void
+ */
 void TScrollBar::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
 {
 	onFocus = false;
 }
 
+/**
+ * Method: TScrollBar::OnMouseMove
+ * Purpose: Allows the scroll bar to shift the contents along with the user (if focused upon)
+ * Parameters: UINT nFlags - redundant
+ *				TPoint point - current point the mouse is at
+ *				messageOutput* mOut - redundant
+ * Returns: void
+ */
 void TScrollBar::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut)
 {
 	if (!onFocus) return;
@@ -102,6 +145,12 @@ void TScrollBar::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut)
 	}
 }
 
+/**
+ * Method: TScrollBar::MovedContent
+ * Purpose: Calculates how much to move the content by
+ * Parameters: float degree - how much the user moved the mouse
+ * Returns: float - how much the content itself has to move
+ */
 float TScrollBar::MovedContent(float degree)
 {
 	if (degree > 0.0f)
@@ -124,6 +173,13 @@ float TScrollBar::MovedContent(float degree)
 	return degree;
 }
 
+/**
+ * Method: TScrollBar::Refresh
+ * Purpose: Refreshes the scroll bars so that they are callibrated correctly
+ * Parameters: const D2D1_RECT_F& location - the location of the area that is allowed to be drawn
+ *				 const D2D1_RECT_F& area - the location of the region that the control[s] underneath actually take up
+ * Returns: void
+ */
 void TScrollBar::Refresh(const D2D1_RECT_F& location, const D2D1_RECT_F& area)
 {
 	body_rect = location;
@@ -166,6 +222,14 @@ void TScrollBar::Refresh(const D2D1_RECT_F& location, const D2D1_RECT_F& area)
 	}
 }
 
+/**
+ * Method: TScrollBar::EstablishScrollColors
+ * Purpose: Establishes the colors used in the scroll bars
+ * Parameters: void
+ * Returns: void
+ *
+ * Note: Called once by the constructor
+ */
 void TScrollBar::EstablishScrollColors()
 {
 	body_box = D2D1::ColorF(0x00000011);
@@ -175,6 +239,12 @@ void TScrollBar::EstablishScrollColors()
 	pointer = &value;
 }
 
+/**
+ * Function: GetScrollbarBoxSize
+ * Purpose: Reports the with/height of the vertical/horzontal scroll bar
+ * Parameters: void
+ * Returns: UINT - the size used in the creation of the box
+ */
 UINT GetScrollbarBoxSize()
 {
 	return BOX_SIZE;

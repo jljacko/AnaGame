@@ -27,8 +27,8 @@ void runLoop()
 }
 
 /*
-* Method: (TRadioButton) (Constructor)
-* Purpose: Sets up the Radio Button
+* Method: TRadioButton::TRadioButton
+* Purpose: Cunstructor
 * Parameters: TrecPointer<DrawingBoard> rt - render target to use
 *				TrecPointer<TArray<styleTable>> ta - the list of Anaface styles
 * Returns: void
@@ -44,8 +44,8 @@ TRadioButton::TRadioButton(TrecPointer<DrawingBoard>rt, TrecPointer<TArray<style
 }
 
 /*
-* Method: (TRadioButton) (Destructor)
-* Purpose: Cleans up radio button
+* Method: TRadioButton::~TRadioButton
+* Purpose: Destructor
 * Parameters: void
 * Returns: void
 */
@@ -59,7 +59,7 @@ TRadioButton::~TRadioButton()
 }
 
 /*
-* Method: TRadioButton - onCreate
+* Method: TRadioButton::onCreate
 * Purpose: Sets up the control, including radio button specific aspects
 * Parameters: RECT r - the loaction of the button
 * Returns: bool - false (ignore)
@@ -106,7 +106,7 @@ bool TRadioButton::onCreate(D2D1_RECT_F r, TrecPointer<TWindowEngine> d3d)
 }
 
 /*
-* Method: TRadioButton - onDraw
+* Method: TRadioButton::onDraw
 * Purpose: Draws Radio Button specific visuals
 * Parameters: void
 * Returns: void
@@ -125,7 +125,7 @@ void TRadioButton::onDraw(TObject* obj)
 }
 
 /*
-* Method: TRadioButton - OnLButtonDown
+* Method: TRadioButton::OnLButtonDown
 * Purpose: Allows Radio buttons thair own control of the the click event
 * Parameters: UINT nFlags - flags involved
 *				CPoint point - point on screen affected
@@ -162,7 +162,7 @@ void TRadioButton::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut
 }
 
 /*
-* Method: TRadioButton -
+* Method: TRadioButton::OnLButtonUp
 * Purpose: Calls the TControls version (Don't know why this version is here)
 * Parameters: UINT nFlags - flags involved
 *				CPoint point - point on screen affected
@@ -176,7 +176,7 @@ void TRadioButton::OnLButtonUp(UINT nFlags, TPoint point, messageOutput * mOut, 
 }
 
 /*
-* Method: TRadioButton - GetAnaGameType
+* Method: TRadioButton::GetAnaGameType
 * Purpose: Returns the AnaGame type marker for Radio Buttons
 * Parameters: void
 * Returns: UCHAR* - pointer to AnaGame marker for radio button class
@@ -186,6 +186,12 @@ UCHAR * TRadioButton::GetAnaGameType()
 	return nullptr;
 }
 
+/*
+ * Method: TRadioButton::Resize
+ * Purpose: Resizes the control upon the window being resized, applies to the box inside the control
+ * Parameters: D2D1_RECT_F& r - the new location for the control
+ * Returns: void
+ */
 void TRadioButton::Resize(D2D1_RECT_F& r)
 {
 	TGadgetControl::Resize(r);
@@ -195,7 +201,7 @@ void TRadioButton::Resize(D2D1_RECT_F& r)
 }
 
 /*
-* Method: TRadioButton - addButton
+* Method: TRadioButton::addButton
 * Purpose: Adds a new radio button to the group
 * Parameters: TRadioButton* trb - button to add
 * Returns: void
@@ -214,7 +220,7 @@ void TRadioButton::addButton(TRadioButton* trb)
 }
 
 /*
-* Method: TRadioButton - onCreateClass
+* Method: TRadioButton::onCreateClass
 * Purpose: Creaes a new class of radio button, used to group buttons
 * Parameters: void 
 * Returns: void
@@ -229,7 +235,7 @@ void TRadioButton::onCreateClass()
 }
 
 /*
-* Method: TRadioButton - storInTML
+* Method: TRadioButton::storInTML
 * Purpose: Stores the radio button in a TML file
 * Parameters: CArchive * ar - File to use
 *				int childLevel - Level of control in the UI tree
