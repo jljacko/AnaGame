@@ -196,3 +196,15 @@ void TFileNode::SetFile(TrecPointer<TFileShell>& d)
 	data = d;
 	DropChildNodes();
 }
+
+
+/**
+ * Method: TFileNode::GetData
+ * Purpose: retireves the underlying file shell object
+ * Parameters: void
+ * Returns: TrecPointer<TFileShell> - the data the node is holding
+ */
+TrecPointer<TFileShell> TFileNode::GetData()
+{
+	return data;
+}

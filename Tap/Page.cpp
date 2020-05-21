@@ -390,10 +390,19 @@ void Page::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
  *				messageOutput* mOut -  the result of the message
  * Returns: void
  */
-void Page::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
+void Page::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TrecPointer<TFlyout> fly)
 {
 	TDataArray<EventID_Cred> eventAr;
-	OnLButtonDown(nFlags, point, mOut, eventAr);
+	OnLButtonDown(nFlags, point, mOut, eventAr, fly);
+
+	for (UINT Rust = 0; Rust < eventAr.Size(); Rust++)
+	{
+		if (eventAr[Rust].eventType == R_Message_Type::On_Select_Scroller && eventAr[Rust].scroll.Get() && windowHandle.Get())
+		{
+			windowHandle->currentScrollBar = eventAr[Rust].scroll;
+			break;
+		}
+	}
 	
 	if(handler.Get())
 		handler->HandleEvents(eventAr);
@@ -448,10 +457,10 @@ void Page::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* mOut)
  *				messageOutput* mOut -  the result of the message
  * Returns: void
  */
-void Page::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut)
+void Page::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TrecPointer<TFlyout> fly)
 {
 	TDataArray<EventID_Cred> eventAr;
-	OnMouseMove(nFlags, point, mOut, eventAr);
+	OnMouseMove(nFlags, point, mOut, eventAr, fly);
 	
 	if(handler.Get())
 		handler->HandleEvents(eventAr);
@@ -493,11 +502,20 @@ void Page::OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut)
  *				messageOutput* mOut -  the result of the message
  * Returns: void
  */
-void Page::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut)
+void Page::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TrecPointer<TFlyout> fly)
 {
 	TDataArray<EventID_Cred> eventAr;
-	OnLButtonUp(nFlags, point, mOut, eventAr);
+	OnLButtonUp(nFlags, point, mOut, eventAr, fly);
 
+	// First, check to see if there is a new flyout to display. If there is, send it to the TWindow
+	for (UINT Rust = 0; Rust < eventAr.Size(); Rust++)
+	{
+		if (eventAr[Rust].eventType == R_Message_Type::On_Flyout && eventAr[Rust].flyout.Get() && windowHandle.Get())
+		{
+			windowHandle->SetFlyout(eventAr[Rust].flyout);
+			break;
+		}
+	}
 
 	if (handler.Get())
 		handler->HandleEvents(eventAr);
@@ -593,10 +611,17 @@ void Page::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArra
  *
  * Note: May be Deprecated soon once the MiniHandler is removed from the library
  */
-void Page::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+void Page::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr, TrecPointer<TFlyout> fly)
 {
 	if (!isContained(&point, &area))
 		return;
+
+	if (fly.Get())
+	{
+		fly->OnLButtonDown(nFlags, point, mOut, eventAr, clickedControl);
+		if (*mOut != messageOutput::negative && *mOut != messageOutput::negativeUpdate)
+			return;
+	}
 
 	if (rootControl.Get())
 		rootControl->OnLButtonDown(nFlags, point, mOut, eventAr, clickedControl);
@@ -633,10 +658,17 @@ void Page::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataAr
  *
  * Note: May be Deprecated soon once the MiniHandler is removed from the library
  */
-void Page::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+void Page::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr, TrecPointer<TFlyout> fly)
 {
 	if (!isContained(&point, &area))
 		return;
+
+	if (fly.Get())
+	{
+		fly->OnMouseMove(nFlags, point, mOut, eventAr);
+		if (*mOut != messageOutput::negative && *mOut != messageOutput::negativeUpdate)
+			return;
+	}
 
 	if (rootControl.Get())
 		rootControl->OnMouseMove(nFlags, point, mOut, eventAr);
@@ -673,12 +705,17 @@ void Page::OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput* mOut, TData
  *
  * Note: May be Deprecated soon once the MiniHandler is removed from the library
  */
-void Page::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+void Page::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr, TrecPointer<TFlyout> fly)
 {
 	if (!isContained(&point, &area))
 		return;
 
-	
+	if (fly.Get())
+	{
+		fly->OnLButtonUp(nFlags, point, mOut, eventAr);
+		if (*mOut != messageOutput::negative && *mOut != messageOutput::negativeUpdate)
+			return;
+	}
 
 	if (rootControl.Get())
 		rootControl->OnLButtonUp(nFlags, point, mOut, eventAr);

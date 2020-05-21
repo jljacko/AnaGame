@@ -1,6 +1,11 @@
 #pragma once
 #include "EventHandler.h"
 
+class FileHandler;
+
+
+typedef void (FileHandler::* FileHandlerEvents)(TControl* tc, EventArgs ea);
+
 /**
  * Class: FileHandler
  * Purpose: Extends the Event Handler to Support File Management
@@ -61,5 +66,20 @@ protected:
 	 * The control that actualy browses the File System
 	 */
 	TrecSubPointer<TControl, TTreeDataBind> browser;
+
+	/**
+	 * Holds list of EventHandlers specific for this Handler type
+	 */
+	TDataArray<FileHandlerEvents> fileHandlers;
+
+	
+	/**
+	 * Method: FileHandler::OnOpenFile
+	 * Purpose: Responds to a Double Click from the Control
+	 * Parameters: TControl* tc - The Control that generated the event
+	 *				EventArgs ea - The parameters of the event
+	 * Returns: void
+	 */
+	void OnOpenFile(TControl* tc, EventArgs ea);
 };
 

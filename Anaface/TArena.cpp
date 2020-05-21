@@ -5,8 +5,8 @@
 #include <DirectXColors.h>
 
 /*
-* Method: TArena) (Constructor) 
-* Purpose: Sets up the Arena
+* Method: TArena::TArena 
+* Purpose: Constructor
 * Parameters: TrecPointer<DrawingBoard> rt - the render target to draw to
 *				TrecPointer<TArray<styleTable>> st - list of Anaface styles
 *				HWND h - the window to attach to
@@ -33,8 +33,8 @@ TArena::TArena(TrecPointer<DrawingBoard> rt, TrecPointer<TArray<styleTable>> st,
 }
 
 /*
-* Method: TArena) (Destructor)
-* Purpose: Cleans up arena
+* Method: TArena::~TArena
+* Purpose: Destructor
 * Parameters: void
 * Returns: void
 */
@@ -45,7 +45,7 @@ TArena::~TArena()
 }
 
 /*
-* Method: TArena - onCreate
+* Method: TArena::onCreate
 * Purpose: Sets up Arena specific attributes
 * Parameters: RECT r - the location on screen where arena is to show
 * Returns: bool - ignore
@@ -187,7 +187,7 @@ bool TArena::onCreate(D2D1_RECT_F r, TrecPointer<TWindowEngine> d3d)
 }
 
 /*
-* Method: TArena - getEngine
+* Method: TArena::getEngine
 * Purpose: Retrieves the engine the Arena control is attached to
 * Parameters: void
 * Returns: TrecPointer<ArenaEngine> - the engine arena control is attached to
@@ -199,7 +199,7 @@ TrecPointer<TArenaEngine> TArena::getEngine()
 
 
 /*
-* Method: TArena - onDraw
+* Method: TArena::onDraw
 * Purpose: Draws the Control as well as activates the 3D engine to draw
 * Parameters: void
 * Returns: void
@@ -242,7 +242,7 @@ void TArena::onDraw(TObject* obj)
 
 
 /*
-* Method: TArena - GetAnaGameType
+* Method: TArena::GetAnaGameType
 * Purpose: Retrieves the AnaGame type for the TArena class
 * Parameters: void
 * Returns: UCHAR* - AnaGame representation of the type
@@ -254,6 +254,12 @@ UCHAR * TArena::GetAnaGameType()
 
 
 
+/*
+ * Method: TArena::Resize
+ * Purpose: Resizes the control upon the window being resized
+ * Parameters: D2D1_RECT_F& r - the new location for the control
+ * Returns: void
+ */
 void TArena::Resize(D2D1_RECT_F& r)
 {
 	TControl::Resize(r);

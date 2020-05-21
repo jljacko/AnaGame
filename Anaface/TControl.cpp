@@ -14,12 +14,12 @@
 */
 
 /*
-* Method: (TControl) (Contructor)
-* Purpose: Sets up a TControl with a RenderTarget to draw to and a style table to draw from
+* Method: TControl::TControl
+* Purpose: Constructor
 * Parameters: TrecPointer<DrawingBoard> db - Smart Pointer to the Render Target to draw on
 *				TrecPointer<TArray<styleTable>> styTab - Smart Pointer to the list of styles to draw from
 *				bool base - (DEPRECIATED) added to distinguish between base control and sub-classes
-* Contstructor - No Return
+* Return: New TControl Object
 */
 TControl::TControl(TrecPointer<DrawingBoard> db,TrecPointer<TArray<styleTable>> styTab, bool base)
 {
@@ -50,14 +50,9 @@ TControl::TControl(TrecPointer<DrawingBoard> db,TrecPointer<TArray<styleTable>> 
 		isTextControl = false;
 	}
 
-	contextMenu = NULL;
-	flyout = NULL;
 	shape =TShape::T_Rect;
 	fixHeight = fixWidth = false;
 	rightBorder = leftBorder = topBorder = bottomBorder = onFocus = onClickFocus = false;
-
-	//eventList = new TDataArray<EventTypeID>();
-	contextMenu = nullptr;
 
 	controlTransform = D2D1::IdentityMatrix();
 	
@@ -69,16 +64,14 @@ TControl::TControl(TrecPointer<DrawingBoard> db,TrecPointer<TArray<styleTable>> 
 }
 
 /*
-* Method: (TControl) (Contructor)
-* Purpose: Provide a Copy Contructor so that it can be moved easily from one medium to another
+* Method: TControl::TControl
+* Purpose: Copy Constructor
 * Parameters: TControl &rCont - the Constructor to draw from
-* Returns: void
+* Returns: Copy of TControl
 */
 TControl::TControl(TControl & rCont)
 {
 	arrayID = rCont.arrayID;
-	contextMenu = rCont.contextMenu;
-	flyout = rCont.flyout;
 	eventHandler = rCont.eventHandler;
 	isActive = rCont.isActive;
 
@@ -176,19 +169,17 @@ TControl::TControl(TControl & rCont)
 }
 
 /*
-* Method: (TControl) (Contructor)
-* Purpose: Provide a Default contructor
+* Method: TControl::TControl) 
+* Purpose: Default contructor
 * Parameters: void
-* Returns: void
+* Returns: Blank TControl
 */
 TControl::TControl()
 {
 	arrayID = -1;
 
-	contextMenu = nullptr;
 	eventHandler = NULL;
 	isActive = true;
-	flyout = nullptr;
 
 	treeLevel = 0;
 
@@ -208,9 +199,6 @@ TControl::TControl()
 	
 	isLayout = false;
 	isTextControl = false;
-
-	flyout = nullptr;
-	contextMenu = nullptr;
 	//PointerCase =TrecPointer<TControl>(this);
 	shape =TShape::T_Rect;
 	fixHeight = fixWidth = false;
@@ -226,8 +214,8 @@ TControl::TControl()
 }
 
 /*
-* Method: (TControl) (Destructor)
-* Purpose: Clean up Memory it consumes
+* Method: TControl::~Tcontrol
+* Purpose: Destructor
 * Parameters: void
 * Returns: void
 */
@@ -256,6 +244,12 @@ TControl::~TControl()
 	Log(LogType::lt_memory, logMessage);
 }
 
+/**
+ * Method: TControl::SetSelf
+ * Purpose: Allows TrecPointerKey to provide the Control with a reference to itself
+ * Parameters: TrecPointer<TControl> self - the TrecPointer of this Control that the TrecPointerKey generated
+ * Returns: void
+ */
 void TControl::SetSelf(TrecPointer<TControl> self)
 {
 	if (this != self.Get())
@@ -269,7 +263,7 @@ void TControl::SetSelf(TrecPointer<TControl> self)
 extern TDataArray<TTextField*> TextList;
 
 /*
-* Method: TControl - loadFromHTML
+* Method: TControl::loadFromHTML
 * Purpose: Enables Control to load itself from an HTML File
 * Parameters: CArchive* ar - archive to read the HTML file
 * Returns: int - error
@@ -281,7 +275,7 @@ int TControl::loadFromHTML(TFile * ar)
 }
 
 /*
-* Method: TControl - storeInTML
+* Method: TControl::storeInTML
 * Purpose: Allows a Control to save itself in a TML File
 * Parameters: CArchive* ar - the file to save to
 *				int childLevel - the generation if the TControl
@@ -452,7 +446,7 @@ void TControl::storeInTML(TFile * ar, int childLevel, bool overrideChildren)
 }
 
 /*
-* Method: TControl - storeInHTML
+* Method: TControl::storeInHTML
 * Purpose: Enables a Control to save itself in an HTML file
 * Parameters: TFile* ar - the file to save to
 * Returns: void
@@ -464,7 +458,7 @@ void TControl::storeInHTML(TFile * ar)
 }
 
 /*
-* Method: TControl - onCreate
+* Method: TControl::onCreate
 * Purpose: Allows the Control To contstruct itself based off of the location it has and the
 *		screen space it is given
 * Parameters: RECT contain - the area it can use
@@ -1014,15 +1008,6 @@ TrecPointer<styleTable> classy;
 
 	}
 
-	valpoint = attributes.retrieveEntry(TString(L"|FlyoutLocation"));
-	if (valpoint.Get() && flyout)
-		flyout->onCreate(convertStringToD2D1Rect(valpoint.Get()),d3d);
-
-	if (contextMenu)
-	{
-		contextMenu->onCreate(location, d3d);
-	}
-
 	updateComponentLocation();
 
 	// Now see if any child element extends beyond 
@@ -1049,10 +1034,11 @@ TrecPointer<styleTable> classy;
 }
 
 /*
-* Method: TControl - Resize
-* Purpose: Resizes the control upon the window being resized
-* Parameters: RECT r - the new location for the control
-*/
+ * Method: TControl::Resize
+ * Purpose: Resizes the control upon the window being resized
+ * Parameters: D2D1_RECT_F& r - the new location for the control
+ * Returns: void
+ */
 void TControl::Resize(D2D1_RECT_F& rr)
 {
 	D2D1_RECT_F r = rr;
@@ -1105,7 +1091,7 @@ void TControl::Resize(D2D1_RECT_F& rr)
 }
 
 /*
-* Method: TControl - setEventHandler
+* Method: TControl::setEventHandler
 * Purpose: Sets up an event handler
 * Parameters: EventTarget& eh - the Event Class
 * Returns: bool - just returns true
@@ -1124,7 +1110,7 @@ bool TControl::setEventHandler(EventTarget & eh)
 }
 
 /*
-* Method:  TControl - updateArrayID
+* Method:  TControl::updateArrayID
 * Purpose: Stores an index to an external array, to be determined by the software using the control
 * Parameters: int aid - the array index to store, default -1
 * Returns: void
@@ -1142,7 +1128,8 @@ void TControl::updateArrayID(int aid)
  * Details: Changes the contents location on the board, reflected in the changes to
  *		TControl's location, but not where it draws, hence why it's own snip stays the same
  *		However, the contents might include child locations so their snips might have to be 
- *		updated*/
+ *		updated
+ */
 bool TControl::onScroll(int x, int y)
 {
 	location.left += x;
@@ -1163,7 +1150,7 @@ bool TControl::onScroll(int x, int y)
 }
 
 /*
-* Method: TControl - onBeingScrolled
+* Method: TControl::onBeingScrolled
 * Purpose: To be called whenever a parent control is scrolling
 * Parameters: int x - the degree to which the control is being moved left or right
 *				int y - the degrees to which the control is being moved up or down
@@ -1193,7 +1180,7 @@ bool TControl::onBeingScrolled(int x, int y)
 }
 
 /*
-* Method: TControl - scroll
+* Method: TControl::scroll
 * Purpose: Use in the event that scrolling needs to be done by a parent so control ends up in view
 * Parameters: RECT& loc - the location of the control that needs to be in view
 * Returns: void
@@ -1242,33 +1229,9 @@ void TControl::scroll(RECT& loc)
 
 }
 
-/*
-* Method: TControl - SetContextMenu
-* Purpose: Set up a Context Menu to show if Control is ever right-Clicked
-* Parameters: TrecPointer<TControl> cm - Smart Pointer to a Control to serve as the Context Menu
-* Returns: bool - true if successful, false if error occurs
-*/
-bool TControl::SetContextMenu(TrecPointer<TControl> cm)
-{
-	if(contextMenu)
-	return false;
-	if (!cm.Get())
-		return false;
-	try
-	{
-		contextMenu = dynamic_cast<TContextMenu*>(cm.Get());
-		
-		return true;
-	}
-	catch (std::bad_cast& bc)
-	{
-		return false;
-	}
-
-}
 
 /*
-* Method: TControl - BreakShared
+* Method: TControl::BreakShared
 * Purpose: Allows Tcontrol to be deleted by removing links to it by its conponents
 * Parameters: void
 * Returns: void
@@ -1299,7 +1262,7 @@ void TControl::BreakShared()
 }
 
 /*
-* Method: TControl - AddClass
+* Method: TControl::AddClass
 * Purpose: Labels to serve as id's to draw styles from, useful in determining what HTML/TML element was used in creating the control
 * Parameters: TString& t - Class Name to add
 * Returns: void
@@ -1317,7 +1280,7 @@ void TControl::AddClass(const TString & t)
 		className = trimmedT;
 }
 /*
-* Method: TControl - GetID
+* Method: TControl::GetID
 * Purpose: Retrieves the ID for the Control
 * Parameters: void
 * Returns: TString - the ID of the Control (Careful, String could be blank)
@@ -1332,11 +1295,23 @@ UCHAR * TControl::GetAnaGameType()
 	return nullptr;
 }
 
+/*
+* Method: TControl::SetNormalMouseState
+* Purpose: Emergency method to set the Control state to normal
+* Parameters: void
+* Returns: void
+*/
 void TControl::SetNormalMouseState()
 {
 	mState = messageState::normal;
 }
 
+/**
+ * Method: TControl::GetMultiData
+ * Purpose: Retireves the Attribute[s] of the Control by the key
+ * Parameters: const TString& key - the key to the attribute requested
+ * Returns: TDataArray<TString> - the list of values associated with the key
+ */
 TDataArray<TString> TControl::GetMultiData(const TString& key)
 {
 	TDataArray<TString> ret;
@@ -1352,6 +1327,12 @@ TDataArray<TString> TControl::GetMultiData(const TString& key)
 	return ret;
 }
 
+/**
+ * Method: TControl::SetScrollControlOnMinSize
+ * Purpose: Allows the TControl to set a Scroller Control above it if the bounds becomes too tight 
+ * Parameters: D2D1_RECT_F l - the new bounds of the TControl
+ * Returns: Whether the ScrollerControl was set or not
+ */
 bool TControl::SetScrollControlOnMinSize(D2D1_RECT_F l)
 {
 	if (dimensions)
@@ -1360,12 +1341,13 @@ bool TControl::SetScrollControlOnMinSize(D2D1_RECT_F l)
 		bool w = dimensions->minWidth > static_cast<int>(l.right - l.left);
 		if (h || w)
 		{
-			if (parent.Get())
+			if (parent.Get() && !parent->IsScroller())
 			{
 				TrecPointer<TControl> scrollControl = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TScrollerControl>(drawingBoard, styles);
 				scrollControl->onCreate(l, TrecPointer<TWindowEngine>());
+				auto oldParent = parent;
 				dynamic_cast<TScrollerControl*>(scrollControl.Get())->SetChildControl(TrecPointerKey::GetTrecPointerFromSoft<TControl>(tThis));
-				parent->SwitchChildControl(tThis, scrollControl);
+				oldParent->SwitchChildControl(tThis, scrollControl);
 				return true;
 			}
 		}
@@ -1373,6 +1355,13 @@ bool TControl::SetScrollControlOnMinSize(D2D1_RECT_F l)
 	return false;
 }
 
+/**
+ * Method: TControl::SwitchChildControl
+ * Purpose: Allows a child control to insert another control between it and THIS control (usually a scroller control)
+ * Parameters: TrecPointerSoft<TControl> curControl - the Control making the call (used to help parent control identify which child to replace)
+ *				 TrecPointer<TControl> newControl - the Control to replace it with
+ * Returns: void
+ */
 void TControl::SwitchChildControl(TrecPointerSoft<TControl> curControl, TrecPointer<TControl> newControl)
 {
 	for (UINT Rust = 0; Rust < children.Count(); Rust++)
@@ -1386,6 +1375,12 @@ void TControl::SwitchChildControl(TrecPointerSoft<TControl> curControl, TrecPoin
 	}
 }
 
+/**
+ * Method: TControl::GetParentReference
+ * Purpose: Sets up a Parent Holder for this Control (used so that no redundant holder object is created)
+ * Parameters: void
+ * Returns: TrecPointer<TParentHolder> - the holder object referencing this control as a parent control
+ */
 TrecPointer<TParentHolder> TControl::GetParentReference()
 {
 	if (!thisParent.Get())
@@ -1396,9 +1391,9 @@ TrecPointer<TParentHolder> TControl::GetParentReference()
 }
 
 /*
-* Method: TControl - onDraw
+* Method: TControl::onDraw
 * Purpose: Draws the control
-* Parameters: void
+* Parameters: TObject* obj - Raw reference to a TObject that might have specific text to say
 * Returns: void
 */
 void TControl::onDraw(TObject* obj)
@@ -1493,7 +1488,7 @@ void TControl::onDraw(TObject* obj)
 }
 
 /*
-* Method: TControl - getLocation
+* Method: TControl::getLocation
 * Purpose: Retrieves the current physical location on the RenderTarget of the control
 * Parameters: void
 * Returns: D2D1_RECT_F - the location
@@ -1504,7 +1499,7 @@ D2D1_RECT_F TControl::getLocation()
 }
 
 /*
-* Method: TControl - getMargin
+* Method: TControl::getMargin
 * Purpose: Retrieves the space between the control's location and the area it was given
 * Parameters: void
 * Returns: D2D1_RECT_F - the margin
@@ -1515,7 +1510,7 @@ D2D1_RECT_F TControl::getMargin()
 }
 
 /*
-* Method: TControl - getRenderTarget
+* Method: TControl::getRenderTarget
 * Purpose: Retrieves the RenderTarget the Control is currently set to draw to
 * Parameters: void
 * Returns: TrecComPointer<ID2D1RenderTarget> - Smart Pointer holding the Render Target 
@@ -1526,7 +1521,7 @@ TrecPointer<DrawingBoard> TControl::getDrawingBoard()
 }
 
 /*
-* Method: TControl - getParent
+* Method: TControl::getParent
 * Purpose: Retrieves the parent control of the current control
 * Parameters: void
 * Returns: TrecPointer<TControl> - Smart Pointer to the Parent Control
@@ -1551,11 +1546,11 @@ void TControl::setExternalBounds(D2D1_RECT_F r)
 }
 
 /*
-* Method:  TControl - getLayoutStatus
+* Method:  TControl::getLayoutStatus
 * Purpose: Returns whether or not the control is a TLayout 
 * Parameters: void
 * Returns: bool - whether or not control is a TLayout
-* Note: DEPRECIATED - C++ RTTI functionality can assume this purpose with greater presision
+* Note: DEPRECIATED - C++ RTTI functionality can assume this purpose with greater precision
 */
 bool TControl::getLayoutStatus()
 {
@@ -1563,7 +1558,7 @@ bool TControl::getLayoutStatus()
 }
 
 /*
-* Method: TControl - offsetLocation
+* Method: TControl::offsetLocation
 * Purpose: Moves the Control to the specified point
 * Parameters: TPoint cp - the point to move the control to 
 * Returns: void
@@ -1582,7 +1577,7 @@ void TControl::offsetLocation(TPoint cp)
 }
 
 /*
-* Method: TControl - ShiftHorizontal
+* Method: TControl::ShiftHorizontal
 * Purpose: Moves the Control left-or right, expected to be used by TLayouts
 * Parameters: int degrees - how much to move the control and which direction
 * Returns: void
@@ -1615,7 +1610,7 @@ void TControl::ShiftHorizontal(int degrees)
 }
 
 /*
-* Method: TControl - ShiftVertical
+* Method: TControl::ShiftVertical
 * Purpose:Moves the Control up or down, expected to be used by TLayouts
 * Parameters: int degrees - how much to move the control and which direction
 * Returns: void
@@ -1648,7 +1643,7 @@ void TControl::ShiftVertical(int degrees)
 }
 
 /*
-* Method: TControl - setMinHeight
+* Method: TControl::setMinHeight
 * Purpose: Sets the Minimum height this control can be
 * Parameters: int h - the minimum height
 * Returns: void
@@ -1661,7 +1656,7 @@ void TControl::setMinHeight(int h)
 }
 
 /*
-* Method: TControl - setMaxHeight
+* Method: TControl::setMaxHeight
 * Purpose: Sets the Maximum height this control can be
 * Parameters: int h - the maximum height this control can be
 * Returns: void
@@ -1674,7 +1669,7 @@ void TControl::setMaxHeight(int h)
 }
 
 /*
-* Method: TControl - setMinWidth
+* Method: TControl::setMinWidth
 * Purpose: Sets the minimum width the control can be
 * Parameters: int w - the minimum width
 * Returns: void
@@ -1687,7 +1682,7 @@ void TControl::setMinWidth(int w)
 }
 
 /*
-* Method: TControl - setMaxWidth
+* Method: TControl::setMaxWidth
 * Purpose: Sets the maximum width the control can be
 * Parameters: int w - the max width
 * Returns: void
@@ -1700,7 +1695,7 @@ void TControl::setMaxWidth(int w)
 }
 
 /*
-* Method: TControl - setWidth
+* Method: TControl::setWidth
 * Purpose: Sets the current witdh of the control
 * Parameters: int w - the new width
 * Returns: void
@@ -1713,7 +1708,7 @@ void TControl::setWidth(int w)
 }
 
 /*
-* Method: TControl - setHeight
+* Method: TControl::setHeight
 * Purpose: Sets the current height of the control
 * Parameters: int h - the height to set the control to
 * Returns: void
@@ -1726,7 +1721,7 @@ void TControl::setHeight(int h)
 }
 
 /*
-* Method: TControl - addAttribute
+* Method: TControl::addAttribute
 * Purpose: Adds a new attribute to use during creation
 * Parameters: TString& attr - the attribute name to add
 *				TrecPointer<TString> val - the value of that attribute
@@ -1743,7 +1738,7 @@ bool TControl::addAttribute(const TString& attr, TrecPointer<TString> val)
 }
 
 /*
-* Method: TControl - addChild
+* Method: TControl::addChild
 * Purpose: Adds a child control to the Current Control to hold
 * Parameters: TrecPointer<TContainer> tcon - the Child to add
 * Returns: bool - success or error
@@ -1760,7 +1755,7 @@ bool TControl::addChild(TrecPointer<TControl> tcon)
 }
 
 /*
-* Method: TControl - setLocation
+* Method: TControl::setLocation
 * Purpose: Sets the Control in a new location
 * Parameters: RECT R - the new location
 * Returns: void
@@ -1771,7 +1766,7 @@ void TControl::setLocation(D2D1_RECT_F r)
 }
 
 /*
-* Method: TControl - setMBottom
+* Method: TControl::setMBottom
 * Purpose: Sets the margin on the bottom, likely used by the Builder when visually designing a control
 * Parameters: int b - the new bottom margin
 * Returns: void
@@ -1783,7 +1778,7 @@ void TControl::setMBottom(int b)
 }
 
 /*
-* Method: TControl - setMBottom
+* Method: TControl::setMBottom
 * Purpose: Sets the margin on the top, likely used by the Builder when visually designing a control
 * Parameters: int t - the new top margin
 * Returns: void
@@ -1795,7 +1790,7 @@ void TControl::setMTop(int t)
 }
 
 /*
-* Method: TControl - setMRight
+* Method: TControl::setMRight
 * Purpose:Sets the margin on the right, likely used by the Builder when visually designing a control
 * Parameters: int r - the new right margin
 * Returns: void
@@ -1807,7 +1802,7 @@ void TControl::setMRight(int r)
 }
 
 /*
-* Method: TControl - setMLeft
+* Method: TControl::setMLeft
 * Purpose: Sets the margin on the left, likely used by the Builder when visually designing a control
 * Parameters: int l - the new left margin
 * Returns: void
@@ -1818,6 +1813,12 @@ void TControl::setMLeft(int l)
 	marginSet = true;
 }
 
+/**
+ * Method: TControl::RotateDegrees
+ * Purpose: Rotates the Control
+ * Parameters: float degrees - the angle to rotate the Control by (in degrees)
+ * Returns: void
+ */
 void TControl::RotateDegrees(float degrees)
 {
 	if (degrees < 0.0f)
@@ -1825,13 +1826,19 @@ void TControl::RotateDegrees(float degrees)
 	rotation = degrees;
 }
 
+/**
+ * Method: TControl::RotateRadians
+ * Purpose: Rotates the Control
+ * Parameters: float radians - the angle to rotate the Control by (in degrees)
+ * Returns: void
+ */
 void TControl::RotateRadians(float radians)
 {
 	RotateDegrees(radians * RADIAN_DEGREE_RATIO);
 }
 
 /*
-* Method: TControl - determineMinHeightNeeded
+* Method: TControl::determineMinHeightNeeded
 * Purpose: Determines the minimum height needed, base returns the current height, useful for sub classes
 * Parameters: void
 * Returns: UINT - the minimum height needed
@@ -1893,7 +1900,7 @@ void TControl::SetNewLocation(const D2D1_RECT_F& r)
 }
 
 /*
-* Method: TControl - ShrinkHeight
+* Method: TControl::ShrinkHeight
 * Purpose: Reduces the height of the control down to what is needed --> just shrinks its children
 *		some of whom might find ways to shrink themselves
 * Parameters: void
@@ -1910,7 +1917,7 @@ void TControl::ShrinkHeight()
 }
 
 /*
-* Method: TControl - setParent
+* Method: TControl::setParent
 * Purpose: Sets the controls parent for reference in the tree
 * Parameters: TrecPointer<TParentHolder> tcp - the pointer to the parent (whether it is a TControl, a (Tap) Page
 * Returns: void
@@ -1922,7 +1929,7 @@ void TControl::setParent(TrecPointer<TParentHolder> tcp)
 }
 
 /*
-* Method: TControl - getText
+* Method: TControl::getText
 * Purpose: Returns the Text Component labeled by the id
 * Parameters: int n - the id of the component
 * Returns: TrecPointer<TText> - Smart Pointer to the target text component
@@ -1944,7 +1951,7 @@ TrecPointer<TText> TControl::getText(int n)
 }
 
 /*
-* Method: TControl - getContent
+* Method: TControl::getContent
 * Purpose: Returns the Content Component labeled by the id
 * Parameters: int n - the id of the component
 * Returns: const TrecPointer<TContent> - Smart Pointer to the target content component
@@ -1965,7 +1972,7 @@ TrecPointer<TContent> TControl::getContent(int n)
 }
 
 /*
-* Method: TControl - getBorder
+* Method: TControl::getBorder
 * Purpose: Returns the Border Component labeled by the id
 * Parameters: int n - the id of the component
 * Returns: const TrecPointer<TBorder> - Smart Pointer to the target Border Component 
@@ -1987,7 +1994,7 @@ TrecPointer<TBorder> TControl::getBorder(int n)
 }
 
 /*
-* Method: TControl - setNewText
+* Method: TControl::setNewText
 * Purpose: Prepares a new TText component, likely called by the Builder when designing controls
 * Parameters: int n - the id of the new TText o override
 * Returns: void
@@ -2008,6 +2015,12 @@ void TControl::setNewText(int n)
 	}
 }
 
+/**
+ * Method: TControl::RegisterAnimations
+ * Purpose: Allows the Control to report Animations that it has been told to call for
+ * Parameters: TDataArray<TrecPointer<AnimationData>>& aData - reference to Animation Data Collection used by the Tap Library to generate Animation for this control
+ * Returns: void
+ */
 void TControl::RegisterAnimations(TDataArray<TrecPointer<AnimationData>>& aData)
 {
 	for (UINT Rust = 0; Rust < children.Count(); Rust++)
@@ -2024,7 +2037,7 @@ void TControl::RegisterAnimations(TDataArray<TrecPointer<AnimationData>>& aData)
 }
 
 /*
-* Method: TControl - setWrapperPointer
+* Method: TControl::setWrapperPointer
 * Purpose: Sets the wrapper component, DO NOT USE
 * Parameters: TrecPointer<TControl> tcp -  the wrapper control
 * Returns: void
@@ -2036,7 +2049,7 @@ void TControl::setWrapperPointer(TrecPointer<TControl> tcp)
 }*/
 
 /*
-* Method: TControl - onCreate
+* Method: TControl::onCreate
 * Purpose: Sets up the basic components based off of the available attributes
 * Parameters: TMap<TString>* att - list of attributes
 *				RECT loc - the location ot use
@@ -2267,7 +2280,7 @@ bool TControl::onCreate(TMap<TString>* att, D2D1_RECT_F loc)
 }
 
 /*
-* Method: TControl - onCreate2
+* Method: TControl::onCreate2
 * Purpose: Sets up themessageState::mouse hover components based off of the available attributes
 * Parameters: TMap<TString>* att - list of attributes
 *				RECT loc - the location ot use
@@ -2561,7 +2574,7 @@ bool TControl::onCreate2(TMap<TString>* att, D2D1_RECT_F loc)
 }
 
 /*
-* Method: TControl - onCreate3
+* Method: TControl::onCreate3
 * Purpose: Sets up the click event components based off of the available attributes
 * Parameters: TMap<TString>* att - list of attributes
 *				RECT loc - the location ot use
@@ -2840,10 +2853,10 @@ bool TControl::onCreate3(TMap<TString>* att, D2D1_RECT_F loc)
 }
 
 /*
-* Method: TControl - updateComponentLocation
+* Method: TControl::updateComponentLocation
 * Purpose: Update the locations of the control's components - call whenever the control's location is updated
-* Parameters:
-* Returns:
+* Parameters: void
+* Returns: void
 */
 void TControl::updateComponentLocation()
 {
@@ -2891,6 +2904,12 @@ void TControl::updateComponentLocation()
 
 }
 
+/**
+ * Method: TControl::CheckScroll
+ * Purpose: Makes sure that the Control doesn't need scrollers or, if it needs them, then the bars are properly configured
+ * Parameters: void
+ * Returns: void
+ */
 void TControl::CheckScroll()
 {
 	D2D1_RECT_F area = location;
@@ -2953,7 +2972,7 @@ void TControl::CheckScroll()
 
 
 /*
-* Method: TControl - generateImage
+* Method: TControl::generateImage
 * Purpose: Sets up an image for the Control if an attribute calls for it
 * Parameters: TrecPointer<TContent> tcon - the Content component to attach the image to
 *				TrecPointer<TString> p - the file name of the target image
@@ -2978,7 +2997,7 @@ int TControl::generateImage(TrecPointer<TContent> tcon, TrecPointer<TString> p, 
 }
 
 /*
-* Method: TControl - checkMargin
+* Method: TControl::checkMargin
 * Purpose: Sets up the margin attribute if available, called by onCreate
 * Parameters: RECT contain - the location given to onCreate
 * Returns: void
@@ -3010,7 +3029,7 @@ void TControl::checkMargin(D2D1_RECT_F contain)
 }
 
 /*
-* Method: TControl - checkHeightWidth
+* Method: TControl::checkHeightWidth
 * Purpose: checks for the height and width attributes of the control, called by onCreate
 * Parameters: RECT r the location given to onCreate
 * Returns: void
@@ -3076,7 +3095,7 @@ void TControl::checkHeightWidth(D2D1_RECT_F r)
 }
 
 /*
-* Method: TControl - generateSizeControl
+* Method: TControl::generateSizeControl
 * Purpose: Sets up the heights and widths of the control (stored as pointer so controls that
 *		don't have this attribute can save memory this way
 * Parameters: void
@@ -3099,7 +3118,7 @@ void TControl::generateSizeControl()
 }
 
 /*
-* Method: TControl - hasEvent
+* Method: TControl::hasEvent
 * Purpose: Checks to see whether the control is set to respond to a certain event with a handler
 * Parameters: R_Message_Type type - type of message to respond to
 * Returns: bool - presense of type handler
@@ -3134,10 +3153,11 @@ void TControl::resetArgs()
 	args.positive = false;
 	args.text.Empty();
 	args.type = L'\0';
+	args.object.Nullify();
 }
 
 /*
-* Method: TControl - getEventID
+* Method: TControl::getEventID
 * Purpose: Controls never touch their handlers. Instead, they're given an index to a collection of handlers
 * Parameters: R_Message_Type type -  the type of message to respond to
 * Returns: int - index of handler to call (-1 if handler not provided)
@@ -3155,8 +3175,8 @@ int TControl::getEventID(R_Message_Type type)
 }
 
 /*
-* Method: TControl - SetToRenderTarget
-* Purpose: Updates each component to the controls current render target, call if render target is ever switched
+* Method: TControl::SetToRenderTarget
+* Purpose: Updates each component to the controls current DrawingBoard, call if DrwingBoard is ever switched
 * Parameters: void
 * Returns: void
 */
@@ -3185,7 +3205,7 @@ void TControl::SetToRenderTarget()
 }
 
 /*
-* Method: TControl - addEventID
+* Method: TControl::addEventID
 * Purpose: Adds the Event Type with a handler index to associate it with
 * Parameters: R_Message_Type rmt -  message type
 *				int e_id - the idex of the message handler that goes with it
@@ -3205,7 +3225,7 @@ void TControl::addEventID(R_Message_Type rmt, int e_id)
 // Messages TControls can expect to get from the Central Program (or when they are part of a running TAP
 
 /*
-* Method: TControl - OnRButtonUp
+* Method: TControl::OnRButtonUp
 * Purpose: Allows Control to catch the RightmessageState::mouse button release event and act accordingly
 * Parameters: UINT nFlags - flags provided by MFC's Message system, not used
 *				TPoint point - the point on screen where the event occured
@@ -3251,7 +3271,7 @@ afx_msg void TControl::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOu
 }
 
 /*
-* Method: TControl - OnLButtonDown
+* Method: TControl::OnLButtonDown
 * Purpose: Allows Control to catch the LeftmessageState::mouse Button Down event and act accordingly
 * Parameters: UINT nFlags - flags provided by MFC's Message system, not used
 *				TPoint point - the point on screen where the event occured
@@ -3379,7 +3399,7 @@ afx_msg void TControl::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* m
 }
 
 /*
-* Method: TControl - OnRButtonDown
+* Method: TControl::OnRButtonDown
 * Purpose: Allows Control to catch the RightmessageState::mouse button down event and act accordingly
 * Parameters: UINT nFlags - flags provided by MFC's Message system, not used
 *				TPoint point - the point on screen where the event occured
@@ -3433,15 +3453,10 @@ afx_msg void TControl::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* m
 		eventAr.push_back(EventID_Cred( R_Message_Type::On_Right_Click,this ));
 	}
 
-	if (contextMenu)
-	{
-		contextMenu->Show(appearCondition::appear_onRightClick);
-	}
-
 }
 
 /*
-* Method: TControl - OnMouseMove
+* Method: TControl::OnMouseMove
 * Purpose: Allows Controls to catch themessageState::mouse Move event and deduce if the cursor has hovered over it
 * Parameters: UINT nFlags - flags provided by MFC's Message system, not used
 *				TPoint point - the point on screen where the event occured
@@ -3508,7 +3523,7 @@ afx_msg void TControl::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOu
 }
 
 /*
-* Method: TControl - OnContextMenu
+* Method: TControl::OnContextMenu
 * Purpose: Allows Anaface to catch onContextMenu calls from MFC
 * Parameters: CWnd* pWnd - The window involved
 *				TPoint point - the point on screen where the event occured
@@ -3524,7 +3539,7 @@ afx_msg void TControl::OnContextMenu(CWnd* pWnd, TPoint point, messageOutput* mO
 }*/
 
 /*
-* Method: TControl - OnLButtonDblClk
+* Method: TControl::OnLButtonDblClk
 * Purpose: Allows control to catch the DOuble Click event and act accordingly
 * Parameters: UINT nFlags - flags provided by MFC's Message system, not used
 *				TPoint point - the point on screen where the event occured
@@ -3536,10 +3551,52 @@ afx_msg void TControl::OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput*
 {
 	if (!isActive)
 		return;
+
+
+	if (!isContained(&point, &location))
+	{
+		if (mState != messageState::normal)
+		{
+			mState = messageState::normal;
+			*mOut = messageOutput::negativeUpdate;
+		}
+		else
+			*mOut = messageOutput::negative;
+		return;
+	}
+	for (int c = 0; c < children.Count(); c++)
+	{
+		children.ElementAt(c)->OnLButtonDblClk(nFlags, point, mOut, eventAr);
+		if (*mOut == messageOutput::negative)
+			continue;
+		if (*mOut == messageOutput::positiveOverride || *mOut == messageOutput::positiveOverrideUpdate)
+			return;
+	}
+	if (*mOut == messageOutput::positiveContinue || *mOut == messageOutput::positiveContinueUpdate)
+	{
+		if (mState != messageState::mouseRClick)
+			*mOut = messageOutput::positiveContinueUpdate;
+
+	}
+	
+
+	if (hasEvent(R_Message_Type::On_LDoubleClick))
+	{
+		// Set args
+		resetArgs();
+		args.eventType = R_Message_Type::On_LDoubleClick;
+		args.point = point;
+		args.methodID = getEventID(R_Message_Type::On_LDoubleClick);
+		args.isClick = true;
+		args.isLeftClick = false;
+		args.control = this;
+		eventAr.push_back(EventID_Cred(R_Message_Type::On_LDoubleClick, this));
+	}
+
 }
 
 /*
-* Method: TControl - OnLButtonUp
+* Method: TControl::OnLButtonUp
 * Purpose: Allows control to catch the Left Button Up event and act accordingly
 * Parameters: UINT nFlags - flags provided by MFC's Message system, not used
 *				TPoint point - the point on screen where the event occured
@@ -3598,7 +3655,7 @@ afx_msg void TControl::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOu
 }
 
 /*
-* Method: TControl - OnChar
+* Method: TControl::OnChar
 * Purpose: Allows Controls to repond to character input
 * Parameters: bool fromChar - can be called either from on Key Down or OnChar
 *				UINT nChar - The ID of the character that was pressed
@@ -3643,7 +3700,7 @@ afx_msg bool TControl::OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlag
 // Messages TControls can get while under construction in the Builder
 
 /*
-* Method: TControl - Builder_OnLButtonUp
+* Method: TControl::Builder_OnLButtonUp
 * Purpose: Allows special calls from the Builder to know when the control is no longer being dragged
 * Parameters: UINT flags - Flags provided by MFC, not used
 *				TPoint point - the Point where event occured
@@ -3663,7 +3720,7 @@ afx_msg void TControl::Builder_OnLButtonUp(UINT flags, TPoint point, TControl** 
 }
 
 /*
-* Method: TControl - Builder_OnLButtonDown
+* Method: TControl::Builder_OnLButtonDown
 * Purpose: Allows Controls to tell if a use of the Builder is planning to move them around
 * Parameters: UINT flags - Flags provided by MFC, not used
 *				TPoint point - the Point where event occured
@@ -3746,7 +3803,7 @@ afx_msg void TControl::Builder_OnLButtonDown(UINT flags, TPoint point, TControl*
 }
 
 /*
-* Method: TControl - Builder_OnMouseMove
+* Method: TControl::Builder_OnMouseMove
 * Purpose: Allows controls to know when they are being moved
 * Parameters: UINT flags - Flags provided by MFC, not used
 *				TPoint point - the Point where event occured
@@ -3933,7 +3990,7 @@ afx_msg void TControl::Builder_OnMouseMove(UINT flags, TPoint cp, TControl** mOu
 }
 
 /*
-* Method: TControl - Remove_Builder_Click_Focus
+* Method: TControl::Remove_Builder_Click_Focus
 * Purpose: Removes the burden of being dragged by the Builder
 * Parameters: void
 * Returns: void
@@ -3947,7 +4004,7 @@ void TControl::Remove_Builder_Click_Focus()
 }
 
 /*
-* Method: TControl - setActive
+* Method: TControl::setActive
 * Purpose: Enables controls to be either active (default) or inactive (they don't draw or respond to events)
 * Parameters: bool act - whether control should be active or not
 * Returns: void
@@ -3958,7 +4015,7 @@ void TControl::setActive(bool act)
 }
 
 /*
-* Method: TControl - getEventArgs
+* Method: TControl::getEventArgs
 * Purpose: Allows Action Methods to retrieve Event Arguements before calling the target Event Handler
 * Parameters: void
 * Returns: EventArgs - structure of relevent arguements to provide an Event Handler
@@ -3969,11 +4026,11 @@ EventArgs TControl::getEventArgs()
 }
 
 /*
-* Method:  (TBorder) (Constructor)
-* Purpose: Sets up the Border for a given TControl
+* Method:  TBorder::TBorder
+* Purpose: Constructor
 * Parameters: TrecPointer<DrawingBoard> dbp - Smart Pointer to the Render target to draw against
 *				TControl* tc - the TControl to which the TBorder is a party to 
-* Returns: void
+* Returns: New TBorder Object
 */
 TBorder::TBorder(TrecPointer<DrawingBoard>rtp, TControl*tc)
 {
@@ -3996,11 +4053,11 @@ TBorder::TBorder(TrecPointer<DrawingBoard>rtp, TControl*tc)
 }
 
 /*
-* Method:  (TBorder) (Constructor)
-* Purpose: Sets up the border for a given TControl based off of an existing Border
+* Method: TBorder:TBorder
+* Purpose: Constructor
 * Parameters: TrecPointer<TBorder> & rBord - Reference to the Border to copy
 *				TControl* tc_holder - the Control to work for
-* Returns: void
+* Returns: New TBorder Object
 */
 TBorder::TBorder(TrecPointer<TBorder> & rBord,TControl* tc_holder)
 {	
@@ -4028,10 +4085,10 @@ TBorder::TBorder(TrecPointer<TBorder> & rBord,TControl* tc_holder)
 }
 
 /*
-* Method: (TBorder) (Constructor)
-* Purpose: Sets up a basic TBorder
+* Method: TBorder::TBorder
+* Purpose: Blank Constructor
 * Parameters: void
-* Returns: void
+* Returns: Blank TBorder Object
 */
 TBorder::TBorder()
 {
@@ -4045,8 +4102,8 @@ TBorder::TBorder()
 }
 
 /*
-* Method: (TBorder) (Destructor)
-* Purpose: Cleans up the TBorder upond deletion
+* Method: TBorder::~TBorder
+* Purpose: Destructor
 * Parameters: void
 * Returns: void
 */
@@ -4064,7 +4121,7 @@ TBorder::~TBorder()
 }
 
 /*
-* Method: TBorder - onCreate
+* Method: TBorder::onCreate
 * Purpose: Sets up a basic Rectangular border
 * Parameters: RECT location - the location the Border should draw on
 * Returns: bool - success
@@ -4091,7 +4148,7 @@ bool TBorder::onCreate(D2D1_RECT_F location)
 }
 
 /*
-* Method: TBorder - onCreate
+* Method: TBorder::onCreate
 * Purpose: Sets up a border optimized for dawing ovals
 * Parameters: D2D1_ELLIPSE e - the oval to draw
 * Returns: bool - success
@@ -4114,7 +4171,7 @@ bool TBorder::onCreate(D2D1_ELLIPSE e)
 }
 
 /*
-* Method: TBorder - onCreate
+* Method: TBorder::onCreate
 * Purpose: Sets up a Border that has a rectangle with rounded corners
 * Parameters: D2D1_ROUNDED_RECT rr - the border to draw
 * Returns: bool - success
@@ -4138,7 +4195,7 @@ bool TBorder::onCreate(D2D1_ROUNDED_RECT rr)
 
 
 /*
-* Method: TBorder - onDraw
+* Method: TBorder::onDraw
 * Purpose: Draws the border
 * Parameters: void
 * Returns: void
@@ -4222,7 +4279,7 @@ void TBorder::onDraw(D2D1_RECT_F& f_loc)
 
 
 /*
-* Method: TBorder - setThickness
+* Method: TBorder::setThickness
 * Purpose: Allows the thickness to be updated after creation
 * Parameters: float f - the thickness to set to
 * Returns: void
@@ -4233,7 +4290,7 @@ void TBorder::setThickness(float f)
 }
 
 /*
-* Method: TBorder - setOpaquency
+* Method: TBorder::setOpaquency
 * Purpose: Allows the Opaquency to be updated after creation
 * Parameters: float f - the opaquency to set to (no upadte occurs if value is out of range)
 * Returns: void 
@@ -4249,7 +4306,7 @@ void TBorder::setOpaquency(float f)
 }
 
 /*
-* Method: TBorder - getThickness
+* Method: TBorder::getThickness
 * Purpose: Allows the current thickness to be seen
 * Parameters: void
 * Returns: float - the current thickness
@@ -4260,7 +4317,7 @@ float TBorder::getThickness()
 }
 
 /*
-* Method: TBorder - getLocation
+* Method: TBorder::getLocation
 * Purpose: Retrieves the Location of the current border
 * Parameters: void
 * Returns: RECT - the current location
@@ -4271,7 +4328,7 @@ RECT TBorder::getLocation()
 }
 
 /*
-* Method: TBorder - ShiftHorizontal
+* Method: TBorder::ShiftHorizontal
 * Purpose: Moves the Border left-or right, expected to be used by TLayouts
 * Parameters: int degrees - how much to move the Border and which direction
 * Returns: void
@@ -4283,7 +4340,7 @@ void TBorder::ShiftHorizontal(int degrees)
 }
 
 /*
-* Method: TBorder - ShiftVertical
+* Method: TBorder::ShiftVertical
 * Purpose:Moves the Border up or down, expected to be used by TLayouts
 * Parameters: int degrees - how much to move the border and which direction
 * Returns: void
@@ -4295,7 +4352,7 @@ void TBorder::ShiftVertical(int degrees)
 }
 
 /*
-* Method: TBorder - SetColor
+* Method: TBorder::SetColor
 * Purpose: Allows the color of the border to change even after creation
 * Parameters: D2D1_COLOR_F& cf -  the color to set the border to
 * Returns: void
@@ -4353,6 +4410,12 @@ TrecPointer<TBrush> TBorder::GetBrush()
 }
 
 
+/*
+ * Method: TBorder::ResetBrush
+ * Purpose: Allows the border to reset the brush when one of it's attributes changes
+ * Parameters: void
+ * Returns: void
+ */
 void TBorder::ResetBrush()
 {
 	if (!drawingBoard.Get())
@@ -4384,12 +4447,12 @@ void TBorder::ResetBrush()
 }
 
 /*
-* Method: TBorder - storeInTML
+* Method: TBorder::storeInTML
 * Purpose: Allows te Border to save itself in the Anaface TML format
 * Parameters: CArchive * ar - the File object to save to
 *				int childLevel - the child level (in TML this lets the Border know how many dashes to write for each attribute)
 *				messageState ms - which Border the current Border is (the Border itself does not know)
-* Returns:
+* Returns: int
 */
 int TBorder::storeInTML(TFile * ar, int childLevel,messageState ms)
 {
@@ -4437,7 +4500,7 @@ int TBorder::storeInTML(TFile * ar, int childLevel,messageState ms)
 }
 
 /*
-* Method: TBorder - BreakShared
+* Method: TBorder::BreakShared
 * Purpose: Breaks the link between the Border and the Parent Control, allowing deletion
 * Parameters: void
 * Returns: void
@@ -4449,11 +4512,11 @@ void TBorder::BreakShared()
 }
 
 /*
-* Method: (TText) (Contstructor)
-* Purpose: Set up a new text element with the control and render target set up
+* Method: TText::TText
+* Purpose: Constructor
 * Parameters: TrecPointer<DrawingBoard> dbp - Smart Pointer to the Render Target to draw to
 *				TControl* tc - the TControl to work for
-* Returns: void
+* Returns: New TText Object
 */
 TText::TText(TrecPointer<DrawingBoard>rtp,TControl* tc)
 {
@@ -4476,11 +4539,11 @@ TText::TText(TrecPointer<DrawingBoard>rtp,TControl* tc)
 }
 
 /*
-* Method: (TText) (Contstructor)
-* Purpose: Sets up a Text element based off of an existing Text element
+* Method: TText::TText
+* Purpose: Close to a Copy Constructor
 * Parameters: TrecPointer<TText> & rText -  the text element to copy
 *				TControl* tc_holder - The TControl to work for
-* Returns: void
+* Returns: Copied TText
 */
 TText::TText(TrecPointer<TText> & rText, TControl* tc_holder)
 {
@@ -4519,10 +4582,10 @@ TText::TText(TrecPointer<TText> & rText, TControl* tc_holder)
 }
 
 /*
-* Method: (TText) (Contstructor)
-* Purpose: Sets up a Basic Clean Slate Text element
+* Method: TText::TText
+* Purpose: Default Constructor
 * Parameters: void
-* Returns: void
+* Returns: Blank TText
 */
 TText::TText()
 {
@@ -4545,8 +4608,8 @@ TText::TText()
 }
 
 /*
-* Method: (TText) (Destructor)
-* Purpose: Cleans up the Content
+* Method: TText::~TText
+* Purpose: Destructor
 * Parameters: void
 * Returns: void
 */
@@ -4554,7 +4617,7 @@ TText::~TText()
 {
 
 	TString logMessage;
-	logMessage.Format(L"DELETE %p TText - %S", this, this->text);
+	logMessage.Format(L"DELETE %p TText::%S", this, this->text);
 
 	Log(LogType::lt_memory, logMessage);
 
@@ -4570,7 +4633,7 @@ TText::~TText()
 }
 
 /*
-* Method: TText - onCreate
+* Method: TText::onCreate
 * Purpose: Sets up the Text element
 * Parameters: RECT loc - the screen space to use
 * Returns: int success (0 means no error)
@@ -4641,7 +4704,7 @@ int TText::onCreate(D2D1_RECT_F loc)
 }
 
 /*
-* Method: TText - reCreateLayout
+* Method: TText::reCreateLayout
 * Purpose: Resets the Text Layout upon changes made to the format, text, or location
 * Parameters: void 
 * Returns: void
@@ -4653,6 +4716,14 @@ void TText::reCreateLayout()
 	reCreateLayout(text);
 }
 
+/*
+ * Method: TText::reCreateLayout
+ * Purpose: Resets the Text Layout upon changes made to the format, text, or location
+ * Parameters: TString & str - the Text to change the format object to
+ * Returns: void
+ * Note: Call this method whenever you make a change to the format of the control, the text, or the location,
+ *		Otherwise, your changes might not be seen
+ */
 void TText::reCreateLayout(TString & str)
 {
 	fontLayout.Nullify();
@@ -4665,7 +4736,7 @@ void TText::reCreateLayout(TString & str)
 }
 
 /*
-* Method: TText - onDraw
+* Method: TText::onDraw
 * Purpose: Draws the text
 * Parameters: RECT r - the area to draw
 * Returns: bool success
@@ -4707,7 +4778,7 @@ bool TText::onDraw(D2D1_RECT_F& loc, TObject* obj)
 
 
 /*
-* Method: TText - setNewFont
+* Method: TText::setNewFont
 * Purpose: Sets up the new font for the text
 * Parameters: TString& pFont - String holding the new fnt to use
 * Returns: bool - true (redundant return value)
@@ -4721,7 +4792,7 @@ bool TText::setNewFont(TString& pFont)
 }
 
 /*
-* Method: TText - setNewFontSize
+* Method: TText::setNewFontSize
 * Purpose: Updates the size of the font to print
 * Parameters: float fs - the new font size
 * Returns: void
@@ -4734,7 +4805,7 @@ void TText::setNewFontSize(float fs)
 }
 
 /*
-* Method: TText - setNewHorizontalAlignment
+* Method: TText::setNewHorizontalAlignment
 * Purpose: Updates the Horizontal Alignment of the text element
 * Parameters: DWRITE_TEXT_ALIGNMENT ha - the new horizontal alignment
 * Returns: void
@@ -4750,7 +4821,7 @@ void TText::setNewHorizontalAlignment(DWRITE_TEXT_ALIGNMENT ha)
 }
 
 /*
-* Method: TText - setNewVerticalAlignment
+* Method: TText::setNewVerticalAlignment
 * Purpose: Updates the Vertical Alignment of the Text element
 * Parameters: DWRITE_PARAGRAPH_ALIGNMENT va - the new vertical alignment
 * Returns: void
@@ -4766,7 +4837,7 @@ void TText::setNewVerticalAlignment(DWRITE_PARAGRAPH_ALIGNMENT va)
 }
 
 /*
-* Method: TText - setOpaquency
+* Method: TText::setOpaquency
 * Purpose: Updates the opaquency of the text
 * Parameters: float o - the new opequency
 * Returns: bool - true if data is valid, false otherwise
@@ -4789,7 +4860,7 @@ void TText::setNewLocation(RECT r)
 }
 
 /*
-* Method: TText - getFontSize
+* Method: TText::getFontSize
 * Purpose: Retrieves the current font size of the text
 * Parameters: void
 * Returns: float - the current font size
@@ -4800,7 +4871,7 @@ float TText::getFontSize()
 }
 
 /*
-* Method: TText - getFont
+* Method: TText::getFont
 * Purpose: Retrieves the current font of the text
 * Parameters: void
 * Returns: TString - the current font
@@ -4811,7 +4882,7 @@ TString TText::getFont()
 }
 
 /*
-* Method: TText - getCaption
+* Method: TText::getCaption
 * Purpose: Retrieves the new caption for the text element
 * Parameters: void
 * Returns: TString - the current caption
@@ -4822,7 +4893,7 @@ TString TText::getCaption()
 }
 
 /*
- * Method: TText - GetMinWidth
+ * Method: TText::GetMinWidth
  * Purpose: Retirvees the minimum width needed before DirectWrtie has to add emergency breaks in line
  * Parameters: bool& worked - whether the value returned is truely the reported value
  * Return: float - the min width needed. If inspection fails, this represents the width currently used
@@ -4836,7 +4907,7 @@ float TText::GetMinWidth(bool& worked)
 }
 
 /*
-* Method: TText - setCaption
+* Method: TText::setCaption
 * Purpose: Updates the text with a new caption
 * Parameters: TString& string - the new Caption to use
 * Returns: void
@@ -4850,7 +4921,7 @@ void TText::setCaption(const TString& string)
 
 
 /*
-* Method: TText - setLocale
+* Method: TText::setLocale
 * Purpose: Sets a new Local for the text
 * Parameters: TString& loc - the String holding the new locale
 * Returns: void
@@ -4862,11 +4933,11 @@ void TText::setLocale(TString& loc)
 }
 
 /*
-* Method: TText - setFont
+* Method: TText::setFont
 * Purpose: Sets up the new font for the text
 * Parameters: TString& fo - String holding the new fnt to use
 * Returns: bool - true (redundant return value)
-* Note: DEPRECIATED - us the method TText - setNewFont
+* Note: DEPRECIATED - us the method TText::setNewFont
 */
 void TText::setFont(TString& fo)
 {
@@ -4875,7 +4946,7 @@ void TText::setFont(TString& fo)
 }
 
 /*
-* Method: TText - removeCaption
+* Method: TText::removeCaption
 * Purpose: Removes the Text and sets it to zero
 * Parameters: void
 * Returns: void
@@ -4888,7 +4959,7 @@ void TText::removeCaption()
 }
 
 /*
-* Method: TText - getHorizontalAlignment
+* Method: TText::getHorizontalAlignment
 * Purpose: Gets the Horizontal alignment of the text
 * Parameters: void
 * Returns: DWRITE_TEXT_ALIGNMENT - the Horizontal alignment
@@ -4899,7 +4970,7 @@ DWRITE_TEXT_ALIGNMENT TText::getHorizontalAlignment()
 }
 
 /*
-* Method: TText - getVerticalAlignment
+* Method: TText::getVerticalAlignment
 * Purpose: Gets the Vertical alignment of the text
 * Parameters: void
 * Returns: DWRITE_PARAGRAPH_ALIGNMENT - the vetical alignment if the text
@@ -4910,7 +4981,7 @@ DWRITE_PARAGRAPH_ALIGNMENT TText::getVerticalAlignment()
 }
 
 /*
-* Method: TText - getLength
+* Method: TText::getLength
 * Purpose: Retrieves the current length of the text being held
 * Parameters: void
 * Returns: int - the length of the text
@@ -4921,7 +4992,7 @@ int TText::getLength()
 }
 
 /*
-* Method: TText - getLocation
+* Method: TText::getLocation
 * Purpose: Retrieves the Location of the Text Control
 * Parameters: void
 * Returns: RECT - the location of the text
@@ -4932,7 +5003,7 @@ RECT TText::getLocation()
 }
 
 /*
-* Method: TText - ShiftHorizontal
+* Method: TText::ShiftHorizontal
 * Purpose: Moves the Text element left-or right, expected to be used by TLayouts
 * Parameters: int degrees - how much to move the text and which direction
 * Returns: void
@@ -4949,7 +5020,7 @@ void TText::ShiftHorizontal(int degrees)
 }
 
 /*
-* Method: TText - ShiftVertical
+* Method: TText::ShiftVertical
 * Purpose:Moves the Text Element up or down, expected to be used by TLayouts
 * Parameters: int degrees - how much to move the text and which direction
 * Returns: void
@@ -5003,7 +5074,12 @@ TrecPointer<TBrush> TText::GetBrush()
 	return penBrush;
 }
 
-
+/*
+ * Method: TText::ResetBrush
+ * Purpose: Allows the Text to reset the brush when one of it's attributes changes
+ * Parameters: void
+ * Returns: void
+ */
 void TText::ResetBrush()
 {
 	if (!drawingBoard.Get())
@@ -5037,7 +5113,7 @@ void TText::ResetBrush()
 
 
 /*
-* Method: TText - storeInTML
+* Method: TText::storeInTML
 * Purpose: Allows the text to store it's attributes to a TML file
 * Parameters: CArchive* ar - the file system to write to
 *				int childLevel - the level this control is - how many dashes to write
@@ -5184,7 +5260,7 @@ int TText::storeInTML(TFile * ar, int childLevel,messageState ms)
 }
 
 /*
-* Method: TText - BreakShared
+* Method: TText::BreakShared
 * Purpose: Breaks the link between the Text Element and the Parent Control, allowing deletion
 * Parameters: void
 * Returns: void
@@ -5196,11 +5272,11 @@ void TText::BreakShared()
 }
 
 /*
-* Method: (TContent) (Contstructor)
-* Purpose: Sets up a TContent component based on the render target and a parent TControl
+* Method: TContent::TContent
+* Purpose: Constructor
 * Parameters: TrecPointer<DrawingBoard> dbp - Smart Pointer to the Render Target to draw to
 *				TControl* tc - the parent Control to work for
-* Returns: void
+* Returns: New TContent
 */
 TContent::TContent(TrecPointer<DrawingBoard>rtp, TControl* tc)
 {
@@ -5218,8 +5294,8 @@ TContent::TContent(TrecPointer<DrawingBoard>rtp, TControl* tc)
 }
 
 /*
-* Method: (TContent) (Contstructor)
-* Purpose: Sets up a blank TContent component
+* Method: TContent::TContent
+* Purpose: Default Constructor
 * Parameters: void 
 * Returns: void
 */
@@ -5235,11 +5311,11 @@ TContent::TContent()
 }
 
 /*
-* Method: (TContent) (Contstructor)
-* Purpose: Sets up a TContent component based on an exiting content and a parent TControl
+* Method: TContent::TContent
+* Purpose: Constructor
 * Parameters: TrecPointer<TContent> &rCont - an exiting Content to copy from
 *				TControl* tc_holder - the Control to work for
-* Returns: void
+* Returns: New TContent object
 */
 TContent::TContent(TrecPointer<TContent> &rCont, TControl* tc_holder)
 {
@@ -5268,8 +5344,8 @@ TContent::TContent(TrecPointer<TContent> &rCont, TControl* tc_holder)
 }
 
 /*
-* Method: (TContent) (Destructor)
-* Purpose: Cleans up the Resources held by the content
+* Method: TContent::~TContent
+* Purpose: Destructor
 * Parameters: void
 * Returns: void
 */
@@ -5285,7 +5361,7 @@ TContent::~TContent()
 }
 
 /*
-* Method: TContent - onCreate
+* Method: TContent::onCreate
 * Purpose: Sets up the details of the Content with a Rectangle to draw
 * Parameters: RECT l - the Location
 *				RECT s - the snip, where the control can appear
@@ -5310,7 +5386,7 @@ bool TContent::onCreate(D2D1_RECT_F l)
 }
 
 /*
-* Method: TContent - onCreate
+* Method: TContent::onCreate
 * Purpose: Sets up the details of the Content with an oval to draw
 * Parameters: D2D1_ELLIPSE e - the oval to draw
 * Returns: bool - success (whether the resources are prepared)
@@ -5332,7 +5408,7 @@ bool TContent::onCreate(D2D1_ELLIPSE e)
 }
 
 /*
-* Method: TContent - onCreate
+* Method: TContent::onCreate
 * Purpose: Sets up the details of the Content with a rounded Rectangle to draw
 * Parameters: D2D1_ROUNDED_RECT rr -  the rounded rectangle to draw
 * Returns: bool - success (whether the resources are prepared)
@@ -5354,7 +5430,7 @@ bool TContent::onCreate(D2D1_ROUNDED_RECT rr)
 }
 
 /*
-* Method: TContent - ShiftHorizontal
+* Method: TContent::ShiftHorizontal
 * Purpose: Moves the content left-or right, expected to be used by TLayouts
 * Parameters: int degrees - how much to move the content and which direction
 * Returns: void
@@ -5366,7 +5442,7 @@ void TContent::ShiftHorizontal(int degrees)
 }
 
 /*
-* Method: TContent - ShiftVertical
+* Method: TContent::ShiftVertical
 * Purpose:Moves the content up or down, expected to be used by TLayouts
 * Parameters: int degrees - how much to move the content and which direction
 * Returns: void
@@ -5378,7 +5454,7 @@ void TContent::ShiftVertical(int degrees)
 }
 
 /*
-* Method: TContent - onDraw
+* Method: TContent::onDraw
 * Purpose: Draws the content, including a picture if one is provided
 * Parameters: void
 * Returns: void
@@ -5424,7 +5500,7 @@ void TContent::onDraw(D2D1_RECT_F& f_snip)
 
 
 /*
-* Method: TContent - setOpaquency
+* Method: TContent::setOpaquency
 * Purpose: Updates the opaquency after creation
 * Parameters: float f - the new opacuency to use
 * Returns: bool whether the input was valid or not
@@ -5440,7 +5516,7 @@ bool TContent::setOpaquency(float f)
 
 
 /*
-* Method: TContent - getLocation
+* Method: TContent::getLocation
 * Purpose: Retrieves the current location of the content
 * Parameters:
 * Returns: RECT - the current location of the Control
@@ -5580,6 +5656,12 @@ TrecPointer<TGradientStopCollection> TContent::getStopCollection(TDataArray<D2D1
 	return grads;
 }
 
+/*
+ * Method: TContent::ResetBrush
+ * Purpose: Allows the content to reset the brush when one of it's attributes changes
+ * Parameters: void
+ * Returns: void
+ */
 void TContent::ResetBrush()
 {
 	if (!drawingBoard.Get())
@@ -5611,7 +5693,7 @@ void TContent::ResetBrush()
 }
 
 /*
-* Method: TContent - storeInTML
+* Method: TContent::storeInTML
 * Purpose: Enables the Content to store itself in a TML file
 * Parameters: CArchive * ar - the file to write to
 *				int childLevel - the generation level content is (how many dashes to write)
@@ -5659,7 +5741,7 @@ int TContent::storeInTML(TFile * ar, int childLevel,messageState ms)
 }
 
 /*
-* Method: TContent - BreakShared
+* Method: TContent::BreakShared
 * Purpose: Breaks the link between the Content and the Parent Control, allowing deletion
 * Parameters: void
 * Returns: void
@@ -5817,7 +5899,7 @@ void TContainer::ShiftHorizontal(int degrees)
 }
 
 /*
-* Method: TContent - ShiftVertical
+* Method: TContent::ShiftVertical
 * Purpose: Moves the container up or down, expected to be used by TLayouts
 * Parameters: int degrees - how much to move the container and which direction
 * Returns: void
@@ -5958,7 +6040,7 @@ void TContainer::setLocation(RECT & r)
 * Method: TContainer - ChildCreate
 * Purpose: Calls the underlying onCreate method on the TControl held
 * Parameters: RECT l - the location of the control
-* Returns: bool - false if control is null, otherwise, see "TControl - onCreate"
+* Returns: bool - false if control is null, otherwise, see "TControl::onCreate"
 *
 bool TContainer::ChildCreate(RECT l)
 {
@@ -6426,16 +6508,44 @@ EventID_Cred::EventID_Cred(R_Message_Type t, TControl* c, TrecPointer<TScrollBar
 	scroll = sb;
 }
 
+EventID_Cred::EventID_Cred(TrecPointer<TFlyout> fly)
+{
+	eventType = R_Message_Type::On_Flyout;
+	control = nullptr;
+	if (!fly.Get())
+		throw L"Error! Needed initialized Flyout!";
+	flyout = fly;
+}
+
+/**
+ * Method: TControlParentHolder::TControlParentHolder
+ * Purpose: Constructor
+ * Parameters: TrecPointer<TControl> parent -  the TControl to serve as a Parent to TControls
+ * Returns: New TControlParentHolder
+ */
 TControlParentHolder::TControlParentHolder(TrecPointer<TControl> parent)
 {
 	this->parent = TrecPointerKey::GetSoftPointerFromTrec<TControl>(parent);
 }
 
+/**
+ * Method: TControlParentHolder::TControlParentHolder
+ * Purpose: Constructor
+ * Parameters: TrecPointerSoft<TControl> parent -  the TControl to serve as a Parent to TControls
+ * Returns: New TControlParentHolder
+ */
 TControlParentHolder::TControlParentHolder(TrecPointerSoft<TControl> parent)
 {
 	this->parent = parent;
 }
 
+/**
+ * Method: TControlParentHolder::SwitchChildControl
+ * Purpose: Has the Control switch one of its child controls with a new one
+ * Parameters: TrecPointerSoft<TControl> cur - the control making the call
+ *				TrecPointer<TControl> newTControl - the Control to replace it with
+ * Returns: void
+ */
 void TControlParentHolder::SwitchChildControl(TrecPointerSoft<TControl> cur, TrecPointer<TControl> newTControl)
 {
 	auto tParent = TrecPointerKey::GetTrecPointerFromSoft<TControl>(parent);
@@ -6443,4 +6553,26 @@ void TControlParentHolder::SwitchChildControl(TrecPointerSoft<TControl> cur, Tre
 	{
 		tParent->SwitchChildControl(cur, newTControl);
 	}
+}
+
+/**
+ * Method: TControlParentHolder::GetParent
+ * Purpose: Allows the Retrieval of the Parent Control (if the holder is holding a control)
+ * Parameters: void
+ * Returns: TrecPointer<TControl> - the Parent (the default returns null but the TControlParentHolder will return the parent)
+ */
+TrecPointer<TControl> TControlParentHolder::GetParent()
+{
+	return TrecPointerKey::GetTrecPointerFromSoft<TControl>(parent);
+}
+
+/**
+ * Method: TControlParentHolder::IsScroller
+ * Purpose: Reports to the Child whether the parent holding it is a Scroller Control
+ * Parameters: void
+ * Returns: bool - whether or not the parent is a Scroller Control
+ */
+bool TControlParentHolder::IsScroller()
+{
+	return dynamic_cast<TScrollerControl*>(parent.Get()) != nullptr;
 }

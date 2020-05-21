@@ -4,6 +4,8 @@
 #include <TFileNode.h>
 #include <DirectoryInterface.h>
 
+TString on_OpenFile(L"OnOpenFile");
+
 /**
  * Method: FileHandler::FileHandler
  * Purpose: Constructor
@@ -12,6 +14,16 @@
  */
 FileHandler::FileHandler(TrecPointer<TInstance> instance) : EventHandler(instance)
 {
+	// First set up the Array list with our event handlers
+	fileHandlers.push_back(&FileHandler::OnOpenFile);
+
+
+	// Now create the link between the name of the handler in TML with 
+	eventNameID enid;
+
+	enid.eventID = 0;
+	enid.name.Set(on_OpenFile);
+	events.push_back(enid);
 }
 
 /**
@@ -34,6 +46,9 @@ void FileHandler::Initialize(TrecPointer<Page> page)
 {
 	if (!page.Get() || !page->GetWindowHandle().Get())
 		return;
+
+	this->page = page;
+
 	TIdeWindow* ideWin = dynamic_cast<TIdeWindow*>(page->GetWindowHandle().Get());
 
 	browser = TrecPointerKey::GetTrecSubPointerFromTrec<TControl, TTreeDataBind>(page->GetRootControl());
@@ -63,6 +78,27 @@ void FileHandler::Initialize(TrecPointer<Page> page)
  */
 void FileHandler::HandleEvents(TDataArray<EventID_Cred>& eventAr)
 {
+	TControl* tc = nullptr;
+	int e_id = -1;
+	EventArgs ea;
+	for (UINT c = 0; c < eventAr.Size(); c++)
+	{
+		tc = eventAr.at(c).control;
+		if (!tc)
+			continue;
+		ea = tc->getEventArgs();
+		e_id = ea.methodID;
+		// At this point, call the appropriate method
+		if (e_id > -1 && e_id < fileHandlers.Size())
+		{
+			// call method
+			if (fileHandlers[e_id])
+				(this->*fileHandlers[e_id])(tc, ea);
+		}
+	}
+
+	//onDraw();
+	eventAr.RemoveAll();
 }
 
 /**
@@ -86,4 +122,31 @@ bool FileHandler::ShouldProcessMessageByType(TrecPointer<HandlerMessage> message
 	if (!message.Get())
 		return false;
 	return message->GetHandlerType() == handler_type::handler_type_file_manager;
+}
+
+
+
+/**
+ * Method: FileHandler::OnOpenFile
+ * Purpose: Responds to a Double Click from the Control
+ * Parameters: TControl* tc - The Control that generated the event
+ *				EventArgs ea - The parameters of the event
+ * Returns: void
+ */
+void FileHandler::OnOpenFile(TControl* tc, EventArgs ea)
+{
+	if(!ea.object.Get())
+		return;
+
+	if(!page.Get() || !page->GetWindowHandle().Get())
+		return;
+	if(dynamic_cast<TIdeWindow*>(page->GetWindowHandle().Get()))
+	{
+		auto fileObject = TrecPointerKey::GetTrecSubPointerFromTrec<TObjectNode, TFileNode>(ea.object);
+
+		if(fileObject.Get())
+		{
+			dynamic_cast<TIdeWindow*>(page->GetWindowHandle().Get())->OpenFile(fileObject->GetData());
+	    }
+	}
 }

@@ -2,6 +2,13 @@
 #include "TTextField.h"
 
 
+/**
+ * Method: TSpreadSheet::TSpreadSheet
+ * Purpose: Constructor
+ * Parameters: TrecPointer<DrawingBoard> db - Smart Pointer to the Render Target to draw on
+ *				TrecPointer<TArray<styleTable>> styTab - Smart Pointer to the list of styles to draw from
+ * Returns: New Tree Object
+ */
 TSpreadSheet::TSpreadSheet(TrecPointer<DrawingBoard> rt, TrecPointer<TArray<styleTable>> ta, HWND w): TLayoutEx(rt, ta)
 {
 	window = w;
@@ -12,10 +19,23 @@ TSpreadSheet::TSpreadSheet(TrecPointer<DrawingBoard> rt, TrecPointer<TArray<styl
 }
 
 
+/**
+ * Method: TSpreadSheet::~TSpreadSheet
+ * Purpose: Destructor
+ * Parameters: void
+ * Returns: void
+ */
 TSpreadSheet::~TSpreadSheet()
 {
 }
 
+/**
+ * Method: TSpreadSheet::onCreate
+ * Purose: the Control To contstruct itself based off of the location it has and the
+ *		screen space it is given
+ * Parameters: RECT contain - the area it can use
+ * Returns: bool - success
+ */
 bool TSpreadSheet::onCreate(D2D1_RECT_F l, TrecPointer<TWindowEngine> d3d)
 {
 	winEngine = d3d;
@@ -171,6 +191,12 @@ bool TSpreadSheet::onCreate(D2D1_RECT_F l, TrecPointer<TWindowEngine> d3d)
 	return false;
 }
 
+/**
+ * Method: TSpreadSheet::onDraw
+ * Purpose: Draws the control
+ * Parameters: TObject* obj - Raw reference to a TObject that might have specific text to say
+ * Returns: void
+ */
 void TSpreadSheet::onDraw(TObject* obj)
 {
 	if (drawLines && internalBrush.Get())
@@ -193,11 +219,20 @@ void TSpreadSheet::onDraw(TObject* obj)
 	TControl::onDraw(obj);
 }
 
+/**
+ * DEPRECATED
+ */
 UCHAR * TSpreadSheet::GetAnaGameType()
 {
 	return nullptr;
 }
 
+/**
+ * Method: TSpreadSheet::GetData
+ * Purpose: Returns the contents of the Spreadsheet in each cell
+ * Parameters: void
+ * Returns: TString - the contents of the spreadsheet
+ */
 TString TSpreadSheet::GetData()
 {
 	TString returnable;
@@ -220,11 +255,26 @@ TString TSpreadSheet::GetData()
 	return returnable;
 }
 
+/**
+ * Method: TSpreadSheet::GetDataSplitTokens
+ * Purpose: Reports the tokens being used to divide the contents of the "GetData()" method
+ * Parameters: void
+ * Returns: TString - the divider used in "GetData()"
+ */
 TString TSpreadSheet::GetDataSplitTokens()
 {
 	return splitTokens;
 }
 
+/**
+ * Method: TSpreadSheet::OnLButtonDown
+* Purpose: Allows Control to catch the LeftmessageState::mouse Button Down event and act accordingly
+* Parameters: UINT nFlags - flags provided by MFC's Message system, not used
+*				TPoint point - the point on screen where the event occured
+*				messageOutput* mOut - allows controls to keep track of whether ohter controls have caught the event
+*				TDataArray<EventID_Cred>& eventAr - allows Controls to add whatever Event Handler they have been assigned
+* Returns: void
+ */
 void TSpreadSheet::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, TDataArray<EventID_Cred>& eventAr, TDataArray<TControl*>& clickedControl)
 {
 	if (!isContained(&point, &location))
