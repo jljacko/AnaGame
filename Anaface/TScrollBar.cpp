@@ -135,14 +135,27 @@ void TScrollBar::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut)
 
 	if (scrollAlignment == ScrollOrient::so_horizontal)
 	{
-		float move = MovedContent(point.x - prevPoint.x);
+		if (point.x > (body_rect.right - BOX_SIZE))
+			point.x = body_rect.right - BOX_SIZE;
+
+		if (point.x < (body_rect.left + BOX_SIZE))
+			point.x = body_rect.left + BOX_SIZE;
+
+		float move = -MovedContent(point.x - prevPoint.x);
 		parent->onScroll(move / widthFactor, 0);
 	}
 	else
 	{
-		float move = MovedContent(point.y - prevPoint.y);
+		if (point.y > (body_rect.bottom - BOX_SIZE))
+			point.y = body_rect.bottom - BOX_SIZE;
+
+		if (point.y < (body_rect.top + BOX_SIZE))
+			point.y = body_rect.top + BOX_SIZE;
+
+		float move = -MovedContent(point.y - prevPoint.y);
 		parent->onScroll(0, move / widthFactor);
 	}
+	prevPoint = point;
 }
 
 /**
@@ -201,6 +214,24 @@ void TScrollBar::Refresh(const D2D1_RECT_F& location, const D2D1_RECT_F& area)
 
 		scroll_rect.left = body_rect.left + BOX_SIZE + diff1 * widthFactor;
 		scroll_rect.right = body_rect.right - BOX_SIZE - (diff2 * widthFactor);
+
+		if (scroll_rect.left < (body_rect.left + BOX_SIZE))
+		{
+			float diff = (body_rect.left + BOX_SIZE) - scroll_rect.left;
+			scroll_rect.left += diff;
+			scroll_rect.right += diff;
+
+			parent->onScroll(diff / widthFactor, 0);
+		}
+		else if (scroll_rect.right > (body_rect.right - BOX_SIZE))
+		{
+			float diff = (body_rect.right - BOX_SIZE) - scroll_rect.right;
+			scroll_rect.left += diff;
+			scroll_rect.right += diff;
+
+			parent->onScroll(diff / widthFactor, 0);
+		}
+
 	}
 	else
 	{
@@ -219,6 +250,25 @@ void TScrollBar::Refresh(const D2D1_RECT_F& location, const D2D1_RECT_F& area)
 
 		scroll_rect.top = body_rect.top + BOX_SIZE + diff1 * widthFactor;
 		scroll_rect.bottom = body_rect.bottom - BOX_SIZE - (diff2 * widthFactor);
+
+
+
+		if (scroll_rect.top < (body_rect.top + BOX_SIZE))
+		{
+			float diff = (body_rect.top + BOX_SIZE) - scroll_rect.top;
+			scroll_rect.top += diff;
+			scroll_rect.bottom += diff;
+
+			parent->onScroll(0, -(diff / widthFactor));
+		}
+		else if (scroll_rect.bottom > (body_rect.bottom - BOX_SIZE))
+		{
+			float diff = (body_rect.bottom - BOX_SIZE) - scroll_rect.bottom;
+			scroll_rect.top += diff;
+			scroll_rect.bottom += diff;
+
+			parent->onScroll(0, -(diff / widthFactor));
+		}
 	}
 }
 

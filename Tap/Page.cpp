@@ -394,6 +394,15 @@ void Page::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TrecPoi
 {
 	TDataArray<EventID_Cred> eventAr;
 	OnLButtonDown(nFlags, point, mOut, eventAr, fly);
+
+	for (UINT Rust = 0; Rust < eventAr.Size(); Rust++)
+	{
+		if (eventAr[Rust].eventType == R_Message_Type::On_Select_Scroller && eventAr[Rust].scroll.Get() && windowHandle.Get())
+		{
+			windowHandle->currentScrollBar = eventAr[Rust].scroll;
+			break;
+		}
+	}
 	
 	if(handler.Get())
 		handler->HandleEvents(eventAr);

@@ -166,6 +166,14 @@ void TIdeWindow::OnMouseMove(UINT nFlags, TPoint point)
 { 
 	if (locked) return;
 	messageOutput output = messageOutput::negative;
+	if (currentScrollBar.Get())
+	{
+
+		currentScrollBar->OnMouseMove(nFlags, point, &output);
+		
+		Draw();
+		return;
+	}
 
 	if (focusPage.Get())
 	{

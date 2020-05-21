@@ -331,7 +331,7 @@ void TTreeDataBind::Resize(D2D1_RECT_F& r)
 	// We do not, so proceed
 	location = r;
 	updateComponentLocation();
-	CheckScroll();
+
 /*
 	TControl* ele = nullptr;
 
@@ -355,4 +355,15 @@ void TTreeDataBind::Resize(D2D1_RECT_F& r)
 		}
 		ele->Resize(loc);
 	}*/
+}
+
+bool TTreeDataBind::onScroll(int x, int y)
+{
+	location.left += x;
+	location.right += x;
+	location.top += y;
+	location.bottom += y;
+
+
+	return true;
 }

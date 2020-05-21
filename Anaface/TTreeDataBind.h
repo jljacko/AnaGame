@@ -109,6 +109,19 @@ public:
 	 * Returns: void
 	 */
 	void Resize(D2D1_RECT_F& r)override;
+
+
+	/* Purpose: to allow the TControl to shift it's contents according to how it is scrolled.
+	 * Caller: Member TScrollBars, either vScroll or hScroll
+	 * Parameter: int (x) how to shift itself horizontally
+	 * Parameter: int (y) how to shift itself vertically
+	 * return: bool, just because
+	 * Details: Changes the contents location on the board, reflected in the changes to
+	 *		TControl's location, but not where it draws, hence why it's own snip stays the same
+	 *		However, the contents might include child locations so their snips might have to be
+	 *		updated
+	 */
+	virtual bool onScroll(int x, int y)override;
 protected:
 	/**
 	 * The root node that starts the tree this control goes down

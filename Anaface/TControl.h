@@ -1624,7 +1624,7 @@ public:
 	 *		However, the contents might include child locations so their snips might have to be
 	 *		updated
 	 */
-	bool onScroll(int x, int y);
+	virtual bool onScroll(int x, int y);
 
 	/*
 	* Method: TControl::onBeingScrolled

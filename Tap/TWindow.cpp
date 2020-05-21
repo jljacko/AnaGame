@@ -361,8 +361,8 @@ void TWindow::OnMouseMove(UINT nFlags, TPoint point)
 	{
 
 		currentScrollBar->OnMouseMove(nFlags, point, &mOut);
-		if (mOut == messageOutput::negativeUpdate || mOut == messageOutput::positiveContinueUpdate || mOut == messageOutput::positiveOverrideUpdate)
-			Draw();
+		
+		Draw();
 		return;
 	}
 
