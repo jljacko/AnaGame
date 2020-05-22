@@ -1,4 +1,4 @@
-# AnaGame (Draft - to be updated soon)
+# AnaGame
 #### Language: C++
 #### Compiler: Visual C++
 #### IDE: Visual Studio 2015 (created), 2019 (Current) - both Community edition
