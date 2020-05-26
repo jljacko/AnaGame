@@ -181,7 +181,7 @@ TrecPointer<TControl> TScrollerControl::GetChildControl()
 {
 	return childControl;
 }
-bool TScrollerControl::onScroll(int x, int y)
+bool TScrollerControl::onScroll(float x,float y)
 {
 	if (childControl.Get())
 	{
