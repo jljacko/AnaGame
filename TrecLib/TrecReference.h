@@ -25,6 +25,8 @@
  *			because these types are created by a Factory method/function and deleting them requires calling the Release() method rather than
  *			manually deleting them.
  *
+ *		TrecObjectPointer - A new Pointer type that holds a counter to any type that can call itself a TObject. Written with Anagame 
+ *			Interpretors in mind
  *
  *		The Other class you will use extensively is the TrecPointerKey class. This is a utility class necessary to operate on the TrecPointers
  *			This is because the TrecPointers restrict what you can do with them. 
