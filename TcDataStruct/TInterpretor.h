@@ -58,6 +58,8 @@ public:
     // Error codes
     const static UINT no_error = 0;
     const static UINT broken_reference = 1;
+    const static UINT not_number = 2;
+    const static UINT too_few_params = 3;
 };
 
 /**

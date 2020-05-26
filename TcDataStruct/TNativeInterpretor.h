@@ -2,7 +2,7 @@
 #include "TInterpretor.h"
 
 
-typedef void (*NativeFunction)(TDataArray<TVariable>& params, ReportObject& ret);
+typedef void (*NativeFunction)(TDataArray<TrecPointer<TVariable>>& params, ReportObject& ret);
 
 
 /**

@@ -42,6 +42,12 @@
     <ClInclude Include="TContainerVariable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="JavaScriptFunc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Operator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -69,6 +75,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TContainerVariable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="JavaScriptFunc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
