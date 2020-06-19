@@ -3,7 +3,7 @@
 #include "PathConfiguration.h"
 
 /*
-* Method: (TShell) (Constructor) 
+* Method: TShell::TShell
 * Purpose: Creates the Shell, with the Home directory as the initial working directory
 * Parameters: void
 * Returns: void
@@ -29,7 +29,7 @@ TShell::TShell()
 }
 
 /*
-* Method: (TShell) (Destructor)
+* Method: TShell::~TShell
 * Purpose: Standard Destructor
 * Parameters: void
 * Returns: void
