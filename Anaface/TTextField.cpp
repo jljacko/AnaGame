@@ -674,7 +674,7 @@ parentCall:
 				args.isLeftClick = false;
 				args.control = this;
 
-				eventAr.push_back(EventID_Cred( R_Message_Type::On_Text_Change, this ));
+				eventAr.push_back(EventID_Cred( R_Message_Type::On_Text_Change, TrecPointerKey::GetTrecPointerFromSoft<TControl>(tThis)));
 			}
 		}
 		else if (isNumber && isContained(&point, &botBut))
@@ -692,7 +692,7 @@ parentCall:
 				args.isLeftClick = false;
 				args.control = this;
 
-				eventAr.push_back(EventID_Cred( R_Message_Type::On_Text_Change, this ));
+				eventAr.push_back(EventID_Cred( R_Message_Type::On_Text_Change, TrecPointerKey::GetTrecPointerFromSoft<TControl>(tThis)));
 			}
 		}
 
@@ -781,7 +781,7 @@ bool TTextField::OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags, me
 		args.methodID = getEventID(R_Message_Type::On_Char);
 		args.type = static_cast<WCHAR>(LOWORD(nChar));
 		args.control = this;
-		eventAr.push_back({ R_Message_Type::On_Text_Change, this });
+		eventAr.push_back({ R_Message_Type::On_Text_Change, TrecPointerKey::GetTrecPointerFromSoft<TControl>(tThis) });
 
 		if (text1.Get() && text1->text.GetSize())
 		{

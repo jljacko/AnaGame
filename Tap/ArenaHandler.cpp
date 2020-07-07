@@ -55,13 +55,12 @@ void ArenaHandler::Initialize(TrecPointer<Page> page)
  */
 void ArenaHandler::HandleEvents(TDataArray<EventID_Cred>& eventAr)
 {
-	TControl* tc = nullptr;
 	int e_id = -1;
 	EventArgs ea;
 	for (UINT c = 0; c < eventAr.Size(); c++)
 	{
-		tc = eventAr.at(c).control;
-		if (!tc)
+		auto tc = eventAr.at(c).control;
+		if (!tc.Get())
 			continue;
 		ea = tc->getEventArgs();
 		e_id = ea.methodID;

@@ -163,7 +163,7 @@ void AnafaceUI::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, T
 					args.isLeftClick = true;
 					args.control = this;
 					args.arrayLabel = c;
-					eventAr.push_back(EventID_Cred( R_Message_Type::On_Click,this ));
+					eventAr.push_back(EventID_Cred( R_Message_Type::On_Click, TrecPointerKey::GetTrecPointerFromSoft<TControl>(tThis)));
 					return;
 				}
 			}

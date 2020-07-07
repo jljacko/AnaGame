@@ -3260,7 +3260,7 @@ afx_msg void TControl::OnRButtonUp(UINT nFlags, TPoint point, messageOutput* mOu
 				args.isLeftClick = false;
 				args.control = this;
 
-				eventAr.push_back(EventID_Cred( R_Message_Type::On_Right_Release, this ));
+				eventAr.push_back(EventID_Cred( R_Message_Type::On_Right_Release, TrecPointerKey::GetTrecPointerFromSoft<TControl>(tThis)));
 			}
 		}
 	}
@@ -3291,7 +3291,7 @@ afx_msg void TControl::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* m
 		args.isClick = args.isLeftClick = true;
 		args.control = nullptr;;
 
-		eventAr.push_back(EventID_Cred(R_Message_Type::On_Click, this, vScroll));
+		eventAr.push_back(EventID_Cred(R_Message_Type::On_Click, TrecPointerKey::GetTrecPointerFromSoft<TControl>(tThis), vScroll));
 		return;
 	}
 
@@ -3306,7 +3306,7 @@ afx_msg void TControl::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* m
 		args.isClick = args.isLeftClick = true;
 		args.control = nullptr;
 
-		eventAr.push_back(EventID_Cred(R_Message_Type::On_Click, this, hScroll));
+		eventAr.push_back(EventID_Cred(R_Message_Type::On_Click, TrecPointerKey::GetTrecPointerFromSoft<TControl>(tThis), hScroll));
 	}
 
 	if (!isContained(&point, &location))
@@ -3361,7 +3361,7 @@ afx_msg void TControl::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* m
 		args.isLeftClick = true;
 		args.control = this;
 
-		eventAr.push_back(EventID_Cred(R_Message_Type::On_Click,this ));
+		eventAr.push_back(EventID_Cred(R_Message_Type::On_Click, TrecPointerKey::GetTrecPointerFromSoft<TControl>(tThis)));
 	}
 
 
@@ -3447,7 +3447,7 @@ afx_msg void TControl::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* m
 		args.isClick = true;
 		args.isLeftClick = false;
 		args.control = this;
-		eventAr.push_back(EventID_Cred( R_Message_Type::On_Right_Click,this ));
+		eventAr.push_back(EventID_Cred( R_Message_Type::On_Right_Click, TrecPointerKey::GetTrecPointerFromSoft<TControl>(tThis)));
 	}
 
 }
@@ -3515,7 +3515,7 @@ afx_msg void TControl::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOu
 		args.point = point;
 		args.methodID = getEventID(R_Message_Type::On_Hover);
 		args.control = this;
-		eventAr.push_back(EventID_Cred( R_Message_Type::On_Hover,this ));
+		eventAr.push_back(EventID_Cred( R_Message_Type::On_Hover, TrecPointerKey::GetTrecPointerFromSoft<TControl>(tThis)));
 	}
 }
 
@@ -3587,7 +3587,7 @@ afx_msg void TControl::OnLButtonDblClk(UINT nFlags, TPoint point, messageOutput*
 		args.isClick = true;
 		args.isLeftClick = false;
 		args.control = this;
-		eventAr.push_back(EventID_Cred(R_Message_Type::On_LDoubleClick, this));
+		eventAr.push_back(EventID_Cred(R_Message_Type::On_LDoubleClick, TrecPointerKey::GetTrecPointerFromSoft<TControl>(tThis)));
 	}
 
 }
@@ -3647,7 +3647,7 @@ afx_msg void TControl::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOu
 		args.isClick = true;
 		args.isLeftClick = true;
 		args.control = this;
-		eventAr.push_back(EventID_Cred( R_Message_Type::On_Click_Release, this ));
+		eventAr.push_back(EventID_Cred( R_Message_Type::On_Click_Release, TrecPointerKey::GetTrecPointerFromSoft<TControl>(tThis)));
 	}
 }
 
@@ -3683,7 +3683,7 @@ afx_msg bool TControl::OnChar(bool fromChar,UINT nChar, UINT nRepCnt, UINT nFlag
 				args.methodID = getEventID(R_Message_Type::On_Char);
 				args.type = static_cast<WCHAR>(LOWORD(nChar));
 				args.control = this;
-				eventAr.push_back(EventID_Cred( R_Message_Type::On_Char, this ));
+				eventAr.push_back(EventID_Cred( R_Message_Type::On_Char, TrecPointerKey::GetTrecPointerFromSoft<TControl>(tThis)));
 			}
 
 			return true;
@@ -6482,7 +6482,6 @@ RECT convertD2DRectToRECT(D2D1_RECT_F f)
 EventID_Cred::EventID_Cred()
 {
 	eventType = R_Message_Type::On_Click;
-	control = nullptr;
 }
 
 EventID_Cred::EventID_Cred(const EventID_Cred& copy)
@@ -6492,13 +6491,13 @@ EventID_Cred::EventID_Cred(const EventID_Cred& copy)
 	scroll = copy.scroll;
 }
 
-EventID_Cred::EventID_Cred(R_Message_Type t, TControl* c)
+EventID_Cred::EventID_Cred(R_Message_Type t, TrecPointer<TControl> c)
 {
 	eventType = t;
 	control = c;
 }
 
-EventID_Cred::EventID_Cred(R_Message_Type t, TControl* c, TrecPointer<TScrollBar> sb)
+EventID_Cred::EventID_Cred(R_Message_Type t, TrecPointer<TControl> c, TrecPointer<TScrollBar> sb)
 {
 	eventType = t;
 	control = c;
@@ -6508,7 +6507,6 @@ EventID_Cred::EventID_Cred(R_Message_Type t, TControl* c, TrecPointer<TScrollBar
 EventID_Cred::EventID_Cred(TrecPointer<TFlyout> fly)
 {
 	eventType = R_Message_Type::On_Flyout;
-	control = nullptr;
 	if (!fly.Get())
 		throw L"Error! Needed initialized Flyout!";
 	flyout = fly;
