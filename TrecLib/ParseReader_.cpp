@@ -7,15 +7,15 @@ UCHAR ParseReaderType[] = { 2, 0b10000000, 3 };
 /*
 * Method: ParseReader_::ParseReader_
 * Purpose: Constructor
-* Parameters: TFile* tf - the TFile to use
-*			Parser_* par - the parser to call upon
+* Parameters: TrecPointer<TFile> tf - the TFile to use
+*			TrecPointer<Parser_> par - the parser to call upon
 * Returns: void
 */
-ParseReader_::ParseReader_(TFile *tf, Parser_ *par)
+ParseReader_::ParseReader_(TrecPointer<TFile> tf, TrecPointer<Parser_> par)
 {
 	tReader = tf;
 	respond = par;
-	if (!tReader || !respond)
+	if (!tReader.Get() || !respond.Get())
 		materials = false;
 	else
 		materials = true;

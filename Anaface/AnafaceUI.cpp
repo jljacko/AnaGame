@@ -389,7 +389,7 @@ bool AnafaceUI::onCreate(D2D1_RECT_F container, TrecPointer<TWindowEngine> d3d)
 		tabs_base = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TLayoutEx>(drawingBoard, styles);
 		tabs = dynamic_cast<TLayoutEx*>(tabs_base.Get());
 		tabs->setLayout(orgLayout::HStack);
-		if (valpoint->ConvertToInt(&tabHeight))
+		if (valpoint->ConvertToInt(tabHeight))
 			tabHeight = 30;
 
 		r = D2D1_RECT_F{ location.left, location.top, location.right, location.top + tabHeight };
@@ -476,7 +476,7 @@ bool AnafaceUI::onCreate(D2D1_RECT_F container, TrecPointer<TWindowEngine> d3d)
 
 	valpoint = attributes.retrieveEntry(TString(L"|BeginningChildIndex"));
 	int ind = -1;
-	if (valpoint.Get() && !valpoint->ConvertToInt(&ind))
+	if (valpoint.Get() && !valpoint->ConvertToInt(ind))
 	{
 		if (ind > -1 && ind < children.Count())
 			currentControl = children.ElementAt(ind);

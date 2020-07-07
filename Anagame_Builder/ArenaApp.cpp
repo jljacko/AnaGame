@@ -451,7 +451,7 @@ void ArenaApp::UpdatePosDirText(DirectX::XMFLOAT3& dir, DirectX::XMFLOAT3& loc)
 void ArenaApp::TextDirectionX(TControl* tc, EventArgs ea)
 {
 	float f = 0.0f;
-	if (!ea.text.ConvertToFloat(&f))
+	if (!ea.text.ConvertToFloat(f))
 	{
 		if (!focusOnModel)
 			arena->UpdateDir(f, 0);
@@ -463,7 +463,7 @@ void ArenaApp::TextDirectionX(TControl* tc, EventArgs ea)
 void ArenaApp::TextLocationX(TControl* tc, EventArgs ea)
 {
 	float f = 0.0f;
-	if (!ea.text.ConvertToFloat(&f))
+	if (!ea.text.ConvertToFloat(f))
 	{
 		if (!focusOnModel)
 			arena->UpdatePos(f, 0);
@@ -473,7 +473,7 @@ void ArenaApp::TextLocationX(TControl* tc, EventArgs ea)
 void ArenaApp::TextDirectionY(TControl* tc, EventArgs ea)
 {
 	float f = 0.0f;
-	if (!ea.text.ConvertToFloat(&f))
+	if (!ea.text.ConvertToFloat(f))
 	{
 		if (!focusOnModel)
 		arena->UpdateDir(f, 1);
@@ -483,7 +483,7 @@ void ArenaApp::TextDirectionY(TControl* tc, EventArgs ea)
 void ArenaApp::TextLocationY(TControl* tc, EventArgs ea)
 {
 	float f = 0.0f;
-	if (!ea.text.ConvertToFloat(&f))
+	if (!ea.text.ConvertToFloat(f))
 	{
 		if (!focusOnModel)
 		arena->UpdatePos(f, 1);
@@ -493,7 +493,7 @@ void ArenaApp::TextLocationY(TControl* tc, EventArgs ea)
 void ArenaApp::TextDirectionZ(TControl* tc, EventArgs ea)
 {
 	float f = 0.0f;
-	if (!ea.text.ConvertToFloat(&f))
+	if (!ea.text.ConvertToFloat(f))
 	{
 		if (!focusOnModel)
 		arena->UpdateDir(f, 2);
@@ -503,7 +503,7 @@ void ArenaApp::TextDirectionZ(TControl* tc, EventArgs ea)
 void ArenaApp::TextLocationZ(TControl* tc, EventArgs ea)
 {
 	float f = 0.0f;
-	if (!ea.text.ConvertToFloat(&f))
+	if (!ea.text.ConvertToFloat(f))
 	{
 		if (!focusOnModel)
 		arena->UpdatePos(f, 2);

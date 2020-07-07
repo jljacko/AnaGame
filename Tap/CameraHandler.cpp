@@ -255,15 +255,15 @@ void CameraHandler::ProcessMessage(TrecPointer<HandlerMessage> message)
 
 			if (mode == 1)
 			{
-				datum->at(0).ConvertToFloat(&t_lx);
-				datum->at(1).ConvertToFloat(&t_ly);
-				datum->at(2).ConvertToFloat(&t_lz);
+				datum->at(0).ConvertToFloat(t_lx);
+				datum->at(1).ConvertToFloat(t_ly);
+				datum->at(2).ConvertToFloat(t_lz);
 			}
 			else
 			{
-				datum->at(0).ConvertToFloat(&t_dx);
-				datum->at(1).ConvertToFloat(&t_dy);
-				datum->at(2).ConvertToFloat(&t_dz);
+				datum->at(0).ConvertToFloat(t_dx);
+				datum->at(1).ConvertToFloat(t_dy);
+				datum->at(2).ConvertToFloat(t_dz);
 			}
 			mode = 0;
 		}
@@ -336,7 +336,7 @@ void CameraHandler::UpdatePanelText()
 void CameraHandler::TextDirectionX(TControl* tc, EventArgs ea)
 {
 	float f = 0.0f;
-	if (!ea.text.ConvertToFloat(&f))
+	if (!ea.text.ConvertToFloat(f))
 	{
 		t_dx = f;
 		TString formatedText;
@@ -355,7 +355,7 @@ void CameraHandler::TextDirectionX(TControl* tc, EventArgs ea)
 void CameraHandler::TextLocationX(TControl* tc, EventArgs ea)
 {
 	float f = 0.0f;
-	if (!ea.text.ConvertToFloat(&f))
+	if (!ea.text.ConvertToFloat(f))
 	{
 		t_lx = f;
 		TString formatedText;
@@ -374,7 +374,7 @@ void CameraHandler::TextLocationX(TControl* tc, EventArgs ea)
 void CameraHandler::TextDirectionY(TControl* tc, EventArgs ea)
 {
 	float f = 0.0f;
-	if (!ea.text.ConvertToFloat(&f))
+	if (!ea.text.ConvertToFloat(f))
 	{
 		t_dy = f;
 		TString formatedText;
@@ -393,7 +393,7 @@ void CameraHandler::TextDirectionY(TControl* tc, EventArgs ea)
 void CameraHandler::TextLocationY(TControl* tc, EventArgs ea)
 {
 	float f = 0.0f;
-	if (!ea.text.ConvertToFloat(&f))
+	if (!ea.text.ConvertToFloat(f))
 	{
 		t_ly = f;
 		TString formatedText;
@@ -412,7 +412,7 @@ void CameraHandler::TextLocationY(TControl* tc, EventArgs ea)
 void CameraHandler::TextDirectionZ(TControl* tc, EventArgs ea)
 {
 	float f = 0.0f;
-	if (!ea.text.ConvertToFloat(&f))
+	if (!ea.text.ConvertToFloat(f))
 	{
 		t_dz = f;
 		TString formatedText;
@@ -431,7 +431,7 @@ void CameraHandler::TextDirectionZ(TControl* tc, EventArgs ea)
 void CameraHandler::TextLocationZ(TControl* tc, EventArgs ea)
 {
 	float f = 0.0f;
-	if (!ea.text.ConvertToFloat(&f))
+	if (!ea.text.ConvertToFloat(f))
 	{
 		t_lz = f;
 		TString formatedText;

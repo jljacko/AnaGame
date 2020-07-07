@@ -6,11 +6,11 @@
 /**
  * Method: TML_Reader_::TML_Reader_
  * Purpose: Constructor
- * Parameters: TFile* the file to read
- *				Parser_* - the parser to process
+ * Parameters: TrecPointer<TFile> tf - the TFile to use
+ *			TrecPointer<Parser_> par - the parser to call upon
  * Returns: new TML Reader Object
  */
-TML_Reader_::TML_Reader_(TFile * ta, Parser_ * p) : ParseReader_(ta,p)
+TML_Reader_::TML_Reader_(TrecPointer<TFile> ta, TrecPointer<Parser_> p) : ParseReader_(ta,p)
 {
 
 }

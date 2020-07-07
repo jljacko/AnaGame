@@ -112,7 +112,7 @@ void TShell::SubmitCommand(TString& command)
 			comArgs3.Trim();
 
 			int pathIndex = 0;
-			if (!comArgs3.ConvertToInt(&pathIndex))
+			if (!comArgs3.ConvertToInt(pathIndex))
 			{
 				switch (SetCurrentPath(comArgs3, static_cast<UINT>(pathIndex -1)))
 				{

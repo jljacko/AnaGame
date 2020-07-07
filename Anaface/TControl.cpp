@@ -578,7 +578,7 @@ bool TControl::onCreate(D2D1_RECT_F contain, TrecPointer<TWindowEngine> d3d)
 	valpoint = attributes.retrieveEntry(TString(L"|ArrayID"));
 	if (valpoint.Get())
 	{
-		valpoint->ConvertToInt(&arrayID);
+		valpoint->ConvertToInt(arrayID);
 	}
 
 	valpoint = attributes.retrieveEntry(TString(L"|Shape"));
@@ -599,12 +599,12 @@ bool TControl::onCreate(D2D1_RECT_F contain, TrecPointer<TWindowEngine> d3d)
 			valpoint = attributes.retrieveEntry(TString(L"|RoundedRectX"));
 			if (valpoint.Get() )
 			{
-				valpoint->ConvertToFloat(&xRound);
+				valpoint->ConvertToFloat(xRound);
 			}
 			valpoint = attributes.retrieveEntry(TString(L"|RoundedRectY"));
 			if (valpoint.Get())
 			{
-				valpoint->ConvertToFloat(&yRound);
+				valpoint->ConvertToFloat(yRound);
 			}
 			roundedRect.rect = location;
 			roundedRect.radiusX = xRound;
@@ -2066,7 +2066,7 @@ bool TControl::onCreate(TMap<TString>* att, D2D1_RECT_F loc)
 	{
 		if (!border1.Get())
 			border1 = TrecPointerKey::GetNewTrecPointer<TBorder>(drawingBoard, (this));
-		valpoint->ConvertToFloat(&(border1->thickness));         // Logic Bug needs fixing
+		valpoint->ConvertToFloat((border1->thickness));         // Logic Bug needs fixing
 	}
 	/*else
 	{
@@ -2096,7 +2096,7 @@ bool TControl::onCreate(TMap<TString>* att, D2D1_RECT_F loc)
 	{
 		if (!content1.Get())
 			content1 = TrecPointerKey::GetNewTrecPointer<TContent>(drawingBoard, (this));
-		valpoint->ConvertToFloat(&(content1->thickness));
+		valpoint->ConvertToFloat((content1->thickness));
 	}
 	/*else
 	{
@@ -2165,7 +2165,7 @@ bool TControl::onCreate(TMap<TString>* att, D2D1_RECT_F loc)
 	{
 		if (!text1.Get())
 			text1 = TrecPointerKey::GetNewTrecPointer<TText>(drawingBoard, (this));
-		 valpoint->ConvertToFloat(&(text1->fontSize) );
+		 valpoint->ConvertToFloat((text1->fontSize) );
 	}
 
 	valpoint = att->retrieveEntry(TString(L"|HorizontalAlignment"));
@@ -2190,7 +2190,7 @@ bool TControl::onCreate(TMap<TString>* att, D2D1_RECT_F loc)
 		if (!content1.Get())
 			content1 = TrecPointerKey::GetNewTrecPointer<TContent>(drawingBoard, (this));
 		float entry = 0.0f;
-		valpoint->ConvertToFloat(&entry);
+		valpoint->ConvertToFloat(entry);
 		//content1->secondColor = true;
 		UINT gradCount = 0;
 		if (gradCount = content1->stopCollection.GetGradientCount())
@@ -2204,7 +2204,7 @@ bool TControl::onCreate(TMap<TString>* att, D2D1_RECT_F loc)
 		if (!border1.Get())
 			border1 = TrecPointerKey::GetNewTrecPointer<TBorder>(drawingBoard, (this));
 		float entry = 0.0f;
-		valpoint->ConvertToFloat(&entry);
+		valpoint->ConvertToFloat(entry);
 		//border1->secondColor = true;
 		UINT gradCount = 0;
 		if (gradCount = border1->stopCollection.GetGradientCount())
@@ -2230,7 +2230,7 @@ bool TControl::onCreate(TMap<TString>* att, D2D1_RECT_F loc)
 		if (!text1.Get())
 			text1 = TrecPointerKey::GetNewTrecPointer<TText>(drawingBoard, (this));
 		float entry = 0.0f;
-		valpoint->ConvertToFloat(&entry);
+		valpoint->ConvertToFloat(entry);
 		//text1->secondColor = true;
 		UINT gradCount = 0;
 		if (gradCount = text1->stopCollection.GetGradientCount())
@@ -2273,9 +2273,6 @@ bool TControl::onCreate(TMap<TString>* att, D2D1_RECT_F loc)
 	}
 
 
-
-
-
 	return false;
 }
 
@@ -2300,7 +2297,7 @@ bool TControl::onCreate2(TMap<TString>* att, D2D1_RECT_F loc)
 			else
 				border2 = TrecPointerKey::GetNewTrecPointer<TBorder>(drawingBoard, (this));
 		}
-		valpoint->ConvertToFloat(&(border2->thickness));         // Logic Bug needs fixing
+		valpoint->ConvertToFloat((border2->thickness));         // Logic Bug needs fixing
 	}
 
 	// 
@@ -2328,7 +2325,7 @@ bool TControl::onCreate2(TMap<TString>* att, D2D1_RECT_F loc)
 			else
 				content2 = TrecPointerKey::GetNewTrecPointer<TContent>(drawingBoard, (this));
 		}
-		valpoint->ConvertToFloat(&(content2->thickness));
+		valpoint->ConvertToFloat((content2->thickness));
 	}
 
 	// 
@@ -2415,7 +2412,7 @@ bool TControl::onCreate2(TMap<TString>* att, D2D1_RECT_F loc)
 			else
 				text2 = TrecPointerKey::GetNewTrecPointer<TText>(drawingBoard, (this));
 		}
-		valpoint->ConvertToFloat(&(text2->fontSize));
+		valpoint->ConvertToFloat(text2->fontSize);
 	}
 	valpoint = att->retrieveEntry(TString(L"|HoverHorizontalAlignment"));
 	if (valpoint.Get())
@@ -2454,7 +2451,7 @@ bool TControl::onCreate2(TMap<TString>* att, D2D1_RECT_F loc)
 				content2 = TrecPointerKey::GetNewTrecPointer<TContent>(drawingBoard, (this));
 		}
 		float entry = 0.0f;
-		valpoint->ConvertToFloat(&entry);
+		valpoint->ConvertToFloat(entry);
 		//content2->secondColor = true;
 		UINT gradCount = 0;
 		if (gradCount = content2->stopCollection.GetGradientCount())
@@ -2473,7 +2470,7 @@ bool TControl::onCreate2(TMap<TString>* att, D2D1_RECT_F loc)
 				border2 = TrecPointerKey::GetNewTrecPointer<TBorder>(drawingBoard, (this));
 		}
 		float entry = 0.0f;
-		valpoint->ConvertToFloat(&entry);
+		valpoint->ConvertToFloat(entry);
 		//border2->secondColor = true;
 		UINT gradCount = 0;
 		if (gradCount = border2->stopCollection.GetGradientCount())
@@ -2509,7 +2506,7 @@ bool TControl::onCreate2(TMap<TString>* att, D2D1_RECT_F loc)
 				text2 = TrecPointerKey::GetNewTrecPointer<TText>(drawingBoard, (this));
 		}
 		float entry = 0.0f;
-		valpoint->ConvertToFloat(&entry);
+		valpoint->ConvertToFloat(entry);
 		//text2->secondColor = true;
 		UINT gradCount = 0;
 		if (gradCount = text2->stopCollection.GetGradientCount())
@@ -2594,7 +2591,7 @@ bool TControl::onCreate3(TMap<TString>* att, D2D1_RECT_F loc)
 			else
 				border3 = TrecPointerKey::GetNewTrecPointer<TBorder>(drawingBoard, (this));
 		}
-		valpoint->ConvertToFloat(&(border3->thickness));         // Logic Bug needs fixing
+		valpoint->ConvertToFloat((border3->thickness));         // Logic Bug needs fixing
 	}
 
 	// 
@@ -2622,7 +2619,7 @@ bool TControl::onCreate3(TMap<TString>* att, D2D1_RECT_F loc)
 			else
 				content3 = TrecPointerKey::GetNewTrecPointer<TContent>(drawingBoard, (this));
 		}
-		valpoint->ConvertToFloat(&(content3->thickness));
+		valpoint->ConvertToFloat((content3->thickness));
 	}
 
 	// 
@@ -2652,7 +2649,7 @@ bool TControl::onCreate3(TMap<TString>* att, D2D1_RECT_F loc)
 				content3 = TrecPointerKey::GetNewTrecPointer<TContent>(drawingBoard, (this));
 		}
 		float entry = 0.0f;
-		valpoint->ConvertToFloat(&entry);
+		valpoint->ConvertToFloat(entry);
 		//content3->secondColor = true;
 		UINT gradCount = 0;
 		if (gradCount = content3->stopCollection.GetGradientCount())
@@ -2671,7 +2668,7 @@ bool TControl::onCreate3(TMap<TString>* att, D2D1_RECT_F loc)
 				border3 = TrecPointerKey::GetNewTrecPointer<TBorder>(drawingBoard, (this));
 		}
 		float entry = 0.0f;
-		valpoint->ConvertToFloat(&entry);
+		valpoint->ConvertToFloat(entry);
 		//border3->secondColor = true;
 		UINT gradCount = 0;
 		if (gradCount = border3->stopCollection.GetGradientCount())
@@ -2706,7 +2703,7 @@ bool TControl::onCreate3(TMap<TString>* att, D2D1_RECT_F loc)
 				text3 = TrecPointerKey::GetNewTrecPointer<TText>(drawingBoard, (this));
 		}
 		float entry = 0.0f;
-		valpoint->ConvertToFloat(&entry);
+		valpoint->ConvertToFloat(entry);
 		//text3->secondColor = true;
 		UINT gradCount = 0;
 		if (gradCount = text3->stopCollection.GetGradientCount())
@@ -2808,7 +2805,7 @@ bool TControl::onCreate3(TMap<TString>* att, D2D1_RECT_F loc)
 			else
 				text3 = TrecPointerKey::GetNewTrecPointer<TText>(drawingBoard, (this));
 		}
-		valpoint->ConvertToFloat(&(text3->fontSize));
+		valpoint->ConvertToFloat(text3->fontSize);
 	}
 	valpoint = att->retrieveEntry(TString(L"|ClickHorizontalAlignment"));
 	if (valpoint.Get())
@@ -3042,7 +3039,7 @@ void TControl::checkHeightWidth(D2D1_RECT_F r)
 	if (valpoint.Get())
 	{
 		generateSizeControl();
-		if (valpoint->ConvertToInt(&(dimensions->height)))
+		if (valpoint->ConvertToInt((dimensions->height)))
 			dimensions->height = 0;
 	}
 
@@ -3050,7 +3047,7 @@ void TControl::checkHeightWidth(D2D1_RECT_F r)
 	if (valpoint.Get())
 	{
 		generateSizeControl();
-		if (valpoint->ConvertToInt(&(dimensions->width)))
+		if (valpoint->ConvertToInt((dimensions->width)))
 			dimensions->width = 0;
 	}
 
@@ -3058,7 +3055,7 @@ void TControl::checkHeightWidth(D2D1_RECT_F r)
 	if (valpoint.Get())
 	{
 		generateSizeControl();
-		if (valpoint->ConvertToInt(&(dimensions->maxHeight)))
+		if (valpoint->ConvertToInt((dimensions->maxHeight)))
 			dimensions->maxHeight = 0;
 	}
 
@@ -3066,7 +3063,7 @@ void TControl::checkHeightWidth(D2D1_RECT_F r)
 	if (valpoint.Get())
 	{
 		generateSizeControl();
-		if (valpoint->ConvertToInt(&(dimensions->maxWidth)))
+		if (valpoint->ConvertToInt((dimensions->maxWidth)))
 			dimensions->maxWidth = 0;
 	}
 
@@ -3074,7 +3071,7 @@ void TControl::checkHeightWidth(D2D1_RECT_F r)
 	if (valpoint.Get())
 	{
 		generateSizeControl();
-		if (valpoint->ConvertToInt(&(dimensions->minHeight)))
+		if (valpoint->ConvertToInt((dimensions->minHeight)))
 			dimensions->minHeight = 0;
 	}
 
@@ -3082,7 +3079,7 @@ void TControl::checkHeightWidth(D2D1_RECT_F r)
 	if (valpoint.Get())
 	{
 		generateSizeControl();
-		if (valpoint->ConvertToInt(&(dimensions->minWidth)))
+		if (valpoint->ConvertToInt((dimensions->minWidth)))
 			dimensions->minWidth = 0;
 	}
 	if (dimensions)
@@ -6167,10 +6164,10 @@ RECT convertStringToRECT(TString* str)
 	{
 		goto fallBack;
 	}
-	res[0] = strSpl->at(0).ConvertToInt((int*)&returnable.top);
-	res[1] = strSpl->at(1).ConvertToInt((int*)&returnable.left);
-	res[2] = strSpl->at(2).ConvertToInt((int*)&returnable.bottom);
-	res[3] = strSpl->at(3).ConvertToInt((int*)&returnable.right);
+	res[0] = strSpl->at(0).ConvertToInt(returnable.top);
+	res[1] = strSpl->at(1).ConvertToInt(returnable.left);
+	res[2] = strSpl->at(2).ConvertToInt(returnable.bottom);
+	res[3] = strSpl->at(3).ConvertToInt(returnable.right);
 	if (res[0] > 0 || res[1] > 0 || res[2] > 0 || res[3] > 0)
 		goto fallBack;
 	return returnable; LONG i;
@@ -6194,10 +6191,10 @@ D2D1_RECT_F convertStringToD2D1Rect(TString* str)
 	{
 		goto fallBack;
 	}
-	res[0] = strSpl->at(0).ConvertToFloat(&returnable.top);
-	res[1] = strSpl->at(1).ConvertToFloat(&returnable.left);
-	res[2] = strSpl->at(2).ConvertToFloat(&returnable.bottom);
-	res[3] = strSpl->at(3).ConvertToFloat(&returnable.right);
+	res[0] = strSpl->at(0).ConvertToFloat(returnable.top);
+	res[1] = strSpl->at(1).ConvertToFloat(returnable.left);
+	res[2] = strSpl->at(2).ConvertToFloat(returnable.bottom);
+	res[3] = strSpl->at(3).ConvertToFloat(returnable.right);
 	if (res[0] > 0 || res[1] > 0 || res[2] > 0 || res[3] > 0)
 		goto fallBack;
 	return returnable; LONG i;
@@ -6223,10 +6220,10 @@ D2D1::ColorF convertStringToD2DColor(TString *str)
 	TrecPointer<TDataArray<TString>> strSpl = str->split(",");
 
 	
-	res[0] = strSpl->at(0).ConvertToFloat(&rgba[0]);
-	res[1] = strSpl->at(1).ConvertToFloat(&rgba[1]);
-	res[2] = strSpl->at(2).ConvertToFloat(&rgba[2]);
-	res[3] = strSpl->at(3).ConvertToFloat(&rgba[3]);
+	res[0] = strSpl->at(0).ConvertToFloat(rgba[0]);
+	res[1] = strSpl->at(1).ConvertToFloat(rgba[1]);
+	res[2] = strSpl->at(2).ConvertToFloat(rgba[2]);
+	res[3] = strSpl->at(3).ConvertToFloat(rgba[3]);
 	if (res[0] > 0 || res[1] > 0 || res[2] > 0 || res[3] > 0)
 	{
 		goto colorFallBack;

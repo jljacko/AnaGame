@@ -6,12 +6,12 @@ UCHAR HTML_ReaderType[] = { 3, 0b10000000, 3, 1 };
 /*
 * Method: HTML_Reader::HTML_Reader
 * Purpose: Constructor
-* Parameters: TFile* car - the CArchive to use
-*			Parser_* par - the parser to call upon
+* Parameters: TrecPointer<TFile> tf - the TFile to use
+*			TrecPointer<Parser_> par - the parser to call upon
 * Returns: void
 * Note: Could be depreciated - CArchive is unique to MFC and CArchive could be replaced with TFile
 */
-HTML_Reader::HTML_Reader(TFile * ta, Parser_ *p):ParseReader_(ta,p)
+HTML_Reader::HTML_Reader(TrecPointer<TFile> ta, TrecPointer<Parser_> p):ParseReader_(ta,p)
 {
 	charDeduced = false;
 	openTaken = false;
@@ -43,7 +43,7 @@ bool HTML_Reader::read(int * i)
 		return false;
 
 	unsigned char char2[2];
-	if (!tReader)
+	if (!tReader.Get())
 		return false;
 	tReader->Read(char2, 2);
 	DeduceCharType(char2);

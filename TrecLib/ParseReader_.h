@@ -14,11 +14,11 @@ public:
 	/*
 	* Method: ParseReader_::ParseReader_
 	* Purpose: Constructor
-	* Parameters: TFile* tf - the TFile to use
-	*			Parser_* par - the parser to call upon
+	* Parameters: TrecPointer<TFile> tf - the TFile to use
+	*			TrecPointer<Parser_> par - the parser to call upon
 	* Returns: void
 	*/
-	ParseReader_(TFile*, Parser_*);
+	ParseReader_(TrecPointer<TFile>, TrecPointer<Parser_>);
 
 	/*
 	* Method: ParseReader_::~ParseReader_
@@ -51,11 +51,11 @@ protected:
 	/**
 	 * File to read from
 	 */
-	TFile* tReader;
+	TrecPointer<TFile> tReader;
 	/**
 	 * Object to document the resources the reader collects
 	 */
-	Parser_* respond;
+	TrecPointer<Parser_> respond;
 
 	/**
 	 * whether the program has both of the resources needed to do it's job

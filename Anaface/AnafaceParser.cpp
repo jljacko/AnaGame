@@ -110,8 +110,8 @@ bool AnafaceParser::Obj(TString* va)
 
 				
 
-				firstNum = numbers->at(0).ConvertToInt(&xValue);
-				secondNum = numbers->at(1).ConvertToInt(&yValue);
+				firstNum = numbers->at(0).ConvertToInt(xValue);
+				secondNum = numbers->at(1).ConvertToInt(yValue);
 				if (firstNum == 0 && secondNum == 0) // YES! we now know where to place this object
 				{
 					positionSet = true;
@@ -122,8 +122,8 @@ bool AnafaceParser::Obj(TString* va)
 				// Now Check for the next two numbers
 				if (numbers->Size() > 3)
 				{
-					firstNum = numbers->at(2).ConvertToInt(&xValue);
-					secondNum = numbers->at(3).ConvertToInt(&yValue);
+					firstNum = numbers->at(2).ConvertToInt(xValue);
+					secondNum = numbers->at(3).ConvertToInt(yValue);
 					if (firstNum == 0 && secondNum == 0) // YES! we now know where to place this object
 					{
 						extendPos = true;
@@ -366,7 +366,7 @@ bool AnafaceParser::Attribute(TrecPointer<TString> v, TString& e)
 		{
 			bool flex = v->Find(L"*") != -1;
 			v->Remove(L'*');
-			if (v.Get()->ConvertToInt(&value))
+			if (v.Get()->ConvertToInt(value))
 				return false;
 			else
 			{
@@ -383,7 +383,7 @@ bool AnafaceParser::Attribute(TrecPointer<TString> v, TString& e)
 		{
 			bool flex = v->Find(L"*") != -1;
 			v->Remove(L'*');
-			if (v.Get()->ConvertToInt(&value))
+			if (v.Get()->ConvertToInt(value))
 				return false;
 			else
 			{

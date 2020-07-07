@@ -110,22 +110,22 @@ void ArenaHandler::ProcessMessage(TrecPointer<HandlerMessage> message)
 
 		float x, y, z, m;
 
-		if (dataPoints->at(0).ConvertToFloat(&x) || dataPoints->at(1).ConvertToFloat(&y))
+		if (dataPoints->at(0).ConvertToFloat(x) || dataPoints->at(1).ConvertToFloat(y))
 			return;
 
-		if (!messages->at(1).Compare(L"Location") && dataPoints->Size() > 2 && !dataPoints->at(2).ConvertToFloat(&z))
+		if (!messages->at(1).Compare(L"Location") && dataPoints->Size() > 2 && !dataPoints->at(2).ConvertToFloat(z))
 		{
 			arenaControl->UpdatePos(x, 0);
 			arenaControl->UpdatePos(y, 1);
 			arenaControl->UpdatePos(z, 2);
 		}
-		else if (!messages->at(1).Compare(L"Direction") && dataPoints->Size() > 2 && !dataPoints->at(2).ConvertToFloat(&z))
+		else if (!messages->at(1).Compare(L"Direction") && dataPoints->Size() > 2 && !dataPoints->at(2).ConvertToFloat(z))
 		{
 			arenaControl->UpdateDir(x, 0);
 			arenaControl->UpdateDir(y, 1);
 			arenaControl->UpdateDir(z, 2);
 		}
-		else if (!messages->at(1).Compare(L"Translate") && dataPoints->Size() > 3 && !dataPoints->at(2).ConvertToFloat(&z) && !dataPoints->at(2).ConvertToFloat(&m))
+		else if (!messages->at(1).Compare(L"Translate") && dataPoints->Size() > 3 && !dataPoints->at(2).ConvertToFloat(z) && !dataPoints->at(2).ConvertToFloat(m))
 		{
 			arenaControl->Translate(m, DirectX::XMFLOAT3(x, y, z));
 		}

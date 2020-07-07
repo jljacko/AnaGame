@@ -14,12 +14,12 @@ public:
 	/*
 	* Method: HTML_Reader::HTML_Reader
 	* Purpose: Constructor
-	* Parameters: TFile* car - the CArchive to use
-	*			Parser_* par - the parser to call upon
+	* Parameters: TrecPointer<TFile> tf - the TFile to use
+	 *			TrecPointer<Parser_> par - the parser to call upon
 	* Returns: void
 	* Note: Could be depreciated - CArchive is unique to MFC and CArchive could be replaced with TFile
 	*/
-	HTML_Reader(TFile*, Parser_*);
+	HTML_Reader(TrecPointer<TFile>, TrecPointer<Parser_>);
 
 	/**
 	 * Method: HTML_Reader::~HTML_Reader
