@@ -45,6 +45,8 @@ void ArenaHandler::Initialize(TrecPointer<Page> page)
 
 	assert(arenaControl.Get());
 	arenaControl->setEngine(this->engine);
+
+	this->page = page;
 }
 
 /**
