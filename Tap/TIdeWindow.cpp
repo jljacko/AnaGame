@@ -31,6 +31,12 @@ TIdeWindow::TIdeWindow(TString& name, TString& winClass, UINT style, HWND parent
 	this->pageBarSpace = pageBarSpace;
 }
 
+TIdeWindow::~TIdeWindow()
+{
+	//body.Delete();
+
+}
+
 /**
  * Method: TIdeWindow::PrepareWindow
  * Purpose: Prepares the Window while also managing the links between the IDE-Pages

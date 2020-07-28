@@ -24,6 +24,15 @@ IDEPage::IDEPage(ide_page_type type, UINT barSpace, TrecPointer<DrawingBoard> bo
 
 }
 
+IDEPage::~IDEPage()
+{
+	for (UINT Rust = 0; Rust < pages.Size(); Rust++)
+	{
+		if (pages[Rust].Get())
+			pages[Rust].Delete();
+	}
+}
+
 /**
  * Method: IDEPage::SetResources
  * Purpose: Sets up resources for this Page to be a 2D Page
@@ -1129,6 +1138,12 @@ IDEPageHolder::IDEPageHolder(TString name, TrecPointer<DrawingBoard> rt, UINT ba
 
 	page = TrecPointerKey::GetNewSelfTrecSubPointer<Page, IDEPage>(ide_page_type::ide_page_type_drag, 0, rt);
 	page->SetHandler(handler);
+}
+
+IDEPageHolder::~IDEPageHolder()
+{
+	page.Delete();
+	text.Delete();
 }
 
 /**

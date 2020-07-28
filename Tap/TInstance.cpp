@@ -45,7 +45,12 @@ TInstance::TInstance(TString& name, TString& winClass, UINT style, HWND parent, 
 
 TInstance::~TInstance()
 {
-	int e = 0;
+	mainWindow.Delete();
+
+	for (UINT Rust = 0; Rust < windowList.Size(); Rust++)
+	{
+		windowList[Rust].Delete();
+	}
 }
 
 /**

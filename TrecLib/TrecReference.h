@@ -279,8 +279,14 @@ public:
 	 */
 	void Delete()
 	{
-		if(rawPointer)
-			delete rawPointer;
+		if (rawPointer)
+		{
+			T* tempRawPointer = reinterpret_cast<T*>(rawPointer);
+			rawPointer = nullptr;
+
+			delete tempRawPointer;
+
+		}
 		// now that the object has been deleted, set it to null to avoid a dangling pointer
 		rawPointer = nullptr;
 	}
