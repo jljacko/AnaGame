@@ -43,6 +43,11 @@ TInstance::TInstance(TString& name, TString& winClass, UINT style, HWND parent, 
 	dialogAtom = 0;
 }
 
+TInstance::~TInstance()
+{
+	int e = 0;
+}
+
 /**
  * Method: TInstance::Proc
  * Purpose: Takes in messages from WinProc and sends them to the appropriate window

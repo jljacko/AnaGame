@@ -32,14 +32,11 @@ IDEPage::IDEPage(ide_page_type type, UINT barSpace, TrecPointer<DrawingBoard> bo
  */
 void IDEPage::SetResources(TrecPointer<TInstance> in, TrecPointer<TWindow> window)
 {
-	this->windowHandle = window;
-	instance = in;
+	this->windowHandle = TrecPointerKey::GetSoftPointerFromTrec<TWindow>( window);
+	instance = TrecPointerKey::GetSoftPointerFromTrec<TInstance>(in);
 
 
 	deviceH = GetWindowDC(window->GetWindowHandle());
-	instance = in;
-
-
 	
 }
 
