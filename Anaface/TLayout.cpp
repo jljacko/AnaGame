@@ -557,7 +557,7 @@ bool TLayout::onCreate(D2D1_RECT_F margin, TrecPointer<TWindowEngine> d3d)
 	valpoint = attributes.retrieveEntry(TString(L"|InternalBorderThickness"));
 	if (valpoint.Get())
 	{
-		valpoint->ConvertToFloat(&thickness);
+		valpoint->ConvertToFloat(thickness);
 	}
 
 	// To-Do: Add support for gradients in future build
@@ -1315,4 +1315,10 @@ void TLayout::SwitchChildControl(TrecPointerSoft<TControl> curControl, TrecPoint
 		}
 	}
 	TControl::SwitchChildControl(curControl, newControl);
+}
+
+containerControl::containerControl()
+{
+	x = x2 = y = y2 = 0;
+	extend = false;
 }

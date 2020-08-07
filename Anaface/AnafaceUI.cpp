@@ -68,48 +68,7 @@ void AnafaceUI::SwitchChildControl(TrecPointerSoft<TControl> curControl, TrecPoi
 	TControl::SwitchChildControl(curControl, newControl);
 }
 
-/*
-int AnafaceUI::loadFromTML(CArchive * ar)
-{
-	TrecPointer <auiHold> temp;
-	TrecPointer <AnafaceUI> uiTemp;
-	TrecPointer <CString> strTemp;
-	CFile tempFile;
-	CArchive* tempArchive = NULL;
-	int error = 0;
-	for (int c = 0; c < children.Count(); c++)
-	{
-		temp = children.ElementAt(c);
-		for (int d = 0; d < temp->children.Count(); d++)
-		{
-			uiTemp = temp->children.ElementAt(d);
-			if (!uiTemp)
-				return 1;
-			strTemp = temp->source.ElementAt(d);
-			if (!strTemp)
-			{
-				return 2;
-			}
-			if (!tempFile.Open(*strTemp, CFile::modeRead))
-				return 3;
-			tempArchive = new CArchive(&tempFile, CArchive::load, 12000);
-			error = uiTemp->loadFromTML(tempArchive); // get an error message
 
-			// Clode File Resources
-			tempArchive->Close();
-			delete tempArchive; // delete any unecessary memory
-			tempArchive = NULL; // set NULL by convention
-			tempFile.Close(); // Close the File so it could be used again
-			if (error) // if this is 0, no errors. Otherwise, needs to be address
-			{
-				return 10 + error; // let the double (or unlikely triple) digits decide how deep down a given anaface was
-				// use single digits to specify the error
-			}
-		}
-	}
-	TControl::loadFromTML(ar);
-	return 0;
-}*/
 
 
 /*
@@ -163,7 +122,7 @@ void AnafaceUI::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, T
 					args.isLeftClick = true;
 					args.control = this;
 					args.arrayLabel = c;
-					eventAr.push_back(EventID_Cred( R_Message_Type::On_Click,this ));
+					eventAr.push_back(EventID_Cred( R_Message_Type::On_Click, TrecPointerKey::GetTrecPointerFromSoft<TControl>(tThis)));
 					return;
 				}
 			}
@@ -181,9 +140,10 @@ void AnafaceUI::OnLButtonDown(UINT nFlags, TPoint point, messageOutput * mOut, T
 *				TPoint point - the point on screen where the event occured
 *				messageOutput* mOut - allows controls to keep track of whether ohter controls have caught the event
 *				TDataArray<EventID_Cred>& eventAr - allows Controls to add whatever Event Handler they have been assigned
+*				TDataArray<TControl*>& clickedControls - list of controls that exprienced the on Button Down Event to alert when the button is released
 * Returns: void
 */
-void AnafaceUI::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+void AnafaceUI::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr, TDataArray<TControl*>& clickedButtons)
 {
 	if (tabs)
 	{
@@ -196,7 +156,7 @@ void AnafaceUI::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TD
 				continue;
 
 			messageOutput tempOut = messageOutput::negative;
-			tcon->OnRButtonDown(nFlags, point, &tempOut, eventAr);
+			tcon->OnRButtonDown(nFlags, point, &tempOut, eventAr, clickedButtons);
 			if (tempOut != messageOutput::negative && tempOut != messageOutput::negativeUpdate)
 			{
 				if (children.Count() > c && children.ElementAt(c).Get())
@@ -210,7 +170,7 @@ void AnafaceUI::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TD
 	}
 
 	if (currentControl.Get() && proceed)
-		currentControl->OnRButtonDown(nFlags, point, mOut, eventAr);
+		currentControl->OnRButtonDown(nFlags, point, mOut, eventAr, clickedButtons);
 }
 
 /*
@@ -220,9 +180,10 @@ void AnafaceUI::OnRButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, TD
 *				TPoint point - the point on screen where the event occured
 *				messageOutput* mOut - allows controls to keep track of whether ohter controls have caught the event
 *				TDataArray<EventID_Cred>& eventAr - allows Controls to add whatever Event Handler they have been assigned
+*				TDataArray<TControl*>& clickedControls - list of controls that exprienced the on Button Down Event to alert when the button is released
 * Returns: void
 */
-void AnafaceUI::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+void AnafaceUI::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr, TDataArray<TControl*>& hoverControls)
 {
 	if (tabs)
 	{
@@ -235,7 +196,7 @@ void AnafaceUI::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDat
 				continue;
 
 			messageOutput tempOut = messageOutput::negative;
-			tcon->OnMouseMove(nFlags, point, &tempOut, eventAr);
+			tcon->OnMouseMove(nFlags, point, &tempOut, eventAr, hoverControls);
 			if (tempOut != messageOutput::negative && tempOut != messageOutput::negativeUpdate)
 			{
 				if (children.Count() > c && children.ElementAt(c).Get())
@@ -249,7 +210,7 @@ void AnafaceUI::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDat
 	}
 
 	if (currentControl.Get() && proceed)
-		currentControl->OnMouseMove(nFlags, point, mOut, eventAr);
+		currentControl->OnMouseMove(nFlags, point, mOut, eventAr, hoverControls);
 }
 
 /*
@@ -389,7 +350,7 @@ bool AnafaceUI::onCreate(D2D1_RECT_F container, TrecPointer<TWindowEngine> d3d)
 		tabs_base = TrecPointerKey::GetNewSelfTrecPointerAlt<TControl, TLayoutEx>(drawingBoard, styles);
 		tabs = dynamic_cast<TLayoutEx*>(tabs_base.Get());
 		tabs->setLayout(orgLayout::HStack);
-		if (valpoint->ConvertToInt(&tabHeight))
+		if (valpoint->ConvertToInt(tabHeight))
 			tabHeight = 30;
 
 		r = D2D1_RECT_F{ location.left, location.top, location.right, location.top + tabHeight };
@@ -476,7 +437,7 @@ bool AnafaceUI::onCreate(D2D1_RECT_F container, TrecPointer<TWindowEngine> d3d)
 
 	valpoint = attributes.retrieveEntry(TString(L"|BeginningChildIndex"));
 	int ind = -1;
-	if (valpoint.Get() && !valpoint->ConvertToInt(&ind))
+	if (valpoint.Get() && !valpoint->ConvertToInt(ind))
 	{
 		if (ind > -1 && ind < children.Count())
 			currentControl = children.ElementAt(ind);

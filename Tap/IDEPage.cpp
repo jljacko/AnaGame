@@ -24,6 +24,15 @@ IDEPage::IDEPage(ide_page_type type, UINT barSpace, TrecPointer<DrawingBoard> bo
 
 }
 
+IDEPage::~IDEPage()
+{
+	for (UINT Rust = 0; Rust < pages.Size(); Rust++)
+	{
+		if (pages[Rust].Get())
+			pages[Rust].Delete();
+	}
+}
+
 /**
  * Method: IDEPage::SetResources
  * Purpose: Sets up resources for this Page to be a 2D Page
@@ -32,14 +41,11 @@ IDEPage::IDEPage(ide_page_type type, UINT barSpace, TrecPointer<DrawingBoard> bo
  */
 void IDEPage::SetResources(TrecPointer<TInstance> in, TrecPointer<TWindow> window)
 {
-	this->windowHandle = window;
-	instance = in;
+	this->windowHandle = TrecPointerKey::GetSoftPointerFromTrec<TWindow>( window);
+	instance = TrecPointerKey::GetSoftPointerFromTrec<TInstance>(in);
 
 
 	deviceH = GetWindowDC(window->GetWindowHandle());
-	instance = in;
-
-
 	
 }
 
@@ -152,6 +158,21 @@ void IDEPage::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* mOut, Trec
 	{
 		TrecPointerKey::GetSubPointerFromSoft<TWindow, TIdeWindow>(parentWindow)->SetCurrentHolder(focusPage);
 		focusPage->curPoint = point;
+	}
+
+	if (isContained(point, area))
+	{
+		if (focusPage.Get())
+		{
+			auto targetPage = focusPage->GetPage();
+
+			auto hand = targetPage->GetHandler();
+
+			if (hand.Get())
+				hand->OnFocus();
+		}
+		else if (handler.Get())
+			handler->OnFocus();
 	}
 
 	if (currentPage.Get())
@@ -1117,6 +1138,12 @@ IDEPageHolder::IDEPageHolder(TString name, TrecPointer<DrawingBoard> rt, UINT ba
 
 	page = TrecPointerKey::GetNewSelfTrecSubPointer<Page, IDEPage>(ide_page_type::ide_page_type_drag, 0, rt);
 	page->SetHandler(handler);
+}
+
+IDEPageHolder::~IDEPageHolder()
+{
+	page.Delete();
+	text.Delete();
 }
 
 /**

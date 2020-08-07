@@ -251,7 +251,7 @@ bool TDataBind::onCreate(D2D1_RECT_F r, TrecPointer<TWindowEngine> d3d)
 	if (valpoint.Get())
 	{
 		int value = 0;
-		if (!valpoint->ConvertToInt(&value))
+		if (!valpoint->ConvertToInt(value))
 		{
 			widthHeight = value;
 			isStack = false;
@@ -269,7 +269,7 @@ bool TDataBind::onCreate(D2D1_RECT_F r, TrecPointer<TWindowEngine> d3d)
 	{
 		r = loc;
 		int value = 0;
-		if (!valpoint->ConvertToInt(&value))
+		if (!valpoint->ConvertToInt(value))
 		{
 			widthHeight = value;
 			isStack = true;
@@ -392,7 +392,7 @@ void TDataBind::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDat
 				args.control = this;
 				args.methodID = getEventID(R_Message_Type::On_sel_change);
 				args.point = point;
-				eventAr.push_back({ R_Message_Type::On_sel_change, this });
+				eventAr.push_back({ R_Message_Type::On_sel_change, TrecPointerKey::GetTrecPointerFromSoft<TControl>(tThis) });
 				break;
 
 
@@ -419,11 +419,12 @@ void TDataBind::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* mOut, TDat
  *				TPoint point - the point on screen where the event occured
  *				messageOutput* mOut - allows controls to keep track of whether ohter controls have caught the event
  *				TDataArray<EventID_Cred>& eventAr - allows Controls to add whatever Event Handler they have been assigned
+ *				TDataArray<TControl*>& clickedControls - list of controls that exprienced the on Button Down Event to alert when the button is released
  * Returns: void
  */
-void TDataBind::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+void TDataBind::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr, TDataArray<TControl*>& hoverControls)
 {
-	TControl::OnMouseMove(nFlags, point, mOut, eventAr);
+	TControl::OnMouseMove(nFlags, point, mOut, eventAr, hoverControls);
 	if (mState == messageState::mouseHover)
 		mouseMovePoint = point;
 }

@@ -45,6 +45,8 @@ void ArenaHandler::Initialize(TrecPointer<Page> page)
 
 	assert(arenaControl.Get());
 	arenaControl->setEngine(this->engine);
+
+	this->page = page;
 }
 
 /**
@@ -55,13 +57,12 @@ void ArenaHandler::Initialize(TrecPointer<Page> page)
  */
 void ArenaHandler::HandleEvents(TDataArray<EventID_Cred>& eventAr)
 {
-	TControl* tc = nullptr;
 	int e_id = -1;
 	EventArgs ea;
 	for (UINT c = 0; c < eventAr.Size(); c++)
 	{
-		tc = eventAr.at(c).control;
-		if (!tc)
+		auto tc = eventAr.at(c).control;
+		if (!tc.Get())
 			continue;
 		ea = tc->getEventArgs();
 		e_id = ea.methodID;
@@ -110,22 +111,22 @@ void ArenaHandler::ProcessMessage(TrecPointer<HandlerMessage> message)
 
 		float x, y, z, m;
 
-		if (dataPoints->at(0).ConvertToFloat(&x) || dataPoints->at(1).ConvertToFloat(&y))
+		if (dataPoints->at(0).ConvertToFloat(x) || dataPoints->at(1).ConvertToFloat(y))
 			return;
 
-		if (!messages->at(1).Compare(L"Location") && dataPoints->Size() > 2 && !dataPoints->at(2).ConvertToFloat(&z))
+		if (!messages->at(1).Compare(L"Location") && dataPoints->Size() > 2 && !dataPoints->at(2).ConvertToFloat(z))
 		{
 			arenaControl->UpdatePos(x, 0);
 			arenaControl->UpdatePos(y, 1);
 			arenaControl->UpdatePos(z, 2);
 		}
-		else if (!messages->at(1).Compare(L"Direction") && dataPoints->Size() > 2 && !dataPoints->at(2).ConvertToFloat(&z))
+		else if (!messages->at(1).Compare(L"Direction") && dataPoints->Size() > 2 && !dataPoints->at(2).ConvertToFloat(z))
 		{
 			arenaControl->UpdateDir(x, 0);
 			arenaControl->UpdateDir(y, 1);
 			arenaControl->UpdateDir(z, 2);
 		}
-		else if (!messages->at(1).Compare(L"Translate") && dataPoints->Size() > 3 && !dataPoints->at(2).ConvertToFloat(&z) && !dataPoints->at(2).ConvertToFloat(&m))
+		else if (!messages->at(1).Compare(L"Translate") && dataPoints->Size() > 3 && !dataPoints->at(2).ConvertToFloat(z) && !dataPoints->at(2).ConvertToFloat(m))
 		{
 			arenaControl->Translate(m, DirectX::XMFLOAT3(x, y, z));
 		}
@@ -139,7 +140,7 @@ void ArenaHandler::ProcessMessage(TrecPointer<HandlerMessage> message)
 		messageStr.Format(L"Camera Location %f;%f;%f Direction %f;%f;%f", loc.x, loc.y, loc.z, dir.x, dir.y, dir.z);
 
 		TrecPointer<HandlerMessage> newMessage = TrecPointerKey::GetNewTrecPointer<HandlerMessage>(name, handler_type::handler_type_camera, 0, message_transmission::message_transmission_name_type, 0, messageStr);
-		app->DispatchAnagameMessage(newMessage);
+		TrecPointerKey::GetTrecPointerFromSoft<TInstance>(app)->DispatchAnagameMessage(newMessage);
 	}
 }
 

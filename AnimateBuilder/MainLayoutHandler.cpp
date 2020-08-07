@@ -149,8 +149,8 @@ void MainLayoutHandler::Initialize(TrecPointer<Page> page)
 		throw L"Error! Expected an actual Page Pointer to be provided!";
 
 	this->page = page;
-
-	app = page->GetInstance();
+	auto tempApp = page->GetInstance();
+	app = TrecPointerKey::GetSoftPointerFromTrec<TInstance>(tempApp);
 
 	rootControl = page->GetRootControl();
 
@@ -196,8 +196,8 @@ void MainLayoutHandler::HandleEvents(TDataArray<EventID_Cred>& eventAr)
 
 	for (UINT Rust = 0; Rust < eventAr.Size(); Rust++)
 	{
-		TControl* cont = eventAr[Rust].control;
-		if (!cont) continue;
+		auto cont = eventAr[Rust].control;
+		if (!cont.Get()) continue;
 
 		EventArgs ea = cont->getEventArgs();
 
@@ -222,7 +222,7 @@ void MainLayoutHandler::Draw()
 	//	currentDocument->Draw();
 }
 
-void MainLayoutHandler::OnSwitchTab(TControl* tc, EventArgs ea)
+void MainLayoutHandler::OnSwitchTab(TrecPointer<TControl> tc, EventArgs ea)
 {
 	//if (ea.arrayLabel >= 0 && ea.arrayLabel < ActiveDocuments.Size())
 	//{
@@ -238,17 +238,17 @@ void MainLayoutHandler::ProcessMessage(TrecPointer<HandlerMessage> message)
 {
 }
 
-void MainLayoutHandler::OnLoadNewSolution(TControl* tc, EventArgs ea)
+void MainLayoutHandler::OnLoadNewSolution(TrecPointer<TControl> tc, EventArgs ea)
 {
 }
 
-void MainLayoutHandler::OnSaveFile(TControl* tc, EventArgs ea)
+void MainLayoutHandler::OnSaveFile(TrecPointer<TControl> tc, EventArgs ea)
 {
 	//if (currentDocument.Get())
 	//	currentDocument->OnSave();
 }
 
-void MainLayoutHandler::OnSaveAllFiles(TControl* tc, EventArgs ea)
+void MainLayoutHandler::OnSaveAllFiles(TrecPointer<TControl> tc, EventArgs ea)
 {
 	//for (UINT Rust = 0; Rust < ActiveDocuments.Size(); Rust++)
 	//{
@@ -257,22 +257,22 @@ void MainLayoutHandler::OnSaveAllFiles(TControl* tc, EventArgs ea)
 	//}
 }
 
-void MainLayoutHandler::OnNewFile(TControl* tc, EventArgs ea)
+void MainLayoutHandler::OnNewFile(TrecPointer<TControl> tc, EventArgs ea)
 {
 }
 
-void MainLayoutHandler::OnImportFile(TControl* tc, EventArgs ea)
+void MainLayoutHandler::OnImportFile(TrecPointer<TControl> tc, EventArgs ea)
 {
 }
 
-void MainLayoutHandler::OnPrint(TControl* tc, EventArgs ea)
+void MainLayoutHandler::OnPrint(TrecPointer<TControl> tc, EventArgs ea)
 {
 }
 
-void MainLayoutHandler::OnNewArena(TControl* tc, EventArgs ea)
+void MainLayoutHandler::OnNewArena(TrecPointer<TControl> tc, EventArgs ea)
 {
 	TString dialog(L"Enter a name for your Arena!");
-	TString arenaName(ActivateNameDialog(app, page->GetWindowHandle()->GetWindowHandle(), dialog));
+	TString arenaName(ActivateNameDialog(TrecPointerKey::GetTrecPointerFromSoft<TInstance>(app), page->GetWindowHandle()->GetWindowHandle(), dialog));
 
 	if (!arenaName.GetSize())
 		return;
@@ -281,7 +281,7 @@ void MainLayoutHandler::OnNewArena(TControl* tc, EventArgs ea)
 	if (!window->SetUp3D())
 	{
 		TString errorMessage(L"Error! Failed to Initialize Window for 3D!");
-		ActivateAlertDialog(app, page->GetWindowHandle()->GetWindowHandle(), errorMessage);
+		ActivateAlertDialog(TrecPointerKey::GetTrecPointerFromSoft<TInstance>(app), page->GetWindowHandle()->GetWindowHandle(), errorMessage);
 		return;
 	}
 
@@ -295,7 +295,7 @@ void MainLayoutHandler::OnNewArena(TControl* tc, EventArgs ea)
 		arenaStack3->setActive(true);
 }
 
-void MainLayoutHandler::OnUpdateClearColor(TControl* tc, EventArgs ea)
+void MainLayoutHandler::OnUpdateClearColor(TrecPointer<TControl> tc, EventArgs ea)
 {
 	ArenaApp* arApp = nullptr;
 	if (currentDocument.Get())
@@ -318,12 +318,12 @@ void MainLayoutHandler::OnUpdateClearColor(TControl* tc, EventArgs ea)
 	arApp->SetColor(color);
 }
 
-void MainLayoutHandler::OnNewModel(TControl* tc, EventArgs ea)
+void MainLayoutHandler::OnNewModel(TrecPointer<TControl> tc, EventArgs ea)
 {
 
 }
 
-void MainLayoutHandler::OnNewCodeFile(TControl* tc, EventArgs ea)
+void MainLayoutHandler::OnNewCodeFile(TrecPointer<TControl> tc, EventArgs ea)
 {
 	/*currentDocument = TrecPointerKey::GetNewSelfTrecPointerAlt<MiniHandler, SourceCodeApp>(body, outputPanel, classUI, app);
 	ActiveDocuments.push_back(currentDocument);
@@ -335,11 +335,11 @@ void MainLayoutHandler::OnNewCodeFile(TControl* tc, EventArgs ea)
 	currentDocument->Initialize();
 }
 
-void MainLayoutHandler::OnImportCode(TControl* tc, EventArgs ea)
+void MainLayoutHandler::OnImportCode(TrecPointer<TControl> tc, EventArgs ea)
 {
 }
 
-void MainLayoutHandler::OnProcessCode(TControl* tc, EventArgs ea)
+void MainLayoutHandler::OnProcessCode(TrecPointer<TControl> tc, EventArgs ea)
 {
 }
 

@@ -112,7 +112,7 @@ bool TComboBox::onCreate(D2D1_RECT_F r, TrecPointer<TWindowEngine> d3d)
 
 
 	int childHeight;
-	if (valpoint.Get() && !valpoint->ConvertToInt(&childHeight))
+	if (valpoint.Get() && !valpoint->ConvertToInt(childHeight))
 	{
 		extension->childHeight = childHeight;
 	}
@@ -194,7 +194,7 @@ bool TComboBox::onCreate(D2D1_RECT_F r, TrecPointer<TWindowEngine> d3d)
 	// Remaining attributes
 	valpoint = attributes.retrieveEntry(TString(L"|BoxEntry"));
 
-	if (valpoint.Get() && !valpoint->ConvertToInt(&childHeight) && childHeight > -1)
+	if (valpoint.Get() && !valpoint->ConvertToInt(childHeight) && childHeight > -1)
 	{
 		extension->maxHeight = childHeight;
 	}
@@ -429,7 +429,7 @@ void TComboBoxExtension::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* m
 		{
 			combo->UpdateCaption(elements[clickSelection], clickSelection);
 			EventID_Cred cred;
-			cred.control = combo.Get();
+			cred.control = TrecPointerKey::GetTrecPointerFromSub<TControl, TComboBox>(combo);
 			cred.eventType = R_Message_Type::On_sel_change;
 			eventAr.push_back(cred);
 		}
@@ -438,7 +438,17 @@ void TComboBoxExtension::OnLButtonUp(UINT nFlags, TPoint point, messageOutput* m
 	clickSelection = -1;
 }
 
-void TComboBoxExtension::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+/**
+ * Method: TComboBoxExtension::OnMouseMove
+ * Purpose: Allows Controls to catch themessageState::mouse Move event and deduce if the cursor has hovered over it
+ * Parameters: UINT nFlags - flags provided by MFC's Message system, not used
+ *				TPoint point - the point on screen where the event occured
+ *				messageOutput* mOut - allows controls to keep track of whether ohter controls have caught the event
+ *				TDataArray<EventID_Cred>& eventAr - allows Controls to add whatever Event Handler they have been assigned
+ *				TDataArray<TControl*>& clickedControls - list of controls that exprienced the on Button Down Event to alert when the button is released
+ * Returns: void
+ */
+void TComboBoxExtension::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr, TDataArray<TControl*>& hoverControls)
 {
 	auto rect = location;
 

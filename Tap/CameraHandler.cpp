@@ -179,13 +179,12 @@ void CameraHandler::Initialize(TrecPointer<Page> page)
  */
 void CameraHandler::HandleEvents(TDataArray<EventID_Cred>& eventAr)
 {
-	TControl* tc = nullptr;
 	int e_id = -1;
 	EventArgs ea;
 	for (UINT c = 0; c < eventAr.Size(); c++)
 	{
-		tc = eventAr.at(c).control;
-		if (!tc)
+		auto tc = eventAr.at(c).control;
+		if (!tc.Get())
 			continue;
 		ea = tc->getEventArgs();
 		e_id = ea.methodID;
@@ -255,15 +254,15 @@ void CameraHandler::ProcessMessage(TrecPointer<HandlerMessage> message)
 
 			if (mode == 1)
 			{
-				datum->at(0).ConvertToFloat(&t_lx);
-				datum->at(1).ConvertToFloat(&t_ly);
-				datum->at(2).ConvertToFloat(&t_lz);
+				datum->at(0).ConvertToFloat(t_lx);
+				datum->at(1).ConvertToFloat(t_ly);
+				datum->at(2).ConvertToFloat(t_lz);
 			}
 			else
 			{
-				datum->at(0).ConvertToFloat(&t_dx);
-				datum->at(1).ConvertToFloat(&t_dy);
-				datum->at(2).ConvertToFloat(&t_dz);
+				datum->at(0).ConvertToFloat(t_dx);
+				datum->at(1).ConvertToFloat(t_dy);
+				datum->at(2).ConvertToFloat(t_dz);
 			}
 			mode = 0;
 		}
@@ -298,7 +297,8 @@ void CameraHandler::SendMessageToArena(const TString& target, const TString& att
 	
 	TString messageStr(target + L" " + attribute + L" " + value);
 	TrecPointer<HandlerMessage> newMessage = TrecPointerKey::GetNewTrecPointer<HandlerMessage>(name, handler_type::handler_type_arena, 0, message_transmission::message_transmission_name_type, 0, messageStr);
-	app->DispatchAnagameMessage(newMessage);
+	if(app.Get())
+		TrecPointerKey::GetTrecPointerFromSoft<TInstance>(app)->DispatchAnagameMessage(newMessage);
 }
 
 
@@ -329,14 +329,14 @@ void CameraHandler::UpdatePanelText()
 /**
  * Method: CameraHandler::TextDirectionX
  * Purpose: Responds to text changes from the x-direction control
- * Parameters: TControl* tc - The Control that generated the event
+ * Parameters: TrecPointer<TControl> tc - The Control that generated the event
  *				EventArgs ea - The parameters of the event
  * Returns: void
  */
-void CameraHandler::TextDirectionX(TControl* tc, EventArgs ea)
+void CameraHandler::TextDirectionX(TrecPointer<TControl> tc, EventArgs ea)
 {
 	float f = 0.0f;
-	if (!ea.text.ConvertToFloat(&f))
+	if (!ea.text.ConvertToFloat(f))
 	{
 		t_dx = f;
 		TString formatedText;
@@ -348,14 +348,14 @@ void CameraHandler::TextDirectionX(TControl* tc, EventArgs ea)
 /**
  * Method: CameraHandler::TextLocationX
  * Purpose: Responds to text changes from the x-location control
- * Parameters: TControl* tc - The Control that generated the event
+ * Parameters: TrecPointer<TControl> tc - The Control that generated the event
  *				EventArgs ea - The parameters of the event
  * Returns: void
  */
-void CameraHandler::TextLocationX(TControl* tc, EventArgs ea)
+void CameraHandler::TextLocationX(TrecPointer<TControl> tc, EventArgs ea)
 {
 	float f = 0.0f;
-	if (!ea.text.ConvertToFloat(&f))
+	if (!ea.text.ConvertToFloat(f))
 	{
 		t_lx = f;
 		TString formatedText;
@@ -367,14 +367,14 @@ void CameraHandler::TextLocationX(TControl* tc, EventArgs ea)
 /**
  * Method: CameraHandler::TextDirectionY
  * Purpose: Responds to text changes from the y-direction control
- * Parameters: TControl* tc - The Control that generated the event
+ * Parameters: TrecPointer<TControl> tc - The Control that generated the event
  *				EventArgs ea - The parameters of the event
  * Returns: void
  */
-void CameraHandler::TextDirectionY(TControl* tc, EventArgs ea)
+void CameraHandler::TextDirectionY(TrecPointer<TControl> tc, EventArgs ea)
 {
 	float f = 0.0f;
-	if (!ea.text.ConvertToFloat(&f))
+	if (!ea.text.ConvertToFloat(f))
 	{
 		t_dy = f;
 		TString formatedText;
@@ -386,14 +386,14 @@ void CameraHandler::TextDirectionY(TControl* tc, EventArgs ea)
 /**
  * Method: CameraHandler::TextLocationY
  * Purpose: Responds to text changes from the y-location control
- * Parameters: TControl* tc - The Control that generated the event
+ * Parameters: TrecPointer<TControl> tc - The Control that generated the event
  *				EventArgs ea - The parameters of the event
  * Returns: void
  */
-void CameraHandler::TextLocationY(TControl* tc, EventArgs ea)
+void CameraHandler::TextLocationY(TrecPointer<TControl> tc, EventArgs ea)
 {
 	float f = 0.0f;
-	if (!ea.text.ConvertToFloat(&f))
+	if (!ea.text.ConvertToFloat(f))
 	{
 		t_ly = f;
 		TString formatedText;
@@ -405,14 +405,14 @@ void CameraHandler::TextLocationY(TControl* tc, EventArgs ea)
 /**
  * Method: CameraHandler::TextDirectionZ
  * Purpose: Responds to text changes from the z-direction control
- * Parameters: TControl* tc - The Control that generated the event
+ * Parameters: TrecPointer<TControl> tc - The Control that generated the event
  *				EventArgs ea - The parameters of the event
  * Returns: void
  */
-void CameraHandler::TextDirectionZ(TControl* tc, EventArgs ea)
+void CameraHandler::TextDirectionZ(TrecPointer<TControl> tc, EventArgs ea)
 {
 	float f = 0.0f;
-	if (!ea.text.ConvertToFloat(&f))
+	if (!ea.text.ConvertToFloat(f))
 	{
 		t_dz = f;
 		TString formatedText;
@@ -424,14 +424,14 @@ void CameraHandler::TextDirectionZ(TControl* tc, EventArgs ea)
 /**
  * Method: CameraHandler::TextLocationZ
  * Purpose: Responds to text changes from the z-location control
- * Parameters: TControl* tc - The Control that generated the event
+ * Parameters: TrecPointer<TControl> tc - The Control that generated the event
  *				EventArgs ea - The parameters of the event
  * Returns: void
  */
-void CameraHandler::TextLocationZ(TControl* tc, EventArgs ea)
+void CameraHandler::TextLocationZ(TrecPointer<TControl> tc, EventArgs ea)
 {
 	float f = 0.0f;
-	if (!ea.text.ConvertToFloat(&f))
+	if (!ea.text.ConvertToFloat(f))
 	{
 		t_lz = f;
 		TString formatedText;
@@ -443,11 +443,11 @@ void CameraHandler::TextLocationZ(TControl* tc, EventArgs ea)
 /**
  * Method: CameraHandler::OnUp
  * Purpose: Responds to the Up button, and moves the camera "up", whether location or rotation
- * Parameters: TControl* tc - The Control that generated the event
+ * Parameters: TrecPointer<TControl> tc - The Control that generated the event
  *				EventArgs ea - The parameters of the event
  * Returns: void
  */
-void CameraHandler::OnUp(TControl* tc, EventArgs ea)
+void CameraHandler::OnUp(TrecPointer<TControl> tc, EventArgs ea)
 {
 	TString formatedText;
 	if (rotateMode)
@@ -466,11 +466,11 @@ void CameraHandler::OnUp(TControl* tc, EventArgs ea)
 /**
  * Method: CameraHandler::OnDown
  * Purpose: Responds to the Up button, and moves the camera "down", whether location or rotation
- * Parameters: TControl* tc - The Control that generated the event
+ * Parameters: TrecPointer<TControl> tc - The Control that generated the event
  *				EventArgs ea - The parameters of the event
  * Returns: void
  */
-void CameraHandler::OnDown(TControl* tc, EventArgs ea)
+void CameraHandler::OnDown(TrecPointer<TControl> tc, EventArgs ea)
 {
 	TString formatedText;
 	if (rotateMode)
@@ -490,11 +490,11 @@ void CameraHandler::OnDown(TControl* tc, EventArgs ea)
 /**
  * Method: CameraHandler::OnLeft
  * Purpose: Responds to the Up button, and moves the camera "left", whether location or rotation
- * Parameters: TControl* tc - The Control that generated the event
+ * Parameters: TrecPointer<TControl> tc - The Control that generated the event
  *				EventArgs ea - The parameters of the event
  * Returns: void
  */
-void CameraHandler::OnLeft(TControl* tc, EventArgs ea)
+void CameraHandler::OnLeft(TrecPointer<TControl> tc, EventArgs ea)
 {
 	TString formatedText;
 	if (rotateMode)
@@ -513,11 +513,11 @@ void CameraHandler::OnLeft(TControl* tc, EventArgs ea)
 /**
  * Method: CameraHandler::OnRight
  * Purpose: Responds to the Up button, and moves the camera "right", whether location or rotation
- * Parameters: TControl* tc - The Control that generated the event
+ * Parameters: TrecPointer<TControl> tc - The Control that generated the event
  *				EventArgs ea - The parameters of the event
  * Returns: void
  */
-void CameraHandler::OnRight(TControl* tc, EventArgs ea)
+void CameraHandler::OnRight(TrecPointer<TControl> tc, EventArgs ea)
 {
 	TString formatedText;
 	if (rotateMode)
@@ -537,11 +537,11 @@ void CameraHandler::OnRight(TControl* tc, EventArgs ea)
 /**
  * Method: CameraHandler::OnNear
  * Purpose: Responds to the Up button, and moves the camera "near", when set to location (rotation is not affected)
- * Parameters: TControl* tc - The Control that generated the event
+ * Parameters: TrecPointer<TControl> tc - The Control that generated the event
  *				EventArgs ea - The parameters of the event
  * Returns: void
  */
-void CameraHandler::OnNear(TControl* tc, EventArgs ea)
+void CameraHandler::OnNear(TrecPointer<TControl> tc, EventArgs ea)
 {
 	if (!rotateMode)
 	{
@@ -555,11 +555,11 @@ void CameraHandler::OnNear(TControl* tc, EventArgs ea)
 /**
  * Method: CameraHandler::OnFar
  * Purpose: Responds to the Up button, and moves the camera "far", when set to location (rotation is not affected)
- * Parameters: TControl* tc - The Control that generated the event
+ * Parameters: TrecPointer<TControl> tc - The Control that generated the event
  *				EventArgs ea - The parameters of the event
  * Returns: void
  */
-void CameraHandler::OnFar(TControl* tc, EventArgs ea)
+void CameraHandler::OnFar(TrecPointer<TControl> tc, EventArgs ea)
 {
 	if (!rotateMode)
 	{
@@ -573,11 +573,11 @@ void CameraHandler::OnFar(TControl* tc, EventArgs ea)
 /**
  * Method: CameraHandler::OnSetCameraRotate
  * Purpose: Sets the mode for rotation when buttons are clicked
- * Parameters: TControl* tc - The Control that generated the event
+ * Parameters: TrecPointer<TControl> tc - The Control that generated the event
  *				EventArgs ea - The parameters of the event
  * Returns: void
  */
-void CameraHandler::OnSetCameraRotate(TControl* tc, EventArgs ea)
+void CameraHandler::OnSetCameraRotate(TrecPointer<TControl> tc, EventArgs ea)
 {
 	rotateMode = true;
 }
@@ -585,11 +585,11 @@ void CameraHandler::OnSetCameraRotate(TControl* tc, EventArgs ea)
 /**
  * Method: CameraHandler::OnSetCameraTranslate
  * Purpose: Sets the mode for translation when buttons are clicked
- * Parameters: TControl* tc - The Control that generated the event
+ * Parameters: TrecPointer<TControl> tc - The Control that generated the event
  *				EventArgs ea - The parameters of the event
  * Returns: void
  */
-void CameraHandler::OnSetCameraTranslate(TControl* tc, EventArgs ea)
+void CameraHandler::OnSetCameraTranslate(TrecPointer<TControl> tc, EventArgs ea)
 {
 	rotateMode = false;
 }
@@ -597,11 +597,11 @@ void CameraHandler::OnSetCameraTranslate(TControl* tc, EventArgs ea)
 /**
  * Method: CameraHandler::OnSelectObject
  * Purpose: [TBD - written when using the old architexture]
- * Parameters: TControl* tc - The Control that generated the event
+ * Parameters: TrecPointer<TControl> tc - The Control that generated the event
  *				EventArgs ea - The parameters of the event
  * Returns: void
  */
-void CameraHandler::OnSelectObject(TControl* tc, EventArgs ea)
+void CameraHandler::OnSelectObject(TrecPointer<TControl> tc, EventArgs ea)
 {
 	//if (!modelCollection.Get()) return;
 
@@ -611,11 +611,11 @@ void CameraHandler::OnSelectObject(TControl* tc, EventArgs ea)
 /**
  * Method: CameraHandler::OnToggleObjectAndCamera
  * Purpose: [TBD - written when using the old architexture]
- * Parameters: TControl* tc - The Control that generated the event
+ * Parameters: TrecPointer<TControl> tc - The Control that generated the event
  *				EventArgs ea - The parameters of the event
  * Returns: void
  */
-void CameraHandler::OnToggleObjectAndCamera(TControl*, EventArgs ea)
+void CameraHandler::OnToggleObjectAndCamera(TrecPointer<TControl> tc, EventArgs ea)
 {
 	//focusOnModel = !focusOnModel;
 
@@ -633,11 +633,11 @@ void CameraHandler::OnToggleObjectAndCamera(TControl*, EventArgs ea)
 /**
  * Method: CameraHandler::OnGetDefaultObject
  * Purpose: [TBD - written when using the old architexture]
- * Parameters: TControl* tc - The Control that generated the event
+ * Parameters: TrecPointer<TControl> tc - The Control that generated the event
  *				EventArgs ea - The parameters of the event
  * Returns: void
  */
-void CameraHandler::OnGetDefaultObject(TControl* tc, EventArgs ea)
+void CameraHandler::OnGetDefaultObject(TrecPointer<TControl> tc, EventArgs ea)
 {
 	//if (ea.arrayLabel >= 0 && ea.arrayLabel < basicModels.Size() && modelCollection.Get() && basicModels[ea.arrayLabel].Get())
 	//{

@@ -247,7 +247,7 @@ protected:
 	/**
 	 * The instance associated with the Handler
 	 */
-	TrecPointer<TInstance> app;
+	TrecPointerSoft<TInstance> app;
 
 	/**
 	 * list of Events organized by Name and id
@@ -270,6 +270,7 @@ protected:
 	 * The File attached to this Handler (if applicable)
 	 */
 	TrecPointer<TFileShell> filePointer;
+
 
 	/**
 	 * Method: EventHandler::SetSaveFile

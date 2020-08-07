@@ -107,7 +107,7 @@ void TScrollerControl::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* m
 		args.isClick = args.isLeftClick = true;
 		args.control = nullptr;
 
-		eventAr.push_back(EventID_Cred(R_Message_Type::On_Select_Scroller, this, vScroll));
+		eventAr.push_back(EventID_Cred(R_Message_Type::On_Select_Scroller, TrecPointerKey::GetTrecPointerFromSoft<TControl>(tThis), vScroll));
 		return;
 	}
 
@@ -121,7 +121,7 @@ void TScrollerControl::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* m
 		args.isClick = args.isLeftClick = true;
 		args.control = nullptr;
 
-		eventAr.push_back(EventID_Cred(R_Message_Type::On_Select_Scroller, this, hScroll));
+		eventAr.push_back(EventID_Cred(R_Message_Type::On_Select_Scroller, TrecPointerKey::GetTrecPointerFromSoft<TControl>(tThis), hScroll));
 		return;
 	}
 
@@ -134,9 +134,10 @@ void TScrollerControl::OnLButtonDown(UINT nFlags, TPoint point, messageOutput* m
  *				TPoint point - the point on screen where the event occured
  *				messageOutput* mOut - allows controls to keep track of whether ohter controls have caught the event
  *				TDataArray<EventID_Cred>& eventAr - allows Controls to add whatever Event Handler they have been assigned
+ *				TDataArray<TControl*>& clickedControls - list of controls that exprienced the on Button Down Event to alert when the button is released
  * Returns: void
  */
-void TScrollerControl::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr)
+void TScrollerControl::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOut, TDataArray<EventID_Cred>& eventAr, TDataArray<TControl*>& hoverControls)
 {
 	if (onScrollFocus)
 	{
@@ -148,7 +149,7 @@ void TScrollerControl::OnMouseMove(UINT nFlags, TPoint point, messageOutput* mOu
 	}
 
 	if (childControl.Get())
-		childControl->OnMouseMove(nFlags, point, mOut, eventAr);
+		childControl->OnMouseMove(nFlags, point, mOut, eventAr, hoverControls);
 }
 /**
  * Method: TScrollerControl::OnLButtonUp
